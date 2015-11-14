@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: http://andyfightting.github.io/sitemap.xml 
