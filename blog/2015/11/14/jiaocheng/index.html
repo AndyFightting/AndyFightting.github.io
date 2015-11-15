@@ -100,17 +100,17 @@
 
 <p><a href="http://octopress.org/">Octopress</a>“A blogging framework for hackers”，即像写代码似的写博客。一个博客网页生成框架，我们按照它要求的格式写博客内容，然后敲命令<code>rake generate</code>,<code>rake deploy</code>,就可以把网页放到Github服务器上，然后我们就可以看到了啊，它就是一个写博客的工具可以这样理解。</p>
 
-<p>个人域名，这个要自己买了，可以上<a href="http://wanwang.aliyun.com/">阿里云</a>上买，一年几十块，配置后面再讲。</p>
+<p>个人域名，这个要自己买了，可以上<a href="http://wanwang.aliyun.com/">阿里云</a>上买，一年几十块，配置后面再讲。在注册阿里云的时候我用的QQ邮箱，就是收不到邮件，换成Gmail就收到了。不知道是我网络问题还是大公司间的任性撕逼，如果你也收不到邮件就换个邮箱注册吧。</p>
 
 <ul>
 <li><p>在<a href="https://github.com">Github</a>上New repository, 名字为<code>yourNmae.github.io</code>确定提交，这里报错是因为我已经建好了。
 <img src="/myimg/other/creat_rep.png" alt="creat_rep" />
 之后会生成一个HTTPS连接如 <a href="https://github.com/yourName/yourName.github.io.git">https://github.com/yourName/yourName.github.io.git</a> ,这个连接在之后的Octopress绑定配置中要用。</p></li>
-<li><p><a href="http://octopress.org/docs/setup/">Octopress</a>这个步骤比较多一点, 我用的系统是 OS X10.10.5。Octopress要用到ruby环境，可以用<code>ruby -v</code>命令看一下ruby版本，我的是版本是<code>2.0.0p643</code>, 没有的话可以看<a href="https://ruby-china.org/wiki/install_ruby_guide">这里</a>安装ruby环境。</p></li>
+<li><p><a href="http://octopress.org/docs/setup/">Octopress</a>这个步骤比较多一点, 我用的系统是 OS X10.10.5。Octopress要用到ruby环境，且ruby版本要大于等于<code>1.9.3</code>。可以用<code>ruby -v</code>命令看一下ruby版本，我的是版本是<code>2.0.0p643</code>, 没有的话可以看<a href="https://ruby-china.org/wiki/install_ruby_guide">这里</a>安装ruby环境。</p></li>
 </ul>
 
 
-<p>环境装好后从网上下载下来Octopress框架到本地电脑上，这里我保存到octopress文件夹且放在桌面上</p>
+<p>环境装好后从网上下载Octopress框架到本地电脑上，这里我保存到octopress文件夹且放在桌面上</p>
 
 <p>下载： <code>git clone git://github.com/imathis/octopress.git /Users/suguiming/Desktop/octopress</code></p>
 
@@ -124,11 +124,11 @@
 
 <p>再然后：  <code>rake install</code></p>
 
-<p>这里Octopress就下载安装好了，之后要进行关联配置,把Octopress和Github关联起来，我们可以把博客放到之前建的Github项目<code>yourNmae.github.io</code>里了。</p>
+<p>这里Octopress就下载安装好了，之后要进行关联配置,把Octopress和Github关联起来，我们就可以把博客放到之前建的Github项目<code>yourNmae.github.io</code>里了。</p>
 
-<p>但关联前还有一个步骤就是SSH key处理。<code>cd ~/.ssh</code>进入目录，<code>ls -a</code>查看内容，这时候一般没有<code>id_rsa</code>及<code>id_rsa.pub</code>这两个文件的，我们现在要创建这两个文件。<code>ssh-keygen -t rsa -C "登录账户邮箱@qq.com"</code>,然后按回车回车再回车就生成那两个文件了。然后把<code>id_rsa.pub</code>里的东西全选复制，在<a href="https://github.com/settings/ssh">这里</a>添加一个SSH key即可。</p>
+<p>但关联前还有一个步骤就是SSH key处理。新建一个命令窗口<code>cd ~/.ssh</code>进入目录，<code>ls -a</code>查看内容，这时候一般没有<code>id_rsa</code>及<code>id_rsa.pub</code>这两个文件的，我们现在要创建这两个文件。<code>ssh-keygen -t rsa -C "Github登录账号邮箱@qq.com"</code>,然后按回车回车再回车就生成那两个文件了。然后把<code>id_rsa.pub</code>里的东西全选复制，在<a href="https://github.com/settings/ssh">这里</a>添加一个SSH key即可。</p>
 
-<p>输入命令<code>rake setup_github_pages</code> 此时要求输入Github项目<code>yourNmae.github.io</code>的地址，即前面得到的<code>https://github.com/yourName/yourName.github.io.git</code>,也可在Github中项目里的右下角的HTTPS链接复制过来然后</p>
+<p>回到octopress的命令窗口，输入命令<code>rake setup_github_pages</code> 此时要求输入Github项目<code>yourNmae.github.io</code>的地址，即前面得到的<code>https://github.com/yourName/yourName.github.io.git</code>,也可在Github中项目里的右下角的HTTPS链接复制过来然后</p>
 
 <pre><code>rake generate
 rake deploy
@@ -164,7 +164,7 @@ git push origin source
 
 <p><img src="/myimg/other/discus.png" alt="img" /></p>
 
-<p>由于访问disqus比较慢，我又把评论部分改用国内的<a href="http://duoshuo.com/">多说</a>了，使用方法都类似的，具体配置请看<a href="http://www.tuicool.com/articles/VbqYNjn">这里</a>,里面还说了性能优化可以跟着改改，提高网页的响应速度。</p>
+<p>由于访问国外disqus比较慢，我又把评论部分改用国内的<a href="http://duoshuo.com/">多说</a>了，使用方法都类似的，具体配置请看<a href="http://www.tuicool.com/articles/VbqYNjn">这里</a>,里面还说了性能优化可以跟着改改，提高网页的响应速度。</p>
 </div>
 
 
