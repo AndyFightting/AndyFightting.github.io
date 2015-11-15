@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Other | 阿贵的博客]]></title>
   <link href="http://andyfightting.github.io/blog/categories/other/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2015-11-15T12:00:25+08:00</updated>
+  <updated>2015-11-15T12:04:40+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -89,6 +89,15 @@ git push origin source
 <p><img src="/myimg/other/discus.png" alt="img" /></p>
 
 <p>由于访问国外disqus比较慢，我又把评论部分改用国内的<a href="http://duoshuo.com/">多说</a>了，使用方法都类似的，具体配置请看<a href="http://www.tuicool.com/articles/VbqYNjn">这里</a>,里面还说了性能优化可以跟着改改，提高网页的响应速度。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[My Octopress]]></title>
+    <link href="http://andyfightting.github.io/blog/2015/11/13/my-octopress/"/>
+    <updated>2015-11-13T21:03:44+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2015/11/13/my-octopress</id>
+    <content type="html"><![CDATA[<p>Hello World !</p>
 ]]></content>
   </entry>
   
