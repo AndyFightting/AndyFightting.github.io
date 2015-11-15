@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Other | 阿贵的博客]]></title>
   <link href="http://andyfightting.github.io/blog/categories/other/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2015-11-15T12:07:13+08:00</updated>
+  <updated>2015-11-15T12:11:37+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -97,7 +97,7 @@ git push origin source
     <link href="http://andyfightting.github.io/blog/2015/11/13/my-octopress/"/>
     <updated>2015-11-13T21:03:44+08:00</updated>
     <id>http://andyfightting.github.io/blog/2015/11/13/my-octopress</id>
-    <content type="html"><![CDATA[<p>Hello World !</p>
+    <content type="html"><![CDATA[<p>Hello World !!</p>
 ]]></content>
   </entry>
   
