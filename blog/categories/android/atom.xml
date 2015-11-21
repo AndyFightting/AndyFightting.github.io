@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Android | 阿贵]]></title>
+  <link href="http://andyfightting.github.io/blog/categories/android/atom.xml" rel="self"/>
+  <link href="http://andyfightting.github.io/"/>
+  <updated>2015-11-21T16:18:31+08:00</updated>
+  <id>http://andyfightting.github.io/</id>
+  <author>
+    <name><![CDATA[guimingsu]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Android 基础知识]]></title>
+    <link href="http://andyfightting.github.io/blog/2015/11/21/androidBase0/"/>
+    <updated>2015-11-21T09:26:15+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2015/11/21/androidBase0</id>
+    <content type="html"><![CDATA[<h3>* Activity启动模式</h3>
+
+<p>在AndroidMainfest.xml里的activity里设置android:launchMode = “xxx”</p>
+
+<p><strong>standard:</strong> 默认模式，每次都会创建一个新的放在栈顶，即使栈里已经有了</p>
+
+<p><strong>singleTop:</strong> 已经在<strong>栈顶</strong>了就不创建，否则还是会创建，即使栈里已经有了</p>
+
+<p><strong>singleTask:</strong> 在活动栈中有了就不创建，直接推到栈顶，<strong>在它之前的全部会被挤出栈</strong>，若活动栈中没有就创建</p>
+
+<p><strong>singleInstance:</strong> 会创建一个<strong>新的活动栈</strong>把自己放进去</p>
+
+<h3>* 随时随地退出程序</h3>
+
+<p>在任何页面都可以被踢下线的实现技巧</p>
+
+<p>创建一个收集Activity的管理类，在BaseActivity的<code>onCreate()</code>方法中添加<code>ActivityManager.addActivity(this)</code>,在<code>onDestroy</code>方法中添加<code>ActivityManager.removeActivity(this)</code>。然后在任何要强退的地方调用<code>ActivityManager.finishAllActivity()</code>。<!--more--></p>
+
+<pre><code>public class ActivityManager {
+
+public static List&lt;Activity&gt; activityList = new ArrayList&lt;&gt;();
+
+public static void addActivity(Activity activity){
+    activityList.add(activity);
+  }
+
+public static void removeActivity(Activity activity){
+    activityList.remove(activity);
+  }
+
+public static void finishAllActivity(){
+    for (Activity activity : activityList){
+        if (!activity.isFinishing()){
+            activity.finish();
+        }
+    }
+    activityList.clear();
+  }
+}
+</code></pre>
+
+<h3>* Activity跳转</h3>
+
+<p>一般我们是用如下的方式跳转，需要知道下一个Activity要用哪些参数，多人开发可能有些不便。</p>
+
+<pre><code>Intent intent = new Intent(OneActivity.thi,TwoActivity.class);
+intent.putExtra("key","value");
+startActivity(intent);
+</code></pre>
+
+<p>可以在下一个Activity中把需要的参数暴露出来。</p>
+
+<pre><code>public static void actionStart(Activity activity,String param){
+  Intent intent = new Intent(activity,TwoActivity.class);
+  intent.putExtra("key","param");
+  activity.startActivity(intent);
+  activity.finish();
+}
+</code></pre>
+
+<h3>* ListView的正确使用方式</h3>
+
+<p>实现了item的复用，这样效率最好，ArrayAdapter源码中就是这样弄的。ArrayAdapter把BaseAdapter包装了一遍，实现了<code>getCount</code>,<code>getItem</code>,<code>getItemId</code>，所以这些我们就可以不用再写了，只重写个<code>getView</code>就可以。</p>
+
+<pre><code>public class UserAdapter extends ArrayAdapter&lt;User&gt; {
+
+private int layoutId;
+public UserAdapter(Context context, int resourceId, List&lt;User&gt; objects){
+      super(context,resourceId,objects);
+      layoutId = resourceId;
+}
+
+@Override
+public View getView(int position, View convertView, ViewGroup parent){
+
+    User user = getItem(position);
+    ViewHolder viewHolder;
+    View layoutView;
+
+    if (convertView == null){
+        layoutView = LayoutInflater.from(getContext()).inflate(layoutId,null);
+        viewHolder = new ViewHolder();
+        viewHolder.headImage = (ImageView)layoutView.findViewById(R.id.head_img);
+        viewHolder.nameTv = (TextView)layoutView.findViewById(R.id.name_tv);
+        layoutView.setTag(viewHolder);
+    }else {
+       layoutView = convertView;
+       viewHolder = (ViewHolder)layoutView.getTag();
+    }
+    //--------在下面赋值 ----------------
+    viewHolder.headImage.setImageResource(user.getHeadImgId());
+    viewHolder.nameTv.setText(user.getName());
+
+    return layoutView;
+}
+
+class ViewHolder{
+    ImageView headImage;
+    TextView nameTv;
+  }
+}
+</code></pre>
+
+<h3>* px,dpi,dp,density</h3>
+
+<p>Android规定：如果手机一英寸长度上有160个px，那么手机的dpi就是160,此时1dp==1px，即density=1。所以如果一英寸长度上有320个px的话，那么手机的dpi就是320，此时1dp==2px,即density=2。</p>
+
+<p>结论：即相同大小的手机上的dp个数是不变的，如果相同大小的手机像素不同的话，只会影响dip和density的值,所以我们适配手机的时候用的长度单位要用 &mdash;- <code>dp</code></p>
+
+<pre><code>public static int getScreenWidthPx(Context context){
+    return  context.getResources().getDisplayMetrics().widthPixels;
+}
+
+public static int getScreenHeightPx(Context context){
+    return  context.getResources().getDisplayMetrics().heightPixels;
+}
+
+public static float getXdpi(Context context){
+    return  context.getResources().getDisplayMetrics().xdpi;
+}
+
+public static float getYdpi(Context context){
+    return  context.getResources().getDisplayMetrics().ydpi;
+}
+
+public static float getDensity(Context context){
+   return context.getResources().getDisplayMetrics().density;
+}
+</code></pre>
+
+<h3>* 9-patch图片</h3>
+
+<p>1，在<code>上</code>边绘制的<code>垂直区域</code>会被<code>水平拉伸</code>，在<code>左</code>边绘制的<code>横向区域</code>会被<code>垂直拉伸</code>。</p>
+
+<p>2，在<code>下</code>边和<code>右</code>边绘制的<code>交叉区域</code>是内容放置的区域。</p>
+
+<p><img src="/myimg/android/9patch.jpg" alt="img" /></p>
+]]></content>
+  </entry>
+  
+</feed>
