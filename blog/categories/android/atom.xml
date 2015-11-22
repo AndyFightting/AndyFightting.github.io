@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2015-11-21T16:18:31+08:00</updated>
+  <updated>2015-11-22T20:00:47+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,20 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Android Studio插件]]></title>
+    <link href="http://andyfightting.github.io/blog/2015/11/22/studioplugin/"/>
+    <updated>2015-11-22T14:10:45+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2015/11/22/studioplugin</id>
+    <content type="html"><![CDATA[<h3>* Logger</h3>
+
+<p>推荐一款打印工具<a href="https://github.com/orhanobut/logger">Logger</a>,比自带的打印效果更好，主要是json打印是格式化的！Github上写的地址<code>compile 'com.github.orhanobut:logger:1.12'</code>我下载失败，我用的是<code>compile 'com.orhanobut:logger:1.11'</code>。
+<img src="/myimg/android/logger.png" alt="img" />
+打印颜色可以在preference里设置，要先<code>Save as</code>保存一下，然后把右边的<code>Use inherited attributes</code>取消，然后就可以选择颜色了
+<img src="/myimg/android/logColor.png" alt="img" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Android 基础知识]]></title>
@@ -155,6 +169,46 @@ public static float getDensity(Context context){
 <p>2，在<code>下</code>边和<code>右</code>边绘制的<code>交叉区域</code>是内容放置的区域。</p>
 
 <p><img src="/myimg/android/9patch.jpg" alt="img" /></p>
+
+<h3>* Fragment</h3>
+
+<p>在fragment里可以用<code>getActivity()</code>得到与之关联的Activity。<code>FragmentTransaction</code>的实例可以调用<code>addToBackStack(null)</code>方法把这个事务添加到返回栈中，这样点击返回就是回到事务处理之前的状态,而不是退出Activity。fragment之间的通信可以通过与之共同关联的Activity来转达。</p>
+
+<p>fragment的生命周期与Activity类似，只不过比Activity多了<code>onAttach()</code>,<code>onCreateView()</code>,<code>onActivityCreated()</code>,<code>onDestroyView()</code>,<code>onDetach()</code>。</p>
+
+<p>由生到死依次是：<code>onAttach()</code>, <code>onCreate()</code>,<code>onCreateView()</code>,<code>onActivityCreated()</code>,<code>onStart()</code>,<code>onResume()</code>,<code>onPause()</code>,<code>onStop()</code>,<code>onDestroyView()</code>,<code>onDestroy()</code>,<code>onDetach()</code>。</p>
+
+<p>从返回栈回来后执行的第一个方法是<code>onActivityCreated()</code>,而Activity的轮回后执行的第一个方法是<code>onRestart()</code>,然后再<code>onStart()</code>,<code>onResume()</code>。</p>
+
+<p>同一个Activity怎样让它在不同大小的设备自动加载不同的布局文件呢？用<code>限定符</code>,即在<code>res</code>下建<code>layout-large</code>文件夹或者不同限定符的文件夹，在里面放<code>同名</code>的布局文件。限定符有：<code>small</code>,<code>normal</code>,<code>large</code>,<code>xlarge</code>以及分辨率限定符：<code>ldpi</code>:120dpi以下，<code>mdpi</code>:120-160dpi，<code>hdpi</code>:160-240dpi,<code>xhdpi</code>:240-320dpi，以及方向限定符：<code>land</code>:横屏,<code>port</code>:竖屏。</p>
+
+<p>还有个问题，<code>large</code>，大，到底多大算大呢？可以自己定义这个边界值。如<code>layout-sm600</code>,就是<code>宽度</code>大于600<code>dp</code>的设备叫大，否则叫小。<code>sm</code>的意思是：<code>smallest width</code>。</p>
+
+<h3>* Broadcast 广播</h3>
+
+<p>见名知意，即发一下消息，很多地方都可以收到。广播有两种：异步执行的广播 和 按顺序执行的同步广播。异步广播接收没有先后之分，可看做同时收到，这种广播发出之后不可被拦截。同步广播是按顺序一个一个执行，可以设置接收的优先级(设置<code>IntentFilter</code>的<code>priority</code>值,越大越优先)，这种广播可以被拦截(在<code>onReceive()</code>方法里调用<code>abortBroadcast()</code>废掉这条广播)。</p>
+
+<p>注册接收广播有两种方式：一种是用代码注册，也叫动态注册，动态注册(在<code>onCreate()</code>里调用Activity的方法<code>registerReceiver()</code>)的广播接收一定要在<code>onDestroy</code>中移除注册(调用Activity的<code>unregisterReceiver()</code>)。另一种叫静态注册，是在xml中配置的，这种注册不用移除。</p>
+
+<p>怎么写广播接收器？写个类继承<code>BroadcastReceiver</code>,它是个抽象类，然后重写<code>onReceive()</code>即可，可以通过<code>intent.getAction()</code>来区分不同广播，<strong>在<code>onReceive()</code>方法中不能开启线程</strong>。下面是一个监听网络变化的广播接收器。</p>
+
+<pre><code>class NetWorkChangeReceiver extends BroadcastReceiver{
+    @Override
+    public void onReceive(Context context,Intent intent){
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if (networkInfo != null &amp;&amp; networkInfo.isAvailable()){
+            Toast.makeText(context,"网络可用",Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(context,"网络不可用",Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+</code></pre>
+
+<p>用Activity里的方法发送异步广播<code>sendBroadcaset(intent)</code>,和发送同步广播<code>sendOrderedBroadCaset(intent,null)</code>。这样发送的广播都是<code>跨应用</code>的，即A应用发出的广播，B应用也可以收到的！应为这些都是全局广播。</p>
+
+<p>本地广播，即发出的广播只会被<code>本身应用</code>接收到,手机里的其他应用就收不到了。本地广播要用<code>LocalBroadcastManager</code>这个类来管理，即注册和移除的时候不能用<code>Activity</code>的<code>registerReceiver()</code>和<code>unregisterReceiver()</code>方法，而应该用<code>LocalBroadcastManager</code>实例的<code>registerReceiver()</code>和<code>unregisterReceiver()</code>方法，简单吧！<strong>本地广播不会被静态注册的接收器收到！</strong>要接收本地广播，接收器都得用动态注册的方式。</p>
 ]]></content>
   </entry>
   
