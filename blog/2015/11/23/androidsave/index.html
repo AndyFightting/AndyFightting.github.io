@@ -129,7 +129,7 @@
 
 <p>读文件</p>
 
-<pre><code>public static void getText(Context context,String fileName){
+<pre><code>public static String getText(Context context,String fileName){
     FileInputStream inputStream;
     BufferedReader bufferReader = null;
     StringBuilder contentBuilder = new StringBuilder();
@@ -151,12 +151,46 @@
            }
        }
     }
+    return contentBuilder.toString();
+}
+</code></pre>
+
+<p>删除文件</p>
+
+<pre><code>public static void deleteFile(Context context, String fileName) {
+    String filePath = context.getFilesDir()+"/"+fileName;
+    File file = new File(filePath);
+    if (file.exists()){
+        file.delete();
+    }
 }
 </code></pre>
 
 <h3>* SharedPreference</h3>
 
-<p>用key-value键值对的方式保存数据，适用于保存应用配置之类的简单信息。</p>
+<p>用key-value键值对的方式保存数据，适用于保存应用配置之类的简单信息。有以下三种方式得到<code>SharedPreferences</code>对象，得到实例后调用实例的<code>edit()</code>方法得到<code>SharedPreferences.Editor</code>对象，用该<code>Editor</code>对象<code>putBoolean("key",value)``putString("key",value)</code>等方法添加数据，然后调用<code>apply()</code>即可。获取数据就调用对应的<code>getBoolean("key")``getString("key")</code>。文件保存在<code>/data/data/packageName/shared_prefs/</code>目录下。</p>
+
+<ol>
+<li><p>Context中的<code>getSharedPreferences()</code>方法接收两个参数，一个文件名(不要包含路径)，一个操作模式，有<code>MODE_PRIVATE</code>(覆盖原文件),<code>MODE_MULTI_PROCESS</code>(多个进程对文件进行读写情况)默认第一种。</p></li>
+<li><p>Activity中也有个一个类似的方法<code>getSharedPreferences()</code>，它只接收一个操作模式作为参数，<strong>自动将类名作为文件名</strong>。</p></li>
+<li><p>PreferenceManager类中的<code>getDefaultSharedPreferences()</code>，这是一个静态方法，接收一个参数<code>Context</code>,自动将应用程序的<code>packageName</code>为前缀的文件名,如我的包名是<code>com.suguiming.myandroid</code>,生成的文件名就是<code>com.suguiming.myandroid_preferences.xml</code>。</p></li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>SharedPreferences sharedPreferences =    PreferenceManager.getDefaultSharedPreferences(context);
+</span><span class='line'>  SharedPreferences.Editor editor = sharedPreferences.edit();
+</span><span class='line'>    editor.putString("name","guimingsu");
+</span><span class='line'>    editor.putInt("age", 18);
+</span><span class='line'>    editor.apply();</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/myimg/android/shareP.png" alt="img" />
+<img src="/myimg/android/shareV.png" alt="img" /></p>
 </div>
 
 
