@@ -124,6 +124,9 @@
 }
 </code></pre>
 
+<!--more-->
+
+
 <p>在我调用 <code>MyTool.saveText(this,"myFile","Hello World!");</code>后出现了如下文件，点画圈圈的地方可以导出到电脑上打开查看。
 <img src="/myimg/android/helloSave.png" alt="img" /></p>
 
@@ -191,6 +194,140 @@
 
 <p><img src="/myimg/android/shareP.png" alt="img" />
 <img src="/myimg/android/shareV.png" alt="img" /></p>
+
+<h3>* SQLite</h3>
+
+<p>关系型的轻量级数据库，保存复杂或者大数据用这个，支持标准的SQL语法。</p>
+
+<p>创建数据库：Android提供了一个抽象类<code>SQLiteOpenHelper</code>，我们继承它重写里面的两个方法<code>onCreate()</code>,<code>onUpdate()</code>来创建和更新数据库表结构。创建的数据库会保存在 <code>/data/data/packageName/databases/</code>目录下。通过<code>getReadableDatabase</code>或者<code>getWritableDatabase</code>都可得到可读写的数据库，但如果数据库不可写时(如磁盘已满)，<code>getWritableDatabase</code>会报错，<code>getReadableDatabase</code>不会。</p>
+
+<p>调用<code>MySqliteHelper.getHelper(mainActivity).getReadableDatabase();</code>一下数据库就建好了，下次再调用就不会再创建了。</p>
+
+<pre><code>public class MyDatabaseHelper extends SQLiteOpenHelper {
+
+private static MyDatabaseHelper helper;
+private static final String DB_NAME = "myAndroid.db";
+
+public MyDatabaseHelper(Context context){
+    super(context, DB_NAME, null, 2);//2 数据库version,修改数据库用
+}
+
+@Override
+public void onCreate(SQLiteDatabase db) {
+    db.execSQL(create_dog);
+    db.execSQL(create_cat);
+}
+
+@Override
+public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    //更新表才用,这里假设在 版本2 中要添加 cat 表,注意：switch 不要 break !!
+    switch (newVersion){
+        case 2:
+            db.execSQL(create_cat);
+        default:
+    }
+}
+//获取 helper 单例
+public static synchronized MyDatabaseHelper getHelper(Context context) {
+    context = context.getApplicationContext();
+    if (helper == null) {
+        synchronized (MyDatabaseHelper.class) {
+            if (helper == null)
+                helper = new MyDatabaseHelper(context);
+        }
+    }
+    return helper;
+}
+
+//-------------sql----------------------------
+    public static final String create_dog = "create table dog ("
+            +"id integer primary key autoincrement,"
+            +"name text,"
+            +"age integer,"
+            +"weight real)";
+
+    public static final String create_cat = "create table cat ("
+            +"id integer primary key autoincrement,"
+            +"name text,"
+            +"age integer,"
+            +"weight real)";
+}
+</code></pre>
+
+<p><img src="/myimg/android/mydb.png" alt="img" />  <br/>
+把数据库导出到桌面，用<a href="http://www.sqlitemanager.org/">SQLiteManager</a>打开查看
+<img src="/myimg/android/mytable.png" alt="img" /></p>
+
+<p>数据增，删，改，查的最简单的例子</p>
+
+<pre><code>public class DogDao {
+private static final String TABLE_NAME = "dog";
+
+public static void add(Context context,Dog dog){
+    SQLiteDatabase db =  MyDatabaseHelper.getHelper(context).getWritableDatabase();
+    ContentValues values = new ContentValues();
+    values.put("name",dog.getName());
+    values.put("age",dog.getAge());
+    values.put("weight",dog.getWeight());
+    db.insert(TABLE_NAME, null, values);
+}
+
+public static void update(Context context,Dog dog){
+    SQLiteDatabase db =  MyDatabaseHelper.getHelper(context).getWritableDatabase();
+    ContentValues values = new ContentValues();
+    values.put("name",dog.getName());
+    values.put("age",dog.getAge());
+    values.put("weight",dog.getWeight());
+    db.update(TABLE_NAME, values, null, null);
+}
+
+public static void deleteAll(Context context){
+    SQLiteDatabase db =  MyDatabaseHelper.getHelper(context).getWritableDatabase();
+    db.delete(TABLE_NAME, null, null);
+}
+
+public static List&lt;Dog&gt; getAll(Context context){
+    SQLiteDatabase db =  MyDatabaseHelper.getHelper(context).getWritableDatabase();
+    Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, null);
+    List&lt;Dog&gt; dogList = new ArrayList&lt;&gt;();
+    if (cursor.moveToFirst()){
+        do {
+            Dog dog = new Dog();
+            dog.setName(cursor.getString(cursor.getColumnIndex("name")));
+            dog.setAge(cursor.getInt(cursor.getColumnIndex("age")));
+            dog.setWeight(cursor.getFloat(cursor.getColumnIndex("weight")));
+            dogList.add(dog);
+        }while (cursor.moveToNext());
+    }
+    cursor.close();
+    return dogList;
+}
+
+//事务，要么都成功，要么都失败。
+public static void transactionTest(Context context){
+    SQLiteDatabase db =  MyDatabaseHelper.getHelper(context).getWritableDatabase();
+    db.beginTransaction();
+    try {
+        //数据处理....
+
+        db.setTransactionSuccessful();
+    }catch (Exception e){
+        e.printStackTrace();
+    }finally {
+        db.endTransaction();
+    }
+}
+}
+</code></pre>
+
+<p>也可以用 Android SDK <code>/platform-tools</code>文件夹中自带的<code>adb</code>工具来操作链接在电脑的手机或者模拟器里的数据库。</p>
+
+<p>但要先配置一下，Mac的配置如下，在终端依次输入 <code>cd ~</code> <code>touch .bash_profile</code> <code>open -e .bash_profile</code>这时会打开一个文本文件，在里面添加<code>export PATH=${PATH}:这里是platform-tools文件的路径</code>保存关闭，
+然后<code>source .bash-profile</code>刷新，然后输入<code>adb shell</code>就可以开始用了。
+<img src="/myimg/android/pzadb.png" alt="img" />
+<img src="/myimg/android/pzadb2.png" alt="img" />
+如查看数据库<code>cd /data/data/packageName/databases</code> <code>l</code>列出所有数据库
+<img src="/myimg/android/adbtable.png" alt="img" /></p>
 </div>
 
 
