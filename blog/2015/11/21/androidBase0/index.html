@@ -272,6 +272,18 @@ public static float getDensity(Context context){
 <p>用Activity里的方法发送异步广播<code>sendBroadcaset(intent)</code>,和发送同步广播<code>sendOrderedBroadCaset(intent,null)</code>。这样发送的广播都是<code>跨应用</code>的，即A应用发出的广播，B应用也可以收到的！应为这些都是全局广播。</p>
 
 <p>本地广播，即发出的广播只会被<code>本身应用</code>接收到,手机里的其他应用就收不到了。本地广播要用<code>LocalBroadcastManager</code>这个类来管理，即注册和移除的时候不能用<code>Activity</code>的<code>registerReceiver()</code>和<code>unregisterReceiver()</code>方法，而应该用<code>LocalBroadcastManager</code>实例的<code>registerReceiver()</code>和<code>unregisterReceiver()</code>方法，简单吧！<strong>本地广播不会被静态注册的接收器收到！</strong>要接收本地广播，接收器都得用动态注册的方式。</p>
+
+<h3>* ContentProvider / ContentResolver</h3>
+
+<p>这个是用于在手机中<code>不同应用程序</code>间的数据传递，可以自己选择那些数据可暴露出来给其他应用获取。有些系统的应用程序已经提供这样的接口了，可以直接通过这种方式获取数据，如 短信应用，通讯录应用等，而我们自己写的应用程序则要自己写这个数据提供接口。</p>
+
+<p>获取数据通过<code>ContentResolver</code>类，可以通过Context 的 <code>getContentResolver()</code>得到实例，然后数据处理就是 <code>insert()</code>,<code>update()</code>,<code>delete()</code>,<code>quert()</code>,和<code>SQLiteDatabase</code>很像，但不是传<code>表名</code>而是传<code>Uri</code>。</p>
+
+<p>提供数据，要继承抽象类<code>ContentProvider</code>然后重写里面的六个方法：<code>onCreate()</code>,<code>quert()</code>,<code>insert()</code>,<code>update()</code>,<code>delete()</code>,<code>getType()</code>。</p>
+
+<h3>* NotificationManager</h3>
+
+<p>Notification 在手机顶部提示用户的通知，</p>
 </div>
 
 

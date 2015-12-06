@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2015-11-29T10:09:28+08:00</updated>
+  <updated>2015-12-06T16:03:04+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -246,6 +246,238 @@ public static void transactionTest(Context context){
 <img src="/myimg/android/pzadb2.png" alt="img" />
 如查看数据库<code>cd /data/data/packageName/databases</code> <code>l</code>列出所有数据库
 <img src="/myimg/android/adbtable.png" alt="img" /></p>
+
+<h3>* SD卡存储</h3>
+
+<p>SD卡存储和文件存储差不多，只不过是手机外部的存储空间，容量更大，不过在使用的时候要判断SD卡可不可以用。</p>
+
+<pre><code>public class SDCardUtil {
+
+// 默认都保存在这个文件夹下
+private static final String DEFAULT_DIR = "ProData/";
+
+public static boolean isEnable() {
+    return Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+}
+
+public static long getTotalMB() {
+    if (!isEnable())
+        return 0;
+    File path = Environment.getExternalStorageDirectory();
+    StatFs stat = new StatFs(path.getPath());
+    long blockSize = stat.getBlockSizeLong();
+    long availableBlocks = stat.getBlockCountLong();
+    return (availableBlocks * blockSize) / 1024 / 1024;
+}
+
+public static long getAvailableMB() {
+    if (!isEnable())
+        return 0;
+    File path = Environment.getExternalStorageDirectory();
+    StatFs stat = new StatFs(path.getPath());
+    long blockSize = stat.getBlockSizeLong();
+    long availableBlocks = stat.getAvailableBlocksLong();
+    return (availableBlocks * blockSize) / 1024 / 1024;
+}
+
+public static long getAvailableByte() {
+    if (!isEnable())
+        return 0;
+    File path = Environment.getExternalStorageDirectory();
+    StatFs stat = new StatFs(path.getPath());
+    long blockSize = stat.getBlockSizeLong();
+    long availableBlocks = stat.getAvailableBlocksLong();
+    return availableBlocks * blockSize;
+}
+
+// 路径：/storage/sdcard0/
+public static String getSDCardPath() {
+    if (!isEnable())
+        return "";
+    return Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator;
+}
+
+
+public static File createDir(String directoryName) {
+    //建默认文件夹
+    String defaultDir = getSDCardPath() + DEFAULT_DIR;
+    File defaultFile = new File(defaultDir);
+    if (!defaultFile.exists()) {
+        defaultFile.mkdir();
+    }
+
+    String dirPath = getFilePath(directoryName);
+    File dirFile = new File(dirPath);
+    if (!dirFile.exists()) {
+        dirFile.mkdir();
+    }
+    return dirFile;
+}
+
+public static File createFile(String fileName) {
+    try {
+        //建默认文件夹
+        String dirPath = getSDCardPath() + DEFAULT_DIR;
+        File directory = new File(dirPath);
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
+
+        //再在默认文件夹里建文件
+        File file = new File(getFilePath(fileName));
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        return file;
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+
+public static String getFilePath(String fileName) {
+    return getSDCardPath() + DEFAULT_DIR + fileName;
+}
+
+public static boolean isFileExist(String fileName) {
+    File file = new File(getFilePath(fileName));
+    return file.exists();
+}
+
+public static boolean saveByte(String fileName, byte[] bytes) {
+    if (bytes == null) {
+        return false;
+    }
+
+    OutputStream output = null;
+    try {
+        if (bytes.length &lt; getAvailableByte()) {
+            File file = createFile(fileName);//这里面已经建了默认文件夹
+            output = new BufferedOutputStream(new FileOutputStream(file));
+            output.write(bytes);
+            output.flush();
+            return true;
+        }
+    } catch (IOException e1) {
+        e1.printStackTrace();
+    } finally {
+        try {
+            if (output != null) {
+                output.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    return false;
+}
+
+public static byte[] getByte(String fileName) {
+    File file = new File(getFilePath(fileName));
+    if (!file.exists()) {
+        return null;
+    }
+    InputStream inputStream = null;
+    try {
+        inputStream = new BufferedInputStream(new FileInputStream(file));
+        byte[] data = new byte[inputStream.available()];
+        inputStream.read(data);
+        return data;
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    return null;
+}
+
+public static boolean saveBitmap(Bitmap bitmap, String bitmapName) {
+    if (bitmap == null) {
+        return false;
+    }
+    //建默认文件夹
+    String dirPath = getSDCardPath() + DEFAULT_DIR;
+    File directory = new File(dirPath);
+    if (!directory.exists()) {
+        directory.mkdir();
+    }
+
+    File file = new File(getFilePath(bitmapName));
+    BufferedOutputStream output = null;
+    try {
+        output = new BufferedOutputStream(new FileOutputStream(file));
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, output);
+        output.flush();
+        output.close();
+        return true;
+    } catch (IOException e1) {
+        e1.printStackTrace();
+    } finally {
+        try {
+            if (output != null) {
+                output.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    return false;
+}
+
+public static Bitmap getBitmap(String bitmapName) {
+    String myJpgPath = getFilePath(bitmapName);
+    BitmapFactory.Options options = new BitmapFactory.Options();
+    return BitmapFactory.decodeFile(myJpgPath, options);
+}
+
+public static void removeFile(String fileName) {
+    String filePath = getFilePath(fileName);
+    File file = new File(filePath);
+    if (file.exists()) {
+        file.delete();
+    }
+}
+
+public static void removeFile(File file) {
+    if (file.isFile()) {
+        file.delete();
+        return;
+    }
+    if (file.isDirectory()) {
+        File[] childFiles = file.listFiles();
+        if (childFiles == null || childFiles.length == 0) {
+            file.delete();
+            return;
+        }
+
+        for (int i = 0; i &lt; childFiles.length; i++) {
+            removeFile(childFiles[i]);
+        }
+        file.delete();
+    }
+}
+
+public static void removeAll() {
+    String filePath = getSDCardPath() + DEFAULT_DIR;
+    File file = new File(filePath);
+    if (file.exists()) {
+        removeFile(file);
+    }
+
+    //再建一个空文件夹
+    File directory = new File(filePath);
+    if (!directory.exists()) {
+        directory.mkdir();
+    }
+  }
+}
+</code></pre>
 ]]></content>
   </entry>
   
@@ -274,6 +506,80 @@ public static void transactionTest(Context context){
 <p>我的<code>sexy editor</code>设置</p>
 
 <p><img src="/myimg/android/sexy_editor.png" alt="img" /></p>
+
+<h3>* Mac下的快捷键</h3>
+
+<p>Mac中的标识：<code>⌘:command</code>, <code>⌃:control</code>, <code>⇧:shift</code>, <code>⌥:alt/option</code></p>
+
+<p><code>⌘ + ⌥ + L</code>: 代码对齐格式化</p>
+
+<p><code>^ + ⌥ + O</code>: 除去无效的import引用</p>
+
+<p><code>F1</code>: 查看文档</p>
+
+<p><code>F2</code>: 定位到未被使用的成员</p>
+
+<p><code>F3</code>: 添加书签</p>
+
+<p><code>F4</code>: 定位到声明处</p>
+
+<p><code>⇧ + F6</code>: 文件重命名</p>
+
+<p><code>⌘ + F12</code>: 显示内部成员</p>
+
+<p><code>⌘ + ⇧ + F7</code>: 代码高亮</p>
+
+<p><code>⌥ + ⏎</code>: 添加缺少的import</p>
+
+<p><code>⌘ + delete</code>: 删除整行</p>
+
+<p><code>⌘ + N</code>: 生成代码，getter setter 等</p>
+
+<p><code>⌃ + H</code>: 查看类的层级关系</p>
+
+<p><code>⌘ + U</code>: 查看父类的同名方法</p>
+
+<p><code>⌘ + J</code>: 快捷插入常用代码片段</p>
+
+<p><code>⌥ + ⇧ + ↑或↓</code>: 上下移动光标所在的行</p>
+
+<p><code>⌘ + ⇧ + ↑或↓</code>: 上下移动整个方法块</p>
+
+<p><code>⌘ + ⌥ + ⏎</code>: 当前行上面插入一行</p>
+
+<p><code>⌘ + ⇧ + U</code>: 大小写转化</p>
+
+<p><code>⌘ + E</code>: 查看打开过的文件</p>
+
+<p><code>⌃ + T</code>: 重构面板</p>
+
+<p><code>⌃ + O</code>: 选择要重写或者要实现的方法</p>
+
+<p><code>⌘ + O</code>: 快速搜索class</p>
+
+<p><code>⌘ + ⇧ + O</code>: 快速搜索file</p>
+
+<p><code>⌘ + ⇧ + F</code>: 全局搜索</p>
+
+<p><code>⌘ + ⇧ + R</code>: 全局替换</p>
+
+<p><code>⌘ + +或-</code>: 展开或者收起代码块</p>
+
+<p><code>⌘ + /</code>: 注释 //</p>
+
+<p><code>⌘ + ⌥ + /</code>: 注释 /**/</p>
+
+<p><code>⌥ + ⏎</code>: 提示错误解决方法</p>
+
+<p>可能会有人觉得为啥重命名<code>⇧ + F6</code>没反应呢？跟 F1 ~ F12 有关的都没反应&hellip;</p>
+
+<p>因为Mac系统默认没有启用它们&hellip;在系统设置，键盘选项里选中就可以了。</p>
+
+<p><img src="/myimg/android/keyf.png" alt="img" /></p>
+
+<p>当然可以设置自己喜欢的快捷键，我自己把运行和调试改成了<code>⌘ + R</code>和<code>⌘ + D</code></p>
+
+<p><img src="/myimg/android/keymap.png" alt="img" /></p>
 ]]></content>
   </entry>
   
@@ -459,6 +765,18 @@ public static float getDensity(Context context){
 <p>用Activity里的方法发送异步广播<code>sendBroadcaset(intent)</code>,和发送同步广播<code>sendOrderedBroadCaset(intent,null)</code>。这样发送的广播都是<code>跨应用</code>的，即A应用发出的广播，B应用也可以收到的！应为这些都是全局广播。</p>
 
 <p>本地广播，即发出的广播只会被<code>本身应用</code>接收到,手机里的其他应用就收不到了。本地广播要用<code>LocalBroadcastManager</code>这个类来管理，即注册和移除的时候不能用<code>Activity</code>的<code>registerReceiver()</code>和<code>unregisterReceiver()</code>方法，而应该用<code>LocalBroadcastManager</code>实例的<code>registerReceiver()</code>和<code>unregisterReceiver()</code>方法，简单吧！<strong>本地广播不会被静态注册的接收器收到！</strong>要接收本地广播，接收器都得用动态注册的方式。</p>
+
+<h3>* ContentProvider / ContentResolver</h3>
+
+<p>这个是用于在手机中<code>不同应用程序</code>间的数据传递，可以自己选择那些数据可暴露出来给其他应用获取。有些系统的应用程序已经提供这样的接口了，可以直接通过这种方式获取数据，如 短信应用，通讯录应用等，而我们自己写的应用程序则要自己写这个数据提供接口。</p>
+
+<p>获取数据通过<code>ContentResolver</code>类，可以通过Context 的 <code>getContentResolver()</code>得到实例，然后数据处理就是 <code>insert()</code>,<code>update()</code>,<code>delete()</code>,<code>quert()</code>,和<code>SQLiteDatabase</code>很像，但不是传<code>表名</code>而是传<code>Uri</code>。</p>
+
+<p>提供数据，要继承抽象类<code>ContentProvider</code>然后重写里面的六个方法：<code>onCreate()</code>,<code>quert()</code>,<code>insert()</code>,<code>update()</code>,<code>delete()</code>,<code>getType()</code>。</p>
+
+<h3>* NotificationManager</h3>
+
+<p>Notification 在手机顶部提示用户的通知，</p>
 ]]></content>
   </entry>
   
