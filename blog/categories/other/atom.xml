@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Other | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/other/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2015-12-06T16:55:57+08:00</updated>
+  <updated>2015-12-19T22:38:07+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,69 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式]]></title>
+    <link href="http://andyfightting.github.io/blog/2015/12/19/desigin-pattern/"/>
+    <updated>2015-12-19T21:51:06+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2015/12/19/desigin-pattern</id>
+    <content type="html"><![CDATA[<h3>1.策略模式</h3>
+
+<p>比如有个父类有飞行功能，然后有很多子类的飞行功能各不一样，如果去继承父类然后分别实现不同的飞行行为，这就坑爹了&hellip;具体做法应该是：把飞行行为完全独立出来成一个Interface，然后不同的飞行行为再在单独的类中实现，不同的子类要不同的飞行行为的话就取对应的行为实现对象。</p>
+
+<p>父类：</p>
+
+<pre><code>public class Duck {//父类
+
+public FlyInterface flyInterface;//行为的接口成员变量
+
+public void performFly(){//统一调用的飞行方法
+    flyInterface.fly();
+}
+
+public void setFlyInterface(FlyInterface fi){//动态改变飞行行为
+    flyInterface = fi;
+  }
+}
+</code></pre>
+
+<p>行为接口：</p>
+
+<pre><code>public interface FlyInterface { //行为接口
+void fly();//要实现的行为方法
+}
+</code></pre>
+
+<p>行为的一种具体实现：</p>
+
+<pre><code>public class FlyPatternOne implements FlyInterface {//飞行行为的一种实现，可以有很多个不同的实现
+@Override
+public void fly() {
+    //这里是具体飞行行为代码
+
+  }
+}
+</code></pre>
+
+<p>某一个子类：</p>
+
+<pre><code>public class SubDuck extends Duck{
+public SubDuck(){
+    //默认的飞行行为，不同的子类有不同的飞行行为，如 FlyPatternTwo FlyPatternThree...等
+    flyInterface = new FlyPatternOne();
+  }
+}
+</code></pre>
+
+<p><img src="/myimg/other/chelue.png" alt="image" /></p>
+
+<p>1,找出可能需要变化之处，把它们独立封装起来，不要和那些不需要变化的代码混合在一起。</p>
+
+<p>2.针对接口编程，而不是针对实现编程。</p>
+
+<p>3.多用组合，少用继承。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Octopress+Github搭建个人博客]]></title>

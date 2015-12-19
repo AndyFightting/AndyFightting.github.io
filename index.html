@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Android数据保存方式有： 文件存储, SharedPreference, Sqlite, SD卡存储。 * 文件存储 不对存储数据做任何格式化处理，原封不动的保存到文件中。使用于保存简单的文本数据或者二进制数据。 Context有个openFileOutput()方法接受两个参数，第一个： &hellip;">
+  <meta name="description" content="1.策略模式 比如有个父类有飞行功能，然后有很多子类的飞行功能各不一样，如果去继承父类然后分别实现不同的飞行行为，这就坑爹了&hellip;具体做法应该是：把飞行行为完全独立出来成一个Interface，然后不同的飞行行为再在单独的类中实现，不同的子类要不同的飞行行为的话就取对应的行为实现对象。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,92 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/12/19/desigin-pattern/">设计模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-12-19T21:51:06+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:51 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>1.策略模式</h3>
+
+<p>比如有个父类有飞行功能，然后有很多子类的飞行功能各不一样，如果去继承父类然后分别实现不同的飞行行为，这就坑爹了&hellip;具体做法应该是：把飞行行为完全独立出来成一个Interface，然后不同的飞行行为再在单独的类中实现，不同的子类要不同的飞行行为的话就取对应的行为实现对象。</p>
+
+<p>父类：</p>
+
+<pre><code>public class Duck {//父类
+
+public FlyInterface flyInterface;//行为的接口成员变量
+
+public void performFly(){//统一调用的飞行方法
+    flyInterface.fly();
+}
+
+public void setFlyInterface(FlyInterface fi){//动态改变飞行行为
+    flyInterface = fi;
+  }
+}
+</code></pre>
+
+<p>行为接口：</p>
+
+<pre><code>public interface FlyInterface { //行为接口
+void fly();//要实现的行为方法
+}
+</code></pre>
+
+<p>行为的一种具体实现：</p>
+
+<pre><code>public class FlyPatternOne implements FlyInterface {//飞行行为的一种实现，可以有很多个不同的实现
+@Override
+public void fly() {
+    //这里是具体飞行行为代码
+
+  }
+}
+</code></pre>
+
+<p>某一个子类：</p>
+
+<pre><code>public class SubDuck extends Duck{
+public SubDuck(){
+    //默认的飞行行为，不同的子类有不同的飞行行为，如 FlyPatternTwo FlyPatternThree...等
+    flyInterface = new FlyPatternOne();
+  }
+}
+</code></pre>
+
+<p><img src="/myimg/other/chelue.png" alt="image" /></p>
+
+<p>1,找出可能需要变化之处，把它们独立封装起来，不要和那些不需要变化的代码混合在一起。</p>
+
+<p>2.针对接口编程，而不是针对实现编程。</p>
+
+<p>3.多用组合，少用继承。</p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2015/12/19/desigin-pattern/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -318,6 +404,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/12/19/desigin-pattern/">设计模式</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/11/23/androidsave/">Android基本存储</a>
       </li>
     
@@ -333,10 +423,6 @@
         <a href="/blog/2015/11/14/jiaocheng/">Octopress+Github搭建个人博客</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2015/11/13/my-octopress/">My Octopress</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -347,7 +433,7 @@
   <h1>Categories</h1>
   <ul id="categories">
     <li class='category'><a href='/blog/categories/android/'>android (3)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (2)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (3)</a></li>
 
   </ul>
 </section>

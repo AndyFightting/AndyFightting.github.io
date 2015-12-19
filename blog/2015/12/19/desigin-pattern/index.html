@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>About - 阿贵</title>
+  <title>设计模式 - 阿贵</title>
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="About Nov 15th, 2015 9:52 am 我的Github: https://github.com/AndyFightting 我的Gmail: &#x67;&#117;&#105;&#x6d;&#x69;&#110;&#103;&#x73;&#117;&#x68;&#x61 &hellip;">
+  <meta name="description" content="设计模式 Dec 19th, 2015 9:51 pm 1.策略模式 比如有个父类有飞行功能，然后有很多子类的飞行功能各不一样，如果去继承父类然后分别实现不同的飞行行为，这就坑爹了&hellip;具体做法应该是：把飞行行为完全独立出来成一个Interface，然后不同的飞行行为再在单独的类中实现 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://andyfightting.github.io/about/">
+  <link rel="canonical" href="http://andyfightting.github.io/blog/2015/12/19/desigin-pattern/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="阿贵" type="application/atom+xml">
@@ -75,40 +75,112 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">About</h1>
-    <p class="meta">
-
-
-
-
-<time class='entry-date' datetime='2015-11-15T09:52:00+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:52 am</span></time></p>
-  </header>
-  
-  <p>我的Github: <a href="https://github.com/AndyFightting">https://github.com/AndyFightting</a></p>
-
-<p>我的Gmail: <a href="&#109;&#97;&#x69;&#108;&#x74;&#111;&#x3a;&#103;&#117;&#105;&#x6d;&#x69;&#x6e;&#x67;&#x73;&#x75;&#x68;&#97;&#112;&#112;&#x79;&#64;&#103;&#109;&#97;&#105;&#x6c;&#x2e;&#x63;&#111;&#109;">&#x67;&#117;&#105;&#x6d;&#x69;&#110;&#103;&#x73;&#117;&#x68;&#x61;&#112;&#112;&#121;&#x40;&#x67;&#x6d;&#x61;&#x69;&#x6c;&#46;&#x63;&#x6f;&#109;</a></p>
-
-<p>我的QQ: 2048396401</p>
-
-<p><audio autoplay="autoplay" loop="loop" src="/myimg/music.mp3" controls="controls"></audio></p>
-
-  
-    <footer>
+    
+      <h1 class="entry-title">设计模式</h1>
+    
+    
       <p class="meta">
         
-        
 
 
 
 
-<time class='entry-date' datetime='2015-11-15T09:52:00+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:52 am</span></time>
+<time class='entry-date' datetime='2015-12-19T21:51:06+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:51 pm</span></time>
         
       </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>1.策略模式</h3>
+
+<p>比如有个父类有飞行功能，然后有很多子类的飞行功能各不一样，如果去继承父类然后分别实现不同的飞行行为，这就坑爹了&hellip;具体做法应该是：把飞行行为完全独立出来成一个Interface，然后不同的飞行行为再在单独的类中实现，不同的子类要不同的飞行行为的话就取对应的行为实现对象。</p>
+
+<p>父类：</p>
+
+<pre><code>public class Duck {//父类
+
+public FlyInterface flyInterface;//行为的接口成员变量
+
+public void performFly(){//统一调用的飞行方法
+    flyInterface.fly();
+}
+
+public void setFlyInterface(FlyInterface fi){//动态改变飞行行为
+    flyInterface = fi;
+  }
+}
+</code></pre>
+
+<p>行为接口：</p>
+
+<pre><code>public interface FlyInterface { //行为接口
+void fly();//要实现的行为方法
+}
+</code></pre>
+
+<p>行为的一种具体实现：</p>
+
+<pre><code>public class FlyPatternOne implements FlyInterface {//飞行行为的一种实现，可以有很多个不同的实现
+@Override
+public void fly() {
+    //这里是具体飞行行为代码
+
+  }
+}
+</code></pre>
+
+<p>某一个子类：</p>
+
+<pre><code>public class SubDuck extends Duck{
+public SubDuck(){
+    //默认的飞行行为，不同的子类有不同的飞行行为，如 FlyPatternTwo FlyPatternThree...等
+    flyInterface = new FlyPatternOne();
+  }
+}
+</code></pre>
+
+<p><img src="/myimg/other/chelue.png" alt="image" /></p>
+
+<p>1,找出可能需要变化之处，把它们独立封装起来，不要和那些不需要变化的代码混合在一起。</p>
+
+<p>2.针对接口编程，而不是针对实现编程。</p>
+
+<p>3.多用组合，少用继承。</p>
+</div>
+
+
+      | <a href="#comments">Comments</a>
+
+
+  <footer>
+    <p class="meta">
       
-        <div class="sharing">
+  
+
+<span class="byline author vcard">Posted by <span class="fn">guimingsu</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-12-19T21:51:06+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:51 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/other/'>other</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
   
   
   
@@ -116,9 +188,14 @@
   
 </div>
 
+    
+    <p class="meta">
       
-    </footer>
-  
+        <a class="basic-alignment left" href="/blog/2015/11/23/androidsave/" title="Previous Post: Android基本存储">&laquo; Android基本存储</a>
+      
+      
+    </p>
+  </footer>
 </article>
 
 
