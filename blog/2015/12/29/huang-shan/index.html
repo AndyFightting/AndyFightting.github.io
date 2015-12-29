@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>设计模式 - 阿贵</title>
+  <title>黄山之旅 - 阿贵</title>
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="设计模式 Dec 19th, 2015 9:51 pm 1.策略模式 比如有个父类有飞行功能，然后有很多子类的飞行功能各不一样，如果去继承父类然后分别实现不同的飞行行为，这就坑爹了&hellip;具体做法应该是：把飞行行为完全独立出来成一个Interface，然后不同的飞行行为再在单独的类中实现 &hellip;">
+  <meta name="description" content="黄山之旅 Dec 29th, 2015 1:31 pm 黄山~向往已久，这次终于成行~哈哈~先来感受一下大自然的神奇魅力吧~是不是让人心旷神怡~~ 上山路上遇到的猴子，呲牙咧嘴的好凶&hellip;连吃东西的姿势都这么霸气&hellip; 日落~~能明显的感觉到气温随着太阳的下降而下降& &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://andyfightting.github.io/blog/2015/12/19/desigin-pattern/">
+  <link rel="canonical" href="http://andyfightting.github.io/blog/2015/12/29/huang-shan/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="阿贵" type="application/atom+xml">
@@ -79,7 +79,7 @@
   
   <header>
     
-      <h1 class="entry-title">设计模式</h1>
+      <h1 class="entry-title">黄山之旅</h1>
     
     
       <p class="meta">
@@ -88,68 +88,35 @@
 
 
 
-<time class='entry-date' datetime='2015-12-19T21:51:06+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:51 pm</span></time>
+<time class='entry-date' datetime='2015-12-29T13:31:16+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>1:31 pm</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h3>1.策略模式</h3>
-
-<p>比如有个父类有飞行功能，然后有很多子类的飞行功能各不一样，如果去继承父类然后分别实现不同的飞行行为，这就坑爹了&hellip;具体做法应该是：把飞行行为完全独立出来成一个Interface，然后不同的飞行行为再在单独的类中实现，不同的子类要不同的飞行行为的话就取对应的行为实现对象。</p>
-
-<p>父类：</p>
-
-<pre><code>public class Duck {//父类
-
-public FlyInterface flyInterface;//行为的接口成员变量
-
-public void performFly(){//统一调用的飞行方法
-    flyInterface.fly();
-}
-
-public void setFlyInterface(FlyInterface fi){//动态改变飞行行为
-    flyInterface = fi;
-  }
-}
-</code></pre>
-
-<p>行为接口：</p>
-
-<pre><code>public interface FlyInterface { //行为接口
-void fly();//要实现的行为方法
-}
-</code></pre>
-
-<p>行为的一种具体实现：</p>
-
-<pre><code>public class FlyPatternOne implements FlyInterface {//飞行行为的一种实现，可以有很多个不同的实现
-@Override
-public void fly() {
-    //这里是具体飞行行为代码
-
-  }
-}
-</code></pre>
-
-<p>某一个子类：</p>
-
-<pre><code>public class SubDuck extends Duck{
-public SubDuck(){
-    //默认的飞行行为，不同的子类有不同的飞行行为，如 FlyPatternTwo FlyPatternThree...等
-    flyInterface = new FlyPatternOne();
-  }
-}
-</code></pre>
-
-<p><img src="/myimg/other/chelue.png" alt="image" /></p>
-
-<p>1,找出可能需要变化之处，把它们独立封装起来，不要和那些不需要变化的代码混合在一起。</p>
-
-<p>2.针对接口编程，而不是针对实现编程。</p>
-
-<p>3.多用组合，少用继承。</p>
+<div class="entry-content"><p>黄山~向往已久，这次终于成行~哈哈~先来感受一下大自然的神奇魅力吧~是不是让人心旷神怡~~
+<img src="/myimg/other/IMG_1182.jpg" alt="image" />
+<img src="/myimg/other/IMG_1183.jpg" alt="image" />
+<img src="/myimg/other/IMG_1185.jpg" alt="image" />
+<img src="/myimg/other/IMG_1229.jpg" alt="image" />
+上山路上遇到的猴子，呲牙咧嘴的好凶&hellip;连吃东西的姿势都这么霸气&hellip;
+<img src="/myimg/other/IMG_0952.jpg" alt="image" />
+日落~~能明显的感觉到气温随着太阳的下降而下降&hellip;
+<img src="/myimg/other/IMG_1082.jpg" alt="image" />
+<img src="/myimg/other/IMG_1102.jpg" alt="image" />
+在山脚下遇到的小伙伴，我们一起爬山，一起游玩，一起欣赏美景
+<img src="/myimg/other/IMG_1201.jpg" alt="image" />
+<img src="/myimg/other/IMG_1199.jpg" alt="image" />
+来几张自拍&hellip;
+<img src="/myimg/other/IMG_1225.jpg" alt="image" />
+<img src="/myimg/other/IMG_1031.jpg" alt="image" />
+<img src="/myimg/other/IMG_1040.jpg" alt="image" />
+<img src="/myimg/other/IMG_1055.jpg" alt="image" />
+最后消失在云雾里
+<img src="/myimg/other/IMG_1245.jpg" alt="image" />
+<img src="/myimg/other/IMG_1254.jpg" alt="image" />
+<img src="/myimg/other/IMG_1260.jpg" alt="image" /></p>
 </div>
 
 
@@ -168,7 +135,7 @@ public SubDuck(){
 
 
 
-<time class='entry-date' datetime='2015-12-19T21:51:06+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:51 pm</span></time>
+<time class='entry-date' datetime='2015-12-29T13:31:16+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>1:31 pm</span></time>
       
 
 <span class="categories">
@@ -191,10 +158,8 @@ public SubDuck(){
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/11/23/androidsave/" title="Previous Post: Android基本存储">&laquo; Android基本存储</a>
+        <a class="basic-alignment left" href="/blog/2015/12/19/desigin-pattern/" title="Previous Post: 设计模式">&laquo; 设计模式</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2015/12/29/huang-shan/" title="Next Post: 黄山之旅">黄山之旅 &raquo;</a>
       
     </p>
   </footer>
