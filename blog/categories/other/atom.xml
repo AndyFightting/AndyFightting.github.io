@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Other | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/other/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2015-12-29T14:42:17+08:00</updated>
+  <updated>2015-12-31T20:47:37+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -48,7 +48,14 @@
     <link href="http://andyfightting.github.io/blog/2015/12/19/desigin-pattern/"/>
     <updated>2015-12-19T21:51:06+08:00</updated>
     <id>http://andyfightting.github.io/blog/2015/12/19/desigin-pattern</id>
-    <content type="html"><![CDATA[<h3>1.策略模式</h3>
+    <content type="html"><![CDATA[<p>我理解的设计模式都是为了让代码模块化，结构化，各司其职，再把各个模块通过"接口"组合起来。</p>
+
+<h3>1.MVC模式</h3>
+
+<p>看图就可以了，简洁明了~
+<img src="/myimg/other/mvc.png" alt="image" /><!--more--></p>
+
+<h3>2.策略模式</h3>
 
 <p>比如有个父类有飞行功能，然后有很多子类的飞行功能各不一样，如果去继承父类然后分别实现不同的飞行行为，这就坑爹了&hellip;具体做法应该是：把飞行行为完全独立出来成一个Interface，然后不同的飞行行为再在单独的类中实现，不同的子类要不同的飞行行为的话就取对应的行为实现对象。</p>
 
