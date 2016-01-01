@@ -181,7 +181,7 @@
 <p>NSOperation是个抽象类，使用的话要<strong>继承它然后实现main方法</strong>。但它有两个现成子类：NSInvocationOperation和NSBlockOperation，后者使用Block形式进行代码组织，使用相对方便。</p>
 
 <p>NSOperation要和NSOperationQueue一起使用，只要将一个NSOperation子类对象
-放到NSOperationQueue队列中，线程就会依次启动。NSOperationQueue负责管理、执行所有的NSOperation，可以更加容易的管理线程总数和控制线程之间的依赖关系。</p>
+放到NSOperationQueue队列中，线程就会依次启动。NSOperationQueue负责管理、执行所有的NSOperation，可以更加容易的管理线程总数和控制线程之间的依赖关系。可以通过监听<strong>isFinished</strong>属性来得到线程执行完毕通知。</p>
 
 <p>NSOperation类中的方法</p>
 
@@ -341,6 +341,54 @@
 所以，GCD若要<strong>异步多线程</strong>执行必须：使用异步队列<strong>DISPATCH_QUEUE_CONCURRENT</strong> 并且 方法是异步方法(dispatch_async)!! 否则，要么在<strong>子线程</strong>里顺序执行(串行队列，异步方法(dispatch_async))，要么在<strong>主线程</strong>里顺序执行！！(同步方法(dispatch_sync)，不管串行还是并发队列)</p>
 
 <p>解决异步情况下抢占资源问题，可以加锁<strong>NSLock</strong>。获取资源时lock住，获取完资源后unlock。或者用<strong>@synchronized</strong>包裹获取资源代码。</p>
+
+<p>几个线程执行完后得到通知</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>dispatch_group_t group = dispatch_group_create();
+</span><span class='line'>dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
+</span><span class='line'>    //并发执行的任务一
+</span><span class='line'>});
+</span><span class='line'>dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
+</span><span class='line'>    //并发执行的任务二
+</span><span class='line'>});
+</span><span class='line'>dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
+</span><span class='line'>    //所有任务都执行完了得到通知
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>NSOperationQueue *queue = [[NSOperationQueue alloc]init];
+</span><span class='line'>NSBlockOperation *blockOperation=[NSBlockOperation blockOperationWithBlock:^{
+</span><span class='line'>     //并发执行的任务一
+</span><span class='line'> }];
+</span><span class='line'> [blockOperation addExecutionBlock:^{
+</span><span class='line'>     //并发执行的任务二
+</span><span class='line'> }];
+</span><span class='line'> [blockOperation setCompletionBlock:^{
+</span><span class='line'>     //所有任务都执行完了
+</span><span class='line'> }];
+</span><span class='line'> [queue addOperation:blockOperation];</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>*总结</h3>
 
