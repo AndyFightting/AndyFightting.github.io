@@ -1,0 +1,488 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>iOS中的多线程 - 阿贵</title>
+  <meta name="author" content="guimingsu">
+
+  
+  <meta name="description" content="iOS中的多线程 Jan 1st, 2016 2:28 pm 1.什么是进程 进程是指在系统中正在运行的一个应用程序，每个进程之间是独立的，每个进程均运行在其专用且受保护的内存空间内。 2.什么是线程 进程要想执行任务必须通过线程来执行，1个进程至少会有1条线程(主线程)， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://andyfightting.github.io/blog/2016/01/01/thread/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="阿贵" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">  -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+
+<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">阿贵</a></h1>
+  
+    <h2>Stay Hungry, Stay Foolish</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="andyfightting.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li> 
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">iOS中的多线程</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-01-01T14:28:22+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>2:28 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>1.什么是进程</p>
+
+<p>进程是指在系统中正在运行的一个应用程序，每个进程之间是独立的，每个进程均运行在其专用且受保护的内存空间内。
+<img src="/myimg/ios/jincheng.png" alt="image" /><!--more--></p>
+
+<p>2.什么是线程</p>
+
+<p>进程要想执行任务必须通过线程来执行，1个进程至少会有1条线程(主线程)，进程的所有任务都在线程中执行。
+<img src="/myimg/ios/xiancheng.png" alt="image" /></p>
+
+<p>线程中任务的执行是按顺序执行的，后面的任务要等前面的任务执行完了才能执行。但1个进程里可以开启多个线程来同时执行不同的任务，可以提高任务的执行效率。
+<img src="/myimg/ios/duox.png" alt="image" /></p>
+
+<p>iOS中每个进程都会有一个主线程(UI线程)，<strong>只能在主线程中更新UI</strong>。如果在这个主线程里做了过多的耗时操作，就会造成UI卡顿，所以用多线程来处理耗时操作。常用的开启多线程方式有三种：NSThread, NSOperation, GCD。</p>
+
+<h3>*NSThread</h3>
+
+<p>NSThread是轻量级的多线程开发，用起来也不复杂。</p>
+
+<p>初始化方法</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>+ (void)detachNewThreadSelector:(SEL)selector toTarget:(id)target withObject:(nullable id)argument;
+</span><span class='line'>- (instancetype)initWithTarget:(id)target selector:(SEL)selector object:(nullable id)argument;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其他方法</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>- (void)start;//启动一个线程，并非立即执行，而是处于就绪状态，当系统调度时才真正执行
+</span><span class='line'>- (void)cancel;//取消
+</span><span class='line'>+ (BOOL)isMainThread;//当前线程是不是主线程
+</span><span class='line'>+ (NSThread *)mainThread //获取主线程
+</span><span class='line'>+ (NSThread *)currentThread;//返回当前线程
+</span><span class='line'>+ (BOOL)isMultiThreaded;//是不是多线程
+</span><span class='line'>+ (void)sleepUntilDate:(NSDate *)date;//休眠
+</span><span class='line'>+ (void)sleepForTimeInterval:(NSTimeInterval)ti;//休眠
+</span><span class='line'>+ (void)exit;//退出
+</span><span class='line'>+ (double)threadPriority;//优先级
+</span><span class='line'>+ (BOOL)setThreadPriority:(double)p;//设置优先级 0~1
+</span><span class='line'>- (BOOL)isExecuting;//正在执行
+</span><span class='line'>- (BOOL)isFinished;//执行完毕
+</span><span class='line'>- (BOOL)isCancelled;//已经取消</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在子线程里要调用主线程来更新UI,可以用NSObject类别中的 OnMainThread 方法(前两个)。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>@interface NSObject (NSThreadPerformAdditions)
+</span><span class='line'>- (void)performSelectorOnMainThread:(SEL)aSelector withObject:(nullable id)arg waitUntilDone:(BOOL)wait modes:(nullable NSArray&lt;NSString *&gt; *)array;
+</span><span class='line'>- (void)performSelectorOnMainThread:(SEL)aSelector withObject:(nullable id)arg waitUntilDone:(BOOL)wait;
+</span><span class='line'>- (void)performSelector:(SEL)aSelector onThread:(NSThread *)thr withObject:(nullable id)arg waitUntilDone:(BOOL)wait modes:(nullable NSArray&lt;NSString *&gt; *)array ;
+</span><span class='line'>- (void)performSelector:(SEL)aSelector onThread:(NSThread *)thr withObject:(nullable id)arg waitUntilDone:(BOOL)wait ;
+</span><span class='line'>- (void)performSelectorInBackground:(SEL)aSelector withObject:(nullable id)arg ;
+</span><span class='line'>@end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>按顺序启动（start）的线程不一定是按顺序执行，由系统调度资源决定的，同样的代码多运行几次顺序就不一样了。
+<img src="/myimg/ios/shunxv.png" alt="image" />
+<img src="/myimg/ios/shunxv2.png" alt="image" /></p>
+
+<h3>*NSOperation</h3>
+
+<p>NSOperation是个抽象类，使用的话要<strong>继承它然后实现main方法</strong>。但它有两个现成子类：NSInvocationOperation和NSBlockOperation，后者使用Block形式进行代码组织，使用相对方便。</p>
+
+<p>NSOperation要和NSOperationQueue一起使用，只要将一个NSOperation子类对象
+放到NSOperationQueue队列中，线程就会依次启动。NSOperationQueue负责管理、执行所有的NSOperation，可以更加容易的管理线程总数和控制线程之间的依赖关系。</p>
+
+<p>NSOperation类中的方法</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>- (void)start;
+</span><span class='line'>- (void)cancel;
+</span><span class='line'>- (void)main;//继承后要实现具体操作
+</span><span class='line'>- (void)addDependency:(NSOperation *)op;//添加线程间的依赖关系，A依赖B，所以要B先执行完再执行A(切记不要循环依赖...)
+</span><span class='line'>- (void)removeDependency:(NSOperation *)op;//移除依赖关系
+</span><span class='line'>- (void)waitUntilFinished;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>几个属性</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>@property (readonly, getter=isCancelled) BOOL cancelled;
+</span><span class='line'>@property (readonly, getter=isExecuting) BOOL executing;
+</span><span class='line'>@property (readonly, getter=isFinished) BOOL finished;
+</span><span class='line'>@property (readonly, getter=isConcurrent) BOOL concurrent;//已经弃用，用下面的'asynchronous'
+</span><span class='line'>@property (readonly, getter=isAsynchronous) BOOL asynchronous;//是否异步执行
+</span><span class='line'>@property (readonly, getter=isReady) BOOL ready;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>为什么说<strong>NSOperation要和NSOperationQueue一起使用</strong>呢？因为如果NSOperation子类对象直接start启动的话，它其实是在主线程中执行的！
+<img src="/myimg/ios/error.png" alt="image" />
+如果把NSOperation子类对象加到NSOperationQueue中,这就不是在主线程中执行了。
+<img src="/myimg/ios/right.png" alt="image" /></p>
+
+<p>NSInvocationOperation就两个初始化方法，两个属性&hellip;</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>- (nullable instancetype)initWithTarget:(id)target selector:(SEL)sel object:(nullable id)arg;
+</span><span class='line'>- (instancetype)initWithInvocation:(NSInvocation *)inv;
+</span><span class='line'>@property (readonly, retain) NSInvocation *invocation;
+</span><span class='line'>@property (nullable, readonly, retain) id result;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>NSBlockOperation就两个方法，一个属性&hellip;</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>+ (instancetype)blockOperationWithBlock:(void (^)(void))block;//初始化
+</span><span class='line'>- (void)addExecutionBlock:(void (^)(void))block;//创建一个新的线程来执行任务
+</span><span class='line'>@property (readonly, copy) NSArray&lt;void (^)(void)&gt; *executionBlocks;//任务数组</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>addExecutionBlock</strong>会创建一个新的线程来执行任务，而不是在同一个子线程中。
+<img src="/myimg/ios/blockThread.png" alt="image" /></p>
+
+<p>NSOperationQueue中的方法及属性，都很少&hellip;</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>- (void)cancelAllOperations;//取消线程
+</span><span class='line'>- (void)waitUntilAllOperationsAreFinished;
+</span><span class='line'>+ (nullable NSOperationQueue *)currentQueue;
+</span><span class='line'>+ (NSOperationQueue *)mainQueue;//获取主线程
+</span><span class='line'>- (void)addOperation:(NSOperation *)op;//添加线程
+</span><span class='line'>- (void)addOperations:(NSArray&lt;NSOperation *&gt; *)ops waitUntilFinished:(BOOL)wait;//添加线程数组
+</span><span class='line'>- (void)addOperationWithBlock:(void (^)(void))block;//添加线程block
+</span><span class='line'>@property (readonly, copy) NSArray&lt;__kindof NSOperation *&gt; *operations;
+</span><span class='line'>@property (readonly) NSUInteger operationCount;//池子里几个线程
+</span><span class='line'>@property NSInteger maxConcurrentOperationCount;//最大并发线程数
+</span><span class='line'>@property (getter=isSuspended) BOOL suspended;//延迟
+</span><span class='line'>@property (nullable, copy) NSString *name;//线程名字
+</span><span class='line'>@property NSQualityOfService qualityOfService;// ??
+</span><span class='line'>@property (nullable, assign) dispatch_queue_t underlyingQueue;// ??</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>*GCD</h3>
+
+<p>GCD(Grand Central Dispatch)是基于C语言开发的一套多线程开发机制，也是苹果官方推荐的多线程开发方法。抽象层次最高，当然是用起来也最简单，只是它基于C语言开发，并不像NSOperation是面向对象的开发，而是完全面向过程的，最显著的优点就是它对于多核运算更加有效。</p>
+
+<p>GCD中的队列分为<strong>串行队列</strong>和<strong>并发队列</strong>两类，都是异步的：</p>
+
+<p>串行队列：只有一个子线程，加入到队列中的操作按添加顺序依次执行。</p>
+
+<p>并发队列：有多个子线程，操作进来之后它会将这些队列安排在可用的处理器上，同时保证先进来的任务优先处理。</p>
+
+<p><strong>1. 串行队列, 在同一个子线程里, 顺序执行！</strong> 关键字 <em>DISPATCH_QUEUE_SERIAL</em></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>dispatch_queue_t serialQueue = dispatch_queue_create("myThreadQueue", DISPATCH_QUEUE_SERIAL);
+</span><span class='line'>    for (int i=0; i&lt;5; ++i) {
+</span><span class='line'>        dispatch_async(serialQueue, ^{
+</span><span class='line'>            [self doSomething:i];
+</span><span class='line'>        });
+</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/myimg/ios/gcd1.png" alt="image" /></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>//更新UI界面,此处调用了GCD主线程队列的方法
+</span><span class='line'>dispatch_queue_t mainQueue = dispatch_get_main_queue();
+</span><span class='line'>  dispatch_sync(mainQueue, ^{
+</span><span class='line'>    [self updateUI];
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>2. 并发队列, 在不同的子线程里, 并发执行</strong> 关键字 <em>DISPATCH_QUEUE_CONCURRENT</em></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> //方式一：dispatch_queue_t serialQueue=dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+</span><span class='line'> dispatch_queue_t serialQueue=dispatch_queue_create("myThreadQueue", DISPATCH_QUEUE_CONCURRENT);
+</span><span class='line'>    for (int i=0; i&lt;5; ++i) {
+</span><span class='line'>        dispatch_async(serialQueue, ^{
+</span><span class='line'>            [self doSomething:i];
+</span><span class='line'>        });
+</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/myimg/ios/ybbf.png" alt="image" />
+若把上面的<strong>dispatch_async</strong>改成<strong>dispatch_sync</strong>,这就是在主线程中顺序执行了！即使在异步并发队列中！
+<img src="/myimg/ios/hah.png" alt="image" />
+所以，GCD若要<strong>异步多线程</strong>执行必须：使用异步队列<strong>DISPATCH_QUEUE_CONCURRENT</strong> 并且 方法是异步方法(dispatch_async)!! 否则，要么在<strong>子线程</strong>里顺序执行(串行队列，异步方法(dispatch_async))，要么在<strong>主线程</strong>里顺序执行！！(同步方法(dispatch_sync)，不管串行还是并发队列)</p>
+
+<p>解决异步情况下抢占资源问题，可以加锁<strong>NSLock</strong>。获取资源时lock住，获取完资源后unlock。或者用<strong>@synchronized</strong>包裹获取资源代码。</p>
+
+<h3>*总结</h3>
+
+<p>1.无论使用哪种方法进行多线程开发，每个线程启动后并不一定立即执行相应的操作，具体什么时候由系统调度，CPU空闲时就会执行。</p>
+
+<p>2.更新UI应该在主线程（UI线程）中进行，常用的方法如下：</p>
+
+<p>-(void)performSelectorOnMainThread:(SEL)aSelector withObject:(id)arg waitUntilDone:(BOOL)wait</p>
+
+<p>-(void)performSelector:(SEL)aSelector onThread:(NSThread *)thr withObject:(id)arg waitUntilDone:(BOOL) wait;//传递[NSThread mainThread]</p>
+
+<p>[[NSOperationQueue mainQueue] addOperationWithBlock:^{ }];</p>
+
+<p>dispatch_sync(dispatch_get_main_queue(), ^{ });</p>
+
+<p>3.NSThread适合轻量级多线程开发，要手动控制线程，线程总数无法控制，无法线程依赖。</p>
+
+<p>4.对于简单的多线程开发建议使用NSObject的扩展方法完成，而不必使用NSThread。</p>
+
+<p>5.可以使用NSThread的currentThread方法取得当前线程，使用 sleepForTimeInterval:方法让当前线程休眠。</p>
+
+<p>6.NSOperation进行多线程开发可以控制线程总数及线程依赖关系。</p>
+
+<p>7.创建一个NSOperation不应该直接调用start方法, 如果直接start则会在主线程中调用, 而是应该放到NSOperationQueue中启动。</p>
+
+<p>8.相比NSInvocationOperation推荐使用NSBlockOperation，代码简单，同时由于闭包性使它没有传参问题。</p>
+
+<p>9.NSOperation是对GCD面向对象的封装，但是GCD基于C语言开发，效率却更高. 建议如果任务之间有依赖关系或者想要监听任务完成状态的情况下优先选择NSOperation否则使用GCD。</p>
+
+<p>10.在GCD中串行队列中的任务被安排到一个单一的子线程中，可以方便地控制执行顺序；并发队列在多个线程中执行（前提是使用异步方法），顺序控制相对复杂，但是更高效。</p>
+
+<p>11.在GDC中一个操作是多线程执行还是单线程执行取决于当前队列类型和执行方法，只有队列类型为并发队列并且使用异步方法执行时才能在多个线程中并发执行。</p>
+
+<p>12.相比使用NSLock，@synchronized更加简单。</p>
+</div>
+
+
+      | <a href="#comments">Comments</a>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">guimingsu</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-01-01T14:28:22+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>2:28 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  <!-- JiaThis Button -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/12/29/huang-shan/" title="Previous Post: 黄山之旅">&laquo; 黄山之旅</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/01/thread/">iOS中的多线程</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/29/huang-shan/">黄山之旅</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/19/desigin-pattern/">设计模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/23/androidsave/">Android基本存储</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/22/studioplugin/">Android Studio插件</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/android/'>android (3)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (4)</a></li>
+
+  </ul>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - guimingsu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
