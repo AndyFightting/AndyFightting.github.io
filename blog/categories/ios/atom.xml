@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-01-02T17:57:34+08:00</updated>
+  <updated>2016-01-02T18:10:12+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -18,8 +18,7 @@
     <link href="http://andyfightting.github.io/blog/2016/01/02/core-text/"/>
     <updated>2016-01-02T15:16:23+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/01/02/core-text</id>
-    <content type="html"><![CDATA[<p>CoreText就是在画板上绘制图片或者文字
-<img src="/myimg/ios/coreText.png" alt="image" /><!--more--></p>
+    <content type="html"><![CDATA[<p><img src="/myimg/ios/coreText.png" alt="image" /><!--more--></p>
 
 <pre><code>#import "CoreTextView.h"
 #import &lt;CoreText/CoreText.h&gt;
