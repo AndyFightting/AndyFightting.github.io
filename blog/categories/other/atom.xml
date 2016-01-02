@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Other | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/other/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-01-02T19:04:47+08:00</updated>
+  <updated>2016-01-02T21:06:02+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[黄山之旅]]></title>
-    <link href="http://andyfightting.github.io/blog/2015/12/29/huang-shan/"/>
-    <updated>2015-12-29T13:31:16+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2015/12/29/huang-shan</id>
+    <link href="http://andyfightting.github.io/blog/2015/12/31/huang-shan/"/>
+    <updated>2015-12-31T13:31:16+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2015/12/31/huang-shan</id>
     <content type="html"><![CDATA[<p>黄山~向往已久，这次终于成行~哈哈~先来感受一下大自然的神奇魅力吧~是不是让人心旷神怡~~
 <img src="/myimg/other/IMG_1182.jpg" alt="image" /><!--more-->
 <img src="/myimg/other/IMG_1183.jpg" alt="image" />
@@ -114,7 +114,7 @@ public SubDuck(){
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Octopress+Github搭建个人博客]]></title>
+    <title type="html"><![CDATA[Octopress搭建个人博客]]></title>
     <link href="http://andyfightting.github.io/blog/2015/11/14/jiaocheng/"/>
     <updated>2015-11-14T11:21:39+08:00</updated>
     <id>http://andyfightting.github.io/blog/2015/11/14/jiaocheng</id>
