@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-01-02T18:10:12+08:00</updated>
+  <updated>2016-01-02T19:04:47+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -18,12 +18,18 @@
     <link href="http://andyfightting.github.io/blog/2016/01/02/core-text/"/>
     <updated>2016-01-02T15:16:23+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/01/02/core-text</id>
-    <content type="html"><![CDATA[<p><img src="/myimg/ios/coreText.png" alt="image" /><!--more--></p>
+    <content type="html"><![CDATA[<p>CoreText进行图文混排的核心思想是把需要摆放图片的位置用空字符替换原来的字符，并且实现CTRunDelegate，用于动态设置空字符的高度和宽度（代表图片的大小），并且对这些空字符设置一个属性名来区别于其他CTRun，之后进行图片渲染的时候就能通过该属性来区分哪些空字符是代表图片的占位符，哪些是普通的空字符。使用CoreText处理点击事件的关键是判断点击的位置是本文内容中的第几个字符，然后通过判断该字符是否在需要处理点击事件的字符串范围内。</p>
 
-<pre><code>#import "CoreTextView.h"
+<p><img src="/myimg/ios/text2.png" alt="image" /><!--more-->
+<img src="/myimg/ios/coreText.png" alt="image" /></p>
+
+<pre><code>
+#import "CoreTextView.h"
 #import &lt;CoreText/CoreText.h&gt;
 
-@implementation CoreTextView
+@implementation CoreTextView{
+    CTFrameRef ctFrame;
+}
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -45,7 +51,7 @@
     CGContextScaleCTM(context, 1.0, -1.0);
 
     //要绘制的文字
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@"少年不识愁滋味，爱上层楼。爱上层楼。为赋新词强说愁。而今识尽愁滋味，欲说还休。欲说还休。却道天凉好个秋。"];
+    NSMutableAttributedString* attributedString = [[NSMutableAttributedString alloc] initWithString:@"少年不识愁滋味，爱上层楼。爱上层楼。为赋新词强说愁。而今识尽愁滋味，欲说还休。欲说还休。却道天凉好个秋。"];
     //为所有文本设置字体
     [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:10] range:NSMakeRange(0, [attributedString length])];
     //设置某些字体更大
@@ -93,8 +99,8 @@
     CGRect bounds = CGRectMake(0.0, 0.0, self.bounds.size.width, self.bounds.size.height);
     CGPathAddRect(path, NULL, bounds);
 
-     //绘制文字
-    CTFrameRef ctFrame = CTFramesetterCreateFrame(ctFramesetter,CFRangeMake(0, 0), path, NULL);
+    //绘制文字
+    ctFrame = CTFramesetterCreateFrame(ctFramesetter,CFRangeMake(0, [attributedString length ]), path, NULL);
     CTFrameDraw(ctFrame, context);
 
     //下面都是为了绘制图片
@@ -109,6 +115,7 @@
         CGFloat lineDescent;
         CGFloat lineLeading;
         CTLineGetTypographicBounds(line, &amp;lineAscent, &amp;lineDescent, &amp;lineLeading);
+
         CFArrayRef runs = CTLineGetGlyphRuns(line);
         for (int j = 0; j &lt; CFArrayGetCount(runs); j++) {
             CGFloat runAscent;
@@ -117,28 +124,67 @@
             CTRunRef run = CFArrayGetValueAtIndex(runs, j);
             NSDictionary* attributes = (NSDictionary*)CTRunGetAttributes(run);
 
-       CGRect runRect;
-           runRect.size.width = CTRunGetTypographicBounds(run, CFRangeMake(0,0), &amp;runAscent, &amp;runDescent, NULL);
-           runRect=CGRectMake(lineOrigin.x + CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location, NULL), lineOrigin.y - runDescent, runRect.size.width, runAscent + runDescent);
+            CGRect runRect;
+            runRect.size.width = CTRunGetTypographicBounds(run, CFRangeMake(0,0), &amp;runAscent, &amp;runDescent, NULL);
+            runRect=CGRectMake(lineOrigin.x + CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location, NULL), lineOrigin.y - runDescent, runRect.size.width, runAscent + runDescent);
 
-       NSString *isImage = [attributes objectForKey:@"imageAttribute"];
-           //图片渲染逻辑
-           if (isImage) {
-               UIImage *image = [UIImage imageNamed:imageName];
-               if (image) {
-                   CGRect imageDrawRect;
-                   imageDrawRect.size = image.size;
-                   imageDrawRect.origin.x = runRect.origin.x + lineOrigin.x;
-                   imageDrawRect.origin.y = lineOrigin.y;
-                   CGContextDrawImage(context, imageDrawRect, image.CGImage);
-               }
-          }
-       }
+            NSString *isImage = [attributes objectForKey:@"imageAttribute"];
+            //图片渲染逻辑
+            if (isImage) {
+                UIImage *image = [UIImage imageNamed:imageName];
+                if (image) {
+                    CGRect imageDrawRect;
+                    imageDrawRect.size = image.size;
+                    imageDrawRect.origin.x = runRect.origin.x + lineOrigin.x;
+                    imageDrawRect.origin.y = lineOrigin.y;
+                    CGContextDrawImage(context, imageDrawRect, image.CGImage);
+                }
+            }
+        }
     }
     //释放资源
-    CFRelease(ctFrame);
+    //    CFRelease(ctFrame); //因为点击要用ctFrame，所以放dealloc里释放
     CFRelease(path);
     CFRelease(ctFramesetter);
+}
+
+//接受触摸事件
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    UITouch *touch = [touches anyObject];
+    CGPoint location = [touch locationInView:self];
+
+    //获取每一行
+    CFArrayRef lines = CTFrameGetLines(ctFrame);
+    CGPoint origins[CFArrayGetCount(lines)];
+    //获取每行的原点坐标
+    CTFrameGetLineOrigins(ctFrame, CFRangeMake(0, 0), origins);
+    CTLineRef line = NULL;
+    CGPoint lineOrigin = CGPointZero;
+    for (int i= 0; i &lt; CFArrayGetCount(lines); i++){
+        CGPoint origin = origins[i];
+        CGPathRef path = CTFrameGetPath(ctFrame);
+        //获取整个CTFrame的大小
+        CGRect rect = CGPathGetBoundingBox(path);
+        //坐标转换，把每行的原点坐标转换为uiview的坐标体系
+        CGFloat y = rect.origin.y + rect.size.height - origin.y;
+        //判断点击的位置处于那一行范围内
+        if ((location.y &lt;= y) &amp;&amp; (location.x &gt;= origin.x)){
+            line = CFArrayGetValueAtIndex(lines, i);
+            lineOrigin = origin;
+            break;
+        }
+    }
+
+    location.x -= lineOrigin.x;
+    //获取点击位置所处的字符位置，就是相当于点击了第几个字符
+    CFIndex index = CTLineGetStringIndexForPosition(line, location)-1;//index从0开始
+    UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"提示" message:[NSString stringWithFormat:@"点击了第 %d 个字符！！",(int)index] delegate:self cancelButtonTitle:@"ok" otherButtonTitles:nil, nil];
+    [alert show];
+}
+
+-(void)dealloc{
+    [super dealloc];
+    CFRelease(ctFrame);
 }
 
 #pragma mark CTRunDelegate Callbacks
