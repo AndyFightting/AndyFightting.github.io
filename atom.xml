@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-01-01T23:13:47+08:00</updated>
+  <updated>2016-01-02T17:57:34+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,393 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[iOS中的CoreText]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/01/02/core-text/"/>
+    <updated>2016-01-02T15:16:23+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/01/02/core-text</id>
+    <content type="html"><![CDATA[<p>CoreText就是在画板上绘制图片或者文字
+<img src="http://andyfightting.github.io/myimg/ios/coreText.png" alt="image" /><!--more--></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#import "CoreTextView.h"
+</span><span class='line'>#import &lt;CoreText/CoreText.h&gt;
+</span><span class='line'>
+</span><span class='line'>@implementation CoreTextView
+</span><span class='line'>
+</span><span class='line'>- (id)initWithFrame:(CGRect)frame
+</span><span class='line'>{
+</span><span class='line'>    self = [super initWithFrame:frame];
+</span><span class='line'>    if (self) {
+</span><span class='line'>        // Initialization code
+</span><span class='line'>    }
+</span><span class='line'>    return self;
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>- (void)drawRect:(CGRect)rect
+</span><span class='line'>{
+</span><span class='line'>    //得到当前用于绘制画布的上下文，用于后续将内容绘制在画布上
+</span><span class='line'>    CGContextRef context = UIGraphicsGetCurrentContext();
+</span><span class='line'>    
+</span><span class='line'>    //翻转当前的坐标系, 因为对于底层绘制引擎来说，屏幕左下角为（0，0)
+</span><span class='line'>    CGContextSetTextMatrix(context, CGAffineTransformIdentity);
+</span><span class='line'>    CGContextTranslateCTM(context, 0, self.bounds.size.height);
+</span><span class='line'>    CGContextScaleCTM(context, 1.0, -1.0);
+</span><span class='line'>
+</span><span class='line'>    //要绘制的文字
+</span><span class='line'>    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@"少年不识愁滋味，爱上层楼。爱上层楼。为赋新词强说愁。而今识尽愁滋味，欲说还休。欲说还休。却道天凉好个秋。"];
+</span><span class='line'>    //为所有文本设置字体
+</span><span class='line'>    [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:10] range:NSMakeRange(0, [attributedString length])];
+</span><span class='line'>    //设置某些字体更大
+</span><span class='line'>    [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:30] range:NSMakeRange(10, 10)];
+</span><span class='line'>    //index 从0开始的2个字符 字体颜色 设置为蓝色
+</span><span class='line'>    [attributedString addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(0, 2)];
+</span><span class='line'>    //index 从2开始的3个字符 字体颜色 设置为红色
+</span><span class='line'>    [attributedString addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(2, 3)];
+</span><span class='line'>    //设置行间距 50
+</span><span class='line'>    CGFloat lineSpacing = 50;
+</span><span class='line'>    CTParagraphStyleSetting theSettings[3] = {
+</span><span class='line'>        {kCTParagraphStyleSpecifierLineSpacingAdjustment, sizeof(CGFloat), &lineSpacing},
+</span><span class='line'>        {kCTParagraphStyleSpecifierMaximumLineSpacing, sizeof(CGFloat), &lineSpacing},
+</span><span class='line'>        {kCTParagraphStyleSpecifierMinimumLineSpacing, sizeof(CGFloat), &lineSpacing}
+</span><span class='line'>    };
+</span><span class='line'>    CTParagraphStyleRef theParagraphRef = CTParagraphStyleCreate(theSettings, 3);
+</span><span class='line'>    [attributedString addAttribute:(id)kCTParagraphStyleAttributeName value:(__bridge id)theParagraphRef range:NSMakeRange(0, attributedString.length)];
+</span><span class='line'>    CFRelease(theParagraphRef);
+</span><span class='line'>    
+</span><span class='line'>    //要插入的图片
+</span><span class='line'>    NSString *imageName = @"testImage.png";
+</span><span class='line'>    
+</span><span class='line'>    //为图片设置CTRunDelegate 计算留给图片的空间大小
+</span><span class='line'>    CTRunDelegateCallbacks imageCallbacks;
+</span><span class='line'>    imageCallbacks.version = kCTRunDelegateVersion1;
+</span><span class='line'>    imageCallbacks.getAscent = GetAscentCallback;
+</span><span class='line'>    imageCallbacks.getDescent = GetDescentCallback;
+</span><span class='line'>    imageCallbacks.getWidth = GetWidthCallback;
+</span><span class='line'>    
+</span><span class='line'>    //设置图片位置，大小
+</span><span class='line'>    CTRunDelegateRef runDelegate = CTRunDelegateCreate(&imageCallbacks, imageName);
+</span><span class='line'>    NSMutableAttributedString *imageAttributedString = [[NSMutableAttributedString alloc] initWithString:@" "];//空格用于给图片留位置
+</span><span class='line'>    [imageAttributedString addAttribute:(NSString *)kCTRunDelegateAttributeName value:(id)runDelegate range:NSMakeRange(0, 1)];//用代理设置图片
+</span><span class='line'>    CFRelease(runDelegate);
+</span><span class='line'>    
+</span><span class='line'>    //把图片插入到字符串中
+</span><span class='line'>    [imageAttributedString addAttribute:@"imageAttribute" value:imageName range:NSMakeRange(0, 1)];
+</span><span class='line'>    [attributedString insertAttributedString:imageAttributedString atIndex:1];//图片插入位置，不能越界
+</span><span class='line'>    [attributedString insertAttributedString:imageAttributedString atIndex:3];//图片插入位置，不能越界
+</span><span class='line'>    [attributedString insertAttributedString:imageAttributedString atIndex:5];//图片插入位置，不能越界
+</span><span class='line'>    
+</span><span class='line'>    //根据attributedString生成CTFramesetterRef
+</span><span class='line'>    CTFramesetterRef ctFramesetter = CTFramesetterCreateWithAttributedString((CFMutableAttributedStringRef)attributedString);
+</span><span class='line'>    CGMutablePathRef path = CGPathCreateMutable();
+</span><span class='line'>  CGRect bounds = CGRectMake(0.0, 0.0, self.bounds.size.width, self.bounds.size.height);
+</span><span class='line'>  CGPathAddRect(path, NULL, bounds);
+</span><span class='line'>
+</span><span class='line'>     //绘制文字
+</span><span class='line'>    CTFrameRef ctFrame = CTFramesetterCreateFrame(ctFramesetter,CFRangeMake(0, 0), path, NULL);
+</span><span class='line'>    CTFrameDraw(ctFrame, context);
+</span><span class='line'>    
+</span><span class='line'>    //下面都是为了绘制图片
+</span><span class='line'>    CFArrayRef lines = CTFrameGetLines(ctFrame);
+</span><span class='line'>    CGPoint lineOrigins[CFArrayGetCount(lines)];
+</span><span class='line'>    CTFrameGetLineOrigins(ctFrame, CFRangeMake(0, 0), lineOrigins);
+</span><span class='line'>    
+</span><span class='line'>    //遍历每个CTLine
+</span><span class='line'>    for (int i = 0; i &lt; CFArrayGetCount(lines); i++) {
+</span><span class='line'>        CTLineRef line = CFArrayGetValueAtIndex(lines, i);
+</span><span class='line'>        CGFloat lineAscent;
+</span><span class='line'>        CGFloat lineDescent;
+</span><span class='line'>        CGFloat lineLeading;
+</span><span class='line'>        CTLineGetTypographicBounds(line, &lineAscent, &lineDescent, &lineLeading);
+</span><span class='line'>        CFArrayRef runs = CTLineGetGlyphRuns(line);
+</span><span class='line'>        for (int j = 0; j &lt; CFArrayGetCount(runs); j++) {
+</span><span class='line'>            CGFloat runAscent;
+</span><span class='line'>            CGFloat runDescent;
+</span><span class='line'>            CGPoint lineOrigin = lineOrigins[i];
+</span><span class='line'>            CTRunRef run = CFArrayGetValueAtIndex(runs, j);
+</span><span class='line'>            NSDictionary* attributes = (NSDictionary*)CTRunGetAttributes(run);
+</span><span class='line'>            
+</span><span class='line'>       CGRect runRect;
+</span><span class='line'>           runRect.size.width = CTRunGetTypographicBounds(run, CFRangeMake(0,0), &runAscent, &runDescent, NULL);
+</span><span class='line'>           runRect=CGRectMake(lineOrigin.x + CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location, NULL), lineOrigin.y - runDescent, runRect.size.width, runAscent + runDescent);
+</span><span class='line'>           
+</span><span class='line'>       NSString *isImage = [attributes objectForKey:@"imageAttribute"];
+</span><span class='line'>           //图片渲染逻辑
+</span><span class='line'>           if (isImage) {
+</span><span class='line'>               UIImage *image = [UIImage imageNamed:imageName];
+</span><span class='line'>               if (image) {
+</span><span class='line'>                   CGRect imageDrawRect;
+</span><span class='line'>                   imageDrawRect.size = image.size;
+</span><span class='line'>                   imageDrawRect.origin.x = runRect.origin.x + lineOrigin.x;
+</span><span class='line'>                   imageDrawRect.origin.y = lineOrigin.y;
+</span><span class='line'>                   CGContextDrawImage(context, imageDrawRect, image.CGImage);
+</span><span class='line'>               }
+</span><span class='line'>          }
+</span><span class='line'>       }
+</span><span class='line'>    }
+</span><span class='line'>    //释放资源
+</span><span class='line'>    CFRelease(ctFrame);
+</span><span class='line'>    CFRelease(path);
+</span><span class='line'>    CFRelease(ctFramesetter);
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>#pragma mark CTRunDelegate Callbacks
+</span><span class='line'>CGFloat GetAscentCallback( void *refCon ){
+</span><span class='line'>    NSString *imageName = (NSString *)refCon;
+</span><span class='line'>    return [UIImage imageNamed:imageName].size.height;
+</span><span class='line'>}
+</span><span class='line'>CGFloat GetDescentCallback(void *refCon){
+</span><span class='line'>    return 0;
+</span><span class='line'>}
+</span><span class='line'>CGFloat GetWidthCallback(void *refCon){
+</span><span class='line'>    NSString *imageName = (NSString *)refCon;
+</span><span class='line'>    return [UIImage imageNamed:imageName].size.width;
+</span><span class='line'>}
+</span><span class='line'>@end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>运行结果
+<img src="http://andyfightting.github.io/myimg/ios/coreResult.png" alt="image" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iOS中的SQLite]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/01/02/ios-sqlite/"/>
+    <updated>2016-01-02T10:44:52+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/01/02/ios-sqlite</id>
+    <content type="html"><![CDATA[<p><img src="http://andyfightting.github.io/myimg/ios/sqlite.png" alt="image" /></p>
+
+<p><a href="http://www.sqlite.org/">SQLite</a>是一个轻量级的关系型数据库，在iOS和Android手机中都有用到，C语言的面向过程的函数式编程。<a href="https://github.com/woooooojianjie/SQLitePersistentObject">SQLitePersistentObject</a>和<a href="https://github.com/ccgus/fmdb">FMDB</a>框架都是基于SQLite开发的。SQLitePersistentObject更像是个ORM框架，它是由Jeff LaMarche在2008年开发的，所以不是ARC的，要用的请加上<strong>-fno-objc-arc</strong>，且作者已经没有维护了，所以还是推荐使用更加广泛的FMDB。<!--more--></p>
+
+<h3>*SQLite</h3>
+
+<p>添加依赖库libsqlite3.tbd，用SQLite来个原生的增删改查。下面一次性完成了创建并打开数据库，创建表，插入一条数据，查询数据，最后关闭数据库。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>NSString* docsdir = [NSSearchPathForDirectoriesInDomains( NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+</span><span class='line'>NSString* dbpath = [docsdir stringByAppendingPathComponent:@"user.sqlite"];
+</span><span class='line'>sqlite3 *database;
+</span><span class='line'>//创建并打开数据库*****************
+</span><span class='line'>if (sqlite3_open([dbpath UTF8String], &database) != SQLITE_OK) { //SQLITE_OK == 0
+</span><span class='line'>   sqlite3_close(database);
+</span><span class='line'>   NSAssert(0,@"数据库打开失败"); //若状态不是0就打开失败
+</span><span class='line'>}
+</span><span class='line'>//创建表格*****************
+</span><span class='line'>NSString *createSql = @"CREATE TABLE IF NOT EXISTS student (student_id INTEGER PRIMARY KEY ,student_name TEXT);";
+</span><span class='line'>char *createError;
+</span><span class='line'>//sqlite3_exec这个方法可以执行那些没有返回结果的操作，例如创建、插入、删除、修改等。这个函数包含了sqlite3_prepare这个函数的操作，目的是将UTF-8格式的SQL语句转换为编译后的语句
+</span><span class='line'>if (sqlite3_exec(database, [createSql UTF8String], NULL, NULL, &createError) != SQLITE_OK) {
+</span><span class='line'>    sqlite3_close(database);
+</span><span class='line'>    NSAssert(0,@"创建表错误：%s", createError);
+</span><span class='line'>}
+</span><span class='line'>//插入或修改数据*****************  
+</span><span class='line'>char *update = "INSERT OR REPLACE INTO student VALUES (?,?)";  
+</span><span class='line'>sqlite3_stmt *statement;  
+</span><span class='line'>if (sqlite3_prepare_v2(database, update, -1, &statement, nil) == SQLITE_OK) {  
+</span><span class='line'>    //将值保存到指定的列,列从1开始！！  
+</span><span class='line'>    sqlite3_bind_int(statement, 1, 4);//1是列，4是student_id  
+</span><span class='line'>    //第四个参数代表第三个参数中需要传递的长度。对于C字符串来说，-1表示传递全部字符串。第五个参数是一个回调函数，比如执行后做内存清除工作。  
+</span><span class='line'>    sqlite3_bind_text(statement, 2, [@"studentName" UTF8String], -1, NULL);  
+</span><span class='line'>}    
+</span><span class='line'>if (sqlite3_step(statement) != SQLITE_DONE) {  
+</span><span class='line'>    NSAssert(0,@"更新数据出错");  
+</span><span class='line'>}  
+</span><span class='line'>sqlite3_finalize(statement);  
+</span><span class='line'>//查询数据库***************** 
+</span><span class='line'>NSString *querySql = @"SELECT * FROM student;";
+</span><span class='line'>sqlite3_stmt *selectStmt;
+</span><span class='line'>if (sqlite3_prepare_v2(database, [querySql UTF8String], -1, &selectStmt, nil) == SQLITE_OK) {
+</span><span class='line'>    while (sqlite3_step(selectStmt) == SQLITE_ROW) {
+</span><span class='line'>        int studentId = sqlite3_column_int(selectStmt, 0);//后面的数字对应每一列
+</span><span class='line'>        char *cString = (char *)sqlite3_column_text(selectStmt, 1);
+</span><span class='line'>        NSString* studentName = [[NSString alloc]initWithUTF8String:cString];
+</span><span class='line'>        NSLog(@"student_id = %d   student_name = %@",studentId,studentName);
+</span><span class='line'>    }
+</span><span class='line'>    sqlite3_finalize(selectStmt);
+</span><span class='line'>}
+</span><span class='line'>sqlite3_close(database);//最后关闭数据库</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://andyfightting.github.io/myimg/ios/select.png" alt="image" />
+<img src="http://andyfightting.github.io/myimg/ios/table.png" alt="image" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[iOS中的多线程]]></title>

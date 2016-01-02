@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ios | 阿贵]]></title>
+  <link href="http://andyfightting.github.io/blog/categories/ios/atom.xml" rel="self"/>
+  <link href="http://andyfightting.github.io/"/>
+  <updated>2016-01-02T17:57:34+08:00</updated>
+  <id>http://andyfightting.github.io/</id>
+  <author>
+    <name><![CDATA[guimingsu]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[iOS中的CoreText]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/01/02/core-text/"/>
+    <updated>2016-01-02T15:16:23+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/01/02/core-text</id>
+    <content type="html"><![CDATA[<p>CoreText就是在画板上绘制图片或者文字
+<img src="/myimg/ios/coreText.png" alt="image" /><!--more--></p>
+
+<pre><code>#import "CoreTextView.h"
+#import &lt;CoreText/CoreText.h&gt;
+
+@implementation CoreTextView
+
+- (id)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        // Initialization code
+    }
+    return self;
+}
+
+- (void)drawRect:(CGRect)rect
+{
+    //得到当前用于绘制画布的上下文，用于后续将内容绘制在画布上
+    CGContextRef context = UIGraphicsGetCurrentContext();
+
+    //翻转当前的坐标系, 因为对于底层绘制引擎来说，屏幕左下角为（0，0)
+    CGContextSetTextMatrix(context, CGAffineTransformIdentity);
+    CGContextTranslateCTM(context, 0, self.bounds.size.height);
+    CGContextScaleCTM(context, 1.0, -1.0);
+
+    //要绘制的文字
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@"少年不识愁滋味，爱上层楼。爱上层楼。为赋新词强说愁。而今识尽愁滋味，欲说还休。欲说还休。却道天凉好个秋。"];
+    //为所有文本设置字体
+    [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:10] range:NSMakeRange(0, [attributedString length])];
+    //设置某些字体更大
+    [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:30] range:NSMakeRange(10, 10)];
+    //index 从0开始的2个字符 字体颜色 设置为蓝色
+    [attributedString addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(0, 2)];
+    //index 从2开始的3个字符 字体颜色 设置为红色
+    [attributedString addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(2, 3)];
+    //设置行间距 50
+    CGFloat lineSpacing = 50;
+    CTParagraphStyleSetting theSettings[3] = {
+        {kCTParagraphStyleSpecifierLineSpacingAdjustment, sizeof(CGFloat), &amp;lineSpacing},
+        {kCTParagraphStyleSpecifierMaximumLineSpacing, sizeof(CGFloat), &amp;lineSpacing},
+        {kCTParagraphStyleSpecifierMinimumLineSpacing, sizeof(CGFloat), &amp;lineSpacing}
+    };
+    CTParagraphStyleRef theParagraphRef = CTParagraphStyleCreate(theSettings, 3);
+    [attributedString addAttribute:(id)kCTParagraphStyleAttributeName value:(__bridge id)theParagraphRef range:NSMakeRange(0, attributedString.length)];
+    CFRelease(theParagraphRef);
+
+    //要插入的图片
+    NSString *imageName = @"testImage.png";
+
+    //为图片设置CTRunDelegate 计算留给图片的空间大小
+    CTRunDelegateCallbacks imageCallbacks;
+    imageCallbacks.version = kCTRunDelegateVersion1;
+    imageCallbacks.getAscent = GetAscentCallback;
+    imageCallbacks.getDescent = GetDescentCallback;
+    imageCallbacks.getWidth = GetWidthCallback;
+
+    //设置图片位置，大小
+    CTRunDelegateRef runDelegate = CTRunDelegateCreate(&amp;imageCallbacks, imageName);
+    NSMutableAttributedString *imageAttributedString = [[NSMutableAttributedString alloc] initWithString:@" "];//空格用于给图片留位置
+    [imageAttributedString addAttribute:(NSString *)kCTRunDelegateAttributeName value:(id)runDelegate range:NSMakeRange(0, 1)];//用代理设置图片
+    CFRelease(runDelegate);
+
+    //把图片插入到字符串中
+    [imageAttributedString addAttribute:@"imageAttribute" value:imageName range:NSMakeRange(0, 1)];
+    [attributedString insertAttributedString:imageAttributedString atIndex:1];//图片插入位置，不能越界
+    [attributedString insertAttributedString:imageAttributedString atIndex:3];//图片插入位置，不能越界
+    [attributedString insertAttributedString:imageAttributedString atIndex:5];//图片插入位置，不能越界
+
+    //根据attributedString生成CTFramesetterRef
+    CTFramesetterRef ctFramesetter = CTFramesetterCreateWithAttributedString((CFMutableAttributedStringRef)attributedString);
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGRect bounds = CGRectMake(0.0, 0.0, self.bounds.size.width, self.bounds.size.height);
+    CGPathAddRect(path, NULL, bounds);
+
+     //绘制文字
+    CTFrameRef ctFrame = CTFramesetterCreateFrame(ctFramesetter,CFRangeMake(0, 0), path, NULL);
+    CTFrameDraw(ctFrame, context);
+
+    //下面都是为了绘制图片
+    CFArrayRef lines = CTFrameGetLines(ctFrame);
+    CGPoint lineOrigins[CFArrayGetCount(lines)];
+    CTFrameGetLineOrigins(ctFrame, CFRangeMake(0, 0), lineOrigins);
+
+    //遍历每个CTLine
+    for (int i = 0; i &lt; CFArrayGetCount(lines); i++) {
+        CTLineRef line = CFArrayGetValueAtIndex(lines, i);
+        CGFloat lineAscent;
+        CGFloat lineDescent;
+        CGFloat lineLeading;
+        CTLineGetTypographicBounds(line, &amp;lineAscent, &amp;lineDescent, &amp;lineLeading);
+        CFArrayRef runs = CTLineGetGlyphRuns(line);
+        for (int j = 0; j &lt; CFArrayGetCount(runs); j++) {
+            CGFloat runAscent;
+            CGFloat runDescent;
+            CGPoint lineOrigin = lineOrigins[i];
+            CTRunRef run = CFArrayGetValueAtIndex(runs, j);
+            NSDictionary* attributes = (NSDictionary*)CTRunGetAttributes(run);
+
+       CGRect runRect;
+           runRect.size.width = CTRunGetTypographicBounds(run, CFRangeMake(0,0), &amp;runAscent, &amp;runDescent, NULL);
+           runRect=CGRectMake(lineOrigin.x + CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location, NULL), lineOrigin.y - runDescent, runRect.size.width, runAscent + runDescent);
+
+       NSString *isImage = [attributes objectForKey:@"imageAttribute"];
+           //图片渲染逻辑
+           if (isImage) {
+               UIImage *image = [UIImage imageNamed:imageName];
+               if (image) {
+                   CGRect imageDrawRect;
+                   imageDrawRect.size = image.size;
+                   imageDrawRect.origin.x = runRect.origin.x + lineOrigin.x;
+                   imageDrawRect.origin.y = lineOrigin.y;
+                   CGContextDrawImage(context, imageDrawRect, image.CGImage);
+               }
+          }
+       }
+    }
+    //释放资源
+    CFRelease(ctFrame);
+    CFRelease(path);
+    CFRelease(ctFramesetter);
+}
+
+#pragma mark CTRunDelegate Callbacks
+CGFloat GetAscentCallback( void *refCon ){
+    NSString *imageName = (NSString *)refCon;
+    return [UIImage imageNamed:imageName].size.height;
+}
+CGFloat GetDescentCallback(void *refCon){
+    return 0;
+}
+CGFloat GetWidthCallback(void *refCon){
+    NSString *imageName = (NSString *)refCon;
+    return [UIImage imageNamed:imageName].size.width;
+}
+@end
+</code></pre>
+
+<p>运行结果
+<img src="/myimg/ios/coreResult.png" alt="image" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iOS中的SQLite]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/01/02/ios-sqlite/"/>
+    <updated>2016-01-02T10:44:52+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/01/02/ios-sqlite</id>
+    <content type="html"><![CDATA[<p><img src="/myimg/ios/sqlite.png" alt="image" /></p>
+
+<p><a href="http://www.sqlite.org/">SQLite</a>是一个轻量级的关系型数据库，在iOS和Android手机中都有用到，C语言的面向过程的函数式编程。<a href="https://github.com/woooooojianjie/SQLitePersistentObject">SQLitePersistentObject</a>和<a href="https://github.com/ccgus/fmdb">FMDB</a>框架都是基于SQLite开发的。SQLitePersistentObject更像是个ORM框架，它是由Jeff LaMarche在2008年开发的，所以不是ARC的，要用的请加上<strong>-fno-objc-arc</strong>，且作者已经没有维护了，所以还是推荐使用更加广泛的FMDB。<!--more--></p>
+
+<h3>*SQLite</h3>
+
+<p>添加依赖库libsqlite3.tbd，用SQLite来个原生的增删改查。下面一次性完成了创建并打开数据库，创建表，插入一条数据，查询数据，最后关闭数据库。
+<code>
+NSString* docsdir = [NSSearchPathForDirectoriesInDomains( NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+NSString* dbpath = [docsdir stringByAppendingPathComponent:@"user.sqlite"];
+sqlite3 *database;
+//创建并打开数据库*****************
+if (sqlite3_open([dbpath UTF8String], &amp;database) != SQLITE_OK) { //SQLITE_OK == 0
+   sqlite3_close(database);
+   NSAssert(0,@"数据库打开失败"); //若状态不是0就打开失败
+}
+//创建表格*****************
+NSString *createSql = @"CREATE TABLE IF NOT EXISTS student (student_id INTEGER PRIMARY KEY ,student_name TEXT);";
+char *createError;
+//sqlite3_exec这个方法可以执行那些没有返回结果的操作，例如创建、插入、删除、修改等。这个函数包含了sqlite3_prepare这个函数的操作，目的是将UTF-8格式的SQL语句转换为编译后的语句
+if (sqlite3_exec(database, [createSql UTF8String], NULL, NULL, &amp;createError) != SQLITE_OK) {
+    sqlite3_close(database);
+    NSAssert(0,@"创建表错误：%s", createError);
+}
+//插入或修改数据*****************  
+char *update = "INSERT OR REPLACE INTO student VALUES (?,?)";  
+sqlite3_stmt *statement;  
+if (sqlite3_prepare_v2(database, update, -1, &amp;statement, nil) == SQLITE_OK) {  
+    //将值保存到指定的列,列从1开始！！  
+    sqlite3_bind_int(statement, 1, 4);//1是列，4是student_id  
+    //第四个参数代表第三个参数中需要传递的长度。对于C字符串来说，-1表示传递全部字符串。第五个参数是一个回调函数，比如执行后做内存清除工作。  
+    sqlite3_bind_text(statement, 2, [@"studentName" UTF8String], -1, NULL);  
+}    
+if (sqlite3_step(statement) != SQLITE_DONE) {  
+    NSAssert(0,@"更新数据出错");  
+}  
+sqlite3_finalize(statement);  
+//查询数据库*****************
+NSString *querySql = @"SELECT * FROM student;";
+sqlite3_stmt *selectStmt;
+if (sqlite3_prepare_v2(database, [querySql UTF8String], -1, &amp;selectStmt, nil) == SQLITE_OK) {
+    while (sqlite3_step(selectStmt) == SQLITE_ROW) {
+        int studentId = sqlite3_column_int(selectStmt, 0);//后面的数字对应每一列
+        char *cString = (char *)sqlite3_column_text(selectStmt, 1);
+        NSString* studentName = [[NSString alloc]initWithUTF8String:cString];
+        NSLog(@"student_id = %d   student_name = %@",studentId,studentName);
+    }
+    sqlite3_finalize(selectStmt);
+}
+sqlite3_close(database);//最后关闭数据库
+</code>
+<img src="/myimg/ios/select.png" alt="image" />
+<img src="/myimg/ios/table.png" alt="image" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iOS中的多线程]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/01/01/thread/"/>
+    <updated>2016-01-01T14:28:22+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/01/01/thread</id>
+    <content type="html"><![CDATA[<p>1.什么是进程</p>
+
+<p>进程是指在系统中正在运行的一个应用程序，每个进程之间是独立的，每个进程均运行在其专用且受保护的内存空间内。
+<img src="/myimg/ios/jincheng.png" alt="image" /><!--more--></p>
+
+<p>2.什么是线程</p>
+
+<p>进程要想执行任务必须通过线程来执行，1个进程至少会有1条线程(主线程)，进程的所有任务都在线程中执行。
+<img src="/myimg/ios/xiancheng.png" alt="image" /></p>
+
+<p>线程中任务的执行是按顺序执行的，后面的任务要等前面的任务执行完了才能执行。但1个进程里可以开启多个线程来同时执行不同的任务，可以提高任务的执行效率。
+<img src="/myimg/ios/duox.png" alt="image" /></p>
+
+<p>iOS中每个进程都会有一个主线程(UI线程)，<strong>只能在主线程中更新UI</strong>。如果在这个主线程里做了过多的耗时操作，就会造成UI卡顿，所以用多线程来处理耗时操作。常用的开启多线程方式有三种：NSThread, NSOperation, GCD。</p>
+
+<h3>*NSThread</h3>
+
+<p>NSThread是轻量级的多线程开发，用起来也不复杂。</p>
+
+<p>初始化方法
+<code>
++ (void)detachNewThreadSelector:(SEL)selector toTarget:(id)target withObject:(nullable id)argument;
+- (instancetype)initWithTarget:(id)target selector:(SEL)selector object:(nullable id)argument;
+</code>
+其他方法
+<code>
+- (void)start;//启动一个线程，并非立即执行，而是处于就绪状态，当系统调度时才真正执行
+- (void)cancel;//取消
++ (BOOL)isMainThread;//当前线程是不是主线程
++ (NSThread *)mainThread //获取主线程
++ (NSThread *)currentThread;//返回当前线程
++ (BOOL)isMultiThreaded;//是不是多线程
++ (void)sleepUntilDate:(NSDate *)date;//休眠
++ (void)sleepForTimeInterval:(NSTimeInterval)ti;//休眠
++ (void)exit;//退出
++ (double)threadPriority;//优先级
++ (BOOL)setThreadPriority:(double)p;//设置优先级 0~1
+- (BOOL)isExecuting;//正在执行
+- (BOOL)isFinished;//执行完毕
+- (BOOL)isCancelled;//已经取消
+</code>
+在子线程里要调用主线程来更新UI,可以用NSObject类别中的 OnMainThread 方法(前两个)。
+<code>
+@interface NSObject (NSThreadPerformAdditions)
+- (void)performSelectorOnMainThread:(SEL)aSelector withObject:(nullable id)arg waitUntilDone:(BOOL)wait modes:(nullable NSArray&lt;NSString *&gt; *)array;
+- (void)performSelectorOnMainThread:(SEL)aSelector withObject:(nullable id)arg waitUntilDone:(BOOL)wait;
+- (void)performSelector:(SEL)aSelector onThread:(NSThread *)thr withObject:(nullable id)arg waitUntilDone:(BOOL)wait modes:(nullable NSArray&lt;NSString *&gt; *)array ;
+- (void)performSelector:(SEL)aSelector onThread:(NSThread *)thr withObject:(nullable id)arg waitUntilDone:(BOOL)wait ;
+- (void)performSelectorInBackground:(SEL)aSelector withObject:(nullable id)arg ;
+@end
+</code>
+按顺序启动（start）的线程不一定是按顺序执行，由系统调度资源决定的，同样的代码多运行几次顺序就不一样了。
+<img src="/myimg/ios/shunxv.png" alt="image" />
+<img src="/myimg/ios/shunxv2.png" alt="image" /></p>
+
+<h3>*NSOperation</h3>
+
+<p>NSOperation是个抽象类，使用的话要<strong>继承它然后实现main方法</strong>。但它有两个现成子类：NSInvocationOperation和NSBlockOperation，后者使用Block形式进行代码组织，使用相对方便。</p>
+
+<p>NSOperation要和NSOperationQueue一起使用，只要将一个NSOperation子类对象
+放到NSOperationQueue队列中，线程就会依次启动。NSOperationQueue负责管理、执行所有的NSOperation，可以更加容易的管理线程总数和控制线程之间的依赖关系。可以通过监听<strong>isFinished</strong>属性来得到线程执行完毕通知。</p>
+
+<p>NSOperation类中的方法</p>
+
+<pre><code>- (void)start;
+- (void)cancel;
+- (void)main;//继承后要实现具体操作
+- (void)addDependency:(NSOperation *)op;//添加线程间的依赖关系，A依赖B，所以要B先执行完再执行A(切记不要循环依赖...)
+- (void)removeDependency:(NSOperation *)op;//移除依赖关系
+- (void)waitUntilFinished;
+</code></pre>
+
+<p>几个属性
+<code>
+@property (readonly, getter=isCancelled) BOOL cancelled;
+@property (readonly, getter=isExecuting) BOOL executing;
+@property (readonly, getter=isFinished) BOOL finished;
+@property (readonly, getter=isConcurrent) BOOL concurrent;//已经弃用，用下面的'asynchronous'
+@property (readonly, getter=isAsynchronous) BOOL asynchronous;//是否异步执行
+@property (readonly, getter=isReady) BOOL ready;
+</code>
+为什么说<strong>NSOperation要和NSOperationQueue一起使用</strong>呢？因为如果NSOperation子类对象直接start启动的话，它其实是在主线程中执行的！
+<img src="/myimg/ios/error.png" alt="image" />
+如果把NSOperation子类对象加到NSOperationQueue中,这就不是在主线程中执行了。
+<img src="/myimg/ios/right.png" alt="image" /></p>
+
+<p>NSInvocationOperation就两个初始化方法，两个属性&hellip;
+<code>
+- (nullable instancetype)initWithTarget:(id)target selector:(SEL)sel object:(nullable id)arg;
+- (instancetype)initWithInvocation:(NSInvocation *)inv;
+@property (readonly, retain) NSInvocation *invocation;
+@property (nullable, readonly, retain) id result;
+</code>
+NSBlockOperation就两个方法，一个属性&hellip;
+<code>
++ (instancetype)blockOperationWithBlock:(void (^)(void))block;//初始化
+- (void)addExecutionBlock:(void (^)(void))block;//创建一个新的线程来执行任务
+@property (readonly, copy) NSArray&lt;void (^)(void)&gt; *executionBlocks;//任务数组
+</code>
+<strong>addExecutionBlock</strong>会创建一个新的线程来执行任务，而不是在同一个子线程中。
+<img src="/myimg/ios/blockThread.png" alt="image" /></p>
+
+<p>NSOperationQueue中的方法及属性，都很少&hellip;
+<code>
+- (void)cancelAllOperations;//取消线程
+- (void)waitUntilAllOperationsAreFinished;
++ (nullable NSOperationQueue *)currentQueue;
++ (NSOperationQueue *)mainQueue;//获取主线程
+- (void)addOperation:(NSOperation *)op;//添加线程
+- (void)addOperations:(NSArray&lt;NSOperation *&gt; *)ops waitUntilFinished:(BOOL)wait;//添加线程数组
+- (void)addOperationWithBlock:(void (^)(void))block;//添加线程block
+@property (readonly, copy) NSArray&lt;__kindof NSOperation *&gt; *operations;
+@property (readonly) NSUInteger operationCount;//池子里几个线程
+@property NSInteger maxConcurrentOperationCount;//最大并发线程数
+@property (getter=isSuspended) BOOL suspended;//延迟
+@property (nullable, copy) NSString *name;//线程名字
+@property NSQualityOfService qualityOfService;// ??
+@property (nullable, assign) dispatch_queue_t underlyingQueue;// ??
+</code></p>
+
+<h3>*GCD</h3>
+
+<p>GCD(Grand Central Dispatch)是基于C语言开发的一套多线程开发机制，也是苹果官方推荐的多线程开发方法。抽象层次最高，当然是用起来也最简单，只是它基于C语言开发，并不像NSOperation是面向对象的开发，而是完全面向过程的，最显著的优点就是它对于多核运算更加有效。</p>
+
+<p>GCD中的队列分为<strong>串行队列</strong>和<strong>并发队列</strong>两类，都是异步的：</p>
+
+<p>串行队列：只有一个子线程，加入到队列中的操作按添加顺序依次执行。</p>
+
+<p>并发队列：有多个子线程，操作进来之后它会将这些队列安排在可用的处理器上，同时保证先进来的任务优先处理。</p>
+
+<p><strong>1. 串行队列, 在同一个子线程里, 顺序执行！</strong> 关键字 <em>DISPATCH_QUEUE_SERIAL</em>
+<code>
+dispatch_queue_t serialQueue = dispatch_queue_create("myThreadQueue", DISPATCH_QUEUE_SERIAL);
+    for (int i=0; i&lt;5; ++i) {
+        dispatch_async(serialQueue, ^{
+            [self doSomething:i];
+        });
+    }
+</code>
+<img src="/myimg/ios/gcd1.png" alt="image" /></p>
+
+<pre><code>//更新UI界面,此处调用了GCD主线程队列的方法
+dispatch_queue_t mainQueue = dispatch_get_main_queue();
+  dispatch_sync(mainQueue, ^{
+    [self updateUI];
+});
+</code></pre>
+
+<p><strong>2. 并发队列, 在不同的子线程里, 并发执行</strong> 关键字 <em>DISPATCH_QUEUE_CONCURRENT</em></p>
+
+<pre><code> //方式一：dispatch_queue_t serialQueue=dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+ dispatch_queue_t serialQueue=dispatch_queue_create("myThreadQueue", DISPATCH_QUEUE_CONCURRENT);
+    for (int i=0; i&lt;5; ++i) {
+        dispatch_async(serialQueue, ^{
+            [self doSomething:i];
+        });
+    }
+</code></pre>
+
+<p><img src="/myimg/ios/ybbf.png" alt="image" />
+若把上面的<strong>dispatch_async</strong>改成<strong>dispatch_sync</strong>,这就是在主线程中顺序执行了！即使在异步并发队列中！
+<img src="/myimg/ios/hah.png" alt="image" />
+所以，GCD若要<strong>异步多线程</strong>执行必须：使用异步队列<strong>DISPATCH_QUEUE_CONCURRENT</strong> 并且 方法是异步方法(dispatch_async)!! 否则，要么在<strong>子线程</strong>里顺序执行(串行队列，异步方法(dispatch_async))，要么在<strong>主线程</strong>里顺序执行！！(同步方法(dispatch_sync)，不管串行还是并发队列)</p>
+
+<p>解决异步情况下抢占资源问题，可以加锁<strong>NSLock</strong>。获取资源时lock住，获取完资源后unlock。或者用<strong>@synchronized</strong>包裹获取资源代码。</p>
+
+<p>几个线程执行完后得到通知</p>
+
+<pre><code>    dispatch_group_t group = dispatch_group_create();
+    dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
+        //并发执行的任务一
+    });
+    dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
+        //并发执行的任务二
+    });
+    dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
+        //所有任务都执行完了得到通知
+    });
+</code></pre>
+
+<pre><code>NSOperationQueue *queue = [[NSOperationQueue alloc]init];
+NSBlockOperation *blockOperation=[NSBlockOperation blockOperationWithBlock:^{
+     //并发执行的任务一
+ }];
+ [blockOperation addExecutionBlock:^{
+     //并发执行的任务二
+ }];
+ [blockOperation setCompletionBlock:^{
+     //所有任务都执行完了
+ }];
+ [queue addOperation:blockOperation];
+</code></pre>
+
+<h3>*总结</h3>
+
+<p>1.无论使用哪种方法进行多线程开发，每个线程启动后并不一定立即执行相应的操作，具体什么时候由系统调度，CPU空闲时就会执行。</p>
+
+<p>2.更新UI应该在主线程（UI线程）中进行，常用的方法如下：</p>
+
+<p>-(void)performSelectorOnMainThread:(SEL)aSelector withObject:(id)arg waitUntilDone:(BOOL)wait</p>
+
+<p>-(void)performSelector:(SEL)aSelector onThread:(NSThread *)thr withObject:(id)arg waitUntilDone:(BOOL) wait;//传递[NSThread mainThread]</p>
+
+<p>[[NSOperationQueue mainQueue] addOperationWithBlock:^{ }];</p>
+
+<p>dispatch_sync(dispatch_get_main_queue(), ^{ });</p>
+
+<p>3.NSThread适合轻量级多线程开发，要手动控制线程，线程总数无法控制，无法线程依赖。</p>
+
+<p>4.对于简单的多线程开发建议使用NSObject的扩展方法完成，而不必使用NSThread。</p>
+
+<p>5.可以使用NSThread的currentThread方法取得当前线程，使用 sleepForTimeInterval:方法让当前线程休眠。</p>
+
+<p>6.NSOperation进行多线程开发可以控制线程总数及线程依赖关系。</p>
+
+<p>7.创建一个NSOperation不应该直接调用start方法, 如果直接start则会在主线程中调用, 而是应该放到NSOperationQueue中启动。</p>
+
+<p>8.相比NSInvocationOperation推荐使用NSBlockOperation，代码简单，同时由于闭包性使它没有传参问题。</p>
+
+<p>9.NSOperation是对GCD面向对象的封装，但是GCD基于C语言开发，效率却更高. 建议如果任务之间有依赖关系或者想要监听任务完成状态的情况下优先选择NSOperation否则使用GCD。</p>
+
+<p>10.在GCD中串行队列中的任务被安排到一个单一的子线程中，可以方便地控制执行顺序；并发队列在多个线程中执行（前提是使用异步方法），顺序控制相对复杂，但是更高效。</p>
+
+<p>11.在GDC中一个操作是多线程执行还是单线程执行取决于当前队列类型和执行方法，只有队列类型为并发队列并且使用异步方法执行时才能在多个线程中并发执行。</p>
+
+<p>12.相比使用NSLock，@synchronized更加简单。</p>
+]]></content>
+  </entry>
+  
+</feed>

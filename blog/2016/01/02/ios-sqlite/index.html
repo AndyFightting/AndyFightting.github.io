@@ -1,0 +1,331 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>iOS中的SQLite - 阿贵</title>
+  <meta name="author" content="guimingsu">
+
+  
+  <meta name="description" content="iOS中的SQLite Jan 2nd, 2016 10:44 am SQLite是一个轻量级的关系型数据库，在iOS和Android手机中都有用到，C语言的面向过程的函数式编程。SQLitePersistentObject和FMDB框架都是基于SQLite开发的。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://andyfightting.github.io/blog/2016/01/02/ios-sqlite/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="阿贵" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">  -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+
+<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">阿贵</a></h1>
+  
+    <h2>Stay Hungry, Stay Foolish</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="andyfightting.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li> 
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">iOS中的SQLite</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-01-02T10:44:52+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2016</span></span> <span class='time'>10:44 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><img src="/myimg/ios/sqlite.png" alt="image" /></p>
+
+<p><a href="http://www.sqlite.org/">SQLite</a>是一个轻量级的关系型数据库，在iOS和Android手机中都有用到，C语言的面向过程的函数式编程。<a href="https://github.com/woooooojianjie/SQLitePersistentObject">SQLitePersistentObject</a>和<a href="https://github.com/ccgus/fmdb">FMDB</a>框架都是基于SQLite开发的。SQLitePersistentObject更像是个ORM框架，它是由Jeff LaMarche在2008年开发的，所以不是ARC的，要用的请加上<strong>-fno-objc-arc</strong>，且作者已经没有维护了，所以还是推荐使用更加广泛的FMDB。<!--more--></p>
+
+<h3>*SQLite</h3>
+
+<p>添加依赖库libsqlite3.tbd，用SQLite来个原生的增删改查。下面一次性完成了创建并打开数据库，创建表，插入一条数据，查询数据，最后关闭数据库。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>NSString* docsdir = [NSSearchPathForDirectoriesInDomains( NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+</span><span class='line'>NSString* dbpath = [docsdir stringByAppendingPathComponent:@"user.sqlite"];
+</span><span class='line'>sqlite3 *database;
+</span><span class='line'>//创建并打开数据库*****************
+</span><span class='line'>if (sqlite3_open([dbpath UTF8String], &database) != SQLITE_OK) { //SQLITE_OK == 0
+</span><span class='line'>   sqlite3_close(database);
+</span><span class='line'>   NSAssert(0,@"数据库打开失败"); //若状态不是0就打开失败
+</span><span class='line'>}
+</span><span class='line'>//创建表格*****************
+</span><span class='line'>NSString *createSql = @"CREATE TABLE IF NOT EXISTS student (student_id INTEGER PRIMARY KEY ,student_name TEXT);";
+</span><span class='line'>char *createError;
+</span><span class='line'>//sqlite3_exec这个方法可以执行那些没有返回结果的操作，例如创建、插入、删除、修改等。这个函数包含了sqlite3_prepare这个函数的操作，目的是将UTF-8格式的SQL语句转换为编译后的语句
+</span><span class='line'>if (sqlite3_exec(database, [createSql UTF8String], NULL, NULL, &createError) != SQLITE_OK) {
+</span><span class='line'>    sqlite3_close(database);
+</span><span class='line'>    NSAssert(0,@"创建表错误：%s", createError);
+</span><span class='line'>}
+</span><span class='line'>//插入或修改数据*****************  
+</span><span class='line'>char *update = "INSERT OR REPLACE INTO student VALUES (?,?)";  
+</span><span class='line'>sqlite3_stmt *statement;  
+</span><span class='line'>if (sqlite3_prepare_v2(database, update, -1, &statement, nil) == SQLITE_OK) {  
+</span><span class='line'>    //将值保存到指定的列,列从1开始！！  
+</span><span class='line'>    sqlite3_bind_int(statement, 1, 4);//1是列，4是student_id  
+</span><span class='line'>    //第四个参数代表第三个参数中需要传递的长度。对于C字符串来说，-1表示传递全部字符串。第五个参数是一个回调函数，比如执行后做内存清除工作。  
+</span><span class='line'>    sqlite3_bind_text(statement, 2, [@"studentName" UTF8String], -1, NULL);  
+</span><span class='line'>}    
+</span><span class='line'>if (sqlite3_step(statement) != SQLITE_DONE) {  
+</span><span class='line'>    NSAssert(0,@"更新数据出错");  
+</span><span class='line'>}  
+</span><span class='line'>sqlite3_finalize(statement);  
+</span><span class='line'>//查询数据库***************** 
+</span><span class='line'>NSString *querySql = @"SELECT * FROM student;";
+</span><span class='line'>sqlite3_stmt *selectStmt;
+</span><span class='line'>if (sqlite3_prepare_v2(database, [querySql UTF8String], -1, &selectStmt, nil) == SQLITE_OK) {
+</span><span class='line'>    while (sqlite3_step(selectStmt) == SQLITE_ROW) {
+</span><span class='line'>        int studentId = sqlite3_column_int(selectStmt, 0);//后面的数字对应每一列
+</span><span class='line'>        char *cString = (char *)sqlite3_column_text(selectStmt, 1);
+</span><span class='line'>        NSString* studentName = [[NSString alloc]initWithUTF8String:cString];
+</span><span class='line'>        NSLog(@"student_id = %d   student_name = %@",studentId,studentName);
+</span><span class='line'>    }
+</span><span class='line'>    sqlite3_finalize(selectStmt);
+</span><span class='line'>}
+</span><span class='line'>sqlite3_close(database);//最后关闭数据库</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/myimg/ios/select.png" alt="image" />
+<img src="/myimg/ios/table.png" alt="image" /></p>
+</div>
+
+
+      | <a href="#comments">Comments</a>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">guimingsu</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-01-02T10:44:52+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2016</span></span> <span class='time'>10:44 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  <!-- JiaThis Button -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/01/01/thread/" title="Previous Post: iOS中的多线程">&laquo; iOS中的多线程</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2016/01/02/core-text/" title="Next Post: iOS中的CoreText">iOS中的CoreText &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-title="Octopress博客的个性化配置"></div>
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"tianweili"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+<!-- Duoshuo Comment END --></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/02/core-text/">iOS中的CoreText</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/02/ios-sqlite/">iOS中的SQLite</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/01/thread/">iOS中的多线程</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/29/huang-shan/">黄山之旅</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/19/desigin-pattern/">设计模式</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/android/'>android (3)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (3)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (4)</a></li>
+
+  </ul>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - guimingsu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
