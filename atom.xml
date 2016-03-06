@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-01-03T12:37:52+08:00</updated>
+  <updated>2016-03-06T12:07:13+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -986,6 +986,29 @@ public SubDuck(){
 <p>2.针对接口编程，而不是针对实现编程。</p>
 
 <p>3.多用组合，少用继承。</p>
+
+<h3>3.观察者模式</h3>
+
+<p>好好看图吧，把它转化为具体代码加深理解
+<img src="http://andyfightting.github.io/myimg/other/guanCha0.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/guanCha1.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/guanCha2.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/guanCha3.jpg" alt="image" /></p>
+
+<p>看完上面例子，下面的设计图也更好理解了。
+<img src="http://andyfightting.github.io/myimg/other/guanCha4.jpg" alt="image" /></p>
+
+<p>使用Java内置的观察者模式
+<img src="http://andyfightting.github.io/myimg/other/guanCha5.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/guanCha6.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/guanCha7.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/guanCha8.jpg" alt="image" /></p>
+
+<p>Swing中的观察者模式
+<img src="http://andyfightting.github.io/myimg/other/guanCha9.jpg" alt="image" /></p>
+
+<p>要点
+<img src="http://andyfightting.github.io/myimg/other/guanCha10.jpg" alt="image" /></p>
 ]]></content>
   </entry>
   
