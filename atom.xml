@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-03-06T12:07:13+08:00</updated>
+  <updated>2016-03-12T12:04:24+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -924,7 +924,7 @@ label.attributedText = [attributeString copy];
     <link href="http://andyfightting.github.io/blog/2015/12/19/desigin-pattern/"/>
     <updated>2015-12-19T21:51:06+08:00</updated>
     <id>http://andyfightting.github.io/blog/2015/12/19/desigin-pattern</id>
-    <content type="html"><![CDATA[<p>我理解的设计模式都是为了让代码模块化，结构化，各司其职，再把各个模块通过"接口"组合起来。</p>
+    <content type="html"><![CDATA[<p>我理解的设计模式都是为了让代码模块化，结构化，各司其职，再把各个模块通过"接口"组合起来。封装变化；多用组合少用继承；针对接口编程，不针对实现编程；为交互对象之间的松耦合设计而努力；对扩展开放，对修改关闭。</p>
 
 <h3>1.MVC模式</h3>
 
@@ -1009,6 +1009,20 @@ public SubDuck(){
 
 <p>要点
 <img src="http://andyfightting.github.io/myimg/other/guanCha10.jpg" alt="image" /></p>
+
+<h3>4.装饰模式</h3>
+
+<p>动态的将责任附加到对象上，用对象组合的方式来解决继承滥用的问题。利用继承设计子类的行为是在编译时静态决定的，而且所有的子类都会继承到相同的行为。如果利用组合的做法扩展对象的行为，就可以在运行时动态的进行扩展。类应该多扩展开放，对修改关闭。即在不修改现有代码的情况下可以添加新的行为。</p>
+
+<p>装饰着和被装饰着必须是同一类型，所以通过继承来实现。这里的继承是用来达到“类型一致”的，而不是为了通过继承得到“行为”。“行为”来自装饰着和基础组件，其他与装饰着之间的组合关系。
+<img src="http://andyfightting.github.io/myimg/other/zhuangShi.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/zhuangShi0.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/zhuangShi1.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/zhuangShi2.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/zhuangShi3.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/zhuangShi4.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/zhuangShi5.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/zhuangShi6.jpg" alt="image" /></p>
 ]]></content>
   </entry>
   
