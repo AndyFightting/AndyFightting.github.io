@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Other | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/other/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-03-12T12:42:08+08:00</updated>
+  <updated>2016-03-28T13:41:13+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -147,6 +147,10 @@ public SubDuck(){
 <img src="/myimg/other/zhuangShi4.jpg" alt="image" />
 <img src="/myimg/other/zhuangShi5.jpg" alt="image" />
 <img src="/myimg/other/zhuangShi6.jpg" alt="image" /></p>
+
+<h3>5.工厂模式</h3>
+
+<p>当每次“new”的时候都会实例化一个类，所以这是用的实现编程而不是接口编程。“工厂”就是一个专门负责产生对象的一个类。</p>
 ]]></content>
   </entry>
   
