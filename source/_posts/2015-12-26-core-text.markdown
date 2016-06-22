@@ -1,0 +1,261 @@
+---
+layout: post
+title: "iOS中的CoreText"
+date: 2015-12-26 15:16:23 +0800
+comments: true
+categories: iOS
+---
+CoreText进行图文混排的核心思想是把需要摆放图片的位置用空字符替换原来的字符，并且实现CTRunDelegate，用于动态设置空字符的高度和宽度（代表图片的大小），并且对这些空字符设置一个属性名来区别于其他CTRun，之后进行图片渲染的时候就能通过该属性来区分哪些空字符是代表图片的占位符，哪些是普通的空字符。使用CoreText处理点击事件的关键是判断点击的位置是本文内容中的第几个字符，然后通过判断该字符是否在需要处理点击事件的字符串范围内。
+
+![image](/myimg/ios/text2.png)<!--more-->
+![image](/myimg/ios/coreText.png)
+
+```
+
+#import "CoreTextView.h"
+#import <CoreText/CoreText.h>
+
+@implementation CoreTextView{
+    CTFrameRef ctFrame;
+}
+
+- (id)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        // Initialization code
+    }
+    return self;
+}
+
+- (void)drawRect:(CGRect)rect
+{
+    //得到当前用于绘制画布的上下文，用于后续将内容绘制在画布上
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    //翻转当前的坐标系, 因为对于底层绘制引擎来说，屏幕左下角为（0，0)
+    CGContextSetTextMatrix(context, CGAffineTransformIdentity);
+    CGContextTranslateCTM(context, 0, self.bounds.size.height);
+    CGContextScaleCTM(context, 1.0, -1.0);
+    
+    //要绘制的文字
+    NSMutableAttributedString* attributedString = [[NSMutableAttributedString alloc] initWithString:@"少年不识愁滋味，爱上层楼。爱上层楼。为赋新词强说愁。而今识尽愁滋味，欲说还休。欲说还休。却道天凉好个秋。"];
+    //为所有文本设置字体
+    [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:10] range:NSMakeRange(0, [attributedString length])];
+    //设置某些字体更大
+    [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:30] range:NSMakeRange(10, 10)];
+    //index 从0开始的2个字符 字体颜色 设置为蓝色
+    [attributedString addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(0, 2)];
+    //index 从2开始的3个字符 字体颜色 设置为红色
+    [attributedString addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(2, 3)];
+    //设置行间距 50
+    CGFloat lineSpacing = 50;
+    CTParagraphStyleSetting theSettings[3] = {
+        {kCTParagraphStyleSpecifierLineSpacingAdjustment, sizeof(CGFloat), &lineSpacing},
+        {kCTParagraphStyleSpecifierMaximumLineSpacing, sizeof(CGFloat), &lineSpacing},
+        {kCTParagraphStyleSpecifierMinimumLineSpacing, sizeof(CGFloat), &lineSpacing}
+    };
+    CTParagraphStyleRef theParagraphRef = CTParagraphStyleCreate(theSettings, 3);
+    [attributedString addAttribute:(id)kCTParagraphStyleAttributeName value:(__bridge id)theParagraphRef range:NSMakeRange(0, attributedString.length)];
+    CFRelease(theParagraphRef);
+    
+    //要插入的图片
+    NSString *imageName = @"testImage.png";
+    
+    //为图片设置CTRunDelegate 计算留给图片的空间大小
+    CTRunDelegateCallbacks imageCallbacks;
+    imageCallbacks.version = kCTRunDelegateVersion1;
+    imageCallbacks.getAscent = GetAscentCallback;
+    imageCallbacks.getDescent = GetDescentCallback;
+    imageCallbacks.getWidth = GetWidthCallback;
+    
+    //设置图片位置，大小
+    CTRunDelegateRef runDelegate = CTRunDelegateCreate(&imageCallbacks, imageName);
+    NSMutableAttributedString *imageAttributedString = [[NSMutableAttributedString alloc] initWithString:@" "];//空格用于给图片留位置
+    [imageAttributedString addAttribute:(NSString *)kCTRunDelegateAttributeName value:(id)runDelegate range:NSMakeRange(0, 1)];//用代理设置图片
+    CFRelease(runDelegate);
+    
+    //把图片插入到字符串中
+    [imageAttributedString addAttribute:@"imageAttribute" value:imageName range:NSMakeRange(0, 1)];
+    [attributedString insertAttributedString:imageAttributedString atIndex:1];//图片插入位置，不能越界
+    [attributedString insertAttributedString:imageAttributedString atIndex:3];//图片插入位置，不能越界
+    [attributedString insertAttributedString:imageAttributedString atIndex:5];//图片插入位置，不能越界
+    
+    //根据attributedString生成CTFramesetterRef
+    CTFramesetterRef ctFramesetter = CTFramesetterCreateWithAttributedString((CFMutableAttributedStringRef)attributedString);
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGRect bounds = CGRectMake(0.0, 0.0, self.bounds.size.width, self.bounds.size.height);
+    CGPathAddRect(path, NULL, bounds);
+    
+    //绘制文字
+    ctFrame = CTFramesetterCreateFrame(ctFramesetter,CFRangeMake(0, [attributedString length ]), path, NULL);
+    CTFrameDraw(ctFrame, context);
+    
+    //下面都是为了绘制图片
+    CFArrayRef lines = CTFrameGetLines(ctFrame);
+    CGPoint lineOrigins[CFArrayGetCount(lines)];
+    CTFrameGetLineOrigins(ctFrame, CFRangeMake(0, 0), lineOrigins);
+    
+    //遍历每个CTLine
+    for (int i = 0; i < CFArrayGetCount(lines); i++) {
+        CTLineRef line = CFArrayGetValueAtIndex(lines, i);
+        CGFloat lineAscent;
+        CGFloat lineDescent;
+        CGFloat lineLeading;
+        CTLineGetTypographicBounds(line, &lineAscent, &lineDescent, &lineLeading);
+        
+        CFArrayRef runs = CTLineGetGlyphRuns(line);
+        for (int j = 0; j < CFArrayGetCount(runs); j++) {
+            CGFloat runAscent;
+            CGFloat runDescent;
+            CGPoint lineOrigin = lineOrigins[i];
+            CTRunRef run = CFArrayGetValueAtIndex(runs, j);
+            NSDictionary* attributes = (NSDictionary*)CTRunGetAttributes(run);
+            
+            CGRect runRect;
+            runRect.size.width = CTRunGetTypographicBounds(run, CFRangeMake(0,0), &runAscent, &runDescent, NULL);
+            runRect=CGRectMake(lineOrigin.x + CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location, NULL), lineOrigin.y - runDescent, runRect.size.width, runAscent + runDescent);
+            
+            NSString *isImage = [attributes objectForKey:@"imageAttribute"];
+            //图片渲染逻辑
+            if (isImage) {
+                UIImage *image = [UIImage imageNamed:imageName];
+                if (image) {
+                    CGRect imageDrawRect;
+                    imageDrawRect.size = image.size;
+                    imageDrawRect.origin.x = runRect.origin.x + lineOrigin.x;
+                    imageDrawRect.origin.y = lineOrigin.y;
+                    CGContextDrawImage(context, imageDrawRect, image.CGImage);
+                }
+            }
+        }
+    }
+    //释放资源
+    //    CFRelease(ctFrame); //因为点击要用ctFrame，所以放dealloc里释放
+    CFRelease(path);
+    CFRelease(ctFramesetter);
+}
+
+//接受触摸事件
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    UITouch *touch = [touches anyObject];
+    CGPoint location = [touch locationInView:self];
+    
+    //获取每一行
+    CFArrayRef lines = CTFrameGetLines(ctFrame);
+    CGPoint origins[CFArrayGetCount(lines)];
+    //获取每行的原点坐标
+    CTFrameGetLineOrigins(ctFrame, CFRangeMake(0, 0), origins);
+    CTLineRef line = NULL;
+    CGPoint lineOrigin = CGPointZero;
+    for (int i= 0; i < CFArrayGetCount(lines); i++){
+        CGPoint origin = origins[i];
+        CGPathRef path = CTFrameGetPath(ctFrame);
+        //获取整个CTFrame的大小
+        CGRect rect = CGPathGetBoundingBox(path);
+        //坐标转换，把每行的原点坐标转换为uiview的坐标体系
+        CGFloat y = rect.origin.y + rect.size.height - origin.y;
+        //判断点击的位置处于那一行范围内
+        if ((location.y <= y) && (location.x >= origin.x)){
+            line = CFArrayGetValueAtIndex(lines, i);
+            lineOrigin = origin;
+            break;
+        }
+    }
+    
+    location.x -= lineOrigin.x;
+    //获取点击位置所处的字符位置，就是相当于点击了第几个字符
+    CFIndex index = CTLineGetStringIndexForPosition(line, location)-1;//index从0开始
+    UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"提示" message:[NSString stringWithFormat:@"点击了第 %d 个字符！！",(int)index] delegate:self cancelButtonTitle:@"ok" otherButtonTitles:nil, nil];
+    [alert show];
+}
+
+-(void)dealloc{
+    [super dealloc];
+    CFRelease(ctFrame);
+}
+
+#pragma mark CTRunDelegate Callbacks
+CGFloat GetAscentCallback( void *refCon ){
+    NSString *imageName = (NSString *)refCon;
+    return [UIImage imageNamed:imageName].size.height;
+}
+CGFloat GetDescentCallback(void *refCon){
+    return 0;
+}
+CGFloat GetWidthCallback(void *refCon){
+    NSString *imageName = (NSString *)refCon;
+    return [UIImage imageNamed:imageName].size.width;
+}
+@end
+```
+运行结果
+![image](/myimg/ios/coreResult.png)
+
+### *TextKit
+由于用CoreText是用绘图方式实现图文混排，复杂难用。所以在iOS7新推出了新的文字排版技术 -- TextKit。使用TextKit可以很方便的实现富文本、表情混排和图文混排等效果。它是UIKit framework中定义的一组用于提供高性能的排版、布局和展示文字的类和协议，比如展示特别的字间距、行间距、断行规则。从上面图2可知，它是基于CoreText的，且UILabel,UITextField,UITextView又都是基于TextKit的。
+
+	UILabel* label = [[UILabel alloc]initWithFrame:self.view.bounds];
+    label.text = @"少年不识愁滋味，爱上层楼。爱上层楼。为赋新词强说愁。而今识尽愁滋味，欲说还休。欲说还休。却道天凉好个秋。";
+    label.numberOfLines = 0;
+    label.userInteractionEnabled = YES;
+    [self.view addSubview:label];
+    
+    NSMutableAttributedString * attributeString = [label.attributedText mutableCopy];
+    [attributeString addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(0, 10)];//设置颜色
+    [attributeString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:25] range:NSMakeRange(0, 5)];//设置字体
+    [attributeString addAttribute:NSUnderlineStyleAttributeName value:@(NSUnderlineStyleSingle) range:NSMakeRange(0, 15)];//设置下划线
+    [attributeString addAttribute:NSStrokeWidthAttributeName value:@(2) range:NSMakeRange(0, 3)];//设置空心字
+    
+    //插入图片1
+    UIImage * image1 = [UIImage imageNamed:@"fengye.png"];
+    NSTextAttachment * attachment1 = [[NSTextAttachment alloc] init];
+    attachment1.bounds = CGRectMake(0, 0, 60, 60);
+    attachment1.image = image1;
+    NSAttributedString * attachStr1 = [NSAttributedString attributedStringWithAttachment:attachment1];
+    [attributeString insertAttributedString:attachStr1 atIndex:1];
+    
+    //插入图片2
+    UIImage * image2 = [UIImage imageNamed:@"fengye.png"];
+    NSTextAttachment * attachment2 = [[NSTextAttachment alloc] init];
+    attachment2.bounds = CGRectMake(0, 0, 30, 30);
+    attachment2.image = image2;
+    NSAttributedString * attachStr2 = [NSAttributedString attributedStringWithAttachment:attachment2];
+    [attributeString insertAttributedString:attachStr2 atIndex:5];
+    
+    label.attributedText = [attributeString copy];
+    
+    //    TextView 通过如下可以设置环绕图片的文字
+    //    UIBezierPath * path = [UIBezierPath bezierPathWithRect:rect];
+    //    textView.textContainer.exclusionPaths = @[path];
+
+![image](/myimg/ios/textkit1.png)
+
+```
+ NSAttributedString属性key的说明
+ NSFontAttributeName                设置字体属性，默认值：字体：Helvetica(Neue) 字号：12
+ NSForegroundColorAttributeName     设置字体颜色，取值为 UIColor对象，默认值为黑色
+ NSBackgroundColorAttributeName     设置字体所在区域背景颜色，取值为 UIColor对象，默认值为nil, 透明色
+ NSLigatureAttributeName            设置连体属性，取值为NSNumber 对象(整数)，0 表示没有连体字符，1 表示使用默认的连体字符
+ NSKernAttributeName                设定字符间距，取值为 NSNumber 对象（整数），正值间距加宽，负值间距变窄
+ NSStrikethroughStyleAttributeName  设置删除线，取值为 NSNumber 对象（整数）
+ NSStrikethroughColorAttributeName  设置删除线颜色，取值为 UIColor 对象，默认值为黑色
+ NSUnderlineStyleAttributeName      设置下划线，取值为 NSNumber 对象（整数），枚举常量 NSUnderlineStyle中的值，与删除线类似
+ NSUnderlineColorAttributeName      设置下划线颜色，取值为 UIColor 对象，默认值为黑色
+ NSStrokeWidthAttributeName         设置笔画宽度，取值为 NSNumber 对象（整数），负值填充效果，正值中空效果
+ NSStrokeColorAttributeName         填充部分颜色，不是字体颜色，取值为 UIColor 对象
+ NSShadowAttributeName              设置阴影属性，取值为 NSShadow 对象
+ NSTextEffectAttributeName          设置文本特殊效果，取值为 NSString 对象，目前只有图版印刷效果可用：
+ NSBaselineOffsetAttributeName      设置基线偏移值，取值为 NSNumber （float）,正值上偏，负值下偏
+ NSObliquenessAttributeName         设置字形倾斜度，取值为 NSNumber （float）,正值右倾，负值左倾
+ NSExpansionAttributeName           设置文本横向拉伸属性，取值为 NSNumber （float）,正值横向拉伸文本，负值横向压缩文本
+ NSWritingDirectionAttributeName    设置文字书写方向，从左向右书写或者从右向左书写
+ NSVerticalGlyphFormAttributeName   设置文字排版方向，取值为 NSNumber 对象(整数)，0 表示横排文本，1 表示竖排文本
+ NSLinkAttributeName                设置链接属性，点击后调用浏览器打开指定URL地址
+ NSAttachmentAttributeName          设置文本附件,取值为NSTextAttachment对象,常用于文字图片混排
+ NSParagraphStyleAttributeName      设置文本段落排版格式，取值为 NSParagraphStyle 对象
+ ```
+
+
+
+

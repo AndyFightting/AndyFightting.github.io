@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Octopress+Github搭建个人博客"
+title: "Octopress搭建个人博客"
 date: 2015-11-14 11:21:39 +0800
 comments: true
 categories: other
