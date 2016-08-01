@@ -1,0 +1,395 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>iOS中的Runloop与Runtime - 阿贵</title>
+  <meta name="author" content="guimingsu">
+
+  
+  <meta name="description" content="iOS中的Runloop与Runtime Aug 1st, 2016 10:20 am Runloop Runloop与线程息息相关，它是线程的基础架构部分，每个线程都有自己的runloop对象，可以用[NSRunLoop currentRunLoop]来得到它。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://andyfightting.github.io/blog/2016/08/01/runtime/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="阿贵" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">  -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+
+<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">阿贵</a></h1>
+  
+    <h2>Stay Hungry, Stay Foolish</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="andyfightting.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li> 
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">iOS中的Runloop与Runtime</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-01T10:20:14+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>10:20 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html">Runloop</a></h3>
+
+<p>Runloop与线程息息相关，它是线程的基础架构部分，每个线程都有自己的runloop对象，可以用[NSRunLoop currentRunLoop]来得到它。主线程中的runloop是启动运行状态，而自己创建的线程中的runloop默认是没有启动的，需要的话要手动去启动。Runloop是一个事件处理循环，用来不停的监听输入事件或者定时事件，并将其分配到对应的目标上进行处理。它可以使线程在有工作的时候工作，没有工作的时候休眠。</p>
+
+<p>Runloop同时也负责autorelease pool的创建和释放，每当一个运行循环结束的时候，它都会释放autorelease pool，同时pool中的所有自动释放类型变量都会被释放掉。NSRunloop不是线程安全的，而CFRunLoopRef是线程安全的。RunLoop要指定在特定Mode下Run：</p>
+
+<p>*NSDefaultRunLoopMode：处理大多数的操作，一般情况下用这个。</p>
+
+<p>*NSRunLoopCommonModes：For Cocoa applications, this set includes the default, modal, and event tracking modes by default. Core Foundation includes just the default mode initially.</p>
+
+<p><img src="/myimg/ios/runloop.png" alt="image" /></p>
+
+<h3><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html">Runtime</a></h3>
+
+<p>Runtime是个很重要的概念，iOS之所以是动态语言就是因为它。它的核心是一个用C和编译语言写的Runtime库。它是Objective-C面向对象和动态机制的基石。静态语言是在编译的时候就已经绑定好了某个方法名会执行哪段函数地址。而动态语言不是在编译的时候就已经绑定好了，它是在具体要执行的某个方法的时候，才根据方法名去寻找具体执行的方法地址，所以可以在这时候动态的改变它的绑定。可以在<a href="https://opensource.apple.com/tarballs/objc4/">这里</a>下载源码查看。</p>
+
+<p>&ldquo;计算机界，只要再加一层中间层，就没有解决不了的问题。如果有，那再加一层，直到它解决。"这句话不知道是在哪里看到的了&hellip;不过说的挺有道理的。而Runtime库正是Objective-C之所以为动态语言的中间层！</p>
+
+<p>在Objective-C中，类、对象和方法都是一个C的结构体，从objc/objc.h头文件中，我们可以找到他们的定义：</p>
+
+<pre><code>//---NSObject-----
+@interface NSObject &lt;NSObject&gt; {
+     Class isa 
+}
+
+//---Class-----
+typedef struct objc_class *Class;
+
+//---objc_class-----
+struct objc_class {
+    Class isa 
+    Class super_class                                        
+    const char *name                                         
+    long version                                             
+    long info                                                
+    long instance_size //对象大小                                      
+    struct objc_ivar_list *ivars //属性列表                             
+    struct objc_method_list **methodLists //方法列表                   
+    struct objc_cache *cache  //方法映射缓存                               
+    struct objc_protocol_list *protocols   //代理列表                   
+};
+
+//---objc_method----
+struct objc_method {  
+    SEL method_name //方法名
+    char *method_types //a string representing argument/return types
+    IMP method_imp  //方法地址
+};
+</code></pre>
+
+<p>Objective-C的函数调用在编译的时候会被翻译为 -objc_msgSend(执行的对象，方法名，参数&hellip;),先通过isa指针找到它的Class,然后在method list里找方法，没有的话就上superClass中找，一旦找到，就去执行，然后把方法名和对应的方法地址映射保存在objc_cache中，下次就直接从这缓存中取。如果都没找到，会在程序报unrecognized selector sent to&hellip;错误之前还有机会补救，就是动态的给它指定一个执行方法！</p>
+
+<p>首先，Objective-C运行时会调用+resolveInstanceMethod:或者+resolveClassMethod:，让你有机会提供一个函数实现。如果你添加了函数并返回YES，那运行时系统就会重新启动一次消息发送的过程。下面用当我调用test方法的时候，没有test的实现方法，但把它动态绑定给了newTest方法去执行！</p>
+
+<pre><code>- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self performSelector:@selector(test) withObject:nil afterDelay:0];
+}
+
+void newTest(){
+    NSLog(@"success !!");
+}
+
++ (BOOL)resolveInstanceMethod:(SEL)aSEL{
+    if(aSEL == @selector(test)){
+        class_addMethod([self class], aSEL, (IMP)newTest, nil);
+        return YES;
+    }
+    return [super resolveInstanceMethod:aSEL];
+}
+</code></pre>
+
+<p>如果resolveInstanceMethod：方法返回NO话，就会转到-forwardingTargetForSelector:方法中去执行,让这个方法在其他对象中去执行！如下面把test方法传递给 viewController2 对象去执行，在 viewController2 对象中实现的 test 方法就会被调用！！</p>
+
+<pre><code>+ (BOOL)resolveInstanceMethod:(SEL)aSEL{
+    return NO;
+}
+
+- (id)forwardingTargetForSelector:(SEL)aSelector{
+    if(aSelector == @selector(test)){
+        return viewController2;//传递给viewController2对象去执行 test方法
+    }
+    return [super forwardingTargetForSelector:aSelector];
+}
+</code></pre>
+
+<p>如果forwardingTargetForSelector：方法返回nil或者self的时候，就会进入- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector:方法中去执行，如果这方法返回了一个NSMethodSignature对象，这会进入-forwardInvocation:方法中，把消息传给对应的对象去执行！如下将会在viewController2中执行test方法！！</p>
+
+<pre><code>+ (BOOL)resolveInstanceMethod:(SEL)aSEL{
+    return NO;
+}
+
+- (id)forwardingTargetForSelector:(SEL)aSelector{
+    return self;
+}
+
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector{
+    NSMethodSignature* signature = [super methodSignatureForSelector:aSelector];
+    if (signature==nil) {
+        signature = [viewController2 methodSignatureForSelector:aSelector];
+    }
+    return signature;
+}
+
+- (void)forwardInvocation:(NSInvocation *)invocation{
+    SEL sel = invocation.selector;
+    if([viewController2 respondsToSelector:sel]) {
+        [invocation invokeWithTarget:viewController2];
+    }else {
+        [self doesNotRecognizeSelector:sel];
+    }
+}
+</code></pre>
+
+<p>如果这三个过程先来都没绑定具体的执行方法，则会进入- (void)doesNotRecognizeSelector:(SEL)aSelector方法，然后程序奔溃!!</p>
+
+<p>下面是Method Swizzling,我觉得叫Method Exchange更好&hellip;就是交换方法的具体指向嘛&hellip;下面的例子中，当调用test1方法的时候，具体执行是跑到test2方法中的！！</p>
+
+<pre><code>@implementation ViewController
++ (void)load {
+static dispatch_once_t onceToken;
+dispatch_once(&amp;onceToken, ^{
+    Class class = [self class];
+
+    SEL originalSelector = @selector(test1);
+    SEL swizzledSelector = @selector(test2);
+
+    Method originalMethod = class_getInstanceMethod(class, originalSelector);
+    Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
+
+    BOOL didAddMethod =
+    class_addMethod(class,
+                    originalSelector,
+                    method_getImplementation(swizzledMethod),
+                    method_getTypeEncoding(swizzledMethod));
+
+    if (didAddMethod) {
+        class_replaceMethod(class,
+                            swizzledSelector,
+                            method_getImplementation(originalMethod),
+                            method_getTypeEncoding(originalMethod));
+    } else {
+        method_exchangeImplementations(originalMethod, swizzledMethod);
+    }
+});
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self test1];
+}
+-(void)test1{
+    NSLog(@"开始1");
+}
+-(void)test2{
+    NSLog(@"开始2");
+}
+</code></pre>
+
+<p>Swizzling应该总是在+load中执行,在Objective-C中，运行时会自动调用每个类的两个方法。+load会在类初始加载时调用，+initialize会在第一次调用类的类方法或实例方法之前被调用。这两个方法是可选的，且只有在实现了它们时才会被调用。由于method swizzling会影响到类的全局状态，因此要尽量避免在并发处理中出现竞争的情况。+load能保证在类的初始化过程中被加载，并保证这种改变应用级别的行为的一致性。相比之下，+initialize在其执行时不提供这种保证—事实上，如果在应用中没为给这个类发送消息，则它可能永远不会被调用。</p>
+
+<p>Swizzling应该总是在dispatch_once中执行, 因为swizzling会改变全局状态，所以我们需要在运行时采取一些预防措施。原子性就是这样一种措施，它确保代码只被执行一次，不管有多少个线程。GCD的dispatch_once可以确保这种行为，我们应该将其作为method swizzling的最佳实践。</p>
+</div>
+
+
+      | <a href="#comments">Comments</a>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">guimingsu</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-08-01T10:20:14+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>10:20 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  <!-- JiaThis Button -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/06/22/hanyu/" title="Previous Post: 韩语">&laquo; 韩语</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-title="Octopress博客的个性化配置"></div>
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"tianweili"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+<!-- Duoshuo Comment END --></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/08/01/runtime/">iOS中的Runloop与Runtime</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/22/hanyu/">韩语</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/27/japanese/">日语</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/31/huang-shan/">黄山之旅</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/26/core-text/">iOS中的CoreText</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/android/'>android (3)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (4)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (6)</a></li>
+
+  </ul>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - guimingsu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

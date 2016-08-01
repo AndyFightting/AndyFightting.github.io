@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://andyfightting.github.io/blog/2016/08/01/runtime/</loc>
+    <lastmod>2016-08-01T10:20:14+08:00</lastmod>
+  </url>
+  <url>
     <loc>http://andyfightting.github.io/blog/2016/06/22/hanyu/</loc>
     <lastmod>2016-06-22T18:46:52+08:00</lastmod>
   </url>
