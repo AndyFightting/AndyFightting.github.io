@@ -105,7 +105,28 @@
 
 <p>*NSRunLoopCommonModes：For Cocoa applications, this set includes the default, modal, and event tracking modes by default. Core Foundation includes just the default mode initially.</p>
 
-<p><img src="/myimg/ios/runloop.png" alt="image" /><!--more--></p>
+<p>而且通过scheduleInRunLoop的方式启动的请求，虽然是在主线程中执行！但也会有异步的效果！SDWebImageDownloader 中的 NSURLConnection 就是这样启动请求的！！</p>
+
+<pre><code>- (void)start{
+    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:15];
+    self.connection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
+    [connection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+    [connection start];
+    if (connection){
+        self.imageData = [NSMutableData data];
+    }else{
+        if ([delegate respondsToSelector:@selector(imageDownloader:didFailWithError:)]){
+            [delegate performSelector:@selector(imageDownloader:didFailWithError:) withObject:self withObject:nil];
+        }
+    }
+}
+</code></pre>
+
+<p>NSURLConnection在代理方法中打印出的线程：
+<img src="/myimg/ios/sdrunloop.png" alt="iamge" /></p>
+
+<p>runloop监听用户输入事件和定时事件
+<img src="/myimg/ios/runloop.png" alt="image" /><!--more--></p>
 
 <h3><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html">Runtime</a></h3>
 
@@ -209,7 +230,7 @@ void newTest(){
 }
 </code></pre>
 
-<p>如果这三个过程先来都没绑定具体的执行方法，则会进入- (void)doesNotRecognizeSelector:(SEL)aSelector方法，然后程序奔溃!!</p>
+<p>如果这三个过程下来都没绑定具体的执行方法，则会进入- (void)doesNotRecognizeSelector:(SEL)aSelector方法，然后程序奔溃!!</p>
 
 <p>Method Swizzling,下面的例子中，当调用test1方法的时候，具体执行是跑到test2方法中的！！</p>
 

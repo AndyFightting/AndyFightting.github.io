@@ -108,7 +108,28 @@
 
 <p>*NSRunLoopCommonModes：For Cocoa applications, this set includes the default, modal, and event tracking modes by default. Core Foundation includes just the default mode initially.</p>
 
-<p><img src="/myimg/ios/runloop.png" alt="image" /></div>
+<p>而且通过scheduleInRunLoop的方式启动的请求，虽然是在主线程中执行！但也会有异步的效果！SDWebImageDownloader 中的 NSURLConnection 就是这样启动请求的！！</p>
+
+<pre><code>- (void)start{
+    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:15];
+    self.connection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
+    [connection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+    [connection start];
+    if (connection){
+        self.imageData = [NSMutableData data];
+    }else{
+        if ([delegate respondsToSelector:@selector(imageDownloader:didFailWithError:)]){
+            [delegate performSelector:@selector(imageDownloader:didFailWithError:) withObject:self withObject:nil];
+        }
+    }
+}
+</code></pre>
+
+<p>NSURLConnection在代理方法中打印出的线程：
+<img src="/myimg/ios/sdrunloop.png" alt="iamge" /></p>
+
+<p>runloop监听用户输入事件和定时事件
+<img src="/myimg/ios/runloop.png" alt="image" /></div>
   
   
     <footer>
