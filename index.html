@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Runloop Runloop与线程息息相关，它是线程的基础架构部分，每个线程都有自己的runloop对象，可以用[NSRunLoop currentRunLoop]来得到它。主线程中的runloop是启动运行状态，而自己创建的线程中的runloop默认是没有启动的，需要的话要手动去启动。 &hellip;">
+  <meta name="description" content="热修复就是项目上线后发现严重bug, 然后通过下载JS代码的方式来修改bug。那就需要有JS代码转成iOS代码的这么一个库！JSPatch就是这么一个转化库！ 在JSPatch平台注册得到key,然后下载SDK导入项目，再添加依赖库JavaScriptCore.framework和libz. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/03/hotfix/">iOS热修复</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-03T14:28:58+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2016</span></span> <span class='time'>2:28 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>热修复就是项目上线后发现严重bug, 然后通过下载JS代码的方式来修改bug。那就需要有JS代码转成iOS代码的这么一个库！<a href="https://github.com/bang590/JSPatch">JSPatch</a>就是这么一个转化库！</p>
+
+<p>在<a href="http://jspatch.com/">JSPatch平台</a>注册得到key,然后下载SDK导入项目，再添加依赖库JavaScriptCore.framework和libz.dylib。</p>
+
+<p>本来应该把JS脚本放服务器上的，这里测试就直接放本地了。新建一个main.js的文件，里面添加代码：</p>
+
+<pre><code>var alertView = require('UIAlertView').alloc().init();
+alertView.setTitle('JSPatch Test');
+alertView.setMessage('JS 文件被加载啦！');
+alertView.addButtonWithTitle('确定');
+alertView.show();
+</code></pre>
+
+<p>然后调用[JSPatch testScriptInBundle]方法，就可以执行main.js文件里的代码了！</p>
+
+<p><img src="/myimg/ios/jspatch.png" alt="image" /></p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/08/03/hotfix/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -486,45 +533,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/22/studioplugin/">Android Studio插件</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-22T14:10:45+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>2:10 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>* Logger</h3>
-
-<p>推荐一款打印工具<a href="https://github.com/orhanobut/logger">Logger</a>,比自带的打印效果更好，主要是json打印是格式化的！Github上写的地址<code>compile 'com.github.orhanobut:logger:1.12'</code>我下载失败，我用的是<code>compile 'com.orhanobut:logger:1.11'</code>。
-<img src="/myimg/android/logger.png" alt="img" />
-打印颜色可以在preference里设置，要先<code>Save as</code>保存一下，然后把右边的<code>Use inherited attributes</code>取消，然后就可以选择颜色了</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/11/22/studioplugin/">阅读全文</a>
-    </footer>
-  
-
-
-      | <a href="/blog/2015/11/22/studioplugin/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -538,6 +546,10 @@
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/08/03/hotfix/">iOS热修复</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/08/01/runtime/">iOS中的Runloop与Runtime</a>
@@ -555,10 +567,6 @@
         <a href="/blog/2015/12/31/huang-shan/">黄山之旅</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2015/12/26/core-text/">iOS中的CoreText</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -569,7 +577,7 @@
   <h1>Categories</h1>
   <ul id="categories">
     <li class='category'><a href='/blog/categories/android/'>android (3)</a></li>
-<li class='category'><a href='/blog/categories/ios/'>ios (4)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (5)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (6)</a></li>
 
   </ul>

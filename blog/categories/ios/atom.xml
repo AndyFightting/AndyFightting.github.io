@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-08-02T09:00:17+08:00</updated>
+  <updated>2016-08-03T15:38:06+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,30 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[iOS热修复]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/08/03/hotfix/"/>
+    <updated>2016-08-03T14:28:58+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/08/03/hotfix</id>
+    <content type="html"><![CDATA[<p>热修复就是项目上线后发现严重bug, 然后通过下载JS代码的方式来修改bug。那就需要有JS代码转成iOS代码的这么一个库！<a href="https://github.com/bang590/JSPatch">JSPatch</a>就是这么一个转化库！</p>
+
+<p>在<a href="http://jspatch.com/">JSPatch平台</a>注册得到key,然后下载SDK导入项目，再添加依赖库JavaScriptCore.framework和libz.dylib。</p>
+
+<p>本来应该把JS脚本放服务器上的，这里测试就直接放本地了。新建一个main.js的文件，里面添加代码：</p>
+
+<pre><code>var alertView = require('UIAlertView').alloc().init();
+alertView.setTitle('JSPatch Test');
+alertView.setMessage('JS 文件被加载啦！');
+alertView.addButtonWithTitle('确定');
+alertView.show();
+</code></pre>
+
+<p>然后调用[JSPatch testScriptInBundle]方法，就可以执行main.js文件里的代码了！</p>
+
+<p><img src="/myimg/ios/jspatch.png" alt="image" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[iOS中的Runloop与Runtime]]></title>
