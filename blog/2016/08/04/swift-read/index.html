@@ -9,7 +9,48 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Swift阅读笔记 Aug 4th, 2016 4:23 pm | Comments Posted by guimingsu Aug 4th, 2016 4:23 pm ios &laquo; iOS中的动画 Comments Recent Posts Swift阅读笔记 iOS中的动画 &hellip;">
+  <meta name="description" content="Swift阅读笔记 Aug 4th, 2016 4:23 pm 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -95,7 +136,101 @@
   </header>
 
 
-<div class="entry-content">
+<div class="entry-content"><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>let 声明常量，var 声明变量，会自动进行类型推断(小数推断为Double),一行末尾可不加分号(;)。
+</span><span class='line'>值永远不会被隐式转换为其他类型，务必显示强制转换。
+</span><span class='line'>if语句的条件不能默认非0为真。 类型后加?号表示可选值，要么有值，要么是nil。
+</span><span class='line'>用 if let(或者var) name = optionName 来获取可选值处理。 
+</span><span class='line'>switch的case中自带break，switch要保证全部遍历，否则必须要有default选项。
+</span><span class='line'>0&lt; x &lt;4 等价 0..&lt;4 , 0&lt; x &lt;=4 等价 0...4 。 
+</span><span class='line'>用 func 声明函数，用-&gt;指定返回类型func greet(name: String, day: String) -&gt; String { ... }。 
+</span><span class='line'>元组概念，一般用做函数返回值。 
+</span><span class='line'>func sumOf(numbers: Int...) -&gt; Int {}，...表示可变个数的参数。 
+</span><span class='line'>函数是一等类型，像int float一样，可用作参数或者返回值。 
+</span><span class='line'>class 声明类,属性都要赋值，要么在声明直接写死，要么在init方法中赋值。 
+</span><span class='line'>重写父类方法必须用 override 标记。 属性可以有get set willGet didSet 等方法。 
+</span><span class='line'>mutating关键字用来标记一个会修改结构体(属性)的方法。 
+</span><span class='line'>extension来为现有的类型添加功能，比如新的方法和计算属性。
+</span><span class='line'>泛型(指定类型)就是java中的泛型。 Bool值是true或false。 
+</span><span class='line'>typealies name = 类型 给类型起个别名。 
+</span><span class='line'>OC中的nil只用在对象上(int不行)，Swift中nil可指任何东西(对象或int)。
+</span><span class='line'>使用!来获取一个不存在的可选值会导致错误。隐式解析可选类型(类型!)就是可选类型，但是可以当做非可选类型来使用(不用!解析,没值时会报错)。 
+</span><span class='line'>throws do try catch 的使用。Swift的赋值操作不返回任何值。% 浮点数也可以取余运算。 
+</span><span class='line'>空合运算符(a ?? b)对可选类型a进行空判断，如果a包含一个值就进行解封，否则就返回一个默认值b(b和a要类型相同)。逻辑 &&，|| 都是短路计算的。
+</span><span class='line'>条件中的下划线 _ 来忽略对值的访问，case 中的下划线 _ 表示所有可能的值,case中可进行值绑定，case条件可用where语句。 
+</span><span class='line'>字典的遍历顺序和插入顺序可能不同(字典无序的)。 
+</span><span class='line'>Swift语言的repeat-while循环合其他语言中的do-while循环是类似的。
+</span><span class='line'>注意循环中switch中的continue(开始下次)和break(跳到switch}后面继续执行)的差别，switch中的fallthrouth进入下一个case时不会再进行条件判断。
+</span><span class='line'>guard(守卫)语句总是有一个else分句。 
+</span><span class='line'>调用函数时第一个参数名不要，之后的参数名要，用逗号分开(第一个参数省略其外部参数名，第二个以后的参数使用其本地参数名作为自己的外部参数名。
+</span><span class='line'>所有参数需要有不同的本地参数名，但可以共享相同的外部参数名。如果你提供了外部参数名，那么函数在被调用时，必须使用外部参数名。如果你不想为第二个及后续的参数设置参数名，用下划线_代替)。
+</span><span class='line'>一个函数最多只能有一个可变参数(...),如果函数同时有默认参数和可变参数要把可变参数放最后。 
+</span><span class='line'>函数参数默认是常量，修改会报错，但可以用var声明为变量,修改只在函数体内有效。 
+</span><span class='line'>inout参数(只能传入变量)会替换原来的值，使用时在变量名前加&符号。 
+</span><span class='line'>原数组不会被sort()方法修改。 闭包就是用{}包起来的函数代码块，用in分开返回值和处理代码，参数不能有默认值。如果需要将闭包作为最后一个参数，可变成尾随闭包。
+</span><span class='line'>Array的map方法可返回不同类型。 函数和闭包都是引用类型。
+</span><span class='line'>结构体和枚举是值类型，所有的基本类型都是值类型，并且都是以结构体的形式在后台所实现。
+</span><span class='line'>类是引用类型。常量实例依然可改变其中的变量属性值。
+</span><span class='line'>swift指针并不直接指向内存中的某个地址，而且也不要求你使用星号（*）来表明你在创建一个引用。
+</span><span class='line'>结构体实例总是通过值传递，类实例总是通过引用传递。
+</span><span class='line'>Swift 中字符串（String）,数组（Array）和字典（Dictionary）均以结构体的形式实现的值类型,而在OC中是以类的形式实现的引用类型。
+</span><span class='line'>计算属性可以用于类、结构体和枚举，存储属性只能用于类和结构体。
+</span><span class='line'>如果创建了一个结构体的实例并将其赋值给一个常量，则无法修改该实例的任何属性，即使定义了变量存储属性，由于结构体（struct）属于值类型，当值类型的实例被声明为常量的时候，它的所有属性也就成了常量。
+</span><span class='line'>必须将延迟存储属性声明成变量（使用var关键字），因为属性的初始值可能在实例构造完成之后才会得到。
+</span><span class='line'>而常量属性在构造过程完成之前必须要有初始值，因此无法声明成延迟属性。
+</span><span class='line'>计算属性不直接存储值，而是提供一个 get和一个可选的set，来间接获取和设置其他属性或变量的值。
+</span><span class='line'>必须使用var关键字定义计算属性，包括只读计算属性，因为它们的值不是固定的。
+</span><span class='line'>父类的属性在子类的构造器中被赋值时，它在父类中的willSet和didSet观察器会被调用。
+</span><span class='line'>全局的常量或变量都是延迟计算的，跟延迟存储属性相似，不同的地方在于，全局的常量或变量不需要标记lazy特性。局部范围的常量或变量不会延迟计算。
+</span><span class='line'>必须给存储类型的类属性指定默认值，因为类型本身无法在初始化过程中使用构造器给类型属性赋值。
+</span><span class='line'>结构体和枚举能够定义方法是 Swift 与 C/Objective-C 的主要区别之一。</span></code></pre></td></tr></table></div></figure>
+
 </div>
 
 
