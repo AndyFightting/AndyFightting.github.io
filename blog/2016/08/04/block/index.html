@@ -112,9 +112,9 @@
 
 <p>block中的isa指向的是该block的Class,主要有三种类型：</p>
 
-<pre><code>NSConcreteStackBlock     栈上创建的block
-NSConcreteMallocBlock    堆上创建的block
-NSConcreteGlobalBlock    作为全局变量的block
+<pre><code>_NSConcreteGlobalBlock 全局的静态 block，不会访问任何外部变量。
+_NSConcreteStackBlock 保存在栈中的 block，当函数返回时会被销毁。
+_NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被销毁。
 </code></pre>
 
 <p>当block第一次被创建时，它是存在于该函数的栈上的，其Class是固定的NSConcreteStackBlock。其捕获的变量是会赋值到结构体的成员上，所以当block初始化完成后，捕获到的变量不能更改。当函数返回时，函数的栈被销毁，这个block的内存也会被清除。所以在函数结束后仍然需要这个block时，就必须用Block_copy()方法将它拷贝到堆上，类型变为NSConcreteMallocBlock，向它发送retain，增加block的引用计数。</p>
@@ -266,23 +266,23 @@ NSConcreteGlobalBlock    作为全局变量的block
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2016/08/04/offer/">剑指offer</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/08/04/suan-fa/">算法</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/08/04/ios-note/">iOS知识点集</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2016/08/04/swift-read/">Swift阅读笔记</a>
       </li>
     
       <li class="post">
         <a href="/blog/2016/08/04/animation/">iOS中的动画</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/08/04/core-data/">iOS中的Core Data</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/08/04/session/">iOS中的NSURLSession</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/08/04/block/">iOS中的block</a>
       </li>
     
   </ul>
@@ -295,8 +295,8 @@ NSConcreteGlobalBlock    作为全局变量的block
   <h1>Categories</h1>
   <ul id="categories">
     <li class='category'><a href='/blog/categories/android/'>android (3)</a></li>
-<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (9)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (3)</a></li>
 
   </ul>
 </section>

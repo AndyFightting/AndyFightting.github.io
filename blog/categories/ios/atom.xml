@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-08-04T19:49:49+08:00</updated>
+  <updated>2016-08-05T18:00:40+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,15 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[iOS知识点集]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/08/04/ios-note/"/>
-    <updated>2016-08-04T16:32:27+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/08/04/ios-note</id>
-    <content type="html"><![CDATA[
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[Swift阅读笔记]]></title>
@@ -36,7 +27,74 @@
     <link href="http://andyfightting.github.io/blog/2016/08/04/animation/"/>
     <updated>2016-08-04T16:22:41+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/08/04/animation</id>
-    <content type="html"><![CDATA[
+    <content type="html"><![CDATA[<p>动画是作用的UIView的CALayer上的，UIView是CALayer的代理，给CALayer提供数据参数，CALayer负责渲染和动画。UIView是在UIKit框架中，而CALayer是在QuartzCore框架中。UIView可以响应用户事件，而CALayer不可以响应用户事件。CALayer也可以像UIView一样添加子Layer。
+<img src="/myimg/ios/calayer.png" alt="image" /></p>
+
+<h4>CALayer常用属性</h4>
+
+<pre><code>anchorPoint 和中心点position重合的一个点，称为“锚点”，锚点的描述是相对于x、y位置比例而言的默认在图像中心点(0.5,0.5)的位置
+backgroundColor 图层背景颜色  
+borderColor 边框颜色    
+borderWidth 边框宽度    
+bounds  图层大小    
+contents    图层显示内容，例如可以将图片作为图层内容显示
+contentsRect    图层显示内容的大小和位置    
+cornerRadius    圆角半径    
+doubleSided 图层背面是否显示，默认为YES 
+frame   图层大小和位置，不支持隐式动画，所以CALayer中很少使用frame，通常使用bounds和position代替
+hidden  是否隐藏    
+mask    图层蒙版    
+maskToBounds    子图层是否剪切图层边界，默认为NO 
+opacity 透明度 ，类似于UIView的alpha    
+position    图层中心点位置，类似于UIView的center
+shadowColor 阴影颜色    
+shadowOffset    阴影偏移量 
+shadowOpacity   阴影透明度，注意默认为0，如果设置阴影必须设置此属性
+shadowPath  阴影的形状 
+shadowRadius    阴影模糊半径  
+sublayers   子图层   
+sublayerTransform   子图层形变 
+transform   图层形变
+</code></pre>
+
+<p>要注意position和anchorPoint的区别：<strong>position是layer中的anchorPoint点在superLayer中的位置坐标！position点是相对suerLayer的，anchorPoint点是相对自身layer的！</strong> 所以说position不变，但anchorPoint改变的话，也会改变layer在superLayer中的位置！</p>
+
+<pre><code>layer=[[CALayer alloc]init];
+layer.backgroundColor=[UIColor purpleColor].CGColor;
+layer.bounds=CGRectMake(0, 0, 100,100);
+layer.shadowColor=[UIColor redColor].CGColor;
+layer.shadowOffset=CGSizeMake(5, 5);
+layer.shadowOpacity=0.7;
+layer.borderColor=[UIColor yellowColor].CGColor;
+layer.borderWidth=3;
+layer.position=CGPointMake(size.width/2, size.height/2);
+[self.view.layer addSublayer:layer];
+
+//layer.anchorPoint=CGPointMake(0, 0); //图一
+//layer.anchorPoint=CGPointMake(0, 1); //图二
+</code></pre>
+
+<p>图中position一样，但anchorPoint不一样，所以图片位置也不一样。  <br/>
+<img src="/myimg/ios/layer_position.png" alt="image" />
+注意如果要设置圆角，对于图层本身而言可以正常显示，但是对于图层中绘制的图片无法正确显示。如果想要图片正确显示则必须设置masksToBounds=YES，剪切子图层。但设置layer.masksToBounds=YES后，图层的影效果无法和masksToBounds=YES同时使用，因为masksToBounds的目的就是剪切外边框。如果同时要阴影又要圆角的话，就用两个重叠的图层,底部负责绘制阴影，上层负责绘制圆角。</p>
+
+<h4>Core Animation</h4>
+
+<p>iOS的核心动画Core Animation包含在Quartz Core框架中。核心动画分为几类：基础动画、关键帧动画、动画组、转场动画,各个类的关系大致如下：
+<img src="/myimg/ios/core_animation.png" alt="image" />
+*CAAnimation：核心动画的基础类，不能直接使用，负责动画运行时间、速度的控制，本身实现了CAMediaTiming协议。</p>
+
+<p>*CAPropertyAnimation：属性动画的基类，通过属性进行动画设置，不能直接使用。</p>
+
+<p>*CAAnimationGroup：动画组合模式，可以通过动画组来进行所有动画行为的统一控制，组中所有动画效果可以并发执行。</p>
+
+<p>*CATransition：转场动画，主要通过滤镜进行动画效果设置。</p>
+
+<p>*CABasicAnimation：基础动画，通过属性修改进行动画参数控制，只有初始状态和结束状态。</p>
+
+<p>*CAKeyframeAnimation：关键帧动画，同样是通过属性进行动画参数控制，但是同基础动画不同的是它可以有多个状态控制。</p>
+
+<p>基础动画、关键帧动画都属于属性动画，就是通过修改属性值产生动画效果，只需要设置初始值和结束值，中间的过程动画由系统自动计算产生。和基础动画不同的是关键帧动画可以设置多个属性值，每两个属性中间的过渡动画由系统自动完成。</p>
 ]]></content>
   </entry>
   
@@ -55,6 +113,107 @@
     <updated>2016-08-04T16:22:02+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/08/04/session</id>
     <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iOS中的block]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/08/04/block/"/>
+    <updated>2016-08-04T16:21:41+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/08/04/block</id>
+    <content type="html"><![CDATA[<p>block就是一个代码块，闭包，会捕获上下文的匿名函数，它可以作为参数或者返回值进行传递。在objc中，根据对象的定义，凡是首地址是*isa的结构体指针，都可以认为是对象(id)，所以block实际上就算是对象，但它的内存管理又和NSObject有点不一样。</p>
+
+<h4>声明:</h4>
+
+<pre><code>*变量：returnType (^blockName)(parameterTypes) = ^returnType(parameters) {...};
+
+*属性：@property (nonatomic, copy) returnType (^blockName)(parameterTypes);
+
+*方法：-(void)someMethod:(returnType (^nullability)(parameterTypes))blockName;
+
+*回调：[object  method:^returnType (parameters) {...}];
+
+*定义：typedef returnType (^TypeName)(parameterTypes); --&gt; TypeName blockName = ^returnType(parameters) {...};
+</code></pre>
+
+<p>block中的isa指向的是该block的Class,主要有三种类型：</p>
+
+<pre><code>_NSConcreteGlobalBlock 全局的静态 block，不会访问任何外部变量。
+_NSConcreteStackBlock 保存在栈中的 block，当函数返回时会被销毁。
+_NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被销毁。
+</code></pre>
+
+<p>当block第一次被创建时，它是存在于该函数的栈上的，其Class是固定的NSConcreteStackBlock。其捕获的变量是会赋值到结构体的成员上，所以当block初始化完成后，捕获到的变量不能更改。当函数返回时，函数的栈被销毁，这个block的内存也会被清除。所以在函数结束后仍然需要这个block时，就必须用Block_copy()方法将它拷贝到堆上，类型变为NSConcreteMallocBlock，向它发送retain，增加block的引用计数。</p>
+
+<p>默认block捕获到的局部变量，都是赋值给block的结构体的，相当于const不可改。为了让block能访问并修改外面的局部变量，需要加上__block修饰词。</p>
+
+<pre><code>void test(){
+ __block int i = 3;
+  void(^myBlock)(void) = ^{
+     i = 5;//局部变量没有__block修饰的话不可修改
+  };
+ myBlock();
+}
+</code></pre>
+
+<h4>捕获规则：</h4>
+
+<pre><code>1.静态存储区的变量,例如全局变量、方法中的static变量:
+  引用，可修改。
+
+2.block接受的参数传值:
+  可修改，和一般函数的参数相同。
+
+3.栈变量(局部变量):
+  常量，不可修改，block会对id类型的变量产生强引用。
+
+4.栈变量(有__block前缀的局部变量):
+  引用，可以修改。如果是id类型则不会被block retain、如果该类型是C类型变量，该值会被挪动到堆中。
+</code></pre>
+
+<p>在ARC中，block被赋值传递的时候会自动拷贝到堆上，堆上的对象就有可能被释放掉，所以要用copy强引用着,以免野指针crash。</p>
+
+<h4>循环引用:</h4>
+
+<p>当block被copy到堆之后，该block对它捕获的对象产生强引用，所以有时需要避免block copy后产生的循环引用。</p>
+
+<p>如self引用了block，block又捕获了self，这样就会有循环引用,因此，需要用weak来声明self。</p>
+
+<pre><code>- (void)test {
+    ViewController * __weak weakSelf = self;
+    self.block = ^{
+        [weakSelf doSomething]; //用弱引用,打破循环引用
+    }
+}
+</code></pre>
+
+<p>如果捕获到的是对象的成员变量对象，也会间接造成对self的循环引用，同样也要避免。</p>
+
+<pre><code>- (void)test {
+    id tempPropertyObj = _propertyObj; //用临时变量,避免了循环引用
+    self.block = ^{
+        [tempPropertyObj doSomething];
+    }
+}
+</code></pre>
+
+<h4>问题</h4>
+
+<pre><code>[UIView animateWithDuration:0.5 animations:^{
+        [self doSomething];
+    }];
+</code></pre>
+
+<p>上面例子并不会造成循环引用，因为block强引用了self,而self并没有强引用block。如果像下面就会循环引用：self &ndash;> _observer &ndash;> block &ndash;> self 这也是一个循环引用。</p>
+
+<pre><code>//_observer 是self的实例变量
+    _observer = [[NSNotificationCenter defaultCenter] addObserverForName:@"test"
+                                                                  object:nil
+                                                                   queue:[NSOperationQueue mainQueue]
+                                                              usingBlock:^(NSNotification * _Nonnull note) {
+                                                                  [self doSomething];
+                                                              }];
+</code></pre>
 ]]></content>
   </entry>
   

@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://andyfightting.github.io/blog/2016/08/04/offer/</loc>
-    <lastmod>2016-08-04T16:40:01+08:00</lastmod>
-  </url>
-  <url>
-    <loc>http://andyfightting.github.io/blog/2016/08/04/suan-fa/</loc>
-    <lastmod>2016-08-04T16:39:37+08:00</lastmod>
-  </url>
-  <url>
-    <loc>http://andyfightting.github.io/blog/2016/08/04/ios-note/</loc>
-    <lastmod>2016-08-04T16:32:27+08:00</lastmod>
-  </url>
-  <url>
     <loc>http://andyfightting.github.io/blog/2016/08/04/swift-read/</loc>
     <lastmod>2016-08-04T16:23:05+08:00</lastmod>
   </url>
