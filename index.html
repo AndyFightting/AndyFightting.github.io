@@ -370,7 +370,34 @@ layer.position=CGPointMake(size.width/2, size.height/2);
   </header>
 
 
-  <div class="entry-content">
+  <div class="entry-content"><p><a href="https://developer.apple.com/library/watchos/documentation/Cocoa/Conceptual/CoreData/index.html">Core Data</a>是一个对sqlite数据库进行封装的ORM(Object Relation Mapping)框架。它主要由以下几部分组成：</p>
+
+<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObject_Class/">NSManagedObject</a></h4>
+
+<p>NSManagedObject is a generic class that implements all the basic behavior required of a Core Data model object. It is not possible to use instances of direct subclasses of NSObject (or any other class not inheriting from NSManagedObject) with a managed object context. You may create custom subclasses of NSManagedObject, although this is not always required. If no custom logic is needed, a complete object graph can be formed with NSManagedObject instances.</p>
+
+<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObjectModel_Class/">NSManagedObjectModel</a></h4>
+
+<p>An NSManagedObjectModel object describes a schema, a collection of entities (data models) that you use in your application.</p>
+
+<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObjectContext_Class/">NSManagedObjectContext</a></h4>
+
+<p>An instance of NSManagedObjectContext represents a single “object space” or scratch pad in an application. Its primary responsibility is to manage a collection of managed objects. These objects form a group of related model objects that represent an internally consistent view of one or more persistent stores. A single managed object instance exists in one and only one context, but multiple copies of an object can exist in different contexts. Thus object uniquing is scoped to a particular context.</p>
+
+<h4><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSPersistentStoreCoordinator_Class/">NSPersistentStoreCoordinator</a></h4>
+
+<p>Instances of NSPersistentStoreCoordinator associate persistent stores (by type) with a model (or more accurately, a configuration of a model) and serve to mediate between the persistent store or stores and the managed object context or contexts. Instances of NSManagedObjectContext use a coordinator to save object graphs to persistent storage and to retrieve model information. A context without a coordinator is not fully functional as it cannot access a model except through a coordinator. The coordinator is designed to present a façade to the managed object contexts such that a group of persistent stores appears as an aggregate store. A managed object context can then create an object graph based on the union of all the data stores the coordinator covers.</p>
+
+<h4><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSFetchRequest_Class/index.html#//apple_ref/occ/cl/NSFetchRequest">NSFetchRequest</a></h4>
+
+<p>An instance of NSFetchRequest describes search criteria used to retrieve data from a persistent store.</p>
+
+<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSPredicate_Class/">NSPredicate</a></h4>
+
+<p>The NSPredicate class is used to define logical conditions used to constrain a search either for a fetch or for in-memory filtering.</p>
+
+<p><img src="/myimg/ios/cd_orm.png" alt="image" />
+<img src="/myimg/ios/cd_table.png" alt="image" /></p>
 </div>
   
   
