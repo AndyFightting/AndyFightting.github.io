@@ -1,0 +1,370 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Android手势滑动返回 - 阿贵</title>
+  <meta name="author" content="guimingsu">
+
+  
+  <meta name="description" content="Android手势滑动返回 Aug 31st, 2016 3:16 pm 偶然间发现了一个Android自带的抽屉控件DrawerLayout,就觉得应该可以用他来封装成手势返回的基础控件。思路就是先设置Activity的跳转动画是从右到左，并且前一个Activity不能动。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://andyfightting.github.io/blog/2016/08/31/android-swipe/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="阿贵" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">  -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+
+<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">阿贵</a></h1>
+  
+    <h2>Stay Hungry, Stay Foolish</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="andyfightting.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li> 
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Android手势滑动返回</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-31T15:16:10+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>3:16 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>偶然间发现了一个Android自带的抽屉控件DrawerLayout,就觉得应该可以用他来封装成手势返回的基础控件。思路就是先设置Activity的跳转动画是从右到左，并且前一个Activity不能动。然后设置DrawerLayout的menu从右边出来，然设置menu全屏，这个menu就相当于子Activity View的容器，默认打开menu,然后设置DrawerLayout容器透明，当DrawerLayout close的时候finish它所在的Activity就可以啦！！复杂的手势控制就交由自带的DrawerLayout处理啦，生命周期还是Activity的生命周期。怎么样，是不是机智如我！！😆</p>
+
+<pre><code>package com.suguiming.myandroid.base;
+import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+
+import com.suguiming.myandroid.R;
+
+public class BaseSwipeActivity extends AppCompatActivity {
+
+private DrawerLayout drawer;
+private LinearLayout containerLayout;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+    setContentView(R.layout.activity_base_swipe);
+
+    containerLayout = (LinearLayout) findViewById(R.id.container_layout);
+
+    drawer = (DrawerLayout) findViewById(R.id.base_drawer_layout);
+    drawer.openDrawer(GravityCompat.END);
+    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+        @Override
+        public void onDrawerClosed(View drawerView) {
+            super.onDrawerClosed(drawerView);
+            finish();
+        }
+    };
+    drawer.setDrawerListener(toggle);
+}
+
+//子类不要用setContentView,用setMainView!!!!
+public void setMainView(int viewId) {
+    LayoutInflater inflater = LayoutInflater.from(this);
+    View tmpView = inflater.inflate(viewId, null);
+
+    if (tmpView instanceof LinearLayout) {
+        LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(linearLayoutParams);
+    } else if (tmpView instanceof RelativeLayout) {
+        RelativeLayout.LayoutParams relativeLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(relativeLayoutParams);
+    }
+    containerLayout.removeAllViews();
+    containerLayout.addView(tmpView);
+}
+
+}
+</code></pre>
+
+<p>对应的布局文件</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/transparent"
+    tools:context="com.suguiming.myandroid.base.BaseSwipeActivity"&gt;
+
+&lt;android.support.v4.widget.DrawerLayout
+    android:id="@+id/base_drawer_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    tools:openDrawer="end"&gt;
+    &lt;LinearLayout
+        android:orientation="vertical"
+        android:background="@color/clear"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"&gt;
+    &lt;/LinearLayout&gt;
+
+    &lt;!---64dp是源码menu的margin,这里设置为65,不然会有一条黑线--&gt;
+    &lt;LinearLayout
+        android:id="@+id/container_layout"
+        android:orientation="vertical"
+        android:layout_gravity="end"
+        android:layout_marginLeft="-65dp"
+        android:background="@color/light_gray"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"&gt;
+    &lt;/LinearLayout&gt;
+&lt;/android.support.v4.widget.DrawerLayout&gt;
+&lt;/LinearLayout&gt;
+</code></pre>
+
+<p>push 的动画 style</p>
+
+<pre><code>&lt;!--手势返回theme--&gt;
+&lt;style name="BackSwipeTheme" parent="Theme.AppCompat.Light.NoActionBar"&gt;
+    &lt;item name="android:windowIsTranslucent"&gt;true&lt;/item&gt;
+    &lt;item name="android:windowBackground"&gt;@android:color/transparent&lt;/item&gt;
+    &lt;item name="android:windowNoTitle"&gt;true&lt;/item&gt;
+    &lt;item name="android:backgroundDimEnabled"&gt;false&lt;/item&gt;
+    &lt;item name="android:windowAnimationStyle"&gt;@style/ActivitySwipeBackAnimation&lt;/item&gt;
+&lt;/style&gt;
+&lt;style name="ActivitySwipeBackAnimation" parent="@android:style/Animation.Activity"&gt;
+    &lt;item name="android:activityOpenEnterAnimation"&gt;@anim/activity_swipe_in&lt;/item&gt;
+    &lt;item name="android:activityOpenExitAnimation"&gt;@anim/activity_swipe_out&lt;/item&gt;
+    &lt;item name="android:activityCloseEnterAnimation"&gt;@anim/activity_swipe_in&lt;/item&gt;
+    &lt;item name="android:activityCloseExitAnimation"&gt;@anim/activity_swipe_out&lt;/item&gt;
+&lt;/style&gt;
+</code></pre>
+
+<p>使用的话就是让Activity继承BaseSwipeActivity，然后设置Activity的Theme为BackSwipeTheme。</p>
+
+<pre><code>public class ActivitySwipeBack extends BaseSwipeActivity {
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    //要用setMainView，不要用setContentView
+    setMainView(R.layout.activity_activity_swipe_back);
+  }
+}
+
+&lt;activity android:name=".tab0.ActivitySwipeBack"
+            android:theme="@style/BackSwipeTheme"/&gt;
+</code></pre>
+
+<p>完整Demo请查看<a href="https://github.com/AndyFightting/MyAndroid">MyAndroid</a>中的"手势滑动返回"。</p>
+
+<p><img src="/myimg/android/android_swipe.png" alt="imge" /></p>
+</div>
+
+
+      | <a href="#comments">Comments</a>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">guimingsu</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-08-31T15:16:10+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>3:16 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/android/'>android</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  <!-- JiaThis Button -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/08/04/swift-read/" title="Previous Post: Swift阅读笔记">&laquo; Swift阅读笔记</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-title="Octopress博客的个性化配置"></div>
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"tianweili"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+<!-- Duoshuo Comment END --></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/08/31/android-swipe/">Android手势滑动返回</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/08/04/swift-read/">Swift阅读笔记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/08/04/animation/">iOS中的动画</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/08/04/core-data/">iOS中的Core Data</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/08/04/session/">iOS中的NSURLSession</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/android/'>android (4)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (9)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (3)</a></li>
+
+  </ul>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - guimingsu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

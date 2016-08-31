@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-08-13T13:02:09+08:00</updated>
+  <updated>2016-08-31T15:49:43+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,151 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Android手势滑动返回]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/08/31/android-swipe/"/>
+    <updated>2016-08-31T15:16:10+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/08/31/android-swipe</id>
+    <content type="html"><![CDATA[<p>偶然间发现了一个Android自带的抽屉控件DrawerLayout,就觉得应该可以用他来封装成手势返回的基础控件。思路就是先设置Activity的跳转动画是从右到左，并且前一个Activity不能动。然后设置DrawerLayout的menu从右边出来，然设置menu全屏，这个menu就相当于子Activity View的容器，默认打开menu,然后设置DrawerLayout容器透明，当DrawerLayout close的时候finish它所在的Activity就可以啦！！复杂的手势控制就交由自带的DrawerLayout处理啦，生命周期还是Activity的生命周期。怎么样，是不是机智如我！！😆</p>
+
+<pre><code>package com.suguiming.myandroid.base;
+import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+
+import com.suguiming.myandroid.R;
+
+public class BaseSwipeActivity extends AppCompatActivity {
+
+private DrawerLayout drawer;
+private LinearLayout containerLayout;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+    setContentView(R.layout.activity_base_swipe);
+
+    containerLayout = (LinearLayout) findViewById(R.id.container_layout);
+
+    drawer = (DrawerLayout) findViewById(R.id.base_drawer_layout);
+    drawer.openDrawer(GravityCompat.END);
+    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+        @Override
+        public void onDrawerClosed(View drawerView) {
+            super.onDrawerClosed(drawerView);
+            finish();
+        }
+    };
+    drawer.setDrawerListener(toggle);
+}
+
+//子类不要用setContentView,用setMainView!!!!
+public void setMainView(int viewId) {
+    LayoutInflater inflater = LayoutInflater.from(this);
+    View tmpView = inflater.inflate(viewId, null);
+
+    if (tmpView instanceof LinearLayout) {
+        LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(linearLayoutParams);
+    } else if (tmpView instanceof RelativeLayout) {
+        RelativeLayout.LayoutParams relativeLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(relativeLayoutParams);
+    }
+    containerLayout.removeAllViews();
+    containerLayout.addView(tmpView);
+}
+
+}
+</code></pre>
+
+<p>对应的布局文件</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/transparent"
+    tools:context="com.suguiming.myandroid.base.BaseSwipeActivity"&gt;
+
+&lt;android.support.v4.widget.DrawerLayout
+    android:id="@+id/base_drawer_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    tools:openDrawer="end"&gt;
+    &lt;LinearLayout
+        android:orientation="vertical"
+        android:background="@color/clear"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"&gt;
+    &lt;/LinearLayout&gt;
+
+    &lt;!---64dp是源码menu的margin,这里设置为65,不然会有一条黑线--&gt;
+    &lt;LinearLayout
+        android:id="@+id/container_layout"
+        android:orientation="vertical"
+        android:layout_gravity="end"
+        android:layout_marginLeft="-65dp"
+        android:background="@color/light_gray"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"&gt;
+    &lt;/LinearLayout&gt;
+&lt;/android.support.v4.widget.DrawerLayout&gt;
+&lt;/LinearLayout&gt;
+</code></pre>
+
+<p>push 的动画 style</p>
+
+<pre><code>&lt;!--手势返回theme--&gt;
+&lt;style name="BackSwipeTheme" parent="Theme.AppCompat.Light.NoActionBar"&gt;
+    &lt;item name="android:windowIsTranslucent"&gt;true&lt;/item&gt;
+    &lt;item name="android:windowBackground"&gt;@android:color/transparent&lt;/item&gt;
+    &lt;item name="android:windowNoTitle"&gt;true&lt;/item&gt;
+    &lt;item name="android:backgroundDimEnabled"&gt;false&lt;/item&gt;
+    &lt;item name="android:windowAnimationStyle"&gt;@style/ActivitySwipeBackAnimation&lt;/item&gt;
+&lt;/style&gt;
+&lt;style name="ActivitySwipeBackAnimation" parent="@android:style/Animation.Activity"&gt;
+    &lt;item name="android:activityOpenEnterAnimation"&gt;@anim/activity_swipe_in&lt;/item&gt;
+    &lt;item name="android:activityOpenExitAnimation"&gt;@anim/activity_swipe_out&lt;/item&gt;
+    &lt;item name="android:activityCloseEnterAnimation"&gt;@anim/activity_swipe_in&lt;/item&gt;
+    &lt;item name="android:activityCloseExitAnimation"&gt;@anim/activity_swipe_out&lt;/item&gt;
+&lt;/style&gt;
+</code></pre>
+
+<p>使用的话就是让Activity继承BaseSwipeActivity，然后设置Activity的Theme为BackSwipeTheme。</p>
+
+<pre><code>public class ActivitySwipeBack extends BaseSwipeActivity {
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    //要用setMainView，不要用setContentView
+    setMainView(R.layout.activity_activity_swipe_back);
+  }
+}
+
+&lt;activity android:name=".tab0.ActivitySwipeBack"
+            android:theme="@style/BackSwipeTheme"/&gt;
+</code></pre>
+
+<p>完整Demo请查看<a href="https://github.com/AndyFightting/MyAndroid">MyAndroid</a>中的"手势滑动返回"。</p>
+
+<p><img src="http://andyfightting.github.io/myimg/android/android_swipe.png" alt="imge" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Swift阅读笔记]]></title>
