@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-08-31T15:49:43+08:00</updated>
+  <updated>2016-08-31T16:09:05+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -18,7 +18,14 @@
     <link href="http://andyfightting.github.io/blog/2016/08/31/android-swipe/"/>
     <updated>2016-08-31T15:16:10+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/08/31/android-swipe</id>
-    <content type="html"><![CDATA[<p>偶然间发现了一个Android自带的抽屉控件DrawerLayout,就觉得应该可以用他来封装成手势返回的基础控件。思路就是先设置Activity的跳转动画是从右到左，并且前一个Activity不能动。然后设置DrawerLayout的menu从右边出来，然设置menu全屏，这个menu就相当于子Activity View的容器，默认打开menu,然后设置DrawerLayout容器透明，当DrawerLayout close的时候finish它所在的Activity就可以啦！！复杂的手势控制就交由自带的DrawerLayout处理啦，生命周期还是Activity的生命周期。怎么样，是不是机智如我！！😆</p>
+    <content type="html"><![CDATA[<p>偶然间发现了一个Android自带的抽屉控件DrawerLayout,就觉得应该可以用他来封装成手势返回的基础控件。思路就是先设置Activity的跳转动画是从右到左，并且前一个Activity不能动。然后设置DrawerLayout的menu从右边出来，然设置menu全屏，这个menu就相当于子Activity View的容器，默认打开menu,然后设置DrawerLayout容器透明，当DrawerLayout close的时候finish它所在的Activity！还要把状态栏设置成透明，不然DrawerLayout closed 再 finish Activity的时候会有视觉差！复杂的手势控制就交由自带的DrawerLayout处理啦，生命周期还是Activity的生命周期。怎么样，是不是机智如我！！😆</p>
+
+<p>遇到的问题：DrawerLayout的menu即时设置成match_parent也不能全屏！因为源码里设置了margin64dp! 那我们只好再设置回来：android:layout_marginLeft=&ldquo;-64dp"。</p>
+
+<pre><code> private static final int MIN_DRAWER_MARGIN = 64; // dp
+</code></pre>
+
+<p>BaseSwipeActivity</p>
 
 <pre><code>package com.suguiming.myandroid.base;
 import android.os.Bundle;
