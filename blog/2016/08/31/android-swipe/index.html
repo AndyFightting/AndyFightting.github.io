@@ -95,7 +95,7 @@
   </header>
 
 
-<div class="entry-content"><p>偶然间发现了一个Android自带的抽屉控件DrawerLayout,就觉得应该可以用他来封装成手势返回的基础控件。思路就是先设置Activity的跳转动画是从右到左，并且前一个Activity不能动。然后设置DrawerLayout的menu从右边出来，然设置menu全屏，这个menu就相当于子Activity View的容器，默认打开menu,然后设置DrawerLayout容器透明，当DrawerLayout close的时候finish它所在的Activity！还要把状态栏设置成透明，不然DrawerLayout closed 再 finish Activity的时候会有视觉差！复杂的手势控制就交由自带的DrawerLayout处理啦，生命周期还是Activity的生命周期。怎么样，是不是机智如我！！😆</p>
+<div class="entry-content"><p>偶然间发现了一个Android自带的抽屉控件<a href="https://developer.android.com/training/implementing-navigation/nav-drawer.html">DrawerLayout</a>,就觉得应该可以用他来封装成手势返回的基础控件。思路就是先设置Activity的跳转动画是从右到左，并且前一个Activity不能动。然后设置DrawerLayout的menu从右边出来，然设置menu全屏，这个menu就相当于子Activity View的容器，默认打开menu,然后设置DrawerLayout容器透明，当DrawerLayout close的时候finish它所在的Activity！还要把状态栏设置成透明，不然DrawerLayout closed 再 finish Activity的时候会有视觉差！复杂的手势控制就交由自带的DrawerLayout处理啦，生命周期还是Activity的生命周期。怎么样，是不是机智如我！！😆</p>
 
 <p>遇到的问题：DrawerLayout的menu即时设置成match_parent也不能全屏！因为源码里设置了margin64dp! 那我们只好再设置回来：android:layout_marginLeft=&ldquo;-64dp"。</p>
 
@@ -283,6 +283,8 @@ protected void onCreate(Bundle savedInstanceState) {
         <a class="basic-alignment left" href="/blog/2016/08/04/swift-read/" title="Previous Post: Swift阅读笔记">&laquo; Swift阅读笔记</a>
       
       
+        <a class="basic-alignment right" href="/blog/2016/09/01/fragment/" title="Next Post: Android中的Fragment">Android中的Fragment &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -315,6 +317,10 @@ protected void onCreate(Bundle savedInstanceState) {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/09/01/fragment/">Android中的Fragment</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/08/31/android-swipe/">Android手势滑动返回</a>
       </li>
     
@@ -330,10 +336,6 @@ protected void onCreate(Bundle savedInstanceState) {
         <a href="/blog/2016/08/04/core-data/">iOS中的Core Data</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/08/04/session/">iOS中的NSURLSession</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -343,7 +345,7 @@ protected void onCreate(Bundle savedInstanceState) {
 <section>
   <h1>Categories</h1>
   <ul id="categories">
-    <li class='category'><a href='/blog/categories/android/'>android (4)</a></li>
+    <li class='category'><a href='/blog/categories/android/'>android (5)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (9)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (3)</a></li>
 
