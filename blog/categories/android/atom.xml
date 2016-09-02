@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-09-01T16:58:55+08:00</updated>
+  <updated>2016-09-02T13:23:22+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,57 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[反编译Android的APK]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/09/02/apk-decode/"/>
+    <updated>2016-09-02T09:55:10+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/09/02/apk-decode</id>
+    <content type="html"><![CDATA[<p>本人用的环境是Mac 10.11.5, 需要用到的工具有：<a href="https://ibotpeaches.github.io/Apktool/">apktool</a>, <a href="https://sourceforge.net/projects/dex2jar/">dex2jar</a>, <a href="http://jd.benow.ca/">JD-GUI</a>。</p>
+
+<p>下面用淘宝2.2.1版本和微信2.3版本为例子来反编译。为什么用这么老的版本？因为可能老版本没有做代码混淆，反编译后会更好看一点。可以用<a href="http://www.anzhi.com/">安智市场</a>来下载历史版本，推荐用安智市场的手机APP来下载，会看到所有的历史版本，而电脑网站只能看到最近的几个历史版本。
+<img src="/myimg/android/az_taobao.png" alt="image" /></p>
+
+<h4>1.apktool</h4>
+
+<p>需要至少Java 7环境，通过<code>java -version</code>查看
+<img src="/myimg/android/javaVersion.png" alt="image" /></p>
+
+<p>配置apktool
+<img src="/myimg/android/apktool.png" alt="image" /></p>
+
+<p>输入apktool如下所示就成功了
+<img src="/myimg/android/apktool_result.png" alt="imag" /></p>
+
+<p>用apktool工具处理后就可以查看xml文件了。在桌面建一个文件夹test, 把apk文件放进去，进入该文件夹，然后执行<code>apktool d apk名称.apk</code>。就会在test文件夹里出现一个<code>apk名称</code>的文件夹。里面的资源文件和xml文件就可以打开查看了。
+<img src="/myimg/android/apktool1.png" alt="imag" />
+<img src="/myimg/android/apktool2.png" alt="imag" />
+<img src="/myimg/android/apktool3.png" alt="imag" /></p>
+
+<h4>2.dex2jar</h4>
+
+<p>dex2jar工具可以吧dex或者apk文件转成jar文件。dex2jar下载好后进入文件夹，执行<code>chmod a+x *.sh</code>命令启用.sh文件。</p>
+
+<h6>方式一</h6>
+
+<p>把apk文件的后缀名改为zip，然后解压得到classes.dex文件，把classes.dex文件放到dex2jar文件夹中，进入该文件夹，执行<code>sh d2j-dex2jar.sh classes.dex</code>命令，就会得到对应的jar文件。</p>
+
+<h6>方式二</h6>
+
+<p>直接把apk文件放入dex2jar文件夹中，执行<code>sh d2j-dex2jar.sh apk名称.apk</code>也会得到对应的jar文件。</p>
+
+<h4>3.JD-GUI</h4>
+
+<p>把JD-GUI下载下来，打开上面生成的jar文件就可查看了。
+<img src="/myimg/android/taobao211.png" alt="image" /></p>
+
+<p>下面是微信2.3处理后的结果
+<img src="/myimg/android/wx1.png" alt="image" />
+<img src="/myimg/android/wx2.png" alt="image" />
+<img src="/myimg/android/wx3.png" alt="image" />
+剩下的就看细心、耐心、和好奇心了&hellip;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Android中的Fragment]]></title>
@@ -42,7 +93,7 @@
 
 <h5>解决方法一</h5>
 
-<p>不用add()的方式处理tab的Fragment，直接在Activity的布局文件中添加需要的Fragment,然后在Activity中通过getFragmentManager().findFragmentById(）的方式得到Fragment，然后处理对应的hide,show。</p>
+<p>不用add()的方式处理tab的Fragment，直接在Activity的布局文件中添加需要的Fragment,然后在Activity中通过getFragmentManager().findFragmentById()的方式得到Fragment，然后处理对应的hide,show。</p>
 
 <pre><code>    &lt;fragment
         android:id="@+id/fragment0"
@@ -905,199 +956,6 @@ public static void removeAll() {
 <p>当然可以设置自己喜欢的快捷键，我自己把运行和调试改成了<code>⌘ + R</code>和<code>⌘ + D</code></p>
 
 <p><img src="/myimg/android/keymap.png" alt="img" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Android 基础知识]]></title>
-    <link href="http://andyfightting.github.io/blog/2015/11/21/androidBase0/"/>
-    <updated>2015-11-21T09:26:15+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2015/11/21/androidBase0</id>
-    <content type="html"><![CDATA[<h3>* Activity启动模式</h3>
-
-<p>在AndroidMainfest.xml里的activity里设置android:launchMode = “xxx”</p>
-
-<p><strong>standard:</strong> 默认模式，每次都会创建一个新的放在栈顶，即使栈里已经有了</p>
-
-<p><strong>singleTop:</strong> 已经在<strong>栈顶</strong>了就不创建，否则还是会创建，即使栈里已经有了</p>
-
-<p><strong>singleTask:</strong> 在活动栈中有了就不创建，直接推到栈顶，<strong>在它之前的全部会被挤出栈</strong>，若活动栈中没有就创建</p>
-
-<p><strong>singleInstance:</strong> 会创建一个<strong>新的活动栈</strong>把自己放进去</p>
-
-<h3>* 随时随地退出程序</h3>
-
-<p>在任何页面都可以被踢下线的实现技巧</p>
-
-<p>创建一个收集Activity的管理类，在BaseActivity的<code>onCreate()</code>方法中添加<code>ActivityManager.addActivity(this)</code>,在<code>onDestroy</code>方法中添加<code>ActivityManager.removeActivity(this)</code>。然后在任何要强退的地方调用<code>ActivityManager.finishAllActivity()</code>。<!--more--></p>
-
-<pre><code>public class ActivityManager {
-
-public static List&lt;Activity&gt; activityList = new ArrayList&lt;&gt;();
-
-public static void addActivity(Activity activity){
-    activityList.add(activity);
-  }
-
-public static void removeActivity(Activity activity){
-    activityList.remove(activity);
-  }
-
-public static void finishAllActivity(){
-    for (Activity activity : activityList){
-        if (!activity.isFinishing()){
-            activity.finish();
-        }
-    }
-    activityList.clear();
-  }
-}
-</code></pre>
-
-<h3>* Activity跳转</h3>
-
-<p>一般我们是用如下的方式跳转，需要知道下一个Activity要用哪些参数，多人开发可能有些不便。</p>
-
-<pre><code>Intent intent = new Intent(OneActivity.thi,TwoActivity.class);
-intent.putExtra("key","value");
-startActivity(intent);
-</code></pre>
-
-<p>可以在下一个Activity中把需要的参数暴露出来。</p>
-
-<pre><code>public static void actionStart(Activity activity,String param){
-  Intent intent = new Intent(activity,TwoActivity.class);
-  intent.putExtra("key","param");
-  activity.startActivity(intent);
-  activity.finish();
-}
-</code></pre>
-
-<h3>* ListView的正确使用方式</h3>
-
-<p>实现了item的复用，这样效率最好，ArrayAdapter源码中就是这样弄的。ArrayAdapter把BaseAdapter包装了一遍，实现了<code>getCount</code>,<code>getItem</code>,<code>getItemId</code>，所以这些我们就可以不用再写了，只重写个<code>getView</code>就可以。</p>
-
-<pre><code>public class UserAdapter extends ArrayAdapter&lt;User&gt; {
-
-private int layoutId;
-public UserAdapter(Context context, int resourceId, List&lt;User&gt; objects){
-      super(context,resourceId,objects);
-      layoutId = resourceId;
-}
-
-@Override
-public View getView(int position, View convertView, ViewGroup parent){
-
-    User user = getItem(position);
-    ViewHolder viewHolder;
-    View layoutView;
-
-    if (convertView == null){
-        layoutView = LayoutInflater.from(getContext()).inflate(layoutId,null);
-        viewHolder = new ViewHolder();
-        viewHolder.headImage = (ImageView)layoutView.findViewById(R.id.head_img);
-        viewHolder.nameTv = (TextView)layoutView.findViewById(R.id.name_tv);
-        layoutView.setTag(viewHolder);
-    }else {
-       layoutView = convertView;
-       viewHolder = (ViewHolder)layoutView.getTag();
-    }
-    //--------在下面赋值 ----------------
-    viewHolder.headImage.setImageResource(user.getHeadImgId());
-    viewHolder.nameTv.setText(user.getName());
-
-    return layoutView;
-}
-
-class ViewHolder{
-    ImageView headImage;
-    TextView nameTv;
-  }
-}
-</code></pre>
-
-<h3>* px,dpi,dp,density</h3>
-
-<p>Android规定：如果手机一英寸长度上有160个px，那么手机的dpi就是160,此时1dp==1px，即density=1。所以如果一英寸长度上有320个px的话，那么手机的dpi就是320，此时1dp==2px,即density=2。</p>
-
-<p>结论：即相同大小的手机上的dp个数是不变的，如果相同大小的手机像素不同的话，只会影响dip和density的值,所以我们适配手机的时候用的长度单位要用 &mdash;- <code>dp</code></p>
-
-<pre><code>public static int getScreenWidthPx(Context context){
-    return  context.getResources().getDisplayMetrics().widthPixels;
-}
-
-public static int getScreenHeightPx(Context context){
-    return  context.getResources().getDisplayMetrics().heightPixels;
-}
-
-public static float getXdpi(Context context){
-    return  context.getResources().getDisplayMetrics().xdpi;
-}
-
-public static float getYdpi(Context context){
-    return  context.getResources().getDisplayMetrics().ydpi;
-}
-
-public static float getDensity(Context context){
-   return context.getResources().getDisplayMetrics().density;
-}
-</code></pre>
-
-<h3>* 9-patch图片</h3>
-
-<p>1，在<code>上</code>边绘制的<code>垂直区域</code>会被<code>水平拉伸</code>，在<code>左</code>边绘制的<code>横向区域</code>会被<code>垂直拉伸</code>。</p>
-
-<p>2，在<code>下</code>边和<code>右</code>边绘制的<code>交叉区域</code>是内容放置的区域。</p>
-
-<p><img src="/myimg/android/9patch.jpg" alt="img" /></p>
-
-<h3>* Fragment</h3>
-
-<p>在fragment里可以用<code>getActivity()</code>得到与之关联的Activity。<code>FragmentTransaction</code>的实例可以调用<code>addToBackStack(null)</code>方法把这个事务添加到返回栈中，这样点击返回就是回到事务处理之前的状态,而不是退出Activity。fragment之间的通信可以通过与之共同关联的Activity来转达。</p>
-
-<p>fragment的生命周期与Activity类似，只不过比Activity多了<code>onAttach()</code>,<code>onCreateView()</code>,<code>onActivityCreated()</code>,<code>onDestroyView()</code>,<code>onDetach()</code>。</p>
-
-<p>由生到死依次是：<code>onAttach()</code>, <code>onCreate()</code>,<code>onCreateView()</code>,<code>onActivityCreated()</code>,<code>onStart()</code>,<code>onResume()</code>,<code>onPause()</code>,<code>onStop()</code>,<code>onDestroyView()</code>,<code>onDestroy()</code>,<code>onDetach()</code>。</p>
-
-<p>从返回栈回来后执行的第一个方法是<code>onActivityCreated()</code>,而Activity的轮回后执行的第一个方法是<code>onRestart()</code>,然后再<code>onStart()</code>,<code>onResume()</code>。</p>
-
-<p>同一个Activity怎样让它在不同大小的设备自动加载不同的布局文件呢？用<code>限定符</code>,即在<code>res</code>下建<code>layout-large</code>文件夹或者不同限定符的文件夹，在里面放<code>同名</code>的布局文件。限定符有：<code>small</code>,<code>normal</code>,<code>large</code>,<code>xlarge</code>以及分辨率限定符：<code>ldpi</code>:120dpi以下，<code>mdpi</code>:120-160dpi，<code>hdpi</code>:160-240dpi,<code>xhdpi</code>:240-320dpi，以及方向限定符：<code>land</code>:横屏,<code>port</code>:竖屏。</p>
-
-<p>还有个问题，<code>large</code>，大，到底多大算大呢？可以自己定义这个边界值。如<code>layout-sm600</code>,就是<code>宽度</code>大于600<code>dp</code>的设备叫大，否则叫小。<code>sm</code>的意思是：<code>smallest width</code>。</p>
-
-<h3>* Broadcast 广播</h3>
-
-<p>见名知意，即发一下消息，很多地方都可以收到。广播有两种：异步执行的广播 和 按顺序执行的同步广播。异步广播接收没有先后之分，可看做同时收到，这种广播发出之后不可被拦截。同步广播是按顺序一个一个执行，可以设置接收的优先级(设置<code>IntentFilter</code>的<code>priority</code>值,越大越优先)，这种广播可以被拦截(在<code>onReceive()</code>方法里调用<code>abortBroadcast()</code>废掉这条广播)。</p>
-
-<p>注册接收广播有两种方式：一种是用代码注册，也叫动态注册，动态注册(在<code>onCreate()</code>里调用Activity的方法<code>registerReceiver()</code>)的广播接收一定要在<code>onDestroy</code>中移除注册(调用Activity的<code>unregisterReceiver()</code>)。另一种叫静态注册，是在xml中配置的，这种注册不用移除。</p>
-
-<p>怎么写广播接收器？写个类继承<code>BroadcastReceiver</code>,它是个抽象类，然后重写<code>onReceive()</code>即可，可以通过<code>intent.getAction()</code>来区分不同广播，<strong>在<code>onReceive()</code>方法中不能开启线程</strong>。下面是一个监听网络变化的广播接收器。</p>
-
-<pre><code>class NetWorkChangeReceiver extends BroadcastReceiver{
-    @Override
-    public void onReceive(Context context,Intent intent){
-        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        if (networkInfo != null &amp;&amp; networkInfo.isAvailable()){
-            Toast.makeText(context,"网络可用",Toast.LENGTH_SHORT).show();
-        }else {
-            Toast.makeText(context,"网络不可用",Toast.LENGTH_SHORT).show();
-        }
-    }
-}
-</code></pre>
-
-<p>用Activity里的方法发送异步广播<code>sendBroadcaset(intent)</code>,和发送同步广播<code>sendOrderedBroadCaset(intent,null)</code>。这样发送的广播都是<code>跨应用</code>的，即A应用发出的广播，B应用也可以收到的！应为这些都是全局广播。</p>
-
-<p>本地广播，即发出的广播只会被<code>本身应用</code>接收到,手机里的其他应用就收不到了。本地广播要用<code>LocalBroadcastManager</code>这个类来管理，即注册和移除的时候不能用<code>Activity</code>的<code>registerReceiver()</code>和<code>unregisterReceiver()</code>方法，而应该用<code>LocalBroadcastManager</code>实例的<code>registerReceiver()</code>和<code>unregisterReceiver()</code>方法，简单吧！<strong>本地广播不会被静态注册的接收器收到！</strong>要接收本地广播，接收器都得用动态注册的方式。</p>
-
-<h3>* ContentProvider / ContentResolver</h3>
-
-<p>这个是用于在手机中<code>不同应用程序</code>间的数据传递，可以自己选择那些数据可暴露出来给其他应用获取。有些系统的应用程序已经提供这样的接口了，可以直接通过这种方式获取数据，如 短信应用，通讯录应用等，而我们自己写的应用程序则要自己写这个数据提供接口。</p>
-
-<p>获取数据通过<code>ContentResolver</code>类，可以通过Context 的 <code>getContentResolver()</code>得到实例，然后数据处理就是 <code>insert()</code>,<code>update()</code>,<code>delete()</code>,<code>quert()</code>,和<code>SQLiteDatabase</code>很像，但不是传<code>表名</code>而是传<code>Uri</code>。</p>
-
-<p>提供数据，要继承抽象类<code>ContentProvider</code>然后重写里面的六个方法：<code>onCreate()</code>,<code>quert()</code>,<code>insert()</code>,<code>update()</code>,<code>delete()</code>,<code>getType()</code>。</p>
 ]]></content>
   </entry>
   

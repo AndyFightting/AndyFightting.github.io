@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-09-01T16:58:55+08:00</updated>
+  <updated>2016-09-02T13:23:22+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,57 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[反编译Android的APK]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/09/02/apk-decode/"/>
+    <updated>2016-09-02T09:55:10+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/09/02/apk-decode</id>
+    <content type="html"><![CDATA[<p>本人用的环境是Mac 10.11.5, 需要用到的工具有：<a href="https://ibotpeaches.github.io/Apktool/">apktool</a>, <a href="https://sourceforge.net/projects/dex2jar/">dex2jar</a>, <a href="http://jd.benow.ca/">JD-GUI</a>。</p>
+
+<p>下面用淘宝2.2.1版本和微信2.3版本为例子来反编译。为什么用这么老的版本？因为可能老版本没有做代码混淆，反编译后会更好看一点。可以用<a href="http://www.anzhi.com/">安智市场</a>来下载历史版本，推荐用安智市场的手机APP来下载，会看到所有的历史版本，而电脑网站只能看到最近的几个历史版本。
+<img src="http://andyfightting.github.io/myimg/android/az_taobao.png" alt="image" /></p>
+
+<h4>1.apktool</h4>
+
+<p>需要至少Java 7环境，通过<code>java -version</code>查看
+<img src="http://andyfightting.github.io/myimg/android/javaVersion.png" alt="image" /></p>
+
+<p>配置apktool
+<img src="http://andyfightting.github.io/myimg/android/apktool.png" alt="image" /></p>
+
+<p>输入apktool如下所示就成功了
+<img src="http://andyfightting.github.io/myimg/android/apktool_result.png" alt="imag" /></p>
+
+<p>用apktool工具处理后就可以查看xml文件了。在桌面建一个文件夹test, 把apk文件放进去，进入该文件夹，然后执行<code>apktool d apk名称.apk</code>。就会在test文件夹里出现一个<code>apk名称</code>的文件夹。里面的资源文件和xml文件就可以打开查看了。
+<img src="http://andyfightting.github.io/myimg/android/apktool1.png" alt="imag" />
+<img src="http://andyfightting.github.io/myimg/android/apktool2.png" alt="imag" />
+<img src="http://andyfightting.github.io/myimg/android/apktool3.png" alt="imag" /></p>
+
+<h4>2.dex2jar</h4>
+
+<p>dex2jar工具可以吧dex或者apk文件转成jar文件。dex2jar下载好后进入文件夹，执行<code>chmod a+x *.sh</code>命令启用.sh文件。</p>
+
+<h6>方式一</h6>
+
+<p>把apk文件的后缀名改为zip，然后解压得到classes.dex文件，把classes.dex文件放到dex2jar文件夹中，进入该文件夹，执行<code>sh d2j-dex2jar.sh classes.dex</code>命令，就会得到对应的jar文件。</p>
+
+<h6>方式二</h6>
+
+<p>直接把apk文件放入dex2jar文件夹中，执行<code>sh d2j-dex2jar.sh apk名称.apk</code>也会得到对应的jar文件。</p>
+
+<h4>3.JD-GUI</h4>
+
+<p>把JD-GUI下载下来，打开上面生成的jar文件就可查看了。
+<img src="http://andyfightting.github.io/myimg/android/taobao211.png" alt="image" /></p>
+
+<p>下面是微信2.3处理后的结果
+<img src="http://andyfightting.github.io/myimg/android/wx1.png" alt="image" />
+<img src="http://andyfightting.github.io/myimg/android/wx2.png" alt="image" />
+<img src="http://andyfightting.github.io/myimg/android/wx3.png" alt="image" />
+剩下的就看细心、耐心、和好奇心了&hellip;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Android中的Fragment]]></title>
@@ -42,7 +93,7 @@
 
 <h5>解决方法一</h5>
 
-<p>不用add()的方式处理tab的Fragment，直接在Activity的布局文件中添加需要的Fragment,然后在Activity中通过getFragmentManager().findFragmentById(）的方式得到Fragment，然后处理对应的hide,show。</p>
+<p>不用add()的方式处理tab的Fragment，直接在Activity的布局文件中添加需要的Fragment,然后在Activity中通过getFragmentManager().findFragmentById()的方式得到Fragment，然后处理对应的hide,show。</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
