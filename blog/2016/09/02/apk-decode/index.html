@@ -137,7 +137,25 @@
 <img src="/myimg/android/wx1.png" alt="image" />
 <img src="/myimg/android/wx2.png" alt="image" />
 <img src="/myimg/android/wx3.png" alt="image" />
-剩下的就看细心、耐心、和好奇心了&hellip;</p>
+剩下的就看细心、耐心、和好奇心了&hellip;下面说说我是怎么查看QQ2.0的。</p>
+
+<h3>我的查看流程</h3>
+
+<p>找一个页面的特殊字符，如下面的"我的个人资料"
+<img src="/myimg/android/find00.jpg" alt="image" /></p>
+
+<p>然后Finder搜索，找到strings.xml文件，在里面找到"我的个人资料"对应的key &ndash; &ldquo;info_info"。
+<img src="/myimg/android/find0.png" alt="image" />
+<img src="/myimg/android/find1.png" alt="image" /></p>
+
+<p>然后搜"info_info"，找到对应的布局文件"info_self.xml"
+<img src="/myimg/android/find2.png" alt="image" /></p>
+
+<p>然后通过"info_self"布局文件名搜索，找到对应的smali文件
+<img src="/myimg/android/find3.png" alt="image" /></p>
+
+<p>然后通过smali文件名"InfoActivity"在JD-GUI的Search功能搜索，不是Find!找到对应的Activity，这样想看的东西应该都能找到了。
+<img src="/myimg/android/find4.png" alt="image" /></p>
 </div>
 
 
