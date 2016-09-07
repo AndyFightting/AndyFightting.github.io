@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="SQLite是一个轻量级的关系型数据库，在iOS和Android手机中都有用到，C语言的面向过程的函数式编程。SQLitePersistentObject和FMDB框架都是基于SQLite开发的。SQLitePersistentObject更像是个ORM框架，它是由Jeff &hellip;">
+  <meta name="description" content="CoreText进行图文混排的核心思想是把需要摆放图片的位置用空字符替换原来的字符，并且实现CTRunDelegate，用于动态设置空字符的高度和宽度（代表图片的大小），并且对这些空字符设置一个属性名来区别于其他CTRun，之后进行图片渲染的时候就能通过该属性来区分哪些空字符是代表图片的占位符， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,43 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/12/26/core-text/">iOS中的CoreText</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-12-26T15:16:23+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>3:16 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>CoreText进行图文混排的核心思想是把需要摆放图片的位置用空字符替换原来的字符，并且实现CTRunDelegate，用于动态设置空字符的高度和宽度（代表图片的大小），并且对这些空字符设置一个属性名来区别于其他CTRun，之后进行图片渲染的时候就能通过该属性来区分哪些空字符是代表图片的占位符，哪些是普通的空字符。使用CoreText处理点击事件的关键是判断点击的位置是本文内容中的第几个字符，然后通过判断该字符是否在需要处理点击事件的字符串范围内。</p>
+
+<p><img src="/myimg/ios/text2.png" alt="image" /></div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/12/26/core-text/">阅读全文</a>
+    </footer>
+  
+
+
+      | <a href="/blog/2015/12/26/core-text/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -435,6 +472,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/09/07/asynctask/">Android中的AsyncTask</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/09/02/apk-decode/">反编译Android的APK</a>
       </li>
     
@@ -450,10 +491,6 @@
         <a href="/blog/2016/08/04/swift-read/">Swift阅读笔记</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/08/04/animation/">iOS中的动画</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -463,7 +500,7 @@
 <section>
   <h1>Categories</h1>
   <ul id="categories">
-    <li class='category'><a href='/blog/categories/android/'>android (6)</a></li>
+    <li class='category'><a href='/blog/categories/android/'>android (7)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (9)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (3)</a></li>
 
