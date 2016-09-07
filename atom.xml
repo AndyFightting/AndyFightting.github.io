@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-09-07T16:39:24+08:00</updated>
+  <updated>2016-09-07T16:46:05+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -468,7 +468,7 @@ private static class SerialExecutor implements Executor {
 
 <p>AsyncTask处理任务的时候，一般都是习惯在onPreExecute显示进度条，在数据处理完成之后的onPostExecute关闭进度条。但是当横竖屏切换或者内存重启导致Activity重新启动时，假设你还在onPostExecute写了一些其他逻辑，这个时候的AsyncTask已经与之前的Activity没有关联了，会导致onPostExecute无效问题。</p>
 
-<p>解决办法是在onPostExecute方法里用EventBus或者Otto等类库，把结果发送给Activity去处理！！</p>
+<p>解决办法是在onPostExecute方法里用EventBus,Otto类库或者自己写通知，把结果发送给Activity去处理！！</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -482,7 +482,7 @@ private static class SerialExecutor implements Executor {
 
 <h4>个人看法</h4>
 
-<p>觉得Android很喜欢造这种中大型的轮子啊！好像没什么必要再造个AsyncTask这样的轮子放在SDK里啊? 像AsyncTask这种任务不应该是开发者去完成的吗？还有比如NavigationView，真的有必要吗？这不是应该让开发者来自定义的View吗？反正我不是很理解，这可能也是Android为什么如此碎片化的原因之一吧！&mdash;- 喜欢造中大型轮子！</p>
+<p>觉得Android很喜欢造这种中型轮子啊！好像没什么必要再造个AsyncTask这样的轮子放在SDK里啊? 像AsyncTask这种任务不应该是开发者去完成的吗？还有比如NavigationView，真的有必要吗？这不是应该让开发者来自定义的View吗？反正我不是很理解，这可能也是Android为什么如此碎片化的原因之一吧！&mdash;- 喜欢造中型轮子！</p>
 ]]></content>
   </entry>
   
