@@ -1,0 +1,414 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>OkHttp and Retrofit - 阿贵</title>
+  <meta name="author" content="guimingsu">
+
+  
+  <meta name="description" content="OkHttp and Retrofit Sep 8th, 2016 2:57 pm OkHttp和Retrofit都是Square公司开源出来的网络请求框架。Retrofit是对OkHttp的封装，使其可以用注解的方式调用。 OkHttp封装 /** * Created by suguiming &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://andyfightting.github.io/blog/2016/09/08/okhttp-retrofit/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="阿贵" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">  -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+
+<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">阿贵</a></h1>
+  
+    <h2>Stay Hungry, Stay Foolish</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="andyfightting.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li> 
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">OkHttp and Retrofit</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-08T14:57:19+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:57 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="http://square.github.io/okhttp/">OkHttp</a>和<a href="http://square.github.io/retrofit/">Retrofit</a>都是<a href="http://square.github.io/">Square</a>公司开源出来的网络请求框架。Retrofit是对OkHttp的封装，使其可以用注解的方式调用。</p>
+
+<h4>OkHttp封装</h4>
+
+<pre><code>/**
+ * Created by suguiming on 16/8/24.
+ */
+
+public class OkHttpHelper {
+private static final Handler mainHandler = new Handler(Looper.getMainLooper()); //异步请求结果要在主线程回调！！！
+private static final OkHttpClient client = new OkHttpClient.Builder()
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .writeTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(10, TimeUnit.SECONDS)
+        .build();
+
+public static void getRequest(String url, final OkHttpListener listener) {
+    Request request = new Request
+            .Builder()
+            .url(url)
+            .build();
+    beginRequest(request, listener);
+}
+
+public static void postRequest(String url, final Map&lt;String, Object&gt; params, final OkHttpListener listener) {
+    MultipartBody.Builder multipleBuilder = new MultipartBody.Builder();
+    multipleBuilder.setType(MultipartBody.FORM);
+
+    if (params != null) {
+        Set&lt;String&gt; keys = params.keySet();
+        for (String key : keys) {
+            Object obj = params.get(key);
+
+            if (obj instanceof File) {
+                File tmpFile = (File) obj;
+                multipleBuilder.addFormDataPart(key,tmpFile.getName(),MultipartBody.create(MediaType.parse("image/png"), tmpFile));
+            } else {
+                multipleBuilder.addPart(Headers.of("Content-Disposition", "form-data; name=\"" + key + "\""), RequestBody.create(null, (String)obj));
+            }
+        }
+    }
+
+    RequestBody multipleBody = multipleBuilder.build();
+    Request request = new Request.Builder()
+            .url(url)
+            .post(multipleBody)
+            .build();
+
+    beginRequest(request, listener);
+}
+
+private static void beginRequest(Request request, final OkHttpListener listener) {
+    Call call = client.newCall(request);
+
+    call.enqueue(new Callback() {//enqueue是异步请求
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            final String responseString = response.body().string();
+            final int code = response.code();
+
+            if (response.isSuccessful()) {
+                MyTool.logJson(responseString);
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.success(responseString);
+                        }
+                    }
+                });
+            } else {
+                //请求失败：400  ---------   {"code":100002,"msg":"手机号已注册","url":""}
+                MyTool.log("请求失败：" + code + "---------" + responseString);
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.fail();
+                        }
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+            e.printStackTrace();
+            MyTool.log("服务器错误");
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (listener != null) {
+                        listener.fail();
+                    }
+                }
+            });
+        }
+    });
+}
+}
+
+//回调接口定义
+public interface OkHttpListener {
+    void success(String response);
+    void fail();
+}
+</code></pre>
+
+<p>要注意的是enqueue方法是异步请求，所以要把结果回调放在主线程中进行。</p>
+
+<pre><code> mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (listener != null) {
+                                listener.success(responseString);
+                            }
+                        }
+                    });
+</code></pre>
+
+<p>这样调用是不是很简单呢~!之前看过一个同事的网络库封装，把网络回调接口放在BaseActivity里，然后在子Activity里重写回调方法！这样导致的结果就是，Fragment里的请求都要通过Activity来重写方法，然后再转发给Fragment&hellip;简直想骂街啊有木有！</p>
+
+<pre><code>//get异步请求,回调都已放在主线程中
+ OkHttpHelper.getRequest(ulr, new OkHttpListener() {
+        @Override
+        public void success(String response) {
+
+        }
+
+        @Override
+        public void fail() {
+
+        }
+    });
+
+   //post异步请求，回调都已放在主线程中，也可以用于提交File
+    Map&lt;String, Object&gt; paramter = new HashMap&lt;&gt;();
+    paramter.put("name", "阿贵");
+    paramter.put("file", new File("filePath"));//提交图片文件
+
+    OkHttpHelper.postRequest(url, paramter, new OkHttpListener() {
+        @Override
+        public void success(String response) {
+
+        }
+
+        @Override
+        public void fail() {
+
+        }
+    });
+</code></pre>
+
+<p>还有很多人喜欢把网络请求和结果解析写在一起，比如通过请求结果直接得到对应的Bean。这样导致的结果就是网球请求结果类型不统一，返回各种Bean。个人不太喜欢这样，可以对结果解析进行简单封装一下，这样网络返回的结果也会统一，数据解析也就一行代码。</p>
+
+<pre><code>//使用: getBean(json, User.class);
+public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
+    T bean = null;
+    try {
+        Gson gson = new Gson();
+        bean = gson.fromJson(json, clazz);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return bean;
+}
+
+   //使用：getBeanList(json, User[].class);
+    public static &lt;T&gt; List&lt;T&gt; getBeanList(String json, Class&lt;T[]&gt; type) {
+        try{
+            T[] list = new Gson().fromJson(json, type);
+            return Arrays.asList(list);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+</code></pre>
+
+<h4>Retrofit封装</h4>
+</div>
+
+
+      | <a href="#comments">Comments</a>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">guimingsu</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-09-08T14:57:19+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:57 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/android/'>android</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  <!-- JiaThis Button -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/09/07/asynctask/" title="Previous Post: Android中的AsyncTask">&laquo; Android中的AsyncTask</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-title="Octopress博客的个性化配置"></div>
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"tianweili"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+<!-- Duoshuo Comment END --></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/08/okhttp-retrofit/">OkHttp and Retrofit</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/09/07/asynctask/">Android中的AsyncTask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/09/02/apk-decode/">反编译Android的APK</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/09/01/fragment/">Android中的Fragment</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/08/31/android-swipe/">Android手势滑动返回</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/android/'>android (8)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (9)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (3)</a></li>
+
+  </ul>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - guimingsu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

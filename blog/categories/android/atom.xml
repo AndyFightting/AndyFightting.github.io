@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-09-07T16:46:05+08:00</updated>
+  <updated>2016-09-08T16:34:08+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,195 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[OkHttp and Retrofit]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/09/08/okhttp-retrofit/"/>
+    <updated>2016-09-08T14:57:19+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/09/08/okhttp-retrofit</id>
+    <content type="html"><![CDATA[<p><a href="http://square.github.io/okhttp/">OkHttp</a>和<a href="http://square.github.io/retrofit/">Retrofit</a>都是<a href="http://square.github.io/">Square</a>公司开源出来的网络请求框架。Retrofit是对OkHttp的封装，使其可以用注解的方式调用。</p>
+
+<h4>OkHttp封装</h4>
+
+<pre><code>/**
+ * Created by suguiming on 16/8/24.
+ */
+
+public class OkHttpHelper {
+private static final Handler mainHandler = new Handler(Looper.getMainLooper()); //异步请求结果要在主线程回调！！！
+private static final OkHttpClient client = new OkHttpClient.Builder()
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .writeTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(10, TimeUnit.SECONDS)
+        .build();
+
+public static void getRequest(String url, final OkHttpListener listener) {
+    Request request = new Request
+            .Builder()
+            .url(url)
+            .build();
+    beginRequest(request, listener);
+}
+
+public static void postRequest(String url, final Map&lt;String, Object&gt; params, final OkHttpListener listener) {
+    MultipartBody.Builder multipleBuilder = new MultipartBody.Builder();
+    multipleBuilder.setType(MultipartBody.FORM);
+
+    if (params != null) {
+        Set&lt;String&gt; keys = params.keySet();
+        for (String key : keys) {
+            Object obj = params.get(key);
+
+            if (obj instanceof File) {
+                File tmpFile = (File) obj;
+                multipleBuilder.addFormDataPart(key,tmpFile.getName(),MultipartBody.create(MediaType.parse("image/png"), tmpFile));
+            } else {
+                multipleBuilder.addPart(Headers.of("Content-Disposition", "form-data; name=\"" + key + "\""), RequestBody.create(null, (String)obj));
+            }
+        }
+    }
+
+    RequestBody multipleBody = multipleBuilder.build();
+    Request request = new Request.Builder()
+            .url(url)
+            .post(multipleBody)
+            .build();
+
+    beginRequest(request, listener);
+}
+
+private static void beginRequest(Request request, final OkHttpListener listener) {
+    Call call = client.newCall(request);
+
+    call.enqueue(new Callback() {//enqueue是异步请求
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            final String responseString = response.body().string();
+            final int code = response.code();
+
+            if (response.isSuccessful()) {
+                MyTool.logJson(responseString);
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.success(responseString);
+                        }
+                    }
+                });
+            } else {
+                //请求失败：400  ---------   {"code":100002,"msg":"手机号已注册","url":""}
+                MyTool.log("请求失败：" + code + "---------" + responseString);
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.fail();
+                        }
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+            e.printStackTrace();
+            MyTool.log("服务器错误");
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (listener != null) {
+                        listener.fail();
+                    }
+                }
+            });
+        }
+    });
+}
+}
+
+//回调接口定义
+public interface OkHttpListener {
+    void success(String response);
+    void fail();
+}
+</code></pre>
+
+<p>要注意的是enqueue方法是异步请求，所以要把结果回调放在主线程中进行。</p>
+
+<pre><code> mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (listener != null) {
+                                listener.success(responseString);
+                            }
+                        }
+                    });
+</code></pre>
+
+<p>这样调用是不是很简单呢~!之前看过一个同事的网络库封装，把网络回调接口放在BaseActivity里，然后在子Activity里重写回调方法！这样导致的结果就是，Fragment里的请求都要通过Activity来重写方法，然后再转发给Fragment&hellip;简直想骂街啊有木有！</p>
+
+<pre><code>//get异步请求,回调都已放在主线程中
+ OkHttpHelper.getRequest(ulr, new OkHttpListener() {
+        @Override
+        public void success(String response) {
+
+        }
+
+        @Override
+        public void fail() {
+
+        }
+    });
+
+   //post异步请求，回调都已放在主线程中，也可以用于提交File
+    Map&lt;String, Object&gt; paramter = new HashMap&lt;&gt;();
+    paramter.put("name", "阿贵");
+    paramter.put("file", new File("filePath"));//提交图片文件
+
+    OkHttpHelper.postRequest(url, paramter, new OkHttpListener() {
+        @Override
+        public void success(String response) {
+
+        }
+
+        @Override
+        public void fail() {
+
+        }
+    });
+</code></pre>
+
+<p>还有很多人喜欢把网络请求和结果解析写在一起，比如通过请求结果直接得到对应的Bean。这样导致的结果就是网球请求结果类型不统一，返回各种Bean。个人不太喜欢这样，可以对结果解析进行简单封装一下，这样网络返回的结果也会统一，数据解析也就一行代码。</p>
+
+<pre><code>//使用: getBean(json, User.class);
+public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
+    T bean = null;
+    try {
+        Gson gson = new Gson();
+        bean = gson.fromJson(json, clazz);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return bean;
+}
+
+   //使用：getBeanList(json, User[].class);
+    public static &lt;T&gt; List&lt;T&gt; getBeanList(String json, Class&lt;T[]&gt; type) {
+        try{
+            T[] list = new Gson().fromJson(json, type);
+            return Arrays.asList(list);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+</code></pre>
+
+<h4>Retrofit封装</h4>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Android中的AsyncTask]]></title>
@@ -629,534 +818,6 @@ protected void onCreate(Bundle savedInstanceState) {
 <p>完整Demo请查看<a href="https://github.com/AndyFightting/MyAndroid">MyAndroid</a>中的"手势滑动返回"。</p>
 
 <p><img src="/myimg/android/android_swipe.png" alt="imge" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Android基本存储]]></title>
-    <link href="http://andyfightting.github.io/blog/2015/11/23/androidsave/"/>
-    <updated>2015-11-23T19:48:52+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2015/11/23/androidsave</id>
-    <content type="html"><![CDATA[<p>Android数据保存方式有： 文件存储, SharedPreference, Sqlite, SD卡存储。</p>
-
-<h3>* 文件存储</h3>
-
-<p>不对存储数据做任何格式化处理，原封不动的保存到文件中。使用于保存简单的文本数据或者二进制数据。</p>
-
-<p>Context有个<code>openFileOutput()</code>方法接受两个参数，第一个：文件名，<strong>不要包含路径</strong>，第二个：操作方式，有两种，<code>MODE_PRIVATE</code>(覆盖原文件内容),<code>MODE_APPEND</code>(在原文件尾部追加内容)，默认第一种。文件默认保存在：<code>/data/data/packageName/files/</code>这个目录里。</p>
-
-<pre><code> public static void saveText(Context context,String fileName,String text){
-    FileOutputStream outputStream ;
-    BufferedWriter bufferedWriter = null;
-    try {
-       outputStream = context.openFileOutput(fileName,Context.MODE_PRIVATE);
-        bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-        bufferedWriter.write(text);
-    }catch (IOException e){
-        e.printStackTrace();
-    }finally {
-        try {
-            if (bufferedWriter != null){
-                bufferedWriter.close();
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-}
-</code></pre>
-
-<!--more-->
-
-
-<p>在我调用 <code>MyTool.saveText(this,"myFile","Hello World!");</code>后出现了如下文件，点画圈圈的地方可以导出到电脑上打开查看。
-<img src="/myimg/android/helloSave.png" alt="img" /></p>
-
-<p>读文件</p>
-
-<pre><code>public static String getText(Context context,String fileName){
-    FileInputStream inputStream;
-    BufferedReader bufferReader = null;
-    StringBuilder contentBuilder = new StringBuilder();
-    try {
-        inputStream = context.openFileInput(fileName);
-        bufferReader = new BufferedReader(new InputStreamReader(inputStream));
-        String lineText = "";
-        while ((lineText = bufferReader.readLine()) != null){
-            contentBuilder.append(lineText);
-        }
-    }catch (IOException e){
-        e.printStackTrace();
-    }finally {
-       if (bufferReader != null){
-           try {
-               bufferReader.close();
-           }catch (IOException e){
-               e.printStackTrace();
-           }
-       }
-    }
-    return contentBuilder.toString();
-}
-</code></pre>
-
-<p>删除文件</p>
-
-<pre><code>public static void deleteFile(Context context, String fileName) {
-    String filePath = context.getFilesDir()+"/"+fileName;
-    File file = new File(filePath);
-    if (file.exists()){
-        file.delete();
-    }
-}
-</code></pre>
-
-<h3>* SharedPreference</h3>
-
-<p>用key-value键值对的方式保存数据，适用于保存应用配置之类的简单信息。有以下三种方式得到<code>SharedPreferences</code>对象，得到实例后调用实例的<code>edit()</code>方法得到<code>SharedPreferences.Editor</code>对象，用该<code>Editor</code>对象<code>putBoolean("key",value)``putString("key",value)</code>等方法添加数据，然后调用<code>apply()</code>即可。获取数据就调用对应的<code>getBoolean("key")``getString("key")</code>。文件保存在<code>/data/data/packageName/shared_prefs/</code>目录下。</p>
-
-<ol>
-<li><p>Context中的<code>getSharedPreferences()</code>方法接收两个参数，一个文件名(不要包含路径)，一个操作模式，有<code>MODE_PRIVATE</code>(覆盖原文件),<code>MODE_MULTI_PROCESS</code>(多个进程对文件进行读写情况)默认第一种。</p></li>
-<li><p>Activity中也有个一个类似的方法<code>getSharedPreferences()</code>，它只接收一个操作模式作为参数，<strong>自动将类名作为文件名</strong>。</p></li>
-<li><p>PreferenceManager类中的<code>getDefaultSharedPreferences()</code>，这是一个静态方法，接收一个参数<code>Context</code>,自动将应用程序的<code>packageName</code>为前缀的文件名,如我的包名是<code>com.suguiming.myandroid</code>,生成的文件名就是<code>com.suguiming.myandroid_preferences.xml</code>。</p></li>
-</ol>
-
-
-<pre><code>    SharedPreferences sharedPreferences =   PreferenceManager.getDefaultSharedPreferences(context);
-      SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("name","guimingsu");
-        editor.putInt("age", 18);
-        editor.apply();
-</code></pre>
-
-<p><img src="/myimg/android/shareP.png" alt="img" />
-<img src="/myimg/android/shareV.png" alt="img" /></p>
-
-<p>一般都把它做成一个工具类</p>
-
-<pre><code>public class SharedPreUtil {
-
-public static final String FILE_NAME = "shared_preference";
-
-public static void put(Context context, String key, Object value) {
-    SharedPreferences sharedPreferences = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
-    SharedPreferences.Editor editor = sharedPreferences.edit();
-
-    if (value instanceof String) {
-        editor.putString(key, (String) value);
-    } else if (value instanceof Integer) {
-        editor.putInt(key, (Integer) value);
-    } else if (value instanceof Boolean) {
-        editor.putBoolean(key, (Boolean) value);
-    } else if (value instanceof Float) {
-        editor.putFloat(key, (Float) value);
-    } else if (value instanceof Long) {
-        editor.putLong(key, (Long) value);
-    } else {
-        editor.putString(key, value.toString());
-    }
-    editor.apply();
-}
-
-public static Object get(Context context, String key, Object defaultValue) {
-    SharedPreferences sharedPreferences = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
-
-    if (defaultValue instanceof String) {
-        return sharedPreferences.getString(key, (String) defaultValue);
-    } else if (defaultValue instanceof Integer) {
-        return sharedPreferences.getInt(key, (Integer) defaultValue);
-    } else if (defaultValue instanceof Boolean) {
-        return sharedPreferences.getBoolean(key, (Boolean) defaultValue);
-    } else if (defaultValue instanceof Float) {
-        return sharedPreferences.getFloat(key, (Float) defaultValue);
-    } else if (defaultValue instanceof Long) {
-        return sharedPreferences.getLong(key, (Long) defaultValue);
-    }
-    return null;
-}
-
-public static void remove(Context context, String key) {
-    SharedPreferences sharedPreferences = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
-    SharedPreferences.Editor editor = sharedPreferences.edit();
-    editor.remove(key);
-    editor.apply();
-}
-
-public static void removeAll(Context context) {
-    SharedPreferences sharedPreferences = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
-    SharedPreferences.Editor editor = sharedPreferences.edit();
-    editor.clear();
-    editor.apply();
-}
-
-}
-</code></pre>
-
-<h3>* SQLite</h3>
-
-<p>关系型的轻量级数据库，保存复杂或者大数据用这个，支持标准的SQL语法。</p>
-
-<p>创建数据库：Android提供了一个抽象类<code>SQLiteOpenHelper</code>，我们继承它重写里面的两个方法<code>onCreate()</code>,<code>onUpdate()</code>来创建和更新数据库表结构。创建的数据库会保存在 <code>/data/data/packageName/databases/</code>目录下。通过<code>getReadableDatabase</code>或者<code>getWritableDatabase</code>都可得到可读写的数据库，但如果数据库不可写时(如磁盘已满)，<code>getWritableDatabase</code>会报错，<code>getReadableDatabase</code>不会。</p>
-
-<p>调用<code>MySqliteHelper.getHelper(mainActivity).getReadableDatabase();</code>一下数据库就建好了，下次再调用就不会再创建了。</p>
-
-<pre><code>public class MyDatabaseHelper extends SQLiteOpenHelper {
-
-private static MyDatabaseHelper helper;
-private static final String DB_NAME = "myAndroid.db";
-
-public MyDatabaseHelper(Context context){
-    super(context, DB_NAME, null, 2);//2 数据库version,修改数据库用
-}
-
-@Override
-public void onCreate(SQLiteDatabase db) {
-    db.execSQL(create_dog);
-    db.execSQL(create_cat);
-}
-
-@Override
-public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-    //更新表才用,这里假设在 版本2 中要添加 cat 表,注意：switch 不要 break !!
-    switch (newVersion){
-        case 2:
-            db.execSQL(create_cat);
-        default:
-    }
-}
-//获取 helper 单例
-public static synchronized MyDatabaseHelper getHelper(Context context) {
-    context = context.getApplicationContext();
-    if (helper == null) {
-        synchronized (MyDatabaseHelper.class) {
-            if (helper == null)
-                helper = new MyDatabaseHelper(context);
-        }
-    }
-    return helper;
-}
-
-//-------------sql----------------------------
-    public static final String create_dog = "create table dog ("
-            +"id integer primary key autoincrement,"
-            +"name text,"
-            +"age integer,"
-            +"weight real)";
-
-    public static final String create_cat = "create table cat ("
-            +"id integer primary key autoincrement,"
-            +"name text,"
-            +"age integer,"
-            +"weight real)";
-}
-</code></pre>
-
-<p><img src="/myimg/android/mydb.png" alt="img" />  <br/>
-把数据库导出到桌面，用<a href="http://www.sqlitemanager.org/">SQLiteManager</a>打开查看
-<img src="/myimg/android/mytable.png" alt="img" /></p>
-
-<p>数据增，删，改，查的最简单的例子</p>
-
-<pre><code>public class DogDao {
-private static final String TABLE_NAME = "dog";
-
-public static void add(Context context,Dog dog){
-    SQLiteDatabase db =  MyDatabaseHelper.getHelper(context).getWritableDatabase();
-    ContentValues values = new ContentValues();
-    values.put("name",dog.getName());
-    values.put("age",dog.getAge());
-    values.put("weight",dog.getWeight());
-    db.insert(TABLE_NAME, null, values);
-}
-
-public static void update(Context context,Dog dog){
-    SQLiteDatabase db =  MyDatabaseHelper.getHelper(context).getWritableDatabase();
-    ContentValues values = new ContentValues();
-    values.put("name",dog.getName());
-    values.put("age",dog.getAge());
-    values.put("weight",dog.getWeight());
-    db.update(TABLE_NAME, values, null, null);
-}
-
-public static void deleteAll(Context context){
-    SQLiteDatabase db =  MyDatabaseHelper.getHelper(context).getWritableDatabase();
-    db.delete(TABLE_NAME, null, null);
-}
-
-public static List&lt;Dog&gt; getAll(Context context){
-    SQLiteDatabase db =  MyDatabaseHelper.getHelper(context).getWritableDatabase();
-    Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, null);
-    List&lt;Dog&gt; dogList = new ArrayList&lt;&gt;();
-    if (cursor.moveToFirst()){
-        do {
-            Dog dog = new Dog();
-            dog.setName(cursor.getString(cursor.getColumnIndex("name")));
-            dog.setAge(cursor.getInt(cursor.getColumnIndex("age")));
-            dog.setWeight(cursor.getFloat(cursor.getColumnIndex("weight")));
-            dogList.add(dog);
-        }while (cursor.moveToNext());
-    }
-    cursor.close();
-    return dogList;
-}
-
-//事务，要么都成功，要么都失败。
-public static void transactionTest(Context context){
-    SQLiteDatabase db =  MyDatabaseHelper.getHelper(context).getWritableDatabase();
-    db.beginTransaction();
-    try {
-        //数据处理....
-
-        db.setTransactionSuccessful();
-    }catch (Exception e){
-        e.printStackTrace();
-    }finally {
-        db.endTransaction();
-    }
-}
-}
-</code></pre>
-
-<p>也可以用 Android SDK <code>/platform-tools</code>文件夹中自带的<code>adb</code>工具来操作链接在电脑的手机或者模拟器里的数据库。</p>
-
-<p>但要先配置一下，Mac的配置如下，在终端依次输入 <code>cd ~</code> <code>touch .bash_profile</code> <code>open -e .bash_profile</code>这时会打开一个文本文件，在里面添加<code>export PATH=${PATH}:这里是platform-tools文件的路径</code>保存关闭，
-然后<code>source .bash-profile</code>刷新，然后输入<code>adb shell</code>就可以开始用了。
-<img src="/myimg/android/pzadb.png" alt="img" />
-<img src="/myimg/android/pzadb2.png" alt="img" />
-如查看数据库<code>cd /data/data/packageName/databases</code> <code>l</code>列出所有数据库
-<img src="/myimg/android/adbtable.png" alt="img" /></p>
-
-<h3>* SD卡存储</h3>
-
-<p>SD卡存储和文件存储差不多，只不过是手机外部的存储空间，容量更大，不过在使用的时候要判断SD卡可不可以用。</p>
-
-<pre><code>public class SDCardUtil {
-
-// 默认都保存在这个文件夹下
-private static final String DEFAULT_DIR = "ProData/";
-
-public static boolean isEnable() {
-    return Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
-}
-
-public static long getTotalMB() {
-    if (!isEnable())
-        return 0;
-    File path = Environment.getExternalStorageDirectory();
-    StatFs stat = new StatFs(path.getPath());
-    long blockSize = stat.getBlockSizeLong();
-    long availableBlocks = stat.getBlockCountLong();
-    return (availableBlocks * blockSize) / 1024 / 1024;
-}
-
-public static long getAvailableMB() {
-    if (!isEnable())
-        return 0;
-    File path = Environment.getExternalStorageDirectory();
-    StatFs stat = new StatFs(path.getPath());
-    long blockSize = stat.getBlockSizeLong();
-    long availableBlocks = stat.getAvailableBlocksLong();
-    return (availableBlocks * blockSize) / 1024 / 1024;
-}
-
-public static long getAvailableByte() {
-    if (!isEnable())
-        return 0;
-    File path = Environment.getExternalStorageDirectory();
-    StatFs stat = new StatFs(path.getPath());
-    long blockSize = stat.getBlockSizeLong();
-    long availableBlocks = stat.getAvailableBlocksLong();
-    return availableBlocks * blockSize;
-}
-
-// 路径：/storage/sdcard0/
-public static String getSDCardPath() {
-    if (!isEnable())
-        return "";
-    return Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator;
-}
-
-
-public static File createDir(String directoryName) {
-    //建默认文件夹
-    String defaultDir = getSDCardPath() + DEFAULT_DIR;
-    File defaultFile = new File(defaultDir);
-    if (!defaultFile.exists()) {
-        defaultFile.mkdir();
-    }
-
-    String dirPath = getFilePath(directoryName);
-    File dirFile = new File(dirPath);
-    if (!dirFile.exists()) {
-        dirFile.mkdir();
-    }
-    return dirFile;
-}
-
-public static File createFile(String fileName) {
-    try {
-        //建默认文件夹
-        String dirPath = getSDCardPath() + DEFAULT_DIR;
-        File directory = new File(dirPath);
-        if (!directory.exists()) {
-            directory.mkdir();
-        }
-
-        //再在默认文件夹里建文件
-        File file = new File(getFilePath(fileName));
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-        return file;
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    return null;
-}
-
-public static String getFilePath(String fileName) {
-    return getSDCardPath() + DEFAULT_DIR + fileName;
-}
-
-public static boolean isFileExist(String fileName) {
-    File file = new File(getFilePath(fileName));
-    return file.exists();
-}
-
-public static boolean saveByte(String fileName, byte[] bytes) {
-    if (bytes == null) {
-        return false;
-    }
-
-    OutputStream output = null;
-    try {
-        if (bytes.length &lt; getAvailableByte()) {
-            File file = createFile(fileName);//这里面已经建了默认文件夹
-            output = new BufferedOutputStream(new FileOutputStream(file));
-            output.write(bytes);
-            output.flush();
-            return true;
-        }
-    } catch (IOException e1) {
-        e1.printStackTrace();
-    } finally {
-        try {
-            if (output != null) {
-                output.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    return false;
-}
-
-public static byte[] getByte(String fileName) {
-    File file = new File(getFilePath(fileName));
-    if (!file.exists()) {
-        return null;
-    }
-    InputStream inputStream = null;
-    try {
-        inputStream = new BufferedInputStream(new FileInputStream(file));
-        byte[] data = new byte[inputStream.available()];
-        inputStream.read(data);
-        return data;
-    } catch (Exception e) {
-        e.printStackTrace();
-    } finally {
-        try {
-            if (inputStream != null) {
-                inputStream.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    return null;
-}
-
-public static boolean saveBitmap(Bitmap bitmap, String bitmapName) {
-    if (bitmap == null) {
-        return false;
-    }
-    //建默认文件夹
-    String dirPath = getSDCardPath() + DEFAULT_DIR;
-    File directory = new File(dirPath);
-    if (!directory.exists()) {
-        directory.mkdir();
-    }
-
-    File file = new File(getFilePath(bitmapName));
-    BufferedOutputStream output = null;
-    try {
-        output = new BufferedOutputStream(new FileOutputStream(file));
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, output);
-        output.flush();
-        output.close();
-        return true;
-    } catch (IOException e1) {
-        e1.printStackTrace();
-    } finally {
-        try {
-            if (output != null) {
-                output.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    return false;
-}
-
-public static Bitmap getBitmap(String bitmapName) {
-    String myJpgPath = getFilePath(bitmapName);
-    BitmapFactory.Options options = new BitmapFactory.Options();
-    return BitmapFactory.decodeFile(myJpgPath, options);
-}
-
-public static void removeFile(String fileName) {
-    String filePath = getFilePath(fileName);
-    File file = new File(filePath);
-    if (file.exists()) {
-        file.delete();
-    }
-}
-
-public static void removeFile(File file) {
-    if (file.isFile()) {
-        file.delete();
-        return;
-    }
-    if (file.isDirectory()) {
-        File[] childFiles = file.listFiles();
-        if (childFiles == null || childFiles.length == 0) {
-            file.delete();
-            return;
-        }
-
-        for (int i = 0; i &lt; childFiles.length; i++) {
-            removeFile(childFiles[i]);
-        }
-        file.delete();
-    }
-}
-
-public static void removeAll() {
-    String filePath = getSDCardPath() + DEFAULT_DIR;
-    File file = new File(filePath);
-    if (file.exists()) {
-        removeFile(file);
-    }
-
-    //再建一个空文件夹
-    File directory = new File(filePath);
-    if (!directory.exists()) {
-        directory.mkdir();
-    }
-  }
-}
-</code></pre>
 ]]></content>
   </entry>
   

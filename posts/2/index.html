@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="CoreText进行图文混排的核心思想是把需要摆放图片的位置用空字符替换原来的字符，并且实现CTRunDelegate，用于动态设置空字符的高度和宽度（代表图片的大小），并且对这些空字符设置一个属性名来区别于其他CTRun，之后进行图片渲染的时候就能通过该属性来区分哪些空字符是代表图片的占位符， &hellip;">
+  <meta name="description" content="Runloop Runloop与线程息息相关，它是线程的基础架构部分，每个线程都有自己的runloop对象，可以用[NSRunLoop currentRunLoop]来得到它。主线程中的runloop是启动运行状态，而自己创建的线程中的runloop默认是没有启动的，需要的话要手动去启动。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,72 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/01/runtime/">iOS中的Runloop与Runtime</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-01T10:20:14+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>10:20 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html">Runloop</a></h3>
+
+<p>Runloop与线程息息相关，它是线程的基础架构部分，每个线程都有自己的runloop对象，可以用[NSRunLoop currentRunLoop]来得到它。主线程中的runloop是启动运行状态，而自己创建的线程中的runloop默认是没有启动的，需要的话要手动去启动。Runloop是一个事件处理循环，用来不停的监听输入事件或者定时事件，并将其分配到对应的目标上进行处理。它可以使线程在有工作的时候工作，没有工作的时候休眠。</p>
+
+<p>Runloop同时也负责autorelease pool的创建和释放，每当一个运行循环结束的时候，它都会释放autorelease pool，同时pool中的所有自动释放类型变量都会被释放掉。NSRunloop不是线程安全的，而CFRunLoopRef是线程安全的。RunLoop要指定在特定Mode下Run：</p>
+
+<p>*NSDefaultRunLoopMode：处理大多数的操作，一般情况下用这个。</p>
+
+<p>*NSRunLoopCommonModes：For Cocoa applications, this set includes the default, modal, and event tracking modes by default. Core Foundation includes just the default mode initially.</p>
+
+<p>而且通过scheduleInRunLoop的方式启动的请求，虽然是在主线程中执行！但也会有异步的效果！SDWebImageDownloader 中的 NSURLConnection 就是这样启动请求的！！</p>
+
+<pre><code>- (void)start{
+    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:15];
+    self.connection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
+    [connection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+    [connection start];
+    if (connection){
+        self.imageData = [NSMutableData data];
+    }else{
+        if ([delegate respondsToSelector:@selector(imageDownloader:didFailWithError:)]){
+            [delegate performSelector:@selector(imageDownloader:didFailWithError:) withObject:self withObject:nil];
+        }
+    }
+}
+</code></pre>
+
+<p>NSURLConnection在代理方法中打印出的线程：
+<img src="/myimg/ios/sdrunloop.png" alt="iamge" /></p>
+
+<p>runloop监听用户输入事件和定时事件
+<img src="/myimg/ios/runloop.png" alt="image" /></div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/08/01/runtime/">阅读全文</a>
+    </footer>
+  
+
+
+      | <a href="/blog/2016/08/01/runtime/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -472,6 +538,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/09/08/okhttp-retrofit/">OkHttp and Retrofit</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/09/07/asynctask/">Android中的AsyncTask</a>
       </li>
     
@@ -487,10 +557,6 @@
         <a href="/blog/2016/08/31/android-swipe/">Android手势滑动返回</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/08/04/swift-read/">Swift阅读笔记</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -500,7 +566,7 @@
 <section>
   <h1>Categories</h1>
   <ul id="categories">
-    <li class='category'><a href='/blog/categories/android/'>android (7)</a></li>
+    <li class='category'><a href='/blog/categories/android/'>android (8)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (9)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (3)</a></li>
 
