@@ -216,7 +216,7 @@ public interface OkHttpListener {
                     });
 </code></pre>
 
-<p>这样调用是不是很简单呢~!之前看过一个同事的网络库封装，把网络回调接口放在BaseActivity里，然后在子Activity里重写回调方法！这样导致的结果就是，Fragment里的请求都要通过Activity来重写方法，然后再转发给Fragment&hellip;简直想骂街啊有木有！</p>
+<p>之前看过一个同事的网络库封装，把网络回调接口放在BaseActivity里，然后在子Activity里重写回调方法！这样导致的结果就是，Fragment里的请求都要通过Activity来重写方法，然后再转发给Fragment&hellip;简直想骂街啊有木有！下面这样调用是不是很简单呢~!</p>
 
 <pre><code>//get异步请求,回调都已放在主线程中
  OkHttpHelper.getRequest(ulr, new OkHttpListener() {
@@ -275,7 +275,40 @@ public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
     }
 </code></pre>
 
-<h4>Retrofit封装</h4>
+<h4>Retrofit使用</h4>
+
+<p><a href="http://square.github.io/retrofit/">Retrofit官网</a>上的例子中返回结果是Bean，但又没说添加了GsonConverterFactory，所以会报 Could not locate ResponseBody converter for XXBean 错误！所以要引入GsonConverterFactory转化库<code>compile 'com.squareup.retrofit2:converter-gson:2.0.2'</code>, 然后在Retrofit初始化的时候添加该库！官网后面说了 By default, Retrofit can only deserialize HTTP bodies into OkHttp&rsquo;s ResponseBody type and it can only accept its RequestBody type for @Body. 默认只会返回ResponseBody！并且只有ResponseBody才可以使用@Body注解！我个人还是不喜欢直接在这里得到Bean, 我还是喜欢先通过得到response.body().string()，然后再转化成Bean，各司其职。注意是<code>response.body().string()</code>，不是<code>response.body().toString()</code>!!</p>
+
+<pre><code>    Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.github.com/")
+                .addConverterFactory(GsonConverterFactory.create()) //添加Bean转化库
+                .build();
+
+    ServiceInterface service = retrofit.create(ServiceInterface.class);
+
+    Call&lt;TestBean&gt; requestCall = service.getUserInfo();
+
+    requestCall.enqueue(new Callback&lt;TestBean&gt;() {
+        @Override
+        public void onResponse(Call&lt;TestBean&gt; call, Response&lt;TestBean&gt; response) {
+
+                TestBean b = response.body();
+        }
+
+        @Override
+        public void onFailure(Call&lt;TestBean&gt; call, Throwable t) {
+
+        }
+    });
+
+ public interface ServiceInterface {
+    @GET("users/andyfightting")
+    Call&lt;TestBean&gt; getUserInfo();
+
+    //这里继续添加其他接口
+
+}
+</code></pre>
 </div>
 
 
@@ -320,6 +353,8 @@ public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
         <a class="basic-alignment left" href="/blog/2016/09/07/asynctask/" title="Previous Post: Android中的AsyncTask">&laquo; Android中的AsyncTask</a>
       
       
+        <a class="basic-alignment right" href="/blog/2016/09/12/link-bug/" title="Next Post: iOS not found for architecture arm64">iOS not found for architecture arm64 &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -352,6 +387,10 @@ public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/09/12/link-bug/">iOS Not Found for Architecture Arm64</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/09/08/okhttp-retrofit/">OkHttp and Retrofit</a>
       </li>
     
@@ -367,10 +406,6 @@ public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
         <a href="/blog/2016/09/01/fragment/">Android中的Fragment</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/08/31/android-swipe/">Android手势滑动返回</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -381,7 +416,7 @@ public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
   <h1>Categories</h1>
   <ul id="categories">
     <li class='category'><a href='/blog/categories/android/'>android (8)</a></li>
-<li class='category'><a href='/blog/categories/ios/'>ios (9)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (3)</a></li>
 
   </ul>

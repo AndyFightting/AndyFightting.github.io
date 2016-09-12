@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="OkHttp and Retrofit Sep 8th, 2016 2:57 pm OkHttp和Retrofit都是Square公司开源出来的网络请求框架。Retrofit是对OkHttp的封装，使其可以用注解的方式调用。 OkHttp封装 /** * Created by suguiming &hellip;">
+  <meta name="description" content="iOS Not Found for Architecture Arm64 Sep 12th, 2016 10:00 am 接手维护一个项目，更新一下出现了下面这问题👇 一看是"not found for architecture arm64"问题啊，哦，找不到architecture &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,52 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/09/12/link-bug/">iOS Not Found for Architecture Arm64</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-12T10:00:18+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>接手维护一个项目，更新一下出现了下面这问题👇
+<img src="/myimg/ios/arm64.png" alt="image" /></p>
+
+<p>一看是"not found for architecture arm64"问题啊，哦，找不到architecture arm64啊，那好办，问问谷歌为啥找不到啊~ 然后就各种搜&hellip;</p>
+
+<p><a href="http://stackoverflow.com/questions/19213782/undefined-symbols-for-architecture-arm64">Stack Overflow</a>
+<img src="/myimg/ios/stackoverflow.png" alt="image" /></p>
+
+<p>说是Architectures设置问题啊~~ 改改改&hellip; 说是Other Linker Flags问题啊~~~ 改改改&hellip;说是Target Membership问题啊~~ 改改改&hellip; 好像都没用啊，问题还是一动不动的出现在那里&hellip;好像有点不淡定了&hellip;这都什么鬼啊&hellip;
+<img src="/myimg/ios/targetMap.png" alt="image" /></p>
+
+<p>继续找找找&hellip;用对应的类文件全局搜一下&hellip;诶~~ 好像那里不对啊&hellip;路径怎么这样子??怎么和别人不一样啊~~ 喜出望外，好像知道原因了，果然项目文件夹里看不到该文件，果断Add Files to &ldquo;XXX"添加文件!
+<img src="/myimg/ios/errorLoad.png" alt="image" /></p>
+
+<p>还是不行&hellip;WTF!! 把对应的.h .m文件拖到桌面上，再重新添加到项目里，解决了！！so easy ！！ 为什么一开始不怀疑是文件索引问题呢？ 因为项目编译没报 XXX.h not found &hellip;以为文件都好好的呢，以为是项目的配置问题&hellip; 所以一开始就找问题的方向就跑偏了！其实这问题之前也遇到过，一般是报第三方的XXX.a文件出现这问题。这问题一般是多人开发是用SVN更来更去导致的<code>project.pbxproj</code>里对应的文件索引没了。好了，再遇到这问题就不要跑偏了，把对应的文件重新添加就可以了！！</p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/09/12/link-bug/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -219,7 +265,7 @@ public interface OkHttpListener {
                     });
 </code></pre>
 
-<p>这样调用是不是很简单呢~!之前看过一个同事的网络库封装，把网络回调接口放在BaseActivity里，然后在子Activity里重写回调方法！这样导致的结果就是，Fragment里的请求都要通过Activity来重写方法，然后再转发给Fragment&hellip;简直想骂街啊有木有！</p>
+<p>之前看过一个同事的网络库封装，把网络回调接口放在BaseActivity里，然后在子Activity里重写回调方法！这样导致的结果就是，Fragment里的请求都要通过Activity来重写方法，然后再转发给Fragment&hellip;简直想骂街啊有木有！下面这样调用是不是很简单呢~!</p>
 
 <pre><code>//get异步请求,回调都已放在主线程中
  OkHttpHelper.getRequest(ulr, new OkHttpListener() {
@@ -278,7 +324,40 @@ public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
     }
 </code></pre>
 
-<h4>Retrofit封装</h4>
+<h4>Retrofit使用</h4>
+
+<p><a href="http://square.github.io/retrofit/">Retrofit官网</a>上的例子中返回结果是Bean，但又没说添加了GsonConverterFactory，所以会报 Could not locate ResponseBody converter for XXBean 错误！所以要引入GsonConverterFactory转化库<code>compile 'com.squareup.retrofit2:converter-gson:2.0.2'</code>, 然后在Retrofit初始化的时候添加该库！官网后面说了 By default, Retrofit can only deserialize HTTP bodies into OkHttp&rsquo;s ResponseBody type and it can only accept its RequestBody type for @Body. 默认只会返回ResponseBody！并且只有ResponseBody才可以使用@Body注解！我个人还是不喜欢直接在这里得到Bean, 我还是喜欢先通过得到response.body().string()，然后再转化成Bean，各司其职。注意是<code>response.body().string()</code>，不是<code>response.body().toString()</code>!!</p>
+
+<pre><code>    Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.github.com/")
+                .addConverterFactory(GsonConverterFactory.create()) //添加Bean转化库
+                .build();
+
+    ServiceInterface service = retrofit.create(ServiceInterface.class);
+
+    Call&lt;TestBean&gt; requestCall = service.getUserInfo();
+
+    requestCall.enqueue(new Callback&lt;TestBean&gt;() {
+        @Override
+        public void onResponse(Call&lt;TestBean&gt; call, Response&lt;TestBean&gt; response) {
+
+                TestBean b = response.body();
+        }
+
+        @Override
+        public void onFailure(Call&lt;TestBean&gt; call, Throwable t) {
+
+        }
+    });
+
+ public interface ServiceInterface {
+    @GET("users/andyfightting")
+    Call&lt;TestBean&gt; getUserInfo();
+
+    //这里继续添加其他接口
+
+}
+</code></pre>
 </div>
   
   
@@ -1518,130 +1597,6 @@ layer.position=CGPointMake(size.width/2, size.height/2);
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/08/04/block/">iOS中的block</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-08-04T16:21:41+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:21 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>block就是一个代码块，闭包，会捕获上下文的匿名函数，它可以作为参数或者返回值进行传递。在objc中，根据对象的定义，凡是首地址是*isa的结构体指针，都可以认为是对象(id)，所以block实际上就算是对象，但它的内存管理又和NSObject有点不一样。</p>
-
-<h4>声明:</h4>
-
-<pre><code>*变量：returnType (^blockName)(parameterTypes) = ^returnType(parameters) {...};
-
-*属性：@property (nonatomic, copy) returnType (^blockName)(parameterTypes);
-
-*方法：-(void)someMethod:(returnType (^nullability)(parameterTypes))blockName;
-
-*回调：[object  method:^returnType (parameters) {...}];
-
-*定义：typedef returnType (^TypeName)(parameterTypes); --&gt; TypeName blockName = ^returnType(parameters) {...};
-</code></pre>
-
-<p>block中的isa指向的是该block的Class,主要有三种类型：</p>
-
-<pre><code>_NSConcreteGlobalBlock 全局的静态 block，不会访问任何外部变量。
-_NSConcreteStackBlock 保存在栈中的 block，当函数返回时会被销毁。
-_NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被销毁。
-</code></pre>
-
-<p>当block第一次被创建时，它是存在于该函数的栈上的，其Class是固定的NSConcreteStackBlock。其捕获的变量是会赋值到结构体的成员上，所以当block初始化完成后，捕获到的变量不能更改。当函数返回时，函数的栈被销毁，这个block的内存也会被清除。所以在函数结束后仍然需要这个block时，就必须用Block_copy()方法将它拷贝到堆上，类型变为NSConcreteMallocBlock，向它发送retain，增加block的引用计数。</p>
-
-<p>默认block捕获到的局部变量，都是赋值给block的结构体的，相当于const不可改。为了让block能访问并修改外面的局部变量，需要加上__block修饰词。</p>
-
-<pre><code>void test(){
- __block int i = 3;
-  void(^myBlock)(void) = ^{
-     i = 5;//局部变量没有__block修饰的话不可修改
-  };
- myBlock();
-}
-</code></pre>
-
-<h4>捕获规则：</h4>
-
-<pre><code>1.静态存储区的变量,例如全局变量、方法中的static变量:
-  引用，可修改。
-
-2.block接受的参数传值:
-  可修改，和一般函数的参数相同。
-
-3.栈变量(局部变量):
-  常量，不可修改，block会对id类型的变量产生强引用。
-
-4.栈变量(有__block前缀的局部变量):
-  引用，可以修改。如果是id类型则不会被block retain、如果该类型是C类型变量，该值会被挪动到堆中。
-</code></pre>
-
-<p>在ARC中，block被赋值传递的时候会自动拷贝到堆上，堆上的对象就有可能被释放掉，所以要用copy强引用着,以免野指针crash。</p>
-
-<h4>循环引用:</h4>
-
-<p>当block被copy到堆之后，该block对它捕获的对象产生强引用，所以有时需要避免block copy后产生的循环引用。</p>
-
-<p>如self引用了block，block又捕获了self，这样就会有循环引用,因此，需要用weak来声明self。</p>
-
-<pre><code>- (void)test {
-    ViewController * __weak weakSelf = self;
-    self.block = ^{
-        [weakSelf doSomething]; //用弱引用,打破循环引用
-    }
-}
-</code></pre>
-
-<p>如果捕获到的是对象的成员变量对象，也会间接造成对self的循环引用，同样也要避免。</p>
-
-<pre><code>- (void)test {
-    id tempPropertyObj = _propertyObj; //用临时变量,避免了循环引用
-    self.block = ^{
-        [tempPropertyObj doSomething];
-    }
-}
-</code></pre>
-
-<h4>问题</h4>
-
-<pre><code>[UIView animateWithDuration:0.5 animations:^{
-        [self doSomething];
-    }];
-</code></pre>
-
-<p>上面例子并不会造成循环引用，因为block强引用了self,而self并没有强引用block。如果像下面就会循环引用：self &ndash;> _observer &ndash;> block &ndash;> self 这也是一个循环引用。</p>
-
-<pre><code>//_observer 是self的实例变量
-    _observer = [[NSNotificationCenter defaultCenter] addObserverForName:@"test"
-                                                                  object:nil
-                                                                   queue:[NSOperationQueue mainQueue]
-                                                              usingBlock:^(NSNotification * _Nonnull note) {
-                                                                  [self doSomething];
-                                                              }];
-</code></pre>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/08/04/block/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1655,6 +1610,10 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/12/link-bug/">iOS Not Found for Architecture Arm64</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/09/08/okhttp-retrofit/">OkHttp and Retrofit</a>
@@ -1672,10 +1631,6 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
         <a href="/blog/2016/09/01/fragment/">Android中的Fragment</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/08/31/android-swipe/">Android手势滑动返回</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -1686,7 +1641,7 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
   <h1>Categories</h1>
   <ul id="categories">
     <li class='category'><a href='/blog/categories/android/'>android (8)</a></li>
-<li class='category'><a href='/blog/categories/ios/'>ios (9)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (3)</a></li>
 
   </ul>

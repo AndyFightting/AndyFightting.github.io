@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Android Studio插件 - 阿贵</title>
+  <title>iOS Not Found for Architecture Arm64 - 阿贵</title>
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Android Studio插件 Nov 22nd, 2015 2:10 pm * Logger 推荐一款打印工具Logger,比自带的打印效果更好，主要是json打印是格式化的！Github上写的地址compile 'com.github.orhanobut:logger:1.12'我下载失败 &hellip;">
+  <meta name="description" content="iOS Not Found for Architecture Arm64 Sep 12th, 2016 10:00 am 接手维护一个项目，更新一下出现了下面这问题👇 一看是"not found for architecture arm64"问题啊，哦，找不到architecture &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://andyfightting.github.io/blog/2015/11/22/studioplugin/">
+  <link rel="canonical" href="http://andyfightting.github.io/blog/2016/09/12/link-bug/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="阿贵" type="application/atom+xml">
@@ -79,7 +79,7 @@
   
   <header>
     
-      <h1 class="entry-title">Android Studio插件</h1>
+      <h1 class="entry-title">iOS Not Found for Architecture Arm64</h1>
     
     
       <p class="meta">
@@ -88,107 +88,28 @@
 
 
 
-<time class='entry-date' datetime='2015-11-22T14:10:45+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>2:10 pm</span></time>
+<time class='entry-date' datetime='2016-09-12T10:00:18+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:00 am</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h3>* Logger</h3>
+<div class="entry-content"><p>接手维护一个项目，更新一下出现了下面这问题👇
+<img src="/myimg/ios/arm64.png" alt="image" /></p>
 
-<p>推荐一款打印工具<a href="https://github.com/orhanobut/logger">Logger</a>,比自带的打印效果更好，主要是json打印是格式化的！Github上写的地址<code>compile 'com.github.orhanobut:logger:1.12'</code>我下载失败，我用的是<code>compile 'com.orhanobut:logger:1.11'</code>。
-<img src="/myimg/android/logger.png" alt="img" />
-打印颜色可以在preference里设置，要先<code>Save as</code>保存一下，然后把右边的<code>Use inherited attributes</code>取消，然后就可以选择颜色了<!--more-->
-<img src="/myimg/android/logColor.png" alt="img" /></p>
+<p>一看是"not found for architecture arm64"问题啊，哦，找不到architecture arm64啊，那好办，问问谷歌为啥找不到啊~ 然后就各种搜&hellip;</p>
 
-<h3>* Sexy Editor</h3>
+<p><a href="http://stackoverflow.com/questions/19213782/undefined-symbols-for-architecture-arm64">Stack Overflow</a>
+<img src="/myimg/ios/stackoverflow.png" alt="image" /></p>
 
-<p>设置编辑区域背景图的, 这样敲代码也更有力气拉~~哈哈</p>
+<p>说是Architectures设置问题啊~~ 改改改&hellip; 说是Other Linker Flags问题啊~~~ 改改改&hellip;说是Target Membership问题啊~~ 改改改&hellip; 好像都没用啊，问题还是一动不动的出现在那里&hellip;好像有点不淡定了&hellip;这都什么鬼啊&hellip;
+<img src="/myimg/ios/targetMap.png" alt="image" /></p>
 
-<p><img src="/myimg/android/screen.png" alt="img" /></p>
+<p>继续找找找&hellip;用对应的类文件全局搜一下&hellip;诶~~ 好像那里不对啊&hellip;路径怎么这样子??怎么和别人不一样啊~~ 喜出望外，好像知道原因了，果然项目文件夹里看不到该文件，果断Add Files to &ldquo;XXX"添加文件!
+<img src="/myimg/ios/errorLoad.png" alt="image" /></p>
 
-<p>怎么添加插件？有如下三种方式<code>install JetBrains plugin</code>,<code>Browse repositories</code>,<code>install plugin from disk</code>。<code>Sexy Editor</code>是用第二种方式添加。</p>
-
-<p><img src="/myimg/android/add_plugin.png" alt="img" /></p>
-
-<p>我的<code>sexy editor</code>设置</p>
-
-<p><img src="/myimg/android/sexy_editor.png" alt="img" /></p>
-
-<h3>* Mac下的快捷键</h3>
-
-<p>Mac中的标识：<code>⌘:command</code>, <code>⌃:control</code>, <code>⇧:shift</code>, <code>⌥:alt/option</code></p>
-
-<p><code>⌘ + ⌥ + L</code>: 代码对齐格式化</p>
-
-<p><code>^ + ⌥ + O</code>: 除去无效的import引用</p>
-
-<p><code>F1</code>: 查看文档</p>
-
-<p><code>F2</code>: 定位到未被使用的成员</p>
-
-<p><code>F3</code>: 添加书签</p>
-
-<p><code>F4</code>: 定位到声明处</p>
-
-<p><code>⇧ + F6</code>: 文件重命名</p>
-
-<p><code>⌘ + F12</code>: 显示内部成员</p>
-
-<p><code>⌘ + ⇧ + F7</code>: 代码高亮</p>
-
-<p><code>⌥ + ⏎</code>: 添加缺少的import</p>
-
-<p><code>⌘ + delete</code>: 删除整行</p>
-
-<p><code>⌘ + N</code>: 生成代码，getter setter 等</p>
-
-<p><code>⌃ + H</code>: 查看类的层级关系</p>
-
-<p><code>⌘ + U</code>: 查看父类的同名方法</p>
-
-<p><code>⌘ + J</code>: 快捷插入常用代码片段</p>
-
-<p><code>⌥ + ⇧ + ↑或↓</code>: 上下移动光标所在的行</p>
-
-<p><code>⌘ + ⇧ + ↑或↓</code>: 上下移动整个方法块</p>
-
-<p><code>⌘ + ⌥ + ⏎</code>: 当前行上面插入一行</p>
-
-<p><code>⌘ + ⇧ + U</code>: 大小写转化</p>
-
-<p><code>⌘ + E</code>: 查看打开过的文件</p>
-
-<p><code>⌃ + T</code>: 重构面板</p>
-
-<p><code>⌃ + O</code>: 选择要重写或者要实现的方法</p>
-
-<p><code>⌘ + O</code>: 快速搜索class</p>
-
-<p><code>⌘ + ⇧ + O</code>: 快速搜索file</p>
-
-<p><code>⌘ + ⇧ + F</code>: 全局搜索</p>
-
-<p><code>⌘ + ⇧ + R</code>: 全局替换</p>
-
-<p><code>⌘ + +或-</code>: 展开或者收起代码块</p>
-
-<p><code>⌘ + /</code>: 注释 //</p>
-
-<p><code>⌘ + ⌥ + /</code>: 注释 /**/</p>
-
-<p><code>⌥ + ⏎</code>: 提示错误解决方法</p>
-
-<p>可能会有人觉得为啥重命名<code>⇧ + F6</code>没反应呢？跟 F1 ~ F12 有关的都没反应&hellip;</p>
-
-<p>因为Mac系统默认没有启用它们&hellip;在系统设置，键盘选项里选中就可以了。</p>
-
-<p><img src="/myimg/android/keyf.png" alt="img" /></p>
-
-<p>当然可以设置自己喜欢的快捷键，我自己把运行和调试改成了<code>⌘ + R</code>和<code>⌘ + D</code></p>
-
-<p><img src="/myimg/android/keymap.png" alt="img" /></p>
+<p>还是不行&hellip;WTF!! 把对应的.h .m文件拖到桌面上，再重新添加到项目里，解决了！！so easy ！！ 为什么一开始不怀疑是文件索引问题呢？ 因为项目编译没报 XXX.h not found &hellip;以为文件都好好的呢，以为是项目的配置问题&hellip; 所以一开始就找问题的方向就跑偏了！其实这问题之前也遇到过，一般是报第三方的XXX.a文件出现这问题。这问题一般是多人开发是用SVN更来更去导致的<code>project.pbxproj</code>里对应的文件索引没了。好了，再遇到这问题就不要跑偏了，把对应的文件重新添加就可以了！！</p>
 </div>
 
 
@@ -207,12 +128,12 @@
 
 
 
-<time class='entry-date' datetime='2015-11-22T14:10:45+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>2:10 pm</span></time>
+<time class='entry-date' datetime='2016-09-12T10:00:18+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:00 am</span></time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/android/'>android</a>
+    <a class='category' href='/blog/categories/ios/'>ios</a>
   
 </span>
 
@@ -230,10 +151,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/11/21/androidBase0/" title="Previous Post: Android 基础知识">&laquo; Android 基础知识</a>
+        <a class="basic-alignment left" href="/blog/2016/09/08/okhttp-retrofit/" title="Previous Post: OkHttp and Retrofit">&laquo; OkHttp and Retrofit</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2015/11/23/androidsave/" title="Next Post: Android基本存储">Android基本存储 &raquo;</a>
       
     </p>
   </footer>
