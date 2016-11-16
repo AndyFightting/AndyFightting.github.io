@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-11-16T10:34:09+08:00</updated>
+  <updated>2016-11-16T15:04:59+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -32,11 +32,225 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[MyBatis 使用]]></title>
+    <title type="html"><![CDATA[MyBatis 的简单使用]]></title>
     <link href="http://andyfightting.github.io/blog/2016/11/14/mybatis/"/>
     <updated>2016-11-14T19:26:25+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/11/14/mybatis</id>
-    <content type="html"><![CDATA[
+    <content type="html"><![CDATA[<p>Mybatis是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以对配置和原生Map使用简单的 XML 或注解，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录。</p>
+
+<p>需要两个包：<a href="https://github.com/mybatis/mybatis-3/releases">MyBatis包</a>和<a href="https://www.mysql.com/products/connector/">JDBC Driver for MySQL</a></p>
+
+<p>无论是用过的mybatis和hibernate他们的共同点：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>1.从配置文件(通常是XML配置文件中)得到sessionfactory
+</span><span class='line'>2.由sessionfactory产生session
+</span><span class='line'>3.在session中完成对数据的增删改查和事务提交等
+</span><span class='line'>4.在用完之后关闭session 
+</span><span class='line'>5.在java 对象和数据库之间有mapping的配置文件，也通常是xml文件</span></code></pre></td></tr></table></div></figure>
+
+
+<p>主要XML配置文件中包含了对 MyBatis 系统的核心设置，包含获取数据库连接实例的数据源和决定事务范围和控制方式的事务管理器。通过加载该文件获取SqlSessionFactory。</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd"&gt;
+&lt;configuration&gt;
+    &lt;!--对象别名定义 --&gt;
+    &lt;typeAliases&gt;
+        &lt;typeAlias alias="User" type="com.sgm.java.User" /&gt;
+    &lt;/typeAliases&gt;
+
+&lt;!--数据库连接 --&gt;
+&lt;environments default="development"&gt;
+    &lt;environment id="development"&gt;
+        &lt;transactionManager type="JDBC" /&gt;
+        &lt;dataSource type="POOLED"&gt;
+            &lt;property name="driver" value="com.mysql.jdbc.Driver" /&gt;
+            &lt;property name="url" value="jdbc:mysql://localhost:8889/java_db" /&gt;
+            &lt;property name="username" value="root" /&gt;
+            &lt;property name="password" value="root" /&gt;
+        &lt;/dataSource&gt;
+    &lt;/environment&gt;
+&lt;/environments&gt;
+
+&lt;!--数据库操作映射文件 --&gt;
+&lt;mappers&gt;
+    &lt;mapper resource="com/sgm/mybatis/User.xml" /&gt;
+&lt;/mappers&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<p>数据库操作映射文件</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd"&gt;
+
+&lt;!--namespace很重要，绑定对应的接口文件！--&gt;
+&lt;mapper namespace="com.sgm.java.UserDao"&gt;
+
+&lt;resultMap type="User" id="resultListUser"&gt;
+    &lt;result column="name" property="name" /&gt;
+    &lt;result column="age" property="age" /&gt;
+&lt;/resultMap&gt;
+
+&lt;!--id名字要和UserDao里的方法名一样  --&gt;
+&lt;insert id="addUser" parameterType="User" useGeneratedKeys="true" keyProperty="id"&gt;
+    insert into user(name, age) values(#{name}, #{age});
+&lt;/insert&gt;
+
+&lt;delete id="deleteUserById" parameterType="int"&gt;
+    delete from user where id = #{id};
+&lt;/delete&gt;
+
+&lt;update id="updateUser" parameterType="User" &gt;
+     update user set name = #{name}, age = #{age} where id = #{id};
+&lt;/update&gt;
+
+&lt;select id="getAllUsers" resultMap="resultListUser"&gt;
+    select * from user ;
+&lt;/select&gt;
+
+&lt;select id="selectUserById" parameterType="int" resultType="User"&gt;
+   select * from user where id = #{id};
+&lt;/select&gt;
+&lt;/mapper&gt;
+</code></pre>
+
+<p>定义数据库操作接口，方法要和对应的映射文件里的id名称一样！</p>
+
+<pre><code>public interface UserDao {
+    //  方法名要和User.xml配置文件里的id名称一样
+    public void addUser(User user);
+
+    public void deleteUserById(int id);
+
+    public void updateUser(User user);
+
+    public List&lt;User&gt; getAllUsers();
+
+    public User selectUserById(int id);
+}
+</code></pre>
+
+<p>操作的Java对象</p>
+
+<pre><code>public class User {
+        public int id;
+        public String name;
+        public int age;
+
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+}
+</code></pre>
+
+<p>测试</p>
+
+<pre><code>public class Main {
+    private static Reader reader;
+    private static SqlSessionFactory sqlSessionFactory;
+
+static {
+    try {
+        reader = Resources.getResourceAsReader("MyBatisConfig.xml");
+        sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+public static void main(String[] args) {
+    SqlSession session = sqlSessionFactory.openSession();
+    UserDao userDao = session.getMapper(UserDao.class);
+
+    try {
+//          // 增
+//          User newUser = new User();
+//          newUser.setName("andy");
+//          newUser.setAge(20);
+//          userDao.addUser(newUser);
+//          session.commit();//必须提交
+//          System.out.println("reult------： 新增的userId " + newUser.getId());    
+//          //删
+//          userDao.deleteUserById(1);
+//          session.commit();//必须提交
+
+//          //改
+//          User updateUser = new User();
+//          updateUser.setId(4);
+//          updateUser.setName("andy");
+//          updateUser.setAge(20);
+//          userDao.updateUser(updateUser);
+//          session.commit();//必须提交
+
+//          //列表
+//          List&lt;User&gt; userList = userDao.getAllUsers();
+//          for(User user : userList){
+//              System.out.println("reult------：  " + user.getName());            
+//          }
+            //查单个
+//          User user = userDao.selectUserById(4);
+//          System.out.println("reult------：  " + user.getName());
+        } finally {
+            session.close();//必须关闭
+        }
+    }
+}
+</code></pre>
+
+<h3>注意!</h3>
+
+<h5>SqlSessionFactoryBuilder</h5>
+
+<p>这个类可以被实例化、使用和丢弃，一旦创建了 SqlSessionFactory，就不再需要它了。因此 SqlSessionFactoryBuilder 实例的最佳范围是方法范围,也就是局部方法变量。可以重用 SqlSessionFactoryBuilder 来创建多个 SqlSessionFactory 实例，但是最好还是不要让其一直存在以保证所有的 XML 解析资源开放给更重要的事情。</p>
+
+<h5>SqlSessionFactory</h5>
+
+<p>SqlSessionFactory 一旦被创建就应该在应用的运行期间一直存在，没有任何理由对它进行清除或重建。使用 SqlSessionFactory 的最佳实践是在应用运行期间不要重复创建多次。因此 SqlSessionFactory 的最佳范围是应用范围。可以使用单例模式或者静态单例模式。</p>
+
+<h5>SqlSession</h5>
+
+<p>每个线程都应该有它自己的 SqlSession 实例。SqlSession 的实例不是线程安全的，因此是不能被共享的，所以它的最佳的范围是请求或方法范围。不能将 SqlSession 实例的引用放在一个类的静态域，甚至一个类的实例变量也不行。每次操作应该打开一个 SqlSession，处理数据，处理完后就关闭它。关闭操作很重要，应该把这个关闭操作放到 finally 块中以确保每次都能执行关闭。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>SqlSession session = sqlSessionFactory.openSession();
+</span><span class='line'>try {
+</span><span class='line'>  // do work
+</span><span class='line'>} finally {
+</span><span class='line'>  session.close();
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+
 ]]></content>
   </entry>
   
@@ -126,7 +340,7 @@ public static void show(Context context, Class showedActivityClass, ItemTapListe
 }
 </code></pre>
 
-<p>  要使用ActionSheet的效果话就是继承它，然后theme选择ActionSheetTheme。然后把界面的布局放在bottom就可以了。</p>
+<p>  要使用ActionSheet的效果话就是继承它，然后theme选择ActionSheetTheme。然后把界面的布局从bottom开始布局。</p>
 
 <pre><code>  public class PhotoSheet extends BaseSheetActivity {
 
@@ -381,15 +595,6 @@ public void backImageTap(View v) {
 <p>在使用的Activity的onDestroy()方法中调用 FileUtil.deleteAllFile(); 清除选取的临时缓存图片！！！</p>
 
 <p><a href="https://github.com/AndyFightting/SelectPhoto_Android">下载</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[微信小程序 Demo]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/11/08/wei-xin-demo/"/>
-    <updated>2016-11-08T19:43:46+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/11/08/wei-xin-demo</id>
-    <content type="html"><![CDATA[
 ]]></content>
   </entry>
   
@@ -3062,6 +3267,117 @@ label.attributedText = [attributeString copy];
 <p>11.在GDC中一个操作是多线程执行还是单线程执行取决于当前队列类型和执行方法，只有队列类型为并发队列并且使用异步方法执行时才能在多个线程中并发执行。</p>
 
 <p>12.相比使用NSLock，@synchronized更加简单。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式]]></title>
+    <link href="http://andyfightting.github.io/blog/2015/12/19/desigin-pattern/"/>
+    <updated>2015-12-19T21:51:06+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2015/12/19/desigin-pattern</id>
+    <content type="html"><![CDATA[<p>我理解的设计模式都是为了让代码模块化，结构化，各司其职，再把各个模块通过"接口"组合起来。封装变化；多用组合少用继承；针对接口编程，不针对实现编程；为交互对象之间的松耦合设计而努力；对扩展开放，对修改关闭。</p>
+
+<h3>1.MVC模式</h3>
+
+<p>看图就可以了，简洁明了~
+<img src="http://andyfightting.github.io/myimg/other/mvc.png" alt="image" /><!--more--></p>
+
+<h3>2.策略模式</h3>
+
+<p>比如有个父类有飞行功能，然后有很多子类的飞行功能各不一样，如果去继承父类然后分别实现不同的飞行行为，这就坑爹了&hellip;具体做法应该是：把飞行行为完全独立出来成一个Interface，然后不同的飞行行为再在单独的类中实现，不同的子类要不同的飞行行为的话就取对应的行为实现对象。</p>
+
+<p>父类：</p>
+
+<pre><code>public class Duck {//父类
+
+public FlyInterface flyInterface;//行为的接口成员变量
+
+public void performFly(){//统一调用的飞行方法
+    flyInterface.fly();
+}
+
+public void setFlyInterface(FlyInterface fi){//动态改变飞行行为
+    flyInterface = fi;
+  }
+}
+</code></pre>
+
+<p>行为接口：</p>
+
+<pre><code>public interface FlyInterface { //行为接口
+void fly();//要实现的行为方法
+}
+</code></pre>
+
+<p>行为的一种具体实现：</p>
+
+<pre><code>public class FlyPatternOne implements FlyInterface {//飞行行为的一种实现，可以有很多个不同的实现
+@Override
+public void fly() {
+    //这里是具体飞行行为代码
+
+  }
+}
+</code></pre>
+
+<p>某一个子类：</p>
+
+<pre><code>public class SubDuck extends Duck{
+public SubDuck(){
+    //默认的飞行行为，不同的子类有不同的飞行行为，如 FlyPatternTwo FlyPatternThree...等
+    flyInterface = new FlyPatternOne();
+  }
+}
+</code></pre>
+
+<p><img src="http://andyfightting.github.io/myimg/other/chelue.png" alt="image" /></p>
+
+<p>1,找出可能需要变化之处，把它们独立封装起来，不要和那些不需要变化的代码混合在一起。</p>
+
+<p>2.针对接口编程，而不是针对实现编程。</p>
+
+<p>3.多用组合，少用继承。</p>
+
+<h3>3.观察者模式</h3>
+
+<p>好好看图吧，把它转化为具体代码加深理解
+<img src="http://andyfightting.github.io/myimg/other/guanCha0.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/guanCha1.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/guanCha2.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/guanCha3.jpg" alt="image" /></p>
+
+<p>看完上面例子，下面的设计图也更好理解了。
+<img src="http://andyfightting.github.io/myimg/other/guanCha4.jpg" alt="image" /></p>
+
+<p>使用Java内置的观察者模式
+<img src="http://andyfightting.github.io/myimg/other/guanCha5.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/guanCha6.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/guanCha7.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/guanCha8.jpg" alt="image" /></p>
+
+<p>Swing中的观察者模式
+<img src="http://andyfightting.github.io/myimg/other/guanCha9.jpg" alt="image" /></p>
+
+<p>要点
+<img src="http://andyfightting.github.io/myimg/other/guanCha10.jpg" alt="image" /></p>
+
+<h3>4.装饰模式</h3>
+
+<p>动态的将责任附加到对象上，用对象组合的方式来解决继承滥用的问题。利用继承设计子类的行为是在编译时静态决定的，而且所有的子类都会继承到相同的行为。如果利用组合的做法扩展对象的行为，就可以在运行时动态的进行扩展。类应该多扩展开放，对修改关闭。即在不修改现有代码的情况下可以添加新的行为。</p>
+
+<p>装饰着和被装饰着必须是同一类型，所以通过继承来实现。这里的继承是用来达到“类型一致”的，而不是为了通过继承得到“行为”。“行为”来自装饰着和基础组件，其他与装饰着之间的组合关系。
+<img src="http://andyfightting.github.io/myimg/other/zhuangShi.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/zhuangShi0.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/zhuangShi1.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/zhuangShi2.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/zhuangShi3.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/zhuangShi4.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/zhuangShi5.jpg" alt="image" />
+<img src="http://andyfightting.github.io/myimg/other/zhuangShi6.jpg" alt="image" /></p>
+
+<h3>5.工厂模式</h3>
+
+<p>当每次“new”的时候都会实例化一个类，所以这是用的实现编程而不是接口编程。“工厂”就是一个专门负责产生对象的一个类。</p>
 ]]></content>
   </entry>
   

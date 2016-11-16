@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-11-16T10:34:09+08:00</updated>
+  <updated>2016-11-16T15:04:59+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -99,7 +99,7 @@ public static void show(Context context, Class showedActivityClass, ItemTapListe
 }
 </code></pre>
 
-<p>  要使用ActionSheet的效果话就是继承它，然后theme选择ActionSheetTheme。然后把界面的布局放在bottom就可以了。</p>
+<p>  要使用ActionSheet的效果话就是继承它，然后theme选择ActionSheetTheme。然后把界面的布局从bottom开始布局。</p>
 
 <pre><code>  public class PhotoSheet extends BaseSheetActivity {
 

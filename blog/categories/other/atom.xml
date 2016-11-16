@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Other | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/other/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-11-16T10:34:09+08:00</updated>
+  <updated>2016-11-16T15:04:59+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -32,20 +32,212 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[MyBatis 使用]]></title>
+    <title type="html"><![CDATA[MyBatis 的简单使用]]></title>
     <link href="http://andyfightting.github.io/blog/2016/11/14/mybatis/"/>
     <updated>2016-11-14T19:26:25+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/11/14/mybatis</id>
-    <content type="html"><![CDATA[
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[微信小程序 Demo]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/11/08/wei-xin-demo/"/>
-    <updated>2016-11-08T19:43:46+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/11/08/wei-xin-demo</id>
-    <content type="html"><![CDATA[
+    <content type="html"><![CDATA[<p>Mybatis是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以对配置和原生Map使用简单的 XML 或注解，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录。</p>
+
+<p>需要两个包：<a href="https://github.com/mybatis/mybatis-3/releases">MyBatis包</a>和<a href="https://www.mysql.com/products/connector/">JDBC Driver for MySQL</a></p>
+
+<p>无论是用过的mybatis和hibernate他们的共同点：
+<code>
+1.从配置文件(通常是XML配置文件中)得到sessionfactory
+2.由sessionfactory产生session
+3.在session中完成对数据的增删改查和事务提交等
+4.在用完之后关闭session
+5.在java 对象和数据库之间有mapping的配置文件，也通常是xml文件
+</code></p>
+
+<p>主要XML配置文件中包含了对 MyBatis 系统的核心设置，包含获取数据库连接实例的数据源和决定事务范围和控制方式的事务管理器。通过加载该文件获取SqlSessionFactory。</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd"&gt;
+&lt;configuration&gt;
+    &lt;!--对象别名定义 --&gt;
+    &lt;typeAliases&gt;
+        &lt;typeAlias alias="User" type="com.sgm.java.User" /&gt;
+    &lt;/typeAliases&gt;
+
+&lt;!--数据库连接 --&gt;
+&lt;environments default="development"&gt;
+    &lt;environment id="development"&gt;
+        &lt;transactionManager type="JDBC" /&gt;
+        &lt;dataSource type="POOLED"&gt;
+            &lt;property name="driver" value="com.mysql.jdbc.Driver" /&gt;
+            &lt;property name="url" value="jdbc:mysql://localhost:8889/java_db" /&gt;
+            &lt;property name="username" value="root" /&gt;
+            &lt;property name="password" value="root" /&gt;
+        &lt;/dataSource&gt;
+    &lt;/environment&gt;
+&lt;/environments&gt;
+
+&lt;!--数据库操作映射文件 --&gt;
+&lt;mappers&gt;
+    &lt;mapper resource="com/sgm/mybatis/User.xml" /&gt;
+&lt;/mappers&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<p>数据库操作映射文件</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd"&gt;
+
+&lt;!--namespace很重要，绑定对应的接口文件！--&gt;
+&lt;mapper namespace="com.sgm.java.UserDao"&gt;
+
+&lt;resultMap type="User" id="resultListUser"&gt;
+    &lt;result column="name" property="name" /&gt;
+    &lt;result column="age" property="age" /&gt;
+&lt;/resultMap&gt;
+
+&lt;!--id名字要和UserDao里的方法名一样  --&gt;
+&lt;insert id="addUser" parameterType="User" useGeneratedKeys="true" keyProperty="id"&gt;
+    insert into user(name, age) values(#{name}, #{age});
+&lt;/insert&gt;
+
+&lt;delete id="deleteUserById" parameterType="int"&gt;
+    delete from user where id = #{id};
+&lt;/delete&gt;
+
+&lt;update id="updateUser" parameterType="User" &gt;
+     update user set name = #{name}, age = #{age} where id = #{id};
+&lt;/update&gt;
+
+&lt;select id="getAllUsers" resultMap="resultListUser"&gt;
+    select * from user ;
+&lt;/select&gt;
+
+&lt;select id="selectUserById" parameterType="int" resultType="User"&gt;
+   select * from user where id = #{id};
+&lt;/select&gt;
+&lt;/mapper&gt;
+</code></pre>
+
+<p>定义数据库操作接口，方法要和对应的映射文件里的id名称一样！</p>
+
+<pre><code>public interface UserDao {
+    //  方法名要和User.xml配置文件里的id名称一样
+    public void addUser(User user);
+
+    public void deleteUserById(int id);
+
+    public void updateUser(User user);
+
+    public List&lt;User&gt; getAllUsers();
+
+    public User selectUserById(int id);
+}
+</code></pre>
+
+<p>操作的Java对象</p>
+
+<pre><code>public class User {
+        public int id;
+        public String name;
+        public int age;
+
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+}
+</code></pre>
+
+<p>测试</p>
+
+<pre><code>public class Main {
+    private static Reader reader;
+    private static SqlSessionFactory sqlSessionFactory;
+
+static {
+    try {
+        reader = Resources.getResourceAsReader("MyBatisConfig.xml");
+        sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+public static void main(String[] args) {
+    SqlSession session = sqlSessionFactory.openSession();
+    UserDao userDao = session.getMapper(UserDao.class);
+
+    try {
+//          // 增
+//          User newUser = new User();
+//          newUser.setName("andy");
+//          newUser.setAge(20);
+//          userDao.addUser(newUser);
+//          session.commit();//必须提交
+//          System.out.println("reult------： 新增的userId " + newUser.getId());    
+//          //删
+//          userDao.deleteUserById(1);
+//          session.commit();//必须提交
+
+//          //改
+//          User updateUser = new User();
+//          updateUser.setId(4);
+//          updateUser.setName("andy");
+//          updateUser.setAge(20);
+//          userDao.updateUser(updateUser);
+//          session.commit();//必须提交
+
+//          //列表
+//          List&lt;User&gt; userList = userDao.getAllUsers();
+//          for(User user : userList){
+//              System.out.println("reult------：  " + user.getName());            
+//          }
+            //查单个
+//          User user = userDao.selectUserById(4);
+//          System.out.println("reult------：  " + user.getName());
+        } finally {
+            session.close();//必须关闭
+        }
+    }
+}
+</code></pre>
+
+<h3>注意!</h3>
+
+<h5>SqlSessionFactoryBuilder</h5>
+
+<p>这个类可以被实例化、使用和丢弃，一旦创建了 SqlSessionFactory，就不再需要它了。因此 SqlSessionFactoryBuilder 实例的最佳范围是方法范围,也就是局部方法变量。可以重用 SqlSessionFactoryBuilder 来创建多个 SqlSessionFactory 实例，但是最好还是不要让其一直存在以保证所有的 XML 解析资源开放给更重要的事情。</p>
+
+<h5>SqlSessionFactory</h5>
+
+<p>SqlSessionFactory 一旦被创建就应该在应用的运行期间一直存在，没有任何理由对它进行清除或重建。使用 SqlSessionFactory 的最佳实践是在应用运行期间不要重复创建多次。因此 SqlSessionFactory 的最佳范围是应用范围。可以使用单例模式或者静态单例模式。</p>
+
+<h5>SqlSession</h5>
+
+<p>每个线程都应该有它自己的 SqlSession 实例。SqlSession 的实例不是线程安全的，因此是不能被共享的，所以它的最佳的范围是请求或方法范围。不能将 SqlSession 实例的引用放在一个类的静态域，甚至一个类的实例变量也不行。每次操作应该打开一个 SqlSession，处理数据，处理完后就关闭它。关闭操作很重要，应该把这个关闭操作放到 finally 块中以确保每次都能执行关闭。
+<code>
+SqlSession session = sqlSessionFactory.openSession();
+try {
+  // do work
+} finally {
+  session.close();
+}
+</code></p>
 ]]></content>
   </entry>
   
@@ -157,6 +349,85 @@ public SubDuck(){
 <h3>5.工厂模式</h3>
 
 <p>当每次“new”的时候都会实例化一个类，所以这是用的实现编程而不是接口编程。“工厂”就是一个专门负责产生对象的一个类。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Octopress搭建个人博客]]></title>
+    <link href="http://andyfightting.github.io/blog/2015/11/14/jiaocheng/"/>
+    <updated>2015-11-14T11:21:39+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2015/11/14/jiaocheng</id>
+    <content type="html"><![CDATA[<p>本人的博客刚刚搭建好，并绑定了个人域名(<a href="http://guimingsu.com">guimingsu.com</a>)，现将该过程记录下来。</p>
+
+<p><a href="https://pages.github.com/">Github Pages</a>是Github提供的一个免费空间，相当于我们博客的免费托管服务器，我们写的博客就是放这上面的。它可以拥有一个独立的二级域名如xxx.github.io(如果有自己的个人域名，可以用自己的个人域名指向它)，允许开发者提交静态网页文件，用于介绍自己，或者自己的开源项目，可以看作是个人或项目主页。</p>
+
+<p><a href="http://octopress.org/">Octopress</a>“A blogging framework for hackers”，即像写代码似的写博客。一个博客网页生成框架，我们按照它要求的格式写博客内容，然后敲命令<code>rake generate</code>,<code>rake deploy</code>,就可以把网页放到Github服务器上，然后我们就可以看到了啊，它就是一个写博客的工具可以这样理解。</p>
+
+<p>个人域名，这个要自己买了，可以上<a href="http://wanwang.aliyun.com/">阿里云</a>上买，一年几十块，配置后面再讲。在注册阿里云的时候我用的QQ邮箱，就是收不到邮件，换成Gmail就收到了。不知道是我网络问题还是大公司间的任性撕逼，如果你也收不到邮件就换个邮箱注册吧。<!--more--></p>
+
+<ul>
+<li><p>在<a href="https://github.com">Github</a>上New repository, 名字为<code>yourNmae.github.io</code>确定提交，这里报错是因为我已经建好了。
+<img src="/myimg/other/creat_rep.png" alt="creat_rep" />
+之后会生成一个HTTPS连接如 <a href="https://github.com/yourName/yourName.github.io.git">https://github.com/yourName/yourName.github.io.git</a> ,这个连接在之后的Octopress绑定配置中要用。</p></li>
+<li><p><a href="http://octopress.org/docs/setup/">Octopress</a>这个步骤比较多一点, 我用的系统是 OS X10.10.5。Octopress要用到ruby环境，且ruby版本要大于等于<code>1.9.3</code>。可以用<code>ruby -v</code>命令看一下ruby版本，我的是版本是<code>2.0.0p643</code>, 没有的话可以看<a href="https://ruby-china.org/wiki/install_ruby_guide">这里</a>安装ruby环境。</p></li>
+</ul>
+
+
+<p>环境装好后从网上下载Octopress框架到本地电脑上，这里我保存到octopress文件夹且放在桌面上</p>
+
+<p>下载： <code>git clone git://github.com/imathis/octopress.git /Users/suguiming/Desktop/octopress</code></p>
+
+<p>然后进入该文件夹：<code>cd  /Users/suguiming/Desktop/octopress</code></p>
+
+<p>然后：  <code>gem install bundler</code></p>
+
+<p>这里可能会报错，说缺少xxx依赖包，可以用<code>gem dependency</code>查看要依赖的包，然后把包都装上再敲上面的命令</p>
+
+<p>然后： <code>bundle install</code></p>
+
+<p>再然后：  <code>rake install</code></p>
+
+<p>这里Octopress就下载安装好了，之后要进行关联配置,把Octopress和Github关联起来，我们就可以把博客放到之前建的Github项目<code>yourNmae.github.io</code>里了。</p>
+
+<p>但关联前还有一个步骤就是SSH key处理。新建一个命令窗口<code>cd ~/.ssh</code>进入目录，<code>ls -a</code>查看内容，这时候一般没有<code>id_rsa</code>及<code>id_rsa.pub</code>这两个文件的，我们现在要创建这两个文件。<code>ssh-keygen -t rsa -C "Github登录账号邮箱@qq.com"</code>,然后按回车回车再回车就生成那两个文件了。然后把<code>id_rsa.pub</code>里的东西全选复制，在<a href="https://github.com/settings/ssh">这里</a>添加一个SSH key即可。</p>
+
+<p>回到octopress的命令窗口，输入命令<code>rake setup_github_pages</code> 此时要求输入Github项目<code>yourNmae.github.io</code>的地址，即前面得到的<code>https://github.com/yourName/yourName.github.io.git</code>,也可在Github中项目里的右下角的HTTPS链接复制过来然后</p>
+
+<pre><code>rake generate
+rake deploy
+git add .
+git commit -m 'say something'
+git push origin source
+</code></pre>
+
+<ul>
+<li>写博客，<code>rake new_post["file name"]</code>新建一个写博客的文件，它会在<code>/source/_posts</code>文件夹里生成,打开它在里面写博客内容就可以了。它是用markdown的方式写，可以在<a href="http://wowubuntu.com/markdown/">这里</a>和<a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">这里</a>查看markdown的使用规则，常用的就那几个，熟悉就可以了,大概长这样。推荐使用<a href="http://mouapp.com/">Mou</a>来编写markdown文件，<a href="https://maxiang.io/">马克飞象</a>这个在线编写工具也很好。
+  <img src="/myimg/other/write_blog.png" alt="write_blog" />
+  写好后保存，<code>rake generate</code>生成博客，<code>rake preview</code>预览博客，在地址栏输入<code>http://localhost:4000/</code>查看，退出预览<code>control+C</code></li>
+</ul>
+
+
+<p>然后提交，之后在地址栏输入<code>yourName.github.io</code>就可以查看了</p>
+
+<pre><code>rake deploy
+git add .
+git commit -m 'say something'
+git push origin source
+</code></pre>
+
+<ul>
+<li><p>域名绑定，在<code>yourName.github.io</code>项目里新建一个文件，文件名必须是大写的<code>CNAME</code>,内容是你购买的域名如我的域名<code>guimingsu.com</code>,前面不要加www或http,参考<a href="https://help.github.com/articles/adding-a-cname-file-to-your-repository/">这里</a>,然后<code>git pull</code>把刚才建的文件同步到本地。
+然后在域名购买的服务商那里设置，我用的是<a href="http://www.aliyun.com/">阿里云</a>。登录账号，在控制管理，域名解析中添加域名指向,把图中的<code>andyfightting.github.io</code>换成你自己的，其他的不变,这样域名就配置好了
+<img src="/myimg/other/yuming.png" alt="img" />
+参考<a href="https://help.github.com/articles/my-custom-domain-isn-t-working/">这里</a>
+<img src="/myimg/other/dns_error.png" alt="img" /></p></li>
+<li><p>其他个性化配置，如在浏览器显示的icon替换，在source文件夹里面有个文件叫favicon.png，做一个16*16图片替换进去提交，可能不会立即有反应。还有博客的评论系统是用的第三方<a href="https://disqus.com">disqus</a>。在该网站上注册一个账号，然后把账号名填写在<code>/octopress/_config.yml</code>文件中对应的地方，把false改成true。</p></li>
+</ul>
+
+
+<p><img src="/myimg/other/discus.png" alt="img" /></p>
+
+<p>由于访问国外disqus比较慢，我又把评论部分改用国内的<a href="http://duoshuo.com/">多说</a>了，使用方法都类似的，具体配置请看<a href="http://www.tuicool.com/articles/VbqYNjn">这里</a>,里面还说了性能优化可以跟着改改，提高网页的响应速度。</p>
 ]]></content>
   </entry>
   
