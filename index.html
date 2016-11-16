@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="iOS Not Found for Architecture Arm64 Sep 12th, 2016 10:00 am 接手维护一个项目，更新一下出现了下面这问题👇 一看是"not found for architecture arm64"问题啊，哦，找不到architecture &hellip;">
+  <meta name="description" content="React Native Demo Nov 14th, 2016 7:46 pm | Comments SpringMVC + MyBatis 框架搭建 Nov 14th, 2016 7:34 pm | Comments MyBatis 使用 Nov 14th, 2016 7:26 pm | &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,501 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/11/14/react-native/">React Native Demo</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-14T19:46:09+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:46 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/11/14/react-native/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/14/springmvc-plus-mybatda-jian/">SpringMVC + MyBatis 框架搭建</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-14T19:34:43+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:34 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/11/14/springmvc-plus-mybatda-jian/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/14/mybatis/">MyBatis 使用</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-14T19:26:25+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:26 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/11/14/mybatis/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/11/android-select-photo/">Android 一行代码选取图片</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-11T19:31:33+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:31 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>一行代码模仿iOS的选取图片效果。思路主要是把相机和相册的回调放在一个透明的Activity里，然后在这个透明的Activity中弹出自定义的ActionSheet选择框，选取调相机还是相册。相机比较简单，直接调系统的。相册就不用系统的了，不同手机差别太大，效果也不好。自己遍历本地图片文件然后显示。这样即时在不同手机上也能展示相同的效果了。封装后使用就简单了，一行代码调用就可以，不会和业务Activity耦合了！</p>
+
+<h4>使用:</h4>
+
+<p>1.选取一张正方形图片</p>
+
+<pre><code>   SelectPhotoSheet.showCropImageSheet(this, new AlbumResultListener() {
+            @Override
+            public void complete(View tapedView, List&lt;String&gt; pathList) {
+                cache.displayBmp(headImageView, pathList.get(0), new Point(100, 100));
+            }
+        });
+</code></pre>
+
+<p>2.选取限制数量的全尺寸图片</p>
+
+<pre><code>SelectPhotoSheet.showFullImageSheet(this, 8, new AlbumResultListener() {
+            @Override
+            public void complete(View tapedView, List&lt;String&gt; pathList) {
+                localPathList.clear();
+                localPathList.addAll(pathList);
+                adapter.notifyDataSetChanged();
+            }
+        });
+</code></pre>
+
+<p><img src="/myimg/android/one_select.png" alt="" /></p>
+
+<h4>实现</h4>
+
+<p>1.自定义ActionSheet，弄一个Sheet的工具类 BaseSheetActivity。</p>
+
+<pre><code>//用作弹出 action sheet 效果的 base activity
+public class BaseSheetActivity extends Activity {
+    protected int activityCloseEnterAnimation;
+    protected int activityCloseExitAnimation;
+
+public static ItemTapListener itemTapListener;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+    TypedArray activityStyle = getTheme().obtainStyledAttributes(new int[] {android.R.attr.windowAnimationStyle});
+    int windowAnimationStyleResId = activityStyle.getResourceId(0, 0);
+    activityStyle.recycle();
+
+    activityStyle = getTheme().obtainStyledAttributes(windowAnimationStyleResId, new int[] {android.R.attr.activityCloseEnterAnimation, android.R.attr.activityCloseExitAnimation});
+    activityCloseEnterAnimation = activityStyle.getResourceId(0, 0);
+    activityCloseExitAnimation = activityStyle.getResourceId(1, 0);
+    activityStyle.recycle();
+}
+
+@Override
+public boolean onTouchEvent(MotionEvent event) {
+    dismiss();
+    if (itemTapListener != null){
+        itemTapListener.itemTap(new View(this),"");
+    }
+    return super.onTouchEvent(event);
+}
+
+@Override
+public void finish() {
+    dismiss();
+}
+
+public void dismiss(){
+    super.finish();
+    overridePendingTransition(activityCloseEnterAnimation, activityCloseExitAnimation);
+}
+
+public static void show(Context context, Class showedActivityClass, ItemTapListener itemTapListener){
+    BaseSheetActivity.itemTapListener = itemTapListener;
+    Intent intent = new Intent(context,showedActivityClass);
+    context.startActivity(intent);
+}
+}
+</code></pre>
+
+<p>  要使用ActionSheet的效果话就是继承它，然后theme选择ActionSheetTheme。然后把界面的布局放在bottom就可以了。</p>
+
+<pre><code>  public class PhotoSheet extends BaseSheetActivity {
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.action_photo_sheet); //action_photo_sheet的布局从bottom开始
+
+}
+
+public void itemTap(View view){
+    dismiss();
+    if (itemTapListener != null){
+        itemTapListener.itemTap(view,"");
+    }
+}
+
+@Override
+public void onBackPressed() {
+    dismiss();
+    if (itemTapListener != null){
+        itemTapListener.itemTap(new View(this),"");
+    }
+}
+}
+
+   //设置为自定义的样式
+ &lt;activity
+        android:name=".photo_lib.photo.PhotoSheet"
+        android:theme="@style/ActionSheetTheme" /&gt;
+</code></pre>
+
+<p>2.读图片文件路径，不单单是相册里的图片</p>
+
+<pre><code>public void getLocalImages() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                ContentResolver mContentResolver = AlbumDirActivity.this.getContentResolver();
+
+            Cursor mCursor = mContentResolver.query(
+                    mImageUri,
+                    null,
+                    MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?",
+                    new String[]{"image/jpeg", "image/png", "image/jpg"},
+                    MediaStore.Images.Media.DATE_MODIFIED);
+
+            while (mCursor.moveToNext()) {
+                String path = mCursor.getString(mCursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                String parentName = new File(path).getParentFile().getName();
+
+                if (!dirMap.containsKey(parentName)) {
+                    List&lt;String&gt; chileList = new ArrayList&lt;&gt;();
+                    chileList.add(path);
+                    dirMap.put(parentName, chileList);
+                } else {
+                    dirMap.get(parentName).add(path);
+                }
+            }
+            mCursor.close();
+            mHandler.sendEmptyMessage(SCAN_OK);
+        }
+    }).start();
+}
+</code></pre>
+
+<p>3.用LruCache缓存显示压缩后的图片</p>
+
+<pre><code>public class LocalImageCache {
+
+private static LocalImageCache mInstance;
+
+private Handler mHander = new Handler();
+private LruCache&lt;String, Bitmap&gt; mMemoryCache;
+private CacheImageCallBack mCallBack;
+private ExecutorService mImageThreadPool = Executors.newFixedThreadPool(5);
+
+private LocalImageCache() {
+    final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+    final int cacheSize = maxMemory / 5;
+
+    mMemoryCache = new LruCache&lt;String, Bitmap&gt;(cacheSize) {
+        @Override
+        protected int sizeOf(String key, Bitmap bitmap) {
+            return bitmap.getByteCount()/1024;
+        }
+    };
+
+    mCallBack = new CacheImageCallBack() {
+        @Override
+        public void onImageLoader(ImageView imageView, Bitmap bitmap) {
+            if (bitmap != null &amp;&amp; imageView != null) {
+                imageView.setImageBitmap(bitmap);
+            }
+        }
+    };
+}
+
+public static LocalImageCache getInstance() {
+    synchronized (LocalImageCache.class) {
+        if (mInstance == null) {
+            mInstance = new LocalImageCache();
+        }
+        return mInstance;
+    }
+}
+
+public static void clearCache() {
+    LocalImageCache cache = getInstance();
+    cache.mMemoryCache.evictAll();
+}
+
+public void displayBmp(final ImageView imageView, final String path, final Point mPoint) {
+    if (TextUtils.isEmpty(path) || imageView == null) {
+        return;
+    }
+
+    Bitmap bitmap = getBitmapFromMemCache(path);
+    if (bitmap == null) {
+        imageView.setImageBitmap(null);
+
+        mImageThreadPool.execute(new Runnable() {
+            Bitmap mBitmap;
+
+            @Override
+            public void run() {
+                mBitmap = decodeThumbBitmapForFile(path, mPoint == null ? 0 : mPoint.x, mPoint == null ? 0 : mPoint.y);
+                mHander.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCallBack.onImageLoader(imageView, mBitmap);
+                    }
+                });
+                addBitmapToMemoryCache(path, mBitmap);
+            }
+        });
+    } else {
+        imageView.setImageBitmap(bitmap);
+    }
+}
+
+private void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+    if (getBitmapFromMemCache(key) == null &amp;&amp; bitmap != null) {
+        mMemoryCache.put(key, bitmap);
+    }
+}
+
+private Bitmap getBitmapFromMemCache(String key) {
+    return mMemoryCache.get(key);
+}
+
+private Bitmap decodeThumbBitmapForFile(String path, int viewWidth, int viewHeight) {
+    BitmapFactory.Options options = new BitmapFactory.Options();
+    options.inJustDecodeBounds = true;
+    BitmapFactory.decodeFile(path, options);
+    options.inSampleSize = computeScale(options, viewWidth, viewHeight);
+    options.inJustDecodeBounds = false;
+
+    return BitmapFactory.decodeFile(path, options);
+}
+
+private int computeScale(BitmapFactory.Options options, int viewWidth, int viewHeight) {
+    int inSampleSize = 1;
+    if (viewWidth == 0 || viewHeight == 0) {
+        return inSampleSize;
+    }
+    int bitmapWidth = options.outWidth;
+    int bitmapHeight = options.outHeight;
+
+    if (bitmapWidth &gt; viewWidth || bitmapHeight &gt; viewHeight) {
+        int widthScale = Math.round((float) bitmapWidth / (float) viewWidth);
+        int heightScale = Math.round((float) bitmapHeight / (float) viewHeight);
+
+        inSampleSize = (widthScale+heightScale)/2;
+    }
+    return inSampleSize;
+}
+
+
+private interface CacheImageCallBack {
+    void onImageLoader(ImageView imageView, Bitmap bitmap);
+}
+}
+</code></pre>
+
+<p>4.用DrawerLayout封装了一个手势返回的基础类</p>
+
+<pre><code>public class BaseSwipeActivity extends AppCompatActivity {
+
+private LinearLayout containerLayout;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    initSwipeView();
+}
+
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+}
+
+private void initSwipeView() {
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+    setContentView(R.layout.activity_base_swipe);
+
+    containerLayout = (LinearLayout) findViewById(R.id.container_layout);
+
+    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.base_drawer_layout);
+    drawer.openDrawer(GravityCompat.END);
+    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+        @Override
+        public void onDrawerClosed(View drawerView) {
+            super.onDrawerClosed(drawerView);
+            finish();
+        }
+    };
+    drawer.addDrawerListener(toggle);
+}
+
+//子类要手势返回就用setMainView!!!!
+public void setMainView(int viewId) {
+    LayoutInflater inflater = LayoutInflater.from(this);
+    View tmpView = inflater.inflate(viewId, null);
+
+    if (tmpView instanceof LinearLayout) {
+        LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(linearLayoutParams);
+    } else if (tmpView instanceof RelativeLayout) {
+        RelativeLayout.LayoutParams relativeLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(relativeLayoutParams);
+    }
+    containerLayout.removeAllViews();
+    containerLayout.addView(tmpView);
+}
+
+public void backViewTap(View v) {
+
+}
+
+public void backImageTap(View v) {
+    finish();
+}
+}
+</code></pre>
+
+<p>其他Activity需要手势返回的话就继承它，然后使用setMainView()替代setContentView()设置界面布局，其他什么都不用管啦！</p>
+
+<h4>注意要</h4>
+
+<p>在使用的Activity的onDestroy()方法中调用 FileUtil.deleteAllFile(); 清除选取的临时缓存图片！！！</p>
+
+<p><a href="https://github.com/AndyFightting/SelectPhoto_Android">下载</a></p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/11/11/android-select-photo/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/08/wei-xin-demo/">微信小程序 Demo</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-08T19:43:46+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:43 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/11/08/wei-xin-demo/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/09/12/link-bug/">iOS Not Found for Architecture Arm64</a></h1>
     
     
@@ -101,18 +596,18 @@
   <div class="entry-content"><p>接手维护一个项目，更新一下出现了下面这问题👇
 <img src="/myimg/ios/arm64.png" alt="image" /></p>
 
-<p>一看是"not found for architecture arm64"问题啊，哦，找不到architecture arm64啊，那好办，问问谷歌为啥找不到啊~ 然后就各种搜&hellip;</p>
+<p>好像不常见的问题，谷歌一下</p>
 
 <p><a href="http://stackoverflow.com/questions/19213782/undefined-symbols-for-architecture-arm64">Stack Overflow</a>
 <img src="/myimg/ios/stackoverflow.png" alt="image" /></p>
 
-<p>说是Architectures设置问题啊~~ 改改改&hellip; 说是Other Linker Flags问题啊~~~ 改改改&hellip;说是Target Membership问题啊~~ 改改改&hellip; 好像都没用啊，问题还是一动不动的出现在那里&hellip;好像有点不淡定了&hellip;这都什么鬼啊&hellip;
+<p>说是Architectures设置问题&hellip; 说是Other Linker Flags问题&hellip;说是Target Membership问题&hellip; 改了好像都没用啊，问题还是一动不动的出现在那里&hellip;
 <img src="/myimg/ios/targetMap.png" alt="image" /></p>
 
-<p>继续找找找&hellip;用对应的类文件全局搜一下&hellip;诶~~ 好像那里不对啊&hellip;路径怎么这样子??怎么和别人不一样啊~~ 喜出望外，好像知道原因了，果然项目文件夹里看不到该文件，果断Add Files to &ldquo;XXX"添加文件!
+<p>继续找找找&hellip;用对应的类文件全局搜一下&hellip;诶~ 好像那里不对啊&hellip;路径怎么这样子??怎么和别的不一样~~ 喜出望外，好像知道原因了，果然项目文件夹里看不到该文件，Add Files to &ldquo;XXX"添加文件!
 <img src="/myimg/ios/errorLoad.png" alt="image" /></p>
 
-<p>还是不行&hellip;WTF!! 把对应的.h .m文件拖到桌面上，再重新添加到项目里，解决了！！so easy ！！ 为什么一开始不怀疑是文件索引问题呢？ 因为项目编译没报 XXX.h not found &hellip;以为文件都好好的呢，以为是项目的配置问题&hellip; 所以一开始就找问题的方向就跑偏了！其实这问题之前也遇到过，一般是报第三方的XXX.a文件出现这问题。这问题一般是多人开发是用SVN更来更去导致的<code>project.pbxproj</code>里对应的文件索引没了。好了，再遇到这问题就不要跑偏了，把对应的文件重新添加就可以了！！</p>
+<p>还是不行&hellip;把对应的.h .m文件拖到桌面上，再重新添加到项目里，解决了！！为什么一开始不怀疑是文件索引问题呢？ 因为项目编译没报 XXX.h not found &hellip;以为文件都好好的呢，以为是项目的配置问题&hellip; 所以一开始找问题的方向就跑偏了！其实这问题之前也遇到过，一般是第三方的XXX.a文件出现这问题，只是这次脑袋没长记性&hellip;这问题一般是多人开发项目用SVN更来更去导致的<code>project.pbxproj</code>里对应的文件索引没了。好了，再遇到这问题就不要跑偏了，把对应的文件重新添加就可以了！！</p>
 </div>
   
   
@@ -146,14 +641,13 @@
 
   <div class="entry-content"><p><a href="http://square.github.io/okhttp/">OkHttp</a>和<a href="http://square.github.io/retrofit/">Retrofit</a>都是<a href="http://square.github.io/">Square</a>公司开源出来的网络请求框架。Retrofit是对OkHttp的封装，使其可以用注解的方式调用。</p>
 
-<h4>OkHttp封装</h4>
+<h4>OkHttp</h4>
 
-<pre><code>/**
- * Created by suguiming on 16/8/24.
- */
+<pre><code>//-----okhttp 网络请求 工具类-----
 
-public class OkHttpHelper {
-private static final Handler mainHandler = new Handler(Looper.getMainLooper()); //异步请求结果要在主线程回调！！！
+//异步请求结果放在主线程回调。
+private static final Handler mainHandler = new Handler(Looper.getMainLooper()); 
+
 private static final OkHttpClient client = new OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
@@ -161,14 +655,44 @@ private static final OkHttpClient client = new OkHttpClient.Builder()
         .build();
 
 public static void getRequest(String url, final OkHttpListener listener) {
-    Request request = new Request
-            .Builder()
+    Request request = new Request.Builder()
+            .header("token", getUserToken())
+            .header("client", "Android")
+            .header("versionCode", getVersionCode())
+            .header("versionName", getVersionName())
             .url(url)
             .build();
     beginRequest(request, listener);
 }
 
-public static void postRequest(String url, final Map&lt;String, Object&gt; params, final OkHttpListener listener) {
+//这样就不会有中文乱码问题
+public static void postRequest(String url, final Map&lt;String, String&gt; params, final OkHttpListener listener) {
+    StringBuilder stringBuilder = new StringBuilder("");
+    if (params != null) {
+        Set&lt;String&gt; keys = params.keySet();
+        for (String key : keys) {
+            String value = params.get(key);
+            stringBuilder.append(key + "=" + value + "&amp;");
+        }
+    }
+
+    MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded;charset=utf-8");
+    RequestBody body = RequestBody.create(mediaType, stringBuilder.toString());
+
+    Request request = new Request.Builder()
+            .header("token", getUserToken())
+            .header("client", "Android")
+            .header("versionCode", getVersionCode())
+            .header("versionName", getVersionName())
+            .url(url)
+            .post(body)
+            .build();
+
+    beginRequest(request, listener);
+}
+
+//可添加图片文件
+public static void postMutibleRequest(String url, final Map&lt;String, Object&gt; params, final OkHttpListener listener) {
     MultipartBody.Builder multipleBuilder = new MultipartBody.Builder();
     multipleBuilder.setType(MultipartBody.FORM);
 
@@ -179,20 +703,82 @@ public static void postRequest(String url, final Map&lt;String, Object&gt; param
 
             if (obj instanceof File) {
                 File tmpFile = (File) obj;
-                multipleBuilder.addFormDataPart(key,tmpFile.getName(),MultipartBody.create(MediaType.parse("image/png"), tmpFile));
+                multipleBuilder.addFormDataPart(key, tmpFile.getName(), MultipartBody.create(MediaType.parse("image/jpg"), tmpFile));
             } else {
-                multipleBuilder.addPart(Headers.of("Content-Disposition", "form-data; name=\"" + key + "\""), RequestBody.create(null, (String)obj));
+                multipleBuilder.addPart(Headers.of("Content-Disposition", "form-data; name=\"" + key + "\""), RequestBody.create(null, (String) obj));
             }
         }
     }
 
     RequestBody multipleBody = multipleBuilder.build();
     Request request = new Request.Builder()
+            .header("token", getUserToken())
+            .header("client", "Android")
+            .header("versionCode", getVersionCode())
+            .header("versionName", getVersionName())
             .url(url)
             .post(multipleBody)
             .build();
 
     beginRequest(request, listener);
+}
+
+//保存网络图片到相册,返回本地存储路径
+public static void downloadImageToSysPhoto(String imageUrl, final OkHttpListener listener) {
+    Request request = new Request.Builder().url(imageUrl).build();
+    Call call = client.newCall(request);
+    call.enqueue(new Callback() {
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            try {
+                //系统相册路径
+                final String localPath = "/storage/emulated/0/DCIM/Camera/" + CommonUtil.getUniqueString(10) + ".jpg";
+
+                InputStream is = response.body().byteStream();
+                FileOutputStream fos = new FileOutputStream(localPath);
+                byte[] buffer = new byte[1024];
+
+                int len;
+                while ((len = is.read(buffer)) != -1) {
+                    fos.write(buffer, 0, len);
+                }
+                is.close();
+                fos.close();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.success(localPath);
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.fail(0, "");
+                        }
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (listener != null) {
+                        listener.fail(0, "");
+                    }
+                }
+            });
+        }
+    });
 }
 
 private static void beginRequest(Request request, final OkHttpListener listener) {
@@ -205,7 +791,7 @@ private static void beginRequest(Request request, final OkHttpListener listener)
             final int code = response.code();
 
             if (response.isSuccessful()) {
-                MyTool.logJson(responseString);
+                CommonUtil.logJson(responseString);
 
                 mainHandler.post(new Runnable() {
                     @Override
@@ -216,13 +802,13 @@ private static void beginRequest(Request request, final OkHttpListener listener)
                     }
                 });
             } else {
-                //请求失败：400  ---------   {"code":100002,"msg":"手机号已注册","url":""}
-                MyTool.log("请求失败：" + code + "---------" + responseString);
+                //请求失败：    400  ---------   {"code":100004,"msg":"手机号已注册"}
+                CommonUtil.logString("请求失败：" + code + "---------" + responseString);
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (listener != null) {
-                            listener.fail();
+                            listener.fail(code, responseString);
                         }
                     }
                 });
@@ -232,24 +818,145 @@ private static void beginRequest(Request request, final OkHttpListener listener)
         @Override
         public void onFailure(Call call, IOException e) {
             e.printStackTrace();
-            MyTool.log("服务器错误");
+            CommonUtil.logString("请求错误");
             mainHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (listener != null) {
-                        listener.fail();
+                        listener.fail(0, "请求失败");
                     }
                 }
             });
         }
     });
 }
+
+public static String getFailedMsg(String response) {
+    try {
+        JSONObject jsonObject = new JSONObject(response);
+        return jsonObject.getString("msg");
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "请求失败";
 }
 
-//回调接口定义
+public static String getUserToken() {
+    UserModel userModel = UserModel.getUser();
+    if (userModel != null) {
+        return userModel.getToken();
+    }
+    return "";
+}
+
+public static String getVersionCode() {
+    try {
+        PackageInfo pi = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
+        return pi.versionCode + "";
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "";
+}
+
+public static String getVersionName() {
+    try {
+        PackageInfo pi = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
+        return pi.versionName;
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "";
+}
+
+//下载apk安装包，HUD是自定义的等待进度条
+private static int apkProgress;
+public static void downloadAPK(final Context context, String apkUrl) {
+    HUD.show(context, "下载中...");
+    HUD.setCancelable(false);
+
+    Request request = new Request.Builder().url(apkUrl).build();
+    Call call = client.newCall(request);
+    call.enqueue(new Callback() {
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            try {
+                FileUtil.createDir();//创建  ~/paiqi/ 文件夹
+                final String apkLocalPath = FileUtil.DIR_PATH + "paiqi.apk";
+
+                InputStream is = response.body().byteStream();
+                FileOutputStream fos = new FileOutputStream(apkLocalPath);
+                int readNum;
+                byte[] buffer = new byte[1024];
+
+                int progressCount = 0;
+                long totalLength = response.body().contentLength();
+
+                while ((readNum = is.read(buffer)) != -1) {
+                    progressCount += readNum;
+                    apkProgress = (int) (((float) progressCount / totalLength) * 100);
+
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            HUD.setMessage("下载中 " + apkProgress + "%");
+                        }
+                    });
+
+                    fos.write(buffer, 0, readNum);
+                }
+                is.close();
+                fos.close();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        HUD.dismiss();
+                        installAPK(context, apkLocalPath);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        HUD.dismiss();
+                        CommonUtil.showToast("下载失败");
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    HUD.dismiss();
+                    CommonUtil.showToast("下载失败");
+                }
+            });
+        }
+    });
+}
+
+//安装apk
+private static void installAPK(Context context, String apkPath) {
+    File apkFile = new File(apkPath);
+    if (!apkFile.exists()) {
+        CommonUtil.showToast("安装失败");
+        return;
+    }
+    Intent intent = new Intent(Intent.ACTION_VIEW);
+    intent.setDataAndType(Uri.parse("file://" + apkFile.toString()), "application/vnd.android.package-archive");
+    context.startActivity(intent);
+} 
+
+//请求回调接口定义
 public interface OkHttpListener {
-    void success(String response);
-    void fail();
+   void success(String response);
+   void fail(int code,String response);
 }
 </code></pre>
 
@@ -324,7 +1031,7 @@ public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
     }
 </code></pre>
 
-<h4>Retrofit使用</h4>
+<h4>Retrofit</h4>
 
 <p><a href="http://square.github.io/retrofit/">Retrofit官网</a>上的例子中返回结果是Bean，但又没说添加了GsonConverterFactory，所以会报 Could not locate ResponseBody converter for XXBean 错误！所以要引入GsonConverterFactory转化库<code>compile 'com.squareup.retrofit2:converter-gson:2.0.2'</code>, 然后在Retrofit初始化的时候添加该库！官网后面说了 By default, Retrofit can only deserialize HTTP bodies into OkHttp&rsquo;s ResponseBody type and it can only accept its RequestBody type for @Body. 默认只会返回ResponseBody！并且只有ResponseBody才可以使用@Body注解！我个人还是不喜欢直接在这里得到Bean, 我还是喜欢先通过得到response.body().string()，然后再转化成Bean，各司其职。注意是<code>response.body().string()</code>，不是<code>response.body().toString()</code>!!</p>
 
@@ -1106,497 +1813,6 @@ public void onSaveInstanceState(Bundle outState) {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/08/31/android-swipe/">Android手势滑动返回</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-08-31T15:16:10+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>3:16 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>偶然间发现了一个Android自带的抽屉控件<a href="https://developer.android.com/training/implementing-navigation/nav-drawer.html">DrawerLayout</a>,就觉得应该可以用他来封装成手势返回的基础控件。思路就是先设置Activity的跳转动画是从右到左，并且前一个Activity不能动。然后设置DrawerLayout的menu从右边出来，然设置menu全屏，这个menu就相当于子Activity View的容器，默认打开menu,然后设置DrawerLayout容器透明，当DrawerLayout close的时候finish它所在的Activity！还要把状态栏设置成透明，不然DrawerLayout closed 再 finish Activity的时候会有视觉差！复杂的手势控制就交由自带的DrawerLayout处理啦，生命周期还是Activity的生命周期。怎么样，是不是机智如我！！😆</p>
-
-<p>遇到的问题：DrawerLayout的menu即时设置成match_parent也不能全屏！因为源码里设置了margin64dp! 那我们只好再设置回来：android:layout_marginLeft=&ldquo;-64dp"。</p>
-
-<pre><code> private static final int MIN_DRAWER_MARGIN = 64; // dp
-</code></pre>
-
-<p>BaseSwipeActivity</p>
-
-<pre><code>package com.suguiming.myandroid.base;
-import android.os.Bundle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-
-import com.suguiming.myandroid.R;
-
-public class BaseSwipeActivity extends AppCompatActivity {
-
-private DrawerLayout drawer;
-private LinearLayout containerLayout;
-
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-    setContentView(R.layout.activity_base_swipe);
-
-    containerLayout = (LinearLayout) findViewById(R.id.container_layout);
-
-    drawer = (DrawerLayout) findViewById(R.id.base_drawer_layout);
-    drawer.openDrawer(GravityCompat.END);
-    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-        @Override
-        public void onDrawerClosed(View drawerView) {
-            super.onDrawerClosed(drawerView);
-            finish();
-        }
-    };
-    drawer.setDrawerListener(toggle);
-}
-
-//子类不要用setContentView,用setMainView!!!!
-public void setMainView(int viewId) {
-    LayoutInflater inflater = LayoutInflater.from(this);
-    View tmpView = inflater.inflate(viewId, null);
-
-    if (tmpView instanceof LinearLayout) {
-        LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        tmpView.setLayoutParams(linearLayoutParams);
-    } else if (tmpView instanceof RelativeLayout) {
-        RelativeLayout.LayoutParams relativeLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        tmpView.setLayoutParams(relativeLayoutParams);
-    }
-    containerLayout.removeAllViews();
-    containerLayout.addView(tmpView);
-}
-
-}
-</code></pre>
-
-<p>对应的布局文件</p>
-
-<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@android:color/transparent"
-    tools:context="com.suguiming.myandroid.base.BaseSwipeActivity"&gt;
-
-&lt;android.support.v4.widget.DrawerLayout
-    android:id="@+id/base_drawer_layout"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/transparent"
-    tools:openDrawer="end"&gt;
-    &lt;LinearLayout
-        android:orientation="vertical"
-        android:background="@color/clear"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"&gt;
-    &lt;/LinearLayout&gt;
-
-    &lt;!---64dp是源码menu的margin,这里设置为65,不然会有一条黑线--&gt;
-    &lt;LinearLayout
-        android:id="@+id/container_layout"
-        android:orientation="vertical"
-        android:layout_gravity="end"
-        android:layout_marginLeft="-65dp"
-        android:background="@color/light_gray"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"&gt;
-    &lt;/LinearLayout&gt;
-&lt;/android.support.v4.widget.DrawerLayout&gt;
-&lt;/LinearLayout&gt;
-</code></pre>
-
-<p>push 的动画 style</p>
-
-<pre><code>&lt;!--手势返回theme--&gt;
-&lt;style name="BackSwipeTheme" parent="Theme.AppCompat.Light.NoActionBar"&gt;
-    &lt;item name="android:windowIsTranslucent"&gt;true&lt;/item&gt;
-    &lt;item name="android:windowBackground"&gt;@android:color/transparent&lt;/item&gt;
-    &lt;item name="android:windowNoTitle"&gt;true&lt;/item&gt;
-    &lt;item name="android:backgroundDimEnabled"&gt;false&lt;/item&gt;
-    &lt;item name="android:windowAnimationStyle"&gt;@style/ActivitySwipeBackAnimation&lt;/item&gt;
-&lt;/style&gt;
-&lt;style name="ActivitySwipeBackAnimation" parent="@android:style/Animation.Activity"&gt;
-    &lt;item name="android:activityOpenEnterAnimation"&gt;@anim/activity_swipe_in&lt;/item&gt;
-    &lt;item name="android:activityOpenExitAnimation"&gt;@anim/activity_swipe_out&lt;/item&gt;
-    &lt;item name="android:activityCloseEnterAnimation"&gt;@anim/activity_swipe_in&lt;/item&gt;
-    &lt;item name="android:activityCloseExitAnimation"&gt;@anim/activity_swipe_out&lt;/item&gt;
-&lt;/style&gt;
-</code></pre>
-
-<p>使用的话就是让Activity继承BaseSwipeActivity，然后设置Activity的Theme为BackSwipeTheme。</p>
-
-<pre><code>public class ActivitySwipeBack extends BaseSwipeActivity {
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    //要用setMainView，不要用setContentView
-    setMainView(R.layout.activity_activity_swipe_back);
-  }
-}
-
-&lt;activity android:name=".tab0.ActivitySwipeBack"
-            android:theme="@style/BackSwipeTheme"/&gt;
-</code></pre>
-
-<p>完整Demo请查看<a href="https://github.com/AndyFightting/MyAndroid">MyAndroid</a>中的"手势滑动返回"。</p>
-
-<p><img src="/myimg/android/android_swipe.png" alt="imge" /></p>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/08/31/android-swipe/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/08/04/swift-read/">Swift阅读笔记</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-08-04T16:23:05+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:23 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>let 声明常量，var 声明变量，会自动进行类型推断(小数推断为Double),一行末尾可不加分号(;)。
-</span><span class='line'>值永远不会被隐式转换为其他类型，务必显示强制转换。
-</span><span class='line'>if语句的条件不能默认非0为真。 类型后加?号表示可选值，要么有值，要么是nil。
-</span><span class='line'>用 if let(或者var) name = optionName 来获取可选值处理。 
-</span><span class='line'>switch的case中自带break，switch要保证全部遍历，否则必须要有default选项。
-</span><span class='line'>0&lt; x &lt;4 等价 0..&lt;4 , 0&lt; x &lt;=4 等价 0...4 。 
-</span><span class='line'>用 func 声明函数，用-&gt;指定返回类型func greet(name: String, day: String) -&gt; String { ... }。 
-</span><span class='line'>元组概念，一般用做函数返回值。 
-</span><span class='line'>func sumOf(numbers: Int...) -&gt; Int {}，...表示可变个数的参数。 
-</span><span class='line'>函数是一等类型，像int float一样，可用作参数或者返回值。 
-</span><span class='line'>class 声明类,属性都要赋值，要么在声明直接写死，要么在init方法中赋值。 
-</span><span class='line'>重写父类方法必须用 override 标记。 属性可以有get set willGet didSet 等方法。 
-</span><span class='line'>mutating关键字用来标记一个会修改结构体(属性)的方法。 
-</span><span class='line'>extension来为现有的类型添加功能，比如新的方法和计算属性。
-</span><span class='line'>泛型(指定类型)就是java中的泛型。 Bool值是true或false。 
-</span><span class='line'>typealies name = 类型 给类型起个别名。 
-</span><span class='line'>OC中的nil只用在对象上(int不行)，Swift中nil可指任何东西(对象或int)。
-</span><span class='line'>使用!来获取一个不存在的可选值会导致错误。隐式解析可选类型(类型!)就是可选类型，但是可以当做非可选类型来使用(不用!解析,没值时会报错)。 
-</span><span class='line'>throws do try catch 的使用。Swift的赋值操作不返回任何值。% 浮点数也可以取余运算。 
-</span><span class='line'>空合运算符(a ?? b)对可选类型a进行空判断，如果a包含一个值就进行解封，否则就返回一个默认值b(b和a要类型相同)。逻辑 &&，|| 都是短路计算的。
-</span><span class='line'>条件中的下划线 _ 来忽略对值的访问，case 中的下划线 _ 表示所有可能的值,case中可进行值绑定，case条件可用where语句。 
-</span><span class='line'>字典的遍历顺序和插入顺序可能不同(字典无序的)。 
-</span><span class='line'>Swift语言的repeat-while循环合其他语言中的do-while循环是类似的。
-</span><span class='line'>注意循环中switch中的continue(开始下次)和break(跳到switch}后面继续执行)的差别，switch中的fallthrouth进入下一个case时不会再进行条件判断。
-</span><span class='line'>guard(守卫)语句总是有一个else分句。 
-</span><span class='line'>调用函数时第一个参数名不要，之后的参数名要，用逗号分开(第一个参数省略其外部参数名，第二个以后的参数使用其本地参数名作为自己的外部参数名。
-</span><span class='line'>所有参数需要有不同的本地参数名，但可以共享相同的外部参数名。如果你提供了外部参数名，那么函数在被调用时，必须使用外部参数名。如果你不想为第二个及后续的参数设置参数名，用下划线_代替)。
-</span><span class='line'>一个函数最多只能有一个可变参数(...),如果函数同时有默认参数和可变参数要把可变参数放最后。 
-</span><span class='line'>函数参数默认是常量，修改会报错，但可以用var声明为变量,修改只在函数体内有效。 
-</span><span class='line'>inout参数(只能传入变量)会替换原来的值，使用时在变量名前加&符号。 
-</span><span class='line'>原数组不会被sort()方法修改。 闭包就是用{}包起来的函数代码块，用in分开返回值和处理代码，参数不能有默认值。如果需要将闭包作为最后一个参数，可变成尾随闭包。
-</span><span class='line'>Array的map方法可返回不同类型。 函数和闭包都是引用类型。
-</span><span class='line'>结构体和枚举是值类型，所有的基本类型都是值类型，并且都是以结构体的形式在后台所实现。
-</span><span class='line'>类是引用类型。常量实例依然可改变其中的变量属性值。
-</span><span class='line'>swift指针并不直接指向内存中的某个地址，而且也不要求你使用星号（*）来表明你在创建一个引用。
-</span><span class='line'>结构体实例总是通过值传递，类实例总是通过引用传递。
-</span><span class='line'>Swift 中字符串（String）,数组（Array）和字典（Dictionary）均以结构体的形式实现的值类型,而在OC中是以类的形式实现的引用类型。
-</span><span class='line'>计算属性可以用于类、结构体和枚举，存储属性只能用于类和结构体。
-</span><span class='line'>如果创建了一个结构体的实例并将其赋值给一个常量，则无法修改该实例的任何属性，即使定义了变量存储属性，由于结构体（struct）属于值类型，当值类型的实例被声明为常量的时候，它的所有属性也就成了常量。
-</span><span class='line'>必须将延迟存储属性声明成变量（使用var关键字），因为属性的初始值可能在实例构造完成之后才会得到。
-</span><span class='line'>而常量属性在构造过程完成之前必须要有初始值，因此无法声明成延迟属性。
-</span><span class='line'>计算属性不直接存储值，而是提供一个 get和一个可选的set，来间接获取和设置其他属性或变量的值。
-</span><span class='line'>必须使用var关键字定义计算属性，包括只读计算属性，因为它们的值不是固定的。
-</span><span class='line'>父类的属性在子类的构造器中被赋值时，它在父类中的willSet和didSet观察器会被调用。
-</span><span class='line'>全局的常量或变量都是延迟计算的，跟延迟存储属性相似，不同的地方在于，全局的常量或变量不需要标记lazy特性。局部范围的常量或变量不会延迟计算。
-</span><span class='line'>必须给存储类型的类属性指定默认值，因为类型本身无法在初始化过程中使用构造器给类型属性赋值。
-</span><span class='line'>结构体和枚举能够定义方法是 Swift 与 C/Objective-C 的主要区别之一。</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/08/04/swift-read/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/08/04/animation/">iOS中的动画</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-08-04T16:22:41+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:22 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>动画是作用的UIView的CALayer上的，UIView是CALayer的代理，给CALayer提供数据参数，CALayer负责渲染和动画。UIView是在UIKit框架中，而CALayer是在QuartzCore框架中。UIView可以响应用户事件，而CALayer不可以响应用户事件。CALayer也可以像UIView一样添加子Layer。
-<img src="/myimg/ios/calayer.png" alt="image" /></p>
-
-<h4>CALayer常用属性</h4>
-
-<pre><code>anchorPoint 和中心点position重合的一个点，称为“锚点”，锚点的描述是相对于x、y位置比例而言的默认在图像中心点(0.5,0.5)的位置
-backgroundColor 图层背景颜色  
-borderColor 边框颜色    
-borderWidth 边框宽度    
-bounds  图层大小    
-contents    图层显示内容，例如可以将图片作为图层内容显示
-contentsRect    图层显示内容的大小和位置    
-cornerRadius    圆角半径    
-doubleSided 图层背面是否显示，默认为YES 
-frame   图层大小和位置，不支持隐式动画，所以CALayer中很少使用frame，通常使用bounds和position代替
-hidden  是否隐藏    
-mask    图层蒙版    
-maskToBounds    子图层是否剪切图层边界，默认为NO 
-opacity 透明度 ，类似于UIView的alpha    
-position    图层中心点位置，类似于UIView的center
-shadowColor 阴影颜色    
-shadowOffset    阴影偏移量 
-shadowOpacity   阴影透明度，注意默认为0，如果设置阴影必须设置此属性
-shadowPath  阴影的形状 
-shadowRadius    阴影模糊半径  
-sublayers   子图层   
-sublayerTransform   子图层形变 
-transform   图层形变
-</code></pre>
-
-<p>要注意position和anchorPoint的区别：<strong>position是layer中的anchorPoint点在superLayer中的位置坐标！position点是相对suerLayer的，anchorPoint点是相对自身layer的！</strong> 所以说position不变，但anchorPoint改变的话，也会改变layer在superLayer中的位置！</p>
-
-<pre><code>layer=[[CALayer alloc]init];
-layer.backgroundColor=[UIColor purpleColor].CGColor;
-layer.bounds=CGRectMake(0, 0, 100,100);
-layer.shadowColor=[UIColor redColor].CGColor;
-layer.shadowOffset=CGSizeMake(5, 5);
-layer.shadowOpacity=0.7;
-layer.borderColor=[UIColor yellowColor].CGColor;
-layer.borderWidth=3;
-layer.position=CGPointMake(size.width/2, size.height/2);
-[self.view.layer addSublayer:layer];
-
-//layer.anchorPoint=CGPointMake(0, 0); //图一
-//layer.anchorPoint=CGPointMake(0, 1); //图二
-</code></pre>
-
-<p>图中position一样，但anchorPoint不一样，所以图片位置也不一样。  <br/>
-<img src="/myimg/ios/layer_position.png" alt="image" />
-注意如果要设置圆角，对于图层本身而言可以正常显示，但是对于图层中绘制的图片无法正确显示。如果想要图片正确显示则必须设置masksToBounds=YES，剪切子图层。但设置layer.masksToBounds=YES后，图层的影效果无法和masksToBounds=YES同时使用，因为masksToBounds的目的就是剪切外边框。如果同时要阴影又要圆角的话，就用两个重叠的图层,底部负责绘制阴影，上层负责绘制圆角。</p>
-
-<h4>Core Animation</h4>
-
-<p>iOS的核心动画Core Animation包含在Quartz Core框架中。核心动画分为几类：基础动画、关键帧动画、动画组、转场动画,各个类的关系大致如下：
-<img src="/myimg/ios/core_animation.png" alt="image" />
-*CAAnimation：核心动画的基础类，不能直接使用，负责动画运行时间、速度的控制，本身实现了CAMediaTiming协议。</p>
-
-<p>*CAPropertyAnimation：属性动画的基类，通过属性进行动画设置，不能直接使用。</p>
-
-<p>*CAAnimationGroup：动画组合模式，可以通过动画组来进行所有动画行为的统一控制，组中所有动画效果可以并发执行。</p>
-
-<p>*CATransition：转场动画，主要通过滤镜进行动画效果设置。</p>
-
-<p>*CABasicAnimation：基础动画，通过属性修改进行动画参数控制，只有初始状态和结束状态。</p>
-
-<p>*CAKeyframeAnimation：关键帧动画，同样是通过属性进行动画参数控制，但是同基础动画不同的是它可以有多个状态控制。</p>
-
-<p>基础动画、关键帧动画都属于属性动画，就是通过修改属性值产生动画效果，只需要设置初始值和结束值，中间的过程动画由系统自动计算产生。和基础动画不同的是关键帧动画可以设置多个属性值，每两个属性中间的过渡动画由系统自动完成。</p>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/08/04/animation/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/08/04/core-data/">iOS中的Core Data</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-08-04T16:22:22+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:22 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="https://developer.apple.com/library/watchos/documentation/Cocoa/Conceptual/CoreData/index.html">Core Data</a>是一个对sqlite数据库进行封装的ORM(Object Relation Mapping)框架。它主要由以下几部分组成：</p>
-
-<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObject_Class/">NSManagedObject</a></h4>
-
-<p>NSManagedObject is a generic class that implements all the basic behavior required of a Core Data model object. It is not possible to use instances of direct subclasses of NSObject (or any other class not inheriting from NSManagedObject) with a managed object context. You may create custom subclasses of NSManagedObject, although this is not always required. If no custom logic is needed, a complete object graph can be formed with NSManagedObject instances.</p>
-
-<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObjectModel_Class/">NSManagedObjectModel</a></h4>
-
-<p>An NSManagedObjectModel object describes a schema, a collection of entities (data models) that you use in your application.</p>
-
-<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObjectContext_Class/">NSManagedObjectContext</a></h4>
-
-<p>An instance of NSManagedObjectContext represents a single “object space” or scratch pad in an application. Its primary responsibility is to manage a collection of managed objects. These objects form a group of related model objects that represent an internally consistent view of one or more persistent stores. A single managed object instance exists in one and only one context, but multiple copies of an object can exist in different contexts. Thus object uniquing is scoped to a particular context.</p>
-
-<h4><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSPersistentStoreCoordinator_Class/">NSPersistentStoreCoordinator</a></h4>
-
-<p>Instances of NSPersistentStoreCoordinator associate persistent stores (by type) with a model (or more accurately, a configuration of a model) and serve to mediate between the persistent store or stores and the managed object context or contexts. Instances of NSManagedObjectContext use a coordinator to save object graphs to persistent storage and to retrieve model information. A context without a coordinator is not fully functional as it cannot access a model except through a coordinator. The coordinator is designed to present a façade to the managed object contexts such that a group of persistent stores appears as an aggregate store. A managed object context can then create an object graph based on the union of all the data stores the coordinator covers.</p>
-
-<h4><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSFetchRequest_Class/index.html#//apple_ref/occ/cl/NSFetchRequest">NSFetchRequest</a></h4>
-
-<p>An instance of NSFetchRequest describes search criteria used to retrieve data from a persistent store.</p>
-
-<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSPredicate_Class/">NSPredicate</a></h4>
-
-<p>The NSPredicate class is used to define logical conditions used to constrain a search either for a fetch or for in-memory filtering.</p>
-
-<p><img src="/myimg/ios/cd_orm.png" alt="image" />
-<img src="/myimg/ios/cd_table.png" alt="image" /></p>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/08/04/core-data/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/08/04/session/">iOS中的NSURLSession</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-08-04T16:22:02+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:22 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content">
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/08/04/session/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1612,23 +1828,23 @@ layer.position=CGPointMake(size.width/2, size.height/2);
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2016/09/12/link-bug/">iOS Not Found for Architecture Arm64</a>
+        <a href="/blog/2016/11/14/react-native/">React Native Demo</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2016/09/08/okhttp-retrofit/">OkHttp and Retrofit</a>
+        <a href="/blog/2016/11/14/springmvc-plus-mybatda-jian/">SpringMVC + MyBatis 框架搭建</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2016/09/07/asynctask/">Android中的AsyncTask</a>
+        <a href="/blog/2016/11/14/mybatis/">MyBatis 使用</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2016/09/02/apk-decode/">反编译Android的APK</a>
+        <a href="/blog/2016/11/11/android-select-photo/">Android 一行代码选取图片</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2016/09/01/fragment/">Android中的Fragment</a>
+        <a href="/blog/2016/11/08/wei-xin-demo/">微信小程序 Demo</a>
       </li>
     
   </ul>
@@ -1640,9 +1856,9 @@ layer.position=CGPointMake(size.width/2, size.height/2);
 <section>
   <h1>Categories</h1>
   <ul id="categories">
-    <li class='category'><a href='/blog/categories/android/'>android (8)</a></li>
+    <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (3)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (7)</a></li>
 
   </ul>
 </section>

@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="OkHttp and Retrofit Sep 8th, 2016 2:57 pm OkHttp和Retrofit都是Square公司开源出来的网络请求框架。Retrofit是对OkHttp的封装，使其可以用注解的方式调用。 OkHttp封装 /** * Created by suguiming &hellip;">
+  <meta name="description" content="OkHttp and Retrofit Sep 8th, 2016 2:57 pm OkHttp和Retrofit都是Square公司开源出来的网络请求框架。Retrofit是对OkHttp的封装，使其可以用注解的方式调用。 OkHttp //-----okhttp 网络请求 工具类 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -97,14 +97,13 @@
 
 <div class="entry-content"><p><a href="http://square.github.io/okhttp/">OkHttp</a>和<a href="http://square.github.io/retrofit/">Retrofit</a>都是<a href="http://square.github.io/">Square</a>公司开源出来的网络请求框架。Retrofit是对OkHttp的封装，使其可以用注解的方式调用。</p>
 
-<h4>OkHttp封装</h4>
+<h4>OkHttp</h4>
 
-<pre><code>/**
- * Created by suguiming on 16/8/24.
- */
+<pre><code>//-----okhttp 网络请求 工具类-----
 
-public class OkHttpHelper {
-private static final Handler mainHandler = new Handler(Looper.getMainLooper()); //异步请求结果要在主线程回调！！！
+//异步请求结果放在主线程回调。
+private static final Handler mainHandler = new Handler(Looper.getMainLooper()); 
+
 private static final OkHttpClient client = new OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
@@ -112,14 +111,44 @@ private static final OkHttpClient client = new OkHttpClient.Builder()
         .build();
 
 public static void getRequest(String url, final OkHttpListener listener) {
-    Request request = new Request
-            .Builder()
+    Request request = new Request.Builder()
+            .header("token", getUserToken())
+            .header("client", "Android")
+            .header("versionCode", getVersionCode())
+            .header("versionName", getVersionName())
             .url(url)
             .build();
     beginRequest(request, listener);
 }
 
-public static void postRequest(String url, final Map&lt;String, Object&gt; params, final OkHttpListener listener) {
+//这样就不会有中文乱码问题
+public static void postRequest(String url, final Map&lt;String, String&gt; params, final OkHttpListener listener) {
+    StringBuilder stringBuilder = new StringBuilder("");
+    if (params != null) {
+        Set&lt;String&gt; keys = params.keySet();
+        for (String key : keys) {
+            String value = params.get(key);
+            stringBuilder.append(key + "=" + value + "&amp;");
+        }
+    }
+
+    MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded;charset=utf-8");
+    RequestBody body = RequestBody.create(mediaType, stringBuilder.toString());
+
+    Request request = new Request.Builder()
+            .header("token", getUserToken())
+            .header("client", "Android")
+            .header("versionCode", getVersionCode())
+            .header("versionName", getVersionName())
+            .url(url)
+            .post(body)
+            .build();
+
+    beginRequest(request, listener);
+}
+
+//可添加图片文件
+public static void postMutibleRequest(String url, final Map&lt;String, Object&gt; params, final OkHttpListener listener) {
     MultipartBody.Builder multipleBuilder = new MultipartBody.Builder();
     multipleBuilder.setType(MultipartBody.FORM);
 
@@ -130,20 +159,82 @@ public static void postRequest(String url, final Map&lt;String, Object&gt; param
 
             if (obj instanceof File) {
                 File tmpFile = (File) obj;
-                multipleBuilder.addFormDataPart(key,tmpFile.getName(),MultipartBody.create(MediaType.parse("image/png"), tmpFile));
+                multipleBuilder.addFormDataPart(key, tmpFile.getName(), MultipartBody.create(MediaType.parse("image/jpg"), tmpFile));
             } else {
-                multipleBuilder.addPart(Headers.of("Content-Disposition", "form-data; name=\"" + key + "\""), RequestBody.create(null, (String)obj));
+                multipleBuilder.addPart(Headers.of("Content-Disposition", "form-data; name=\"" + key + "\""), RequestBody.create(null, (String) obj));
             }
         }
     }
 
     RequestBody multipleBody = multipleBuilder.build();
     Request request = new Request.Builder()
+            .header("token", getUserToken())
+            .header("client", "Android")
+            .header("versionCode", getVersionCode())
+            .header("versionName", getVersionName())
             .url(url)
             .post(multipleBody)
             .build();
 
     beginRequest(request, listener);
+}
+
+//保存网络图片到相册,返回本地存储路径
+public static void downloadImageToSysPhoto(String imageUrl, final OkHttpListener listener) {
+    Request request = new Request.Builder().url(imageUrl).build();
+    Call call = client.newCall(request);
+    call.enqueue(new Callback() {
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            try {
+                //系统相册路径
+                final String localPath = "/storage/emulated/0/DCIM/Camera/" + CommonUtil.getUniqueString(10) + ".jpg";
+
+                InputStream is = response.body().byteStream();
+                FileOutputStream fos = new FileOutputStream(localPath);
+                byte[] buffer = new byte[1024];
+
+                int len;
+                while ((len = is.read(buffer)) != -1) {
+                    fos.write(buffer, 0, len);
+                }
+                is.close();
+                fos.close();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.success(localPath);
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.fail(0, "");
+                        }
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (listener != null) {
+                        listener.fail(0, "");
+                    }
+                }
+            });
+        }
+    });
 }
 
 private static void beginRequest(Request request, final OkHttpListener listener) {
@@ -156,7 +247,7 @@ private static void beginRequest(Request request, final OkHttpListener listener)
             final int code = response.code();
 
             if (response.isSuccessful()) {
-                MyTool.logJson(responseString);
+                CommonUtil.logJson(responseString);
 
                 mainHandler.post(new Runnable() {
                     @Override
@@ -167,13 +258,13 @@ private static void beginRequest(Request request, final OkHttpListener listener)
                     }
                 });
             } else {
-                //请求失败：400  ---------   {"code":100002,"msg":"手机号已注册","url":""}
-                MyTool.log("请求失败：" + code + "---------" + responseString);
+                //请求失败：    400  ---------   {"code":100004,"msg":"手机号已注册"}
+                CommonUtil.logString("请求失败：" + code + "---------" + responseString);
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (listener != null) {
-                            listener.fail();
+                            listener.fail(code, responseString);
                         }
                     }
                 });
@@ -183,24 +274,145 @@ private static void beginRequest(Request request, final OkHttpListener listener)
         @Override
         public void onFailure(Call call, IOException e) {
             e.printStackTrace();
-            MyTool.log("服务器错误");
+            CommonUtil.logString("请求错误");
             mainHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (listener != null) {
-                        listener.fail();
+                        listener.fail(0, "请求失败");
                     }
                 }
             });
         }
     });
 }
+
+public static String getFailedMsg(String response) {
+    try {
+        JSONObject jsonObject = new JSONObject(response);
+        return jsonObject.getString("msg");
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "请求失败";
 }
 
-//回调接口定义
+public static String getUserToken() {
+    UserModel userModel = UserModel.getUser();
+    if (userModel != null) {
+        return userModel.getToken();
+    }
+    return "";
+}
+
+public static String getVersionCode() {
+    try {
+        PackageInfo pi = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
+        return pi.versionCode + "";
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "";
+}
+
+public static String getVersionName() {
+    try {
+        PackageInfo pi = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
+        return pi.versionName;
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "";
+}
+
+//下载apk安装包，HUD是自定义的等待进度条
+private static int apkProgress;
+public static void downloadAPK(final Context context, String apkUrl) {
+    HUD.show(context, "下载中...");
+    HUD.setCancelable(false);
+
+    Request request = new Request.Builder().url(apkUrl).build();
+    Call call = client.newCall(request);
+    call.enqueue(new Callback() {
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            try {
+                FileUtil.createDir();//创建  ~/paiqi/ 文件夹
+                final String apkLocalPath = FileUtil.DIR_PATH + "paiqi.apk";
+
+                InputStream is = response.body().byteStream();
+                FileOutputStream fos = new FileOutputStream(apkLocalPath);
+                int readNum;
+                byte[] buffer = new byte[1024];
+
+                int progressCount = 0;
+                long totalLength = response.body().contentLength();
+
+                while ((readNum = is.read(buffer)) != -1) {
+                    progressCount += readNum;
+                    apkProgress = (int) (((float) progressCount / totalLength) * 100);
+
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            HUD.setMessage("下载中 " + apkProgress + "%");
+                        }
+                    });
+
+                    fos.write(buffer, 0, readNum);
+                }
+                is.close();
+                fos.close();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        HUD.dismiss();
+                        installAPK(context, apkLocalPath);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        HUD.dismiss();
+                        CommonUtil.showToast("下载失败");
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    HUD.dismiss();
+                    CommonUtil.showToast("下载失败");
+                }
+            });
+        }
+    });
+}
+
+//安装apk
+private static void installAPK(Context context, String apkPath) {
+    File apkFile = new File(apkPath);
+    if (!apkFile.exists()) {
+        CommonUtil.showToast("安装失败");
+        return;
+    }
+    Intent intent = new Intent(Intent.ACTION_VIEW);
+    intent.setDataAndType(Uri.parse("file://" + apkFile.toString()), "application/vnd.android.package-archive");
+    context.startActivity(intent);
+} 
+
+//请求回调接口定义
 public interface OkHttpListener {
-    void success(String response);
-    void fail();
+   void success(String response);
+   void fail(int code,String response);
 }
 </code></pre>
 
@@ -275,7 +487,7 @@ public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
     }
 </code></pre>
 
-<h4>Retrofit使用</h4>
+<h4>Retrofit</h4>
 
 <p><a href="http://square.github.io/retrofit/">Retrofit官网</a>上的例子中返回结果是Bean，但又没说添加了GsonConverterFactory，所以会报 Could not locate ResponseBody converter for XXBean 错误！所以要引入GsonConverterFactory转化库<code>compile 'com.squareup.retrofit2:converter-gson:2.0.2'</code>, 然后在Retrofit初始化的时候添加该库！官网后面说了 By default, Retrofit can only deserialize HTTP bodies into OkHttp&rsquo;s ResponseBody type and it can only accept its RequestBody type for @Body. 默认只会返回ResponseBody！并且只有ResponseBody才可以使用@Body注解！我个人还是不喜欢直接在这里得到Bean, 我还是喜欢先通过得到response.body().string()，然后再转化成Bean，各司其职。注意是<code>response.body().string()</code>，不是<code>response.body().toString()</code>!!</p>
 
@@ -387,23 +599,23 @@ public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2016/09/12/link-bug/">iOS Not Found for Architecture Arm64</a>
+        <a href="/blog/2016/11/14/react-native/">React Native Demo</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2016/09/08/okhttp-retrofit/">OkHttp and Retrofit</a>
+        <a href="/blog/2016/11/14/springmvc-plus-mybatda-jian/">SpringMVC + MyBatis 框架搭建</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2016/09/07/asynctask/">Android中的AsyncTask</a>
+        <a href="/blog/2016/11/14/mybatis/">MyBatis 使用</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2016/09/02/apk-decode/">反编译Android的APK</a>
+        <a href="/blog/2016/11/11/android-select-photo/">Android 一行代码选取图片</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2016/09/01/fragment/">Android中的Fragment</a>
+        <a href="/blog/2016/11/08/wei-xin-demo/">微信小程序 Demo</a>
       </li>
     
   </ul>
@@ -415,9 +627,9 @@ public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
 <section>
   <h1>Categories</h1>
   <ul id="categories">
-    <li class='category'><a href='/blog/categories/android/'>android (8)</a></li>
+    <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (3)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (7)</a></li>
 
   </ul>
 </section>

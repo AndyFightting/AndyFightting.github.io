@@ -1,0 +1,571 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Android 一行代码选取图片 - 阿贵</title>
+  <meta name="author" content="guimingsu">
+
+  
+  <meta name="description" content="Android 一行代码选取图片 Nov 11th, 2016 7:31 pm 一行代码模仿iOS的选取图片效果。思路主要是把相机和相册的回调放在一个透明的Activity里，然后在这个透明的Activity中弹出自定义的ActionSheet选择框，选取调相机还是相册。相机比较简单， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://andyfightting.github.io/blog/2016/11/11/android-select-photo/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="阿贵" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">  -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+
+<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">阿贵</a></h1>
+  
+    <h2>Stay Hungry, Stay Foolish</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="andyfightting.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li> 
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Android 一行代码选取图片</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-11T19:31:33+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:31 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>一行代码模仿iOS的选取图片效果。思路主要是把相机和相册的回调放在一个透明的Activity里，然后在这个透明的Activity中弹出自定义的ActionSheet选择框，选取调相机还是相册。相机比较简单，直接调系统的。相册就不用系统的了，不同手机差别太大，效果也不好。自己遍历本地图片文件然后显示。这样即时在不同手机上也能展示相同的效果了。封装后使用就简单了，一行代码调用就可以，不会和业务Activity耦合了！</p>
+
+<h4>使用:</h4>
+
+<p>1.选取一张正方形图片</p>
+
+<pre><code>   SelectPhotoSheet.showCropImageSheet(this, new AlbumResultListener() {
+            @Override
+            public void complete(View tapedView, List&lt;String&gt; pathList) {
+                cache.displayBmp(headImageView, pathList.get(0), new Point(100, 100));
+            }
+        });
+</code></pre>
+
+<p>2.选取限制数量的全尺寸图片</p>
+
+<pre><code>SelectPhotoSheet.showFullImageSheet(this, 8, new AlbumResultListener() {
+            @Override
+            public void complete(View tapedView, List&lt;String&gt; pathList) {
+                localPathList.clear();
+                localPathList.addAll(pathList);
+                adapter.notifyDataSetChanged();
+            }
+        });
+</code></pre>
+
+<p><img src="/myimg/android/one_select.png" alt="" /></p>
+
+<h4>实现</h4>
+
+<p>1.自定义ActionSheet，弄一个Sheet的工具类 BaseSheetActivity。</p>
+
+<pre><code>//用作弹出 action sheet 效果的 base activity
+public class BaseSheetActivity extends Activity {
+    protected int activityCloseEnterAnimation;
+    protected int activityCloseExitAnimation;
+
+public static ItemTapListener itemTapListener;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+    TypedArray activityStyle = getTheme().obtainStyledAttributes(new int[] {android.R.attr.windowAnimationStyle});
+    int windowAnimationStyleResId = activityStyle.getResourceId(0, 0);
+    activityStyle.recycle();
+
+    activityStyle = getTheme().obtainStyledAttributes(windowAnimationStyleResId, new int[] {android.R.attr.activityCloseEnterAnimation, android.R.attr.activityCloseExitAnimation});
+    activityCloseEnterAnimation = activityStyle.getResourceId(0, 0);
+    activityCloseExitAnimation = activityStyle.getResourceId(1, 0);
+    activityStyle.recycle();
+}
+
+@Override
+public boolean onTouchEvent(MotionEvent event) {
+    dismiss();
+    if (itemTapListener != null){
+        itemTapListener.itemTap(new View(this),"");
+    }
+    return super.onTouchEvent(event);
+}
+
+@Override
+public void finish() {
+    dismiss();
+}
+
+public void dismiss(){
+    super.finish();
+    overridePendingTransition(activityCloseEnterAnimation, activityCloseExitAnimation);
+}
+
+public static void show(Context context, Class showedActivityClass, ItemTapListener itemTapListener){
+    BaseSheetActivity.itemTapListener = itemTapListener;
+    Intent intent = new Intent(context,showedActivityClass);
+    context.startActivity(intent);
+}
+}
+</code></pre>
+
+<p>  要使用ActionSheet的效果话就是继承它，然后theme选择ActionSheetTheme。然后把界面的布局放在bottom就可以了。</p>
+
+<pre><code>  public class PhotoSheet extends BaseSheetActivity {
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.action_photo_sheet); //action_photo_sheet的布局从bottom开始
+
+}
+
+public void itemTap(View view){
+    dismiss();
+    if (itemTapListener != null){
+        itemTapListener.itemTap(view,"");
+    }
+}
+
+@Override
+public void onBackPressed() {
+    dismiss();
+    if (itemTapListener != null){
+        itemTapListener.itemTap(new View(this),"");
+    }
+}
+}
+
+   //设置为自定义的样式
+ &lt;activity
+        android:name=".photo_lib.photo.PhotoSheet"
+        android:theme="@style/ActionSheetTheme" /&gt;
+</code></pre>
+
+<p>2.读图片文件路径，不单单是相册里的图片</p>
+
+<pre><code>public void getLocalImages() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                ContentResolver mContentResolver = AlbumDirActivity.this.getContentResolver();
+
+            Cursor mCursor = mContentResolver.query(
+                    mImageUri,
+                    null,
+                    MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?",
+                    new String[]{"image/jpeg", "image/png", "image/jpg"},
+                    MediaStore.Images.Media.DATE_MODIFIED);
+
+            while (mCursor.moveToNext()) {
+                String path = mCursor.getString(mCursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                String parentName = new File(path).getParentFile().getName();
+
+                if (!dirMap.containsKey(parentName)) {
+                    List&lt;String&gt; chileList = new ArrayList&lt;&gt;();
+                    chileList.add(path);
+                    dirMap.put(parentName, chileList);
+                } else {
+                    dirMap.get(parentName).add(path);
+                }
+            }
+            mCursor.close();
+            mHandler.sendEmptyMessage(SCAN_OK);
+        }
+    }).start();
+}
+</code></pre>
+
+<p>3.用LruCache缓存显示压缩后的图片</p>
+
+<pre><code>public class LocalImageCache {
+
+private static LocalImageCache mInstance;
+
+private Handler mHander = new Handler();
+private LruCache&lt;String, Bitmap&gt; mMemoryCache;
+private CacheImageCallBack mCallBack;
+private ExecutorService mImageThreadPool = Executors.newFixedThreadPool(5);
+
+private LocalImageCache() {
+    final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+    final int cacheSize = maxMemory / 5;
+
+    mMemoryCache = new LruCache&lt;String, Bitmap&gt;(cacheSize) {
+        @Override
+        protected int sizeOf(String key, Bitmap bitmap) {
+            return bitmap.getByteCount()/1024;
+        }
+    };
+
+    mCallBack = new CacheImageCallBack() {
+        @Override
+        public void onImageLoader(ImageView imageView, Bitmap bitmap) {
+            if (bitmap != null &amp;&amp; imageView != null) {
+                imageView.setImageBitmap(bitmap);
+            }
+        }
+    };
+}
+
+public static LocalImageCache getInstance() {
+    synchronized (LocalImageCache.class) {
+        if (mInstance == null) {
+            mInstance = new LocalImageCache();
+        }
+        return mInstance;
+    }
+}
+
+public static void clearCache() {
+    LocalImageCache cache = getInstance();
+    cache.mMemoryCache.evictAll();
+}
+
+public void displayBmp(final ImageView imageView, final String path, final Point mPoint) {
+    if (TextUtils.isEmpty(path) || imageView == null) {
+        return;
+    }
+
+    Bitmap bitmap = getBitmapFromMemCache(path);
+    if (bitmap == null) {
+        imageView.setImageBitmap(null);
+
+        mImageThreadPool.execute(new Runnable() {
+            Bitmap mBitmap;
+
+            @Override
+            public void run() {
+                mBitmap = decodeThumbBitmapForFile(path, mPoint == null ? 0 : mPoint.x, mPoint == null ? 0 : mPoint.y);
+                mHander.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCallBack.onImageLoader(imageView, mBitmap);
+                    }
+                });
+                addBitmapToMemoryCache(path, mBitmap);
+            }
+        });
+    } else {
+        imageView.setImageBitmap(bitmap);
+    }
+}
+
+private void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+    if (getBitmapFromMemCache(key) == null &amp;&amp; bitmap != null) {
+        mMemoryCache.put(key, bitmap);
+    }
+}
+
+private Bitmap getBitmapFromMemCache(String key) {
+    return mMemoryCache.get(key);
+}
+
+private Bitmap decodeThumbBitmapForFile(String path, int viewWidth, int viewHeight) {
+    BitmapFactory.Options options = new BitmapFactory.Options();
+    options.inJustDecodeBounds = true;
+    BitmapFactory.decodeFile(path, options);
+    options.inSampleSize = computeScale(options, viewWidth, viewHeight);
+    options.inJustDecodeBounds = false;
+
+    return BitmapFactory.decodeFile(path, options);
+}
+
+private int computeScale(BitmapFactory.Options options, int viewWidth, int viewHeight) {
+    int inSampleSize = 1;
+    if (viewWidth == 0 || viewHeight == 0) {
+        return inSampleSize;
+    }
+    int bitmapWidth = options.outWidth;
+    int bitmapHeight = options.outHeight;
+
+    if (bitmapWidth &gt; viewWidth || bitmapHeight &gt; viewHeight) {
+        int widthScale = Math.round((float) bitmapWidth / (float) viewWidth);
+        int heightScale = Math.round((float) bitmapHeight / (float) viewHeight);
+
+        inSampleSize = (widthScale+heightScale)/2;
+    }
+    return inSampleSize;
+}
+
+
+private interface CacheImageCallBack {
+    void onImageLoader(ImageView imageView, Bitmap bitmap);
+}
+}
+</code></pre>
+
+<p>4.用DrawerLayout封装了一个手势返回的基础类</p>
+
+<pre><code>public class BaseSwipeActivity extends AppCompatActivity {
+
+private LinearLayout containerLayout;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    initSwipeView();
+}
+
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+}
+
+private void initSwipeView() {
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+    setContentView(R.layout.activity_base_swipe);
+
+    containerLayout = (LinearLayout) findViewById(R.id.container_layout);
+
+    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.base_drawer_layout);
+    drawer.openDrawer(GravityCompat.END);
+    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+        @Override
+        public void onDrawerClosed(View drawerView) {
+            super.onDrawerClosed(drawerView);
+            finish();
+        }
+    };
+    drawer.addDrawerListener(toggle);
+}
+
+//子类要手势返回就用setMainView!!!!
+public void setMainView(int viewId) {
+    LayoutInflater inflater = LayoutInflater.from(this);
+    View tmpView = inflater.inflate(viewId, null);
+
+    if (tmpView instanceof LinearLayout) {
+        LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(linearLayoutParams);
+    } else if (tmpView instanceof RelativeLayout) {
+        RelativeLayout.LayoutParams relativeLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(relativeLayoutParams);
+    }
+    containerLayout.removeAllViews();
+    containerLayout.addView(tmpView);
+}
+
+public void backViewTap(View v) {
+
+}
+
+public void backImageTap(View v) {
+    finish();
+}
+}
+</code></pre>
+
+<p>其他Activity需要手势返回的话就继承它，然后使用setMainView()替代setContentView()设置界面布局，其他什么都不用管啦！</p>
+
+<h4>注意要</h4>
+
+<p>在使用的Activity的onDestroy()方法中调用 FileUtil.deleteAllFile(); 清除选取的临时缓存图片！！！</p>
+
+<p><a href="https://github.com/AndyFightting/SelectPhoto_Android">下载</a></p>
+</div>
+
+
+      | <a href="#comments">Comments</a>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">guimingsu</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-11-11T19:31:33+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:31 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/android/'>android</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  <!-- JiaThis Button -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/11/08/wei-xin-demo/" title="Previous Post: 微信小程序 Demo">&laquo; 微信小程序 Demo</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2016/11/14/mybatis/" title="Next Post: MyBatis 使用">MyBatis 使用 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-title="Octopress博客的个性化配置"></div>
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"tianweili"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+<!-- Duoshuo Comment END --></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/11/14/react-native/">React Native Demo</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/14/springmvc-plus-mybatda-jian/">SpringMVC + MyBatis 框架搭建</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/14/mybatis/">MyBatis 使用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/11/android-select-photo/">Android 一行代码选取图片</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/08/wei-xin-demo/">微信小程序 Demo</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (7)</a></li>
+
+  </ul>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - guimingsu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-09-12T11:01:45+08:00</updated>
+  <updated>2016-11-16T10:34:09+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -21,18 +21,18 @@
     <content type="html"><![CDATA[<p>接手维护一个项目，更新一下出现了下面这问题👇
 <img src="/myimg/ios/arm64.png" alt="image" /></p>
 
-<p>一看是"not found for architecture arm64"问题啊，哦，找不到architecture arm64啊，那好办，问问谷歌为啥找不到啊~ 然后就各种搜&hellip;</p>
+<p>好像不常见的问题，谷歌一下</p>
 
 <p><a href="http://stackoverflow.com/questions/19213782/undefined-symbols-for-architecture-arm64">Stack Overflow</a>
 <img src="/myimg/ios/stackoverflow.png" alt="image" /></p>
 
-<p>说是Architectures设置问题啊~~ 改改改&hellip; 说是Other Linker Flags问题啊~~~ 改改改&hellip;说是Target Membership问题啊~~ 改改改&hellip; 好像都没用啊，问题还是一动不动的出现在那里&hellip;好像有点不淡定了&hellip;这都什么鬼啊&hellip;
+<p>说是Architectures设置问题&hellip; 说是Other Linker Flags问题&hellip;说是Target Membership问题&hellip; 改了好像都没用啊，问题还是一动不动的出现在那里&hellip;
 <img src="/myimg/ios/targetMap.png" alt="image" /></p>
 
-<p>继续找找找&hellip;用对应的类文件全局搜一下&hellip;诶~~ 好像那里不对啊&hellip;路径怎么这样子??怎么和别人不一样啊~~ 喜出望外，好像知道原因了，果然项目文件夹里看不到该文件，果断Add Files to &ldquo;XXX"添加文件!
+<p>继续找找找&hellip;用对应的类文件全局搜一下&hellip;诶~ 好像那里不对啊&hellip;路径怎么这样子??怎么和别的不一样~~ 喜出望外，好像知道原因了，果然项目文件夹里看不到该文件，Add Files to &ldquo;XXX"添加文件!
 <img src="/myimg/ios/errorLoad.png" alt="image" /></p>
 
-<p>还是不行&hellip;WTF!! 把对应的.h .m文件拖到桌面上，再重新添加到项目里，解决了！！so easy ！！ 为什么一开始不怀疑是文件索引问题呢？ 因为项目编译没报 XXX.h not found &hellip;以为文件都好好的呢，以为是项目的配置问题&hellip; 所以一开始就找问题的方向就跑偏了！其实这问题之前也遇到过，一般是报第三方的XXX.a文件出现这问题。这问题一般是多人开发是用SVN更来更去导致的<code>project.pbxproj</code>里对应的文件索引没了。好了，再遇到这问题就不要跑偏了，把对应的文件重新添加就可以了！！</p>
+<p>还是不行&hellip;把对应的.h .m文件拖到桌面上，再重新添加到项目里，解决了！！为什么一开始不怀疑是文件索引问题呢？ 因为项目编译没报 XXX.h not found &hellip;以为文件都好好的呢，以为是项目的配置问题&hellip; 所以一开始找问题的方向就跑偏了！其实这问题之前也遇到过，一般是第三方的XXX.a文件出现这问题，只是这次脑袋没长记性&hellip;这问题一般是多人开发项目用SVN更来更去导致的<code>project.pbxproj</code>里对应的文件索引没了。好了，再遇到这问题就不要跑偏了，把对应的文件重新添加就可以了！！</p>
 ]]></content>
   </entry>
   

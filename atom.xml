@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-09-12T11:01:45+08:00</updated>
+  <updated>2016-11-16T10:34:09+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -14,6 +14,386 @@
 
   
   <entry>
+    <title type="html"><![CDATA[React Native Demo]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/11/14/react-native/"/>
+    <updated>2016-11-14T19:46:09+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/14/react-native</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[SpringMVC + MyBatis 框架搭建]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/11/14/springmvc-plus-mybatda-jian/"/>
+    <updated>2016-11-14T19:34:43+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/14/springmvc-plus-mybatda-jian</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[MyBatis 使用]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/11/14/mybatis/"/>
+    <updated>2016-11-14T19:26:25+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/14/mybatis</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Android 一行代码选取图片]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/11/11/android-select-photo/"/>
+    <updated>2016-11-11T19:31:33+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/11/android-select-photo</id>
+    <content type="html"><![CDATA[<p>一行代码模仿iOS的选取图片效果。思路主要是把相机和相册的回调放在一个透明的Activity里，然后在这个透明的Activity中弹出自定义的ActionSheet选择框，选取调相机还是相册。相机比较简单，直接调系统的。相册就不用系统的了，不同手机差别太大，效果也不好。自己遍历本地图片文件然后显示。这样即时在不同手机上也能展示相同的效果了。封装后使用就简单了，一行代码调用就可以，不会和业务Activity耦合了！</p>
+
+<h4>使用:</h4>
+
+<p>1.选取一张正方形图片</p>
+
+<pre><code>   SelectPhotoSheet.showCropImageSheet(this, new AlbumResultListener() {
+            @Override
+            public void complete(View tapedView, List&lt;String&gt; pathList) {
+                cache.displayBmp(headImageView, pathList.get(0), new Point(100, 100));
+            }
+        });
+</code></pre>
+
+<p>2.选取限制数量的全尺寸图片</p>
+
+<pre><code>SelectPhotoSheet.showFullImageSheet(this, 8, new AlbumResultListener() {
+            @Override
+            public void complete(View tapedView, List&lt;String&gt; pathList) {
+                localPathList.clear();
+                localPathList.addAll(pathList);
+                adapter.notifyDataSetChanged();
+            }
+        });
+</code></pre>
+
+<p><img src="http://andyfightting.github.io/myimg/android/one_select.png" alt="" /></p>
+
+<h4>实现</h4>
+
+<p>1.自定义ActionSheet，弄一个Sheet的工具类 BaseSheetActivity。</p>
+
+<pre><code>//用作弹出 action sheet 效果的 base activity
+public class BaseSheetActivity extends Activity {
+    protected int activityCloseEnterAnimation;
+    protected int activityCloseExitAnimation;
+
+public static ItemTapListener itemTapListener;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+    TypedArray activityStyle = getTheme().obtainStyledAttributes(new int[] {android.R.attr.windowAnimationStyle});
+    int windowAnimationStyleResId = activityStyle.getResourceId(0, 0);
+    activityStyle.recycle();
+
+    activityStyle = getTheme().obtainStyledAttributes(windowAnimationStyleResId, new int[] {android.R.attr.activityCloseEnterAnimation, android.R.attr.activityCloseExitAnimation});
+    activityCloseEnterAnimation = activityStyle.getResourceId(0, 0);
+    activityCloseExitAnimation = activityStyle.getResourceId(1, 0);
+    activityStyle.recycle();
+}
+
+@Override
+public boolean onTouchEvent(MotionEvent event) {
+    dismiss();
+    if (itemTapListener != null){
+        itemTapListener.itemTap(new View(this),"");
+    }
+    return super.onTouchEvent(event);
+}
+
+@Override
+public void finish() {
+    dismiss();
+}
+
+public void dismiss(){
+    super.finish();
+    overridePendingTransition(activityCloseEnterAnimation, activityCloseExitAnimation);
+}
+
+public static void show(Context context, Class showedActivityClass, ItemTapListener itemTapListener){
+    BaseSheetActivity.itemTapListener = itemTapListener;
+    Intent intent = new Intent(context,showedActivityClass);
+    context.startActivity(intent);
+}
+}
+</code></pre>
+
+<p>  要使用ActionSheet的效果话就是继承它，然后theme选择ActionSheetTheme。然后把界面的布局放在bottom就可以了。</p>
+
+<pre><code>  public class PhotoSheet extends BaseSheetActivity {
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.action_photo_sheet); //action_photo_sheet的布局从bottom开始
+
+}
+
+public void itemTap(View view){
+    dismiss();
+    if (itemTapListener != null){
+        itemTapListener.itemTap(view,"");
+    }
+}
+
+@Override
+public void onBackPressed() {
+    dismiss();
+    if (itemTapListener != null){
+        itemTapListener.itemTap(new View(this),"");
+    }
+}
+}
+
+   //设置为自定义的样式
+ &lt;activity
+        android:name=".photo_lib.photo.PhotoSheet"
+        android:theme="@style/ActionSheetTheme" /&gt;
+</code></pre>
+
+<p>2.读图片文件路径，不单单是相册里的图片</p>
+
+<pre><code>public void getLocalImages() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                ContentResolver mContentResolver = AlbumDirActivity.this.getContentResolver();
+
+            Cursor mCursor = mContentResolver.query(
+                    mImageUri,
+                    null,
+                    MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?",
+                    new String[]{"image/jpeg", "image/png", "image/jpg"},
+                    MediaStore.Images.Media.DATE_MODIFIED);
+
+            while (mCursor.moveToNext()) {
+                String path = mCursor.getString(mCursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                String parentName = new File(path).getParentFile().getName();
+
+                if (!dirMap.containsKey(parentName)) {
+                    List&lt;String&gt; chileList = new ArrayList&lt;&gt;();
+                    chileList.add(path);
+                    dirMap.put(parentName, chileList);
+                } else {
+                    dirMap.get(parentName).add(path);
+                }
+            }
+            mCursor.close();
+            mHandler.sendEmptyMessage(SCAN_OK);
+        }
+    }).start();
+}
+</code></pre>
+
+<p>3.用LruCache缓存显示压缩后的图片</p>
+
+<pre><code>public class LocalImageCache {
+
+private static LocalImageCache mInstance;
+
+private Handler mHander = new Handler();
+private LruCache&lt;String, Bitmap&gt; mMemoryCache;
+private CacheImageCallBack mCallBack;
+private ExecutorService mImageThreadPool = Executors.newFixedThreadPool(5);
+
+private LocalImageCache() {
+    final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+    final int cacheSize = maxMemory / 5;
+
+    mMemoryCache = new LruCache&lt;String, Bitmap&gt;(cacheSize) {
+        @Override
+        protected int sizeOf(String key, Bitmap bitmap) {
+            return bitmap.getByteCount()/1024;
+        }
+    };
+
+    mCallBack = new CacheImageCallBack() {
+        @Override
+        public void onImageLoader(ImageView imageView, Bitmap bitmap) {
+            if (bitmap != null &amp;&amp; imageView != null) {
+                imageView.setImageBitmap(bitmap);
+            }
+        }
+    };
+}
+
+public static LocalImageCache getInstance() {
+    synchronized (LocalImageCache.class) {
+        if (mInstance == null) {
+            mInstance = new LocalImageCache();
+        }
+        return mInstance;
+    }
+}
+
+public static void clearCache() {
+    LocalImageCache cache = getInstance();
+    cache.mMemoryCache.evictAll();
+}
+
+public void displayBmp(final ImageView imageView, final String path, final Point mPoint) {
+    if (TextUtils.isEmpty(path) || imageView == null) {
+        return;
+    }
+
+    Bitmap bitmap = getBitmapFromMemCache(path);
+    if (bitmap == null) {
+        imageView.setImageBitmap(null);
+
+        mImageThreadPool.execute(new Runnable() {
+            Bitmap mBitmap;
+
+            @Override
+            public void run() {
+                mBitmap = decodeThumbBitmapForFile(path, mPoint == null ? 0 : mPoint.x, mPoint == null ? 0 : mPoint.y);
+                mHander.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCallBack.onImageLoader(imageView, mBitmap);
+                    }
+                });
+                addBitmapToMemoryCache(path, mBitmap);
+            }
+        });
+    } else {
+        imageView.setImageBitmap(bitmap);
+    }
+}
+
+private void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+    if (getBitmapFromMemCache(key) == null &amp;&amp; bitmap != null) {
+        mMemoryCache.put(key, bitmap);
+    }
+}
+
+private Bitmap getBitmapFromMemCache(String key) {
+    return mMemoryCache.get(key);
+}
+
+private Bitmap decodeThumbBitmapForFile(String path, int viewWidth, int viewHeight) {
+    BitmapFactory.Options options = new BitmapFactory.Options();
+    options.inJustDecodeBounds = true;
+    BitmapFactory.decodeFile(path, options);
+    options.inSampleSize = computeScale(options, viewWidth, viewHeight);
+    options.inJustDecodeBounds = false;
+
+    return BitmapFactory.decodeFile(path, options);
+}
+
+private int computeScale(BitmapFactory.Options options, int viewWidth, int viewHeight) {
+    int inSampleSize = 1;
+    if (viewWidth == 0 || viewHeight == 0) {
+        return inSampleSize;
+    }
+    int bitmapWidth = options.outWidth;
+    int bitmapHeight = options.outHeight;
+
+    if (bitmapWidth &gt; viewWidth || bitmapHeight &gt; viewHeight) {
+        int widthScale = Math.round((float) bitmapWidth / (float) viewWidth);
+        int heightScale = Math.round((float) bitmapHeight / (float) viewHeight);
+
+        inSampleSize = (widthScale+heightScale)/2;
+    }
+    return inSampleSize;
+}
+
+
+private interface CacheImageCallBack {
+    void onImageLoader(ImageView imageView, Bitmap bitmap);
+}
+}
+</code></pre>
+
+<p>4.用DrawerLayout封装了一个手势返回的基础类</p>
+
+<pre><code>public class BaseSwipeActivity extends AppCompatActivity {
+
+private LinearLayout containerLayout;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    initSwipeView();
+}
+
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+}
+
+private void initSwipeView() {
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+    setContentView(R.layout.activity_base_swipe);
+
+    containerLayout = (LinearLayout) findViewById(R.id.container_layout);
+
+    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.base_drawer_layout);
+    drawer.openDrawer(GravityCompat.END);
+    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+        @Override
+        public void onDrawerClosed(View drawerView) {
+            super.onDrawerClosed(drawerView);
+            finish();
+        }
+    };
+    drawer.addDrawerListener(toggle);
+}
+
+//子类要手势返回就用setMainView!!!!
+public void setMainView(int viewId) {
+    LayoutInflater inflater = LayoutInflater.from(this);
+    View tmpView = inflater.inflate(viewId, null);
+
+    if (tmpView instanceof LinearLayout) {
+        LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(linearLayoutParams);
+    } else if (tmpView instanceof RelativeLayout) {
+        RelativeLayout.LayoutParams relativeLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(relativeLayoutParams);
+    }
+    containerLayout.removeAllViews();
+    containerLayout.addView(tmpView);
+}
+
+public void backViewTap(View v) {
+
+}
+
+public void backImageTap(View v) {
+    finish();
+}
+}
+</code></pre>
+
+<p>其他Activity需要手势返回的话就继承它，然后使用setMainView()替代setContentView()设置界面布局，其他什么都不用管啦！</p>
+
+<h4>注意要</h4>
+
+<p>在使用的Activity的onDestroy()方法中调用 FileUtil.deleteAllFile(); 清除选取的临时缓存图片！！！</p>
+
+<p><a href="https://github.com/AndyFightting/SelectPhoto_Android">下载</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[微信小程序 Demo]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/11/08/wei-xin-demo/"/>
+    <updated>2016-11-08T19:43:46+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/08/wei-xin-demo</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[iOS Not Found for Architecture Arm64]]></title>
     <link href="http://andyfightting.github.io/blog/2016/09/12/link-bug/"/>
     <updated>2016-09-12T10:00:18+08:00</updated>
@@ -21,18 +401,18 @@
     <content type="html"><![CDATA[<p>接手维护一个项目，更新一下出现了下面这问题👇
 <img src="http://andyfightting.github.io/myimg/ios/arm64.png" alt="image" /></p>
 
-<p>一看是"not found for architecture arm64"问题啊，哦，找不到architecture arm64啊，那好办，问问谷歌为啥找不到啊~ 然后就各种搜&hellip;</p>
+<p>好像不常见的问题，谷歌一下</p>
 
 <p><a href="http://stackoverflow.com/questions/19213782/undefined-symbols-for-architecture-arm64">Stack Overflow</a>
 <img src="http://andyfightting.github.io/myimg/ios/stackoverflow.png" alt="image" /></p>
 
-<p>说是Architectures设置问题啊~~ 改改改&hellip; 说是Other Linker Flags问题啊~~~ 改改改&hellip;说是Target Membership问题啊~~ 改改改&hellip; 好像都没用啊，问题还是一动不动的出现在那里&hellip;好像有点不淡定了&hellip;这都什么鬼啊&hellip;
+<p>说是Architectures设置问题&hellip; 说是Other Linker Flags问题&hellip;说是Target Membership问题&hellip; 改了好像都没用啊，问题还是一动不动的出现在那里&hellip;
 <img src="http://andyfightting.github.io/myimg/ios/targetMap.png" alt="image" /></p>
 
-<p>继续找找找&hellip;用对应的类文件全局搜一下&hellip;诶~~ 好像那里不对啊&hellip;路径怎么这样子??怎么和别人不一样啊~~ 喜出望外，好像知道原因了，果然项目文件夹里看不到该文件，果断Add Files to &ldquo;XXX"添加文件!
+<p>继续找找找&hellip;用对应的类文件全局搜一下&hellip;诶~ 好像那里不对啊&hellip;路径怎么这样子??怎么和别的不一样~~ 喜出望外，好像知道原因了，果然项目文件夹里看不到该文件，Add Files to &ldquo;XXX"添加文件!
 <img src="http://andyfightting.github.io/myimg/ios/errorLoad.png" alt="image" /></p>
 
-<p>还是不行&hellip;WTF!! 把对应的.h .m文件拖到桌面上，再重新添加到项目里，解决了！！so easy ！！ 为什么一开始不怀疑是文件索引问题呢？ 因为项目编译没报 XXX.h not found &hellip;以为文件都好好的呢，以为是项目的配置问题&hellip; 所以一开始就找问题的方向就跑偏了！其实这问题之前也遇到过，一般是报第三方的XXX.a文件出现这问题。这问题一般是多人开发是用SVN更来更去导致的<code>project.pbxproj</code>里对应的文件索引没了。好了，再遇到这问题就不要跑偏了，把对应的文件重新添加就可以了！！</p>
+<p>还是不行&hellip;把对应的.h .m文件拖到桌面上，再重新添加到项目里，解决了！！为什么一开始不怀疑是文件索引问题呢？ 因为项目编译没报 XXX.h not found &hellip;以为文件都好好的呢，以为是项目的配置问题&hellip; 所以一开始找问题的方向就跑偏了！其实这问题之前也遇到过，一般是第三方的XXX.a文件出现这问题，只是这次脑袋没长记性&hellip;这问题一般是多人开发项目用SVN更来更去导致的<code>project.pbxproj</code>里对应的文件索引没了。好了，再遇到这问题就不要跑偏了，把对应的文件重新添加就可以了！！</p>
 ]]></content>
   </entry>
   
@@ -43,14 +423,13 @@
     <id>http://andyfightting.github.io/blog/2016/09/08/okhttp-retrofit</id>
     <content type="html"><![CDATA[<p><a href="http://square.github.io/okhttp/">OkHttp</a>和<a href="http://square.github.io/retrofit/">Retrofit</a>都是<a href="http://square.github.io/">Square</a>公司开源出来的网络请求框架。Retrofit是对OkHttp的封装，使其可以用注解的方式调用。</p>
 
-<h4>OkHttp封装</h4>
+<h4>OkHttp</h4>
 
-<pre><code>/**
- * Created by suguiming on 16/8/24.
- */
+<pre><code>//-----okhttp 网络请求 工具类-----
 
-public class OkHttpHelper {
-private static final Handler mainHandler = new Handler(Looper.getMainLooper()); //异步请求结果要在主线程回调！！！
+//异步请求结果放在主线程回调。
+private static final Handler mainHandler = new Handler(Looper.getMainLooper()); 
+
 private static final OkHttpClient client = new OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
@@ -58,14 +437,44 @@ private static final OkHttpClient client = new OkHttpClient.Builder()
         .build();
 
 public static void getRequest(String url, final OkHttpListener listener) {
-    Request request = new Request
-            .Builder()
+    Request request = new Request.Builder()
+            .header("token", getUserToken())
+            .header("client", "Android")
+            .header("versionCode", getVersionCode())
+            .header("versionName", getVersionName())
             .url(url)
             .build();
     beginRequest(request, listener);
 }
 
-public static void postRequest(String url, final Map&lt;String, Object&gt; params, final OkHttpListener listener) {
+//这样就不会有中文乱码问题
+public static void postRequest(String url, final Map&lt;String, String&gt; params, final OkHttpListener listener) {
+    StringBuilder stringBuilder = new StringBuilder("");
+    if (params != null) {
+        Set&lt;String&gt; keys = params.keySet();
+        for (String key : keys) {
+            String value = params.get(key);
+            stringBuilder.append(key + "=" + value + "&amp;");
+        }
+    }
+
+    MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded;charset=utf-8");
+    RequestBody body = RequestBody.create(mediaType, stringBuilder.toString());
+
+    Request request = new Request.Builder()
+            .header("token", getUserToken())
+            .header("client", "Android")
+            .header("versionCode", getVersionCode())
+            .header("versionName", getVersionName())
+            .url(url)
+            .post(body)
+            .build();
+
+    beginRequest(request, listener);
+}
+
+//可添加图片文件
+public static void postMutibleRequest(String url, final Map&lt;String, Object&gt; params, final OkHttpListener listener) {
     MultipartBody.Builder multipleBuilder = new MultipartBody.Builder();
     multipleBuilder.setType(MultipartBody.FORM);
 
@@ -76,20 +485,82 @@ public static void postRequest(String url, final Map&lt;String, Object&gt; param
 
             if (obj instanceof File) {
                 File tmpFile = (File) obj;
-                multipleBuilder.addFormDataPart(key,tmpFile.getName(),MultipartBody.create(MediaType.parse("image/png"), tmpFile));
+                multipleBuilder.addFormDataPart(key, tmpFile.getName(), MultipartBody.create(MediaType.parse("image/jpg"), tmpFile));
             } else {
-                multipleBuilder.addPart(Headers.of("Content-Disposition", "form-data; name=\"" + key + "\""), RequestBody.create(null, (String)obj));
+                multipleBuilder.addPart(Headers.of("Content-Disposition", "form-data; name=\"" + key + "\""), RequestBody.create(null, (String) obj));
             }
         }
     }
 
     RequestBody multipleBody = multipleBuilder.build();
     Request request = new Request.Builder()
+            .header("token", getUserToken())
+            .header("client", "Android")
+            .header("versionCode", getVersionCode())
+            .header("versionName", getVersionName())
             .url(url)
             .post(multipleBody)
             .build();
 
     beginRequest(request, listener);
+}
+
+//保存网络图片到相册,返回本地存储路径
+public static void downloadImageToSysPhoto(String imageUrl, final OkHttpListener listener) {
+    Request request = new Request.Builder().url(imageUrl).build();
+    Call call = client.newCall(request);
+    call.enqueue(new Callback() {
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            try {
+                //系统相册路径
+                final String localPath = "/storage/emulated/0/DCIM/Camera/" + CommonUtil.getUniqueString(10) + ".jpg";
+
+                InputStream is = response.body().byteStream();
+                FileOutputStream fos = new FileOutputStream(localPath);
+                byte[] buffer = new byte[1024];
+
+                int len;
+                while ((len = is.read(buffer)) != -1) {
+                    fos.write(buffer, 0, len);
+                }
+                is.close();
+                fos.close();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.success(localPath);
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.fail(0, "");
+                        }
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (listener != null) {
+                        listener.fail(0, "");
+                    }
+                }
+            });
+        }
+    });
 }
 
 private static void beginRequest(Request request, final OkHttpListener listener) {
@@ -102,7 +573,7 @@ private static void beginRequest(Request request, final OkHttpListener listener)
             final int code = response.code();
 
             if (response.isSuccessful()) {
-                MyTool.logJson(responseString);
+                CommonUtil.logJson(responseString);
 
                 mainHandler.post(new Runnable() {
                     @Override
@@ -113,13 +584,13 @@ private static void beginRequest(Request request, final OkHttpListener listener)
                     }
                 });
             } else {
-                //请求失败：400  ---------   {"code":100002,"msg":"手机号已注册","url":""}
-                MyTool.log("请求失败：" + code + "---------" + responseString);
+                //请求失败：    400  ---------   {"code":100004,"msg":"手机号已注册"}
+                CommonUtil.logString("请求失败：" + code + "---------" + responseString);
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (listener != null) {
-                            listener.fail();
+                            listener.fail(code, responseString);
                         }
                     }
                 });
@@ -129,24 +600,145 @@ private static void beginRequest(Request request, final OkHttpListener listener)
         @Override
         public void onFailure(Call call, IOException e) {
             e.printStackTrace();
-            MyTool.log("服务器错误");
+            CommonUtil.logString("请求错误");
             mainHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (listener != null) {
-                        listener.fail();
+                        listener.fail(0, "请求失败");
                     }
                 }
             });
         }
     });
 }
+
+public static String getFailedMsg(String response) {
+    try {
+        JSONObject jsonObject = new JSONObject(response);
+        return jsonObject.getString("msg");
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "请求失败";
 }
 
-//回调接口定义
+public static String getUserToken() {
+    UserModel userModel = UserModel.getUser();
+    if (userModel != null) {
+        return userModel.getToken();
+    }
+    return "";
+}
+
+public static String getVersionCode() {
+    try {
+        PackageInfo pi = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
+        return pi.versionCode + "";
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "";
+}
+
+public static String getVersionName() {
+    try {
+        PackageInfo pi = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
+        return pi.versionName;
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "";
+}
+
+//下载apk安装包，HUD是自定义的等待进度条
+private static int apkProgress;
+public static void downloadAPK(final Context context, String apkUrl) {
+    HUD.show(context, "下载中...");
+    HUD.setCancelable(false);
+
+    Request request = new Request.Builder().url(apkUrl).build();
+    Call call = client.newCall(request);
+    call.enqueue(new Callback() {
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            try {
+                FileUtil.createDir();//创建  ~/paiqi/ 文件夹
+                final String apkLocalPath = FileUtil.DIR_PATH + "paiqi.apk";
+
+                InputStream is = response.body().byteStream();
+                FileOutputStream fos = new FileOutputStream(apkLocalPath);
+                int readNum;
+                byte[] buffer = new byte[1024];
+
+                int progressCount = 0;
+                long totalLength = response.body().contentLength();
+
+                while ((readNum = is.read(buffer)) != -1) {
+                    progressCount += readNum;
+                    apkProgress = (int) (((float) progressCount / totalLength) * 100);
+
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            HUD.setMessage("下载中 " + apkProgress + "%");
+                        }
+                    });
+
+                    fos.write(buffer, 0, readNum);
+                }
+                is.close();
+                fos.close();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        HUD.dismiss();
+                        installAPK(context, apkLocalPath);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        HUD.dismiss();
+                        CommonUtil.showToast("下载失败");
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    HUD.dismiss();
+                    CommonUtil.showToast("下载失败");
+                }
+            });
+        }
+    });
+}
+
+//安装apk
+private static void installAPK(Context context, String apkPath) {
+    File apkFile = new File(apkPath);
+    if (!apkFile.exists()) {
+        CommonUtil.showToast("安装失败");
+        return;
+    }
+    Intent intent = new Intent(Intent.ACTION_VIEW);
+    intent.setDataAndType(Uri.parse("file://" + apkFile.toString()), "application/vnd.android.package-archive");
+    context.startActivity(intent);
+} 
+
+//请求回调接口定义
 public interface OkHttpListener {
-    void success(String response);
-    void fail();
+   void success(String response);
+   void fail(int code,String response);
 }
 </code></pre>
 
@@ -221,7 +813,7 @@ public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
     }
 </code></pre>
 
-<h4>Retrofit使用</h4>
+<h4>Retrofit</h4>
 
 <p><a href="http://square.github.io/retrofit/">Retrofit官网</a>上的例子中返回结果是Bean，但又没说添加了GsonConverterFactory，所以会报 Could not locate ResponseBody converter for XXBean 错误！所以要引入GsonConverterFactory转化库<code>compile 'com.squareup.retrofit2:converter-gson:2.0.2'</code>, 然后在Retrofit初始化的时候添加该库！官网后面说了 By default, Retrofit can only deserialize HTTP bodies into OkHttp&rsquo;s ResponseBody type and it can only accept its RequestBody type for @Body. 默认只会返回ResponseBody！并且只有ResponseBody才可以使用@Body注解！我个人还是不喜欢直接在这里得到Bean, 我还是喜欢先通过得到response.body().string()，然后再转化成Bean，各司其职。注意是<code>response.body().string()</code>，不是<code>response.body().toString()</code>!!</p>
 
@@ -2470,1024 +3062,6 @@ label.attributedText = [attributeString copy];
 <p>11.在GDC中一个操作是多线程执行还是单线程执行取决于当前队列类型和执行方法，只有队列类型为并发队列并且使用异步方法执行时才能在多个线程中并发执行。</p>
 
 <p>12.相比使用NSLock，@synchronized更加简单。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式]]></title>
-    <link href="http://andyfightting.github.io/blog/2015/12/19/desigin-pattern/"/>
-    <updated>2015-12-19T21:51:06+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2015/12/19/desigin-pattern</id>
-    <content type="html"><![CDATA[<p>我理解的设计模式都是为了让代码模块化，结构化，各司其职，再把各个模块通过"接口"组合起来。封装变化；多用组合少用继承；针对接口编程，不针对实现编程；为交互对象之间的松耦合设计而努力；对扩展开放，对修改关闭。</p>
-
-<h3>1.MVC模式</h3>
-
-<p>看图就可以了，简洁明了~
-<img src="http://andyfightting.github.io/myimg/other/mvc.png" alt="image" /><!--more--></p>
-
-<h3>2.策略模式</h3>
-
-<p>比如有个父类有飞行功能，然后有很多子类的飞行功能各不一样，如果去继承父类然后分别实现不同的飞行行为，这就坑爹了&hellip;具体做法应该是：把飞行行为完全独立出来成一个Interface，然后不同的飞行行为再在单独的类中实现，不同的子类要不同的飞行行为的话就取对应的行为实现对象。</p>
-
-<p>父类：</p>
-
-<pre><code>public class Duck {//父类
-
-public FlyInterface flyInterface;//行为的接口成员变量
-
-public void performFly(){//统一调用的飞行方法
-    flyInterface.fly();
-}
-
-public void setFlyInterface(FlyInterface fi){//动态改变飞行行为
-    flyInterface = fi;
-  }
-}
-</code></pre>
-
-<p>行为接口：</p>
-
-<pre><code>public interface FlyInterface { //行为接口
-void fly();//要实现的行为方法
-}
-</code></pre>
-
-<p>行为的一种具体实现：</p>
-
-<pre><code>public class FlyPatternOne implements FlyInterface {//飞行行为的一种实现，可以有很多个不同的实现
-@Override
-public void fly() {
-    //这里是具体飞行行为代码
-
-  }
-}
-</code></pre>
-
-<p>某一个子类：</p>
-
-<pre><code>public class SubDuck extends Duck{
-public SubDuck(){
-    //默认的飞行行为，不同的子类有不同的飞行行为，如 FlyPatternTwo FlyPatternThree...等
-    flyInterface = new FlyPatternOne();
-  }
-}
-</code></pre>
-
-<p><img src="http://andyfightting.github.io/myimg/other/chelue.png" alt="image" /></p>
-
-<p>1,找出可能需要变化之处，把它们独立封装起来，不要和那些不需要变化的代码混合在一起。</p>
-
-<p>2.针对接口编程，而不是针对实现编程。</p>
-
-<p>3.多用组合，少用继承。</p>
-
-<h3>3.观察者模式</h3>
-
-<p>好好看图吧，把它转化为具体代码加深理解
-<img src="http://andyfightting.github.io/myimg/other/guanCha0.jpg" alt="image" />
-<img src="http://andyfightting.github.io/myimg/other/guanCha1.jpg" alt="image" />
-<img src="http://andyfightting.github.io/myimg/other/guanCha2.jpg" alt="image" />
-<img src="http://andyfightting.github.io/myimg/other/guanCha3.jpg" alt="image" /></p>
-
-<p>看完上面例子，下面的设计图也更好理解了。
-<img src="http://andyfightting.github.io/myimg/other/guanCha4.jpg" alt="image" /></p>
-
-<p>使用Java内置的观察者模式
-<img src="http://andyfightting.github.io/myimg/other/guanCha5.jpg" alt="image" />
-<img src="http://andyfightting.github.io/myimg/other/guanCha6.jpg" alt="image" />
-<img src="http://andyfightting.github.io/myimg/other/guanCha7.jpg" alt="image" />
-<img src="http://andyfightting.github.io/myimg/other/guanCha8.jpg" alt="image" /></p>
-
-<p>Swing中的观察者模式
-<img src="http://andyfightting.github.io/myimg/other/guanCha9.jpg" alt="image" /></p>
-
-<p>要点
-<img src="http://andyfightting.github.io/myimg/other/guanCha10.jpg" alt="image" /></p>
-
-<h3>4.装饰模式</h3>
-
-<p>动态的将责任附加到对象上，用对象组合的方式来解决继承滥用的问题。利用继承设计子类的行为是在编译时静态决定的，而且所有的子类都会继承到相同的行为。如果利用组合的做法扩展对象的行为，就可以在运行时动态的进行扩展。类应该多扩展开放，对修改关闭。即在不修改现有代码的情况下可以添加新的行为。</p>
-
-<p>装饰着和被装饰着必须是同一类型，所以通过继承来实现。这里的继承是用来达到“类型一致”的，而不是为了通过继承得到“行为”。“行为”来自装饰着和基础组件，其他与装饰着之间的组合关系。
-<img src="http://andyfightting.github.io/myimg/other/zhuangShi.jpg" alt="image" />
-<img src="http://andyfightting.github.io/myimg/other/zhuangShi0.jpg" alt="image" />
-<img src="http://andyfightting.github.io/myimg/other/zhuangShi1.jpg" alt="image" />
-<img src="http://andyfightting.github.io/myimg/other/zhuangShi2.jpg" alt="image" />
-<img src="http://andyfightting.github.io/myimg/other/zhuangShi3.jpg" alt="image" />
-<img src="http://andyfightting.github.io/myimg/other/zhuangShi4.jpg" alt="image" />
-<img src="http://andyfightting.github.io/myimg/other/zhuangShi5.jpg" alt="image" />
-<img src="http://andyfightting.github.io/myimg/other/zhuangShi6.jpg" alt="image" /></p>
-
-<h3>5.工厂模式</h3>
-
-<p>当每次“new”的时候都会实例化一个类，所以这是用的实现编程而不是接口编程。“工厂”就是一个专门负责产生对象的一个类。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Android基本存储]]></title>
-    <link href="http://andyfightting.github.io/blog/2015/11/23/androidsave/"/>
-    <updated>2015-11-23T19:48:52+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2015/11/23/androidsave</id>
-    <content type="html"><![CDATA[<p>Android数据保存方式有： 文件存储, SharedPreference, Sqlite, SD卡存储。</p>
-
-<h3>* 文件存储</h3>
-
-<p>不对存储数据做任何格式化处理，原封不动的保存到文件中。使用于保存简单的文本数据或者二进制数据。</p>
-
-<p>Context有个<code>openFileOutput()</code>方法接受两个参数，第一个：文件名，<strong>不要包含路径</strong>，第二个：操作方式，有两种，<code>MODE_PRIVATE</code>(覆盖原文件内容),<code>MODE_APPEND</code>(在原文件尾部追加内容)，默认第一种。文件默认保存在：<code>/data/data/packageName/files/</code>这个目录里。</p>
-
-<pre><code> public static void saveText(Context context,String fileName,String text){
-    FileOutputStream outputStream ;
-    BufferedWriter bufferedWriter = null;
-    try {
-       outputStream = context.openFileOutput(fileName,Context.MODE_PRIVATE);
-        bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-        bufferedWriter.write(text);
-    }catch (IOException e){
-        e.printStackTrace();
-    }finally {
-        try {
-            if (bufferedWriter != null){
-                bufferedWriter.close();
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-}
-</code></pre>
-
-<!--more-->
-
-
-<p>在我调用 <code>MyTool.saveText(this,"myFile","Hello World!");</code>后出现了如下文件，点画圈圈的地方可以导出到电脑上打开查看。
-<img src="http://andyfightting.github.io/myimg/android/helloSave.png" alt="img" /></p>
-
-<p>读文件</p>
-
-<pre><code>public static String getText(Context context,String fileName){
-    FileInputStream inputStream;
-    BufferedReader bufferReader = null;
-    StringBuilder contentBuilder = new StringBuilder();
-    try {
-        inputStream = context.openFileInput(fileName);
-        bufferReader = new BufferedReader(new InputStreamReader(inputStream));
-        String lineText = "";
-        while ((lineText = bufferReader.readLine()) != null){
-            contentBuilder.append(lineText);
-        }
-    }catch (IOException e){
-        e.printStackTrace();
-    }finally {
-       if (bufferReader != null){
-           try {
-               bufferReader.close();
-           }catch (IOException e){
-               e.printStackTrace();
-           }
-       }
-    }
-    return contentBuilder.toString();
-}
-</code></pre>
-
-<p>删除文件</p>
-
-<pre><code>public static void deleteFile(Context context, String fileName) {
-    String filePath = context.getFilesDir()+"/"+fileName;
-    File file = new File(filePath);
-    if (file.exists()){
-        file.delete();
-    }
-}
-</code></pre>
-
-<h3>* SharedPreference</h3>
-
-<p>用key-value键值对的方式保存数据，适用于保存应用配置之类的简单信息。有以下三种方式得到<code>SharedPreferences</code>对象，得到实例后调用实例的<code>edit()</code>方法得到<code>SharedPreferences.Editor</code>对象，用该<code>Editor</code>对象<code>putBoolean("key",value)``putString("key",value)</code>等方法添加数据，然后调用<code>apply()</code>即可。获取数据就调用对应的<code>getBoolean("key")``getString("key")</code>。文件保存在<code>/data/data/packageName/shared_prefs/</code>目录下。</p>
-
-<ol>
-<li><p>Context中的<code>getSharedPreferences()</code>方法接收两个参数，一个文件名(不要包含路径)，一个操作模式，有<code>MODE_PRIVATE</code>(覆盖原文件),<code>MODE_MULTI_PROCESS</code>(多个进程对文件进行读写情况)默认第一种。</p></li>
-<li><p>Activity中也有个一个类似的方法<code>getSharedPreferences()</code>，它只接收一个操作模式作为参数，<strong>自动将类名作为文件名</strong>。</p></li>
-<li><p>PreferenceManager类中的<code>getDefaultSharedPreferences()</code>，这是一个静态方法，接收一个参数<code>Context</code>,自动将应用程序的<code>packageName</code>为前缀的文件名,如我的包名是<code>com.suguiming.myandroid</code>,生成的文件名就是<code>com.suguiming.myandroid_preferences.xml</code>。</p></li>
-</ol>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>SharedPreferences sharedPreferences =    PreferenceManager.getDefaultSharedPreferences(context);
-</span><span class='line'>  SharedPreferences.Editor editor = sharedPreferences.edit();
-</span><span class='line'>    editor.putString("name","guimingsu");
-</span><span class='line'>    editor.putInt("age", 18);
-</span><span class='line'>    editor.apply();</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://andyfightting.github.io/myimg/android/shareP.png" alt="img" />
-<img src="http://andyfightting.github.io/myimg/android/shareV.png" alt="img" /></p>
-
-<p>一般都把它做成一个工具类</p>
-
-<pre><code>public class SharedPreUtil {
-
-public static final String FILE_NAME = "shared_preference";
-
-public static void put(Context context, String key, Object value) {
-    SharedPreferences sharedPreferences = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
-    SharedPreferences.Editor editor = sharedPreferences.edit();
-
-    if (value instanceof String) {
-        editor.putString(key, (String) value);
-    } else if (value instanceof Integer) {
-        editor.putInt(key, (Integer) value);
-    } else if (value instanceof Boolean) {
-        editor.putBoolean(key, (Boolean) value);
-    } else if (value instanceof Float) {
-        editor.putFloat(key, (Float) value);
-    } else if (value instanceof Long) {
-        editor.putLong(key, (Long) value);
-    } else {
-        editor.putString(key, value.toString());
-    }
-    editor.apply();
-}
-
-public static Object get(Context context, String key, Object defaultValue) {
-    SharedPreferences sharedPreferences = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
-
-    if (defaultValue instanceof String) {
-        return sharedPreferences.getString(key, (String) defaultValue);
-    } else if (defaultValue instanceof Integer) {
-        return sharedPreferences.getInt(key, (Integer) defaultValue);
-    } else if (defaultValue instanceof Boolean) {
-        return sharedPreferences.getBoolean(key, (Boolean) defaultValue);
-    } else if (defaultValue instanceof Float) {
-        return sharedPreferences.getFloat(key, (Float) defaultValue);
-    } else if (defaultValue instanceof Long) {
-        return sharedPreferences.getLong(key, (Long) defaultValue);
-    }
-    return null;
-}
-
-public static void remove(Context context, String key) {
-    SharedPreferences sharedPreferences = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
-    SharedPreferences.Editor editor = sharedPreferences.edit();
-    editor.remove(key);
-    editor.apply();
-}
-
-public static void removeAll(Context context) {
-    SharedPreferences sharedPreferences = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
-    SharedPreferences.Editor editor = sharedPreferences.edit();
-    editor.clear();
-    editor.apply();
-}
-
-}
-</code></pre>
-
-<h3>* SQLite</h3>
-
-<p>关系型的轻量级数据库，保存复杂或者大数据用这个，支持标准的SQL语法。</p>
-
-<p>创建数据库：Android提供了一个抽象类<code>SQLiteOpenHelper</code>，我们继承它重写里面的两个方法<code>onCreate()</code>,<code>onUpdate()</code>来创建和更新数据库表结构。创建的数据库会保存在 <code>/data/data/packageName/databases/</code>目录下。通过<code>getReadableDatabase</code>或者<code>getWritableDatabase</code>都可得到可读写的数据库，但如果数据库不可写时(如磁盘已满)，<code>getWritableDatabase</code>会报错，<code>getReadableDatabase</code>不会。</p>
-
-<p>调用<code>MySqliteHelper.getHelper(mainActivity).getReadableDatabase();</code>一下数据库就建好了，下次再调用就不会再创建了。</p>
-
-<pre><code>public class MyDatabaseHelper extends SQLiteOpenHelper {
-
-private static MyDatabaseHelper helper;
-private static final String DB_NAME = "myAndroid.db";
-
-public MyDatabaseHelper(Context context){
-    super(context, DB_NAME, null, 2);//2 数据库version,修改数据库用
-}
-
-@Override
-public void onCreate(SQLiteDatabase db) {
-    db.execSQL(create_dog);
-    db.execSQL(create_cat);
-}
-
-@Override
-public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-    //更新表才用,这里假设在 版本2 中要添加 cat 表,注意：switch 不要 break !!
-    switch (newVersion){
-        case 2:
-            db.execSQL(create_cat);
-        default:
-    }
-}
-//获取 helper 单例
-public static synchronized MyDatabaseHelper getHelper(Context context) {
-    context = context.getApplicationContext();
-    if (helper == null) {
-        synchronized (MyDatabaseHelper.class) {
-            if (helper == null)
-                helper = new MyDatabaseHelper(context);
-        }
-    }
-    return helper;
-}
-
-//-------------sql----------------------------
-    public static final String create_dog = "create table dog ("
-            +"id integer primary key autoincrement,"
-            +"name text,"
-            +"age integer,"
-            +"weight real)";
-
-    public static final String create_cat = "create table cat ("
-            +"id integer primary key autoincrement,"
-            +"name text,"
-            +"age integer,"
-            +"weight real)";
-}
-</code></pre>
-
-<p><img src="http://andyfightting.github.io/myimg/android/mydb.png" alt="img" />  <br/>
-把数据库导出到桌面，用<a href="http://www.sqlitemanager.org/">SQLiteManager</a>打开查看
-<img src="http://andyfightting.github.io/myimg/android/mytable.png" alt="img" /></p>
-
-<p>数据增，删，改，查的最简单的例子</p>
-
-<pre><code>public class DogDao {
-private static final String TABLE_NAME = "dog";
-
-public static void add(Context context,Dog dog){
-    SQLiteDatabase db =  MyDatabaseHelper.getHelper(context).getWritableDatabase();
-    ContentValues values = new ContentValues();
-    values.put("name",dog.getName());
-    values.put("age",dog.getAge());
-    values.put("weight",dog.getWeight());
-    db.insert(TABLE_NAME, null, values);
-}
-
-public static void update(Context context,Dog dog){
-    SQLiteDatabase db =  MyDatabaseHelper.getHelper(context).getWritableDatabase();
-    ContentValues values = new ContentValues();
-    values.put("name",dog.getName());
-    values.put("age",dog.getAge());
-    values.put("weight",dog.getWeight());
-    db.update(TABLE_NAME, values, null, null);
-}
-
-public static void deleteAll(Context context){
-    SQLiteDatabase db =  MyDatabaseHelper.getHelper(context).getWritableDatabase();
-    db.delete(TABLE_NAME, null, null);
-}
-
-public static List&lt;Dog&gt; getAll(Context context){
-    SQLiteDatabase db =  MyDatabaseHelper.getHelper(context).getWritableDatabase();
-    Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, null);
-    List&lt;Dog&gt; dogList = new ArrayList&lt;&gt;();
-    if (cursor.moveToFirst()){
-        do {
-            Dog dog = new Dog();
-            dog.setName(cursor.getString(cursor.getColumnIndex("name")));
-            dog.setAge(cursor.getInt(cursor.getColumnIndex("age")));
-            dog.setWeight(cursor.getFloat(cursor.getColumnIndex("weight")));
-            dogList.add(dog);
-        }while (cursor.moveToNext());
-    }
-    cursor.close();
-    return dogList;
-}
-
-//事务，要么都成功，要么都失败。
-public static void transactionTest(Context context){
-    SQLiteDatabase db =  MyDatabaseHelper.getHelper(context).getWritableDatabase();
-    db.beginTransaction();
-    try {
-        //数据处理....
-
-        db.setTransactionSuccessful();
-    }catch (Exception e){
-        e.printStackTrace();
-    }finally {
-        db.endTransaction();
-    }
-}
-}
-</code></pre>
-
-<p>也可以用 Android SDK <code>/platform-tools</code>文件夹中自带的<code>adb</code>工具来操作链接在电脑的手机或者模拟器里的数据库。</p>
-
-<p>但要先配置一下，Mac的配置如下，在终端依次输入 <code>cd ~</code> <code>touch .bash_profile</code> <code>open -e .bash_profile</code>这时会打开一个文本文件，在里面添加<code>export PATH=${PATH}:这里是platform-tools文件的路径</code>保存关闭，
-然后<code>source .bash-profile</code>刷新，然后输入<code>adb shell</code>就可以开始用了。
-<img src="http://andyfightting.github.io/myimg/android/pzadb.png" alt="img" />
-<img src="http://andyfightting.github.io/myimg/android/pzadb2.png" alt="img" />
-如查看数据库<code>cd /data/data/packageName/databases</code> <code>l</code>列出所有数据库
-<img src="http://andyfightting.github.io/myimg/android/adbtable.png" alt="img" /></p>
-
-<h3>* SD卡存储</h3>
-
-<p>SD卡存储和文件存储差不多，只不过是手机外部的存储空间，容量更大，不过在使用的时候要判断SD卡可不可以用。</p>
-
-<pre><code>public class SDCardUtil {
-
-// 默认都保存在这个文件夹下
-private static final String DEFAULT_DIR = "ProData/";
-
-public static boolean isEnable() {
-    return Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
-}
-
-public static long getTotalMB() {
-    if (!isEnable())
-        return 0;
-    File path = Environment.getExternalStorageDirectory();
-    StatFs stat = new StatFs(path.getPath());
-    long blockSize = stat.getBlockSizeLong();
-    long availableBlocks = stat.getBlockCountLong();
-    return (availableBlocks * blockSize) / 1024 / 1024;
-}
-
-public static long getAvailableMB() {
-    if (!isEnable())
-        return 0;
-    File path = Environment.getExternalStorageDirectory();
-    StatFs stat = new StatFs(path.getPath());
-    long blockSize = stat.getBlockSizeLong();
-    long availableBlocks = stat.getAvailableBlocksLong();
-    return (availableBlocks * blockSize) / 1024 / 1024;
-}
-
-public static long getAvailableByte() {
-    if (!isEnable())
-        return 0;
-    File path = Environment.getExternalStorageDirectory();
-    StatFs stat = new StatFs(path.getPath());
-    long blockSize = stat.getBlockSizeLong();
-    long availableBlocks = stat.getAvailableBlocksLong();
-    return availableBlocks * blockSize;
-}
-
-// 路径：/storage/sdcard0/
-public static String getSDCardPath() {
-    if (!isEnable())
-        return "";
-    return Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator;
-}
-
-
-public static File createDir(String directoryName) {
-    //建默认文件夹
-    String defaultDir = getSDCardPath() + DEFAULT_DIR;
-    File defaultFile = new File(defaultDir);
-    if (!defaultFile.exists()) {
-        defaultFile.mkdir();
-    }
-
-    String dirPath = getFilePath(directoryName);
-    File dirFile = new File(dirPath);
-    if (!dirFile.exists()) {
-        dirFile.mkdir();
-    }
-    return dirFile;
-}
-
-public static File createFile(String fileName) {
-    try {
-        //建默认文件夹
-        String dirPath = getSDCardPath() + DEFAULT_DIR;
-        File directory = new File(dirPath);
-        if (!directory.exists()) {
-            directory.mkdir();
-        }
-
-        //再在默认文件夹里建文件
-        File file = new File(getFilePath(fileName));
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-        return file;
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    return null;
-}
-
-public static String getFilePath(String fileName) {
-    return getSDCardPath() + DEFAULT_DIR + fileName;
-}
-
-public static boolean isFileExist(String fileName) {
-    File file = new File(getFilePath(fileName));
-    return file.exists();
-}
-
-public static boolean saveByte(String fileName, byte[] bytes) {
-    if (bytes == null) {
-        return false;
-    }
-
-    OutputStream output = null;
-    try {
-        if (bytes.length &lt; getAvailableByte()) {
-            File file = createFile(fileName);//这里面已经建了默认文件夹
-            output = new BufferedOutputStream(new FileOutputStream(file));
-            output.write(bytes);
-            output.flush();
-            return true;
-        }
-    } catch (IOException e1) {
-        e1.printStackTrace();
-    } finally {
-        try {
-            if (output != null) {
-                output.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    return false;
-}
-
-public static byte[] getByte(String fileName) {
-    File file = new File(getFilePath(fileName));
-    if (!file.exists()) {
-        return null;
-    }
-    InputStream inputStream = null;
-    try {
-        inputStream = new BufferedInputStream(new FileInputStream(file));
-        byte[] data = new byte[inputStream.available()];
-        inputStream.read(data);
-        return data;
-    } catch (Exception e) {
-        e.printStackTrace();
-    } finally {
-        try {
-            if (inputStream != null) {
-                inputStream.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    return null;
-}
-
-public static boolean saveBitmap(Bitmap bitmap, String bitmapName) {
-    if (bitmap == null) {
-        return false;
-    }
-    //建默认文件夹
-    String dirPath = getSDCardPath() + DEFAULT_DIR;
-    File directory = new File(dirPath);
-    if (!directory.exists()) {
-        directory.mkdir();
-    }
-
-    File file = new File(getFilePath(bitmapName));
-    BufferedOutputStream output = null;
-    try {
-        output = new BufferedOutputStream(new FileOutputStream(file));
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, output);
-        output.flush();
-        output.close();
-        return true;
-    } catch (IOException e1) {
-        e1.printStackTrace();
-    } finally {
-        try {
-            if (output != null) {
-                output.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    return false;
-}
-
-public static Bitmap getBitmap(String bitmapName) {
-    String myJpgPath = getFilePath(bitmapName);
-    BitmapFactory.Options options = new BitmapFactory.Options();
-    return BitmapFactory.decodeFile(myJpgPath, options);
-}
-
-public static void removeFile(String fileName) {
-    String filePath = getFilePath(fileName);
-    File file = new File(filePath);
-    if (file.exists()) {
-        file.delete();
-    }
-}
-
-public static void removeFile(File file) {
-    if (file.isFile()) {
-        file.delete();
-        return;
-    }
-    if (file.isDirectory()) {
-        File[] childFiles = file.listFiles();
-        if (childFiles == null || childFiles.length == 0) {
-            file.delete();
-            return;
-        }
-
-        for (int i = 0; i &lt; childFiles.length; i++) {
-            removeFile(childFiles[i]);
-        }
-        file.delete();
-    }
-}
-
-public static void removeAll() {
-    String filePath = getSDCardPath() + DEFAULT_DIR;
-    File file = new File(filePath);
-    if (file.exists()) {
-        removeFile(file);
-    }
-
-    //再建一个空文件夹
-    File directory = new File(filePath);
-    if (!directory.exists()) {
-        directory.mkdir();
-    }
-  }
-}
-</code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Android Studio插件]]></title>
-    <link href="http://andyfightting.github.io/blog/2015/11/22/studioplugin/"/>
-    <updated>2015-11-22T14:10:45+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2015/11/22/studioplugin</id>
-    <content type="html"><![CDATA[<h3>* Logger</h3>
-
-<p>推荐一款打印工具<a href="https://github.com/orhanobut/logger">Logger</a>,比自带的打印效果更好，主要是json打印是格式化的！Github上写的地址<code>compile 'com.github.orhanobut:logger:1.12'</code>我下载失败，我用的是<code>compile 'com.orhanobut:logger:1.11'</code>。
-<img src="http://andyfightting.github.io/myimg/android/logger.png" alt="img" />
-打印颜色可以在preference里设置，要先<code>Save as</code>保存一下，然后把右边的<code>Use inherited attributes</code>取消，然后就可以选择颜色了<!--more-->
-<img src="http://andyfightting.github.io/myimg/android/logColor.png" alt="img" /></p>
-
-<h3>* Sexy Editor</h3>
-
-<p>设置编辑区域背景图的, 这样敲代码也更有力气拉~~哈哈</p>
-
-<p><img src="http://andyfightting.github.io/myimg/android/screen.png" alt="img" /></p>
-
-<p>怎么添加插件？有如下三种方式<code>install JetBrains plugin</code>,<code>Browse repositories</code>,<code>install plugin from disk</code>。<code>Sexy Editor</code>是用第二种方式添加。</p>
-
-<p><img src="http://andyfightting.github.io/myimg/android/add_plugin.png" alt="img" /></p>
-
-<p>我的<code>sexy editor</code>设置</p>
-
-<p><img src="http://andyfightting.github.io/myimg/android/sexy_editor.png" alt="img" /></p>
-
-<h3>* Mac下的快捷键</h3>
-
-<p>Mac中的标识：<code>⌘:command</code>, <code>⌃:control</code>, <code>⇧:shift</code>, <code>⌥:alt/option</code></p>
-
-<p><code>⌘ + ⌥ + L</code>: 代码对齐格式化</p>
-
-<p><code>^ + ⌥ + O</code>: 除去无效的import引用</p>
-
-<p><code>F1</code>: 查看文档</p>
-
-<p><code>F2</code>: 定位到未被使用的成员</p>
-
-<p><code>F3</code>: 添加书签</p>
-
-<p><code>F4</code>: 定位到声明处</p>
-
-<p><code>⇧ + F6</code>: 文件重命名</p>
-
-<p><code>⌘ + F12</code>: 显示内部成员</p>
-
-<p><code>⌘ + ⇧ + F7</code>: 代码高亮</p>
-
-<p><code>⌥ + ⏎</code>: 添加缺少的import</p>
-
-<p><code>⌘ + delete</code>: 删除整行</p>
-
-<p><code>⌘ + N</code>: 生成代码，getter setter 等</p>
-
-<p><code>⌃ + H</code>: 查看类的层级关系</p>
-
-<p><code>⌘ + U</code>: 查看父类的同名方法</p>
-
-<p><code>⌘ + J</code>: 快捷插入常用代码片段</p>
-
-<p><code>⌥ + ⇧ + ↑或↓</code>: 上下移动光标所在的行</p>
-
-<p><code>⌘ + ⇧ + ↑或↓</code>: 上下移动整个方法块</p>
-
-<p><code>⌘ + ⌥ + ⏎</code>: 当前行上面插入一行</p>
-
-<p><code>⌘ + ⇧ + U</code>: 大小写转化</p>
-
-<p><code>⌘ + E</code>: 查看打开过的文件</p>
-
-<p><code>⌃ + T</code>: 重构面板</p>
-
-<p><code>⌃ + O</code>: 选择要重写或者要实现的方法</p>
-
-<p><code>⌘ + O</code>: 快速搜索class</p>
-
-<p><code>⌘ + ⇧ + O</code>: 快速搜索file</p>
-
-<p><code>⌘ + ⇧ + F</code>: 全局搜索</p>
-
-<p><code>⌘ + ⇧ + R</code>: 全局替换</p>
-
-<p><code>⌘ + +或-</code>: 展开或者收起代码块</p>
-
-<p><code>⌘ + /</code>: 注释 //</p>
-
-<p><code>⌘ + ⌥ + /</code>: 注释 /**/</p>
-
-<p><code>⌥ + ⏎</code>: 提示错误解决方法</p>
-
-<p>可能会有人觉得为啥重命名<code>⇧ + F6</code>没反应呢？跟 F1 ~ F12 有关的都没反应&hellip;</p>
-
-<p>因为Mac系统默认没有启用它们&hellip;在系统设置，键盘选项里选中就可以了。</p>
-
-<p><img src="http://andyfightting.github.io/myimg/android/keyf.png" alt="img" /></p>
-
-<p>当然可以设置自己喜欢的快捷键，我自己把运行和调试改成了<code>⌘ + R</code>和<code>⌘ + D</code></p>
-
-<p><img src="http://andyfightting.github.io/myimg/android/keymap.png" alt="img" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Android 基础知识]]></title>
-    <link href="http://andyfightting.github.io/blog/2015/11/21/androidBase0/"/>
-    <updated>2015-11-21T09:26:15+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2015/11/21/androidBase0</id>
-    <content type="html"><![CDATA[<h3>* Activity启动模式</h3>
-
-<p>在AndroidMainfest.xml里的activity里设置android:launchMode = “xxx”</p>
-
-<p><strong>standard:</strong> 默认模式，每次都会创建一个新的放在栈顶，即使栈里已经有了</p>
-
-<p><strong>singleTop:</strong> 已经在<strong>栈顶</strong>了就不创建，否则还是会创建，即使栈里已经有了</p>
-
-<p><strong>singleTask:</strong> 在活动栈中有了就不创建，直接推到栈顶，<strong>在它之前的全部会被挤出栈</strong>，若活动栈中没有就创建</p>
-
-<p><strong>singleInstance:</strong> 会创建一个<strong>新的活动栈</strong>把自己放进去</p>
-
-<h3>* 随时随地退出程序</h3>
-
-<p>在任何页面都可以被踢下线的实现技巧</p>
-
-<p>创建一个收集Activity的管理类，在BaseActivity的<code>onCreate()</code>方法中添加<code>ActivityManager.addActivity(this)</code>,在<code>onDestroy</code>方法中添加<code>ActivityManager.removeActivity(this)</code>。然后在任何要强退的地方调用<code>ActivityManager.finishAllActivity()</code>。<!--more--></p>
-
-<pre><code>public class ActivityManager {
-
-public static List&lt;Activity&gt; activityList = new ArrayList&lt;&gt;();
-
-public static void addActivity(Activity activity){
-    activityList.add(activity);
-  }
-
-public static void removeActivity(Activity activity){
-    activityList.remove(activity);
-  }
-
-public static void finishAllActivity(){
-    for (Activity activity : activityList){
-        if (!activity.isFinishing()){
-            activity.finish();
-        }
-    }
-    activityList.clear();
-  }
-}
-</code></pre>
-
-<h3>* Activity跳转</h3>
-
-<p>一般我们是用如下的方式跳转，需要知道下一个Activity要用哪些参数，多人开发可能有些不便。</p>
-
-<pre><code>Intent intent = new Intent(OneActivity.thi,TwoActivity.class);
-intent.putExtra("key","value");
-startActivity(intent);
-</code></pre>
-
-<p>可以在下一个Activity中把需要的参数暴露出来。</p>
-
-<pre><code>public static void actionStart(Activity activity,String param){
-  Intent intent = new Intent(activity,TwoActivity.class);
-  intent.putExtra("key","param");
-  activity.startActivity(intent);
-  activity.finish();
-}
-</code></pre>
-
-<h3>* ListView的正确使用方式</h3>
-
-<p>实现了item的复用，这样效率最好，ArrayAdapter源码中就是这样弄的。ArrayAdapter把BaseAdapter包装了一遍，实现了<code>getCount</code>,<code>getItem</code>,<code>getItemId</code>，所以这些我们就可以不用再写了，只重写个<code>getView</code>就可以。</p>
-
-<pre><code>public class UserAdapter extends ArrayAdapter&lt;User&gt; {
-
-private int layoutId;
-public UserAdapter(Context context, int resourceId, List&lt;User&gt; objects){
-      super(context,resourceId,objects);
-      layoutId = resourceId;
-}
-
-@Override
-public View getView(int position, View convertView, ViewGroup parent){
-
-    User user = getItem(position);
-    ViewHolder viewHolder;
-    View layoutView;
-
-    if (convertView == null){
-        layoutView = LayoutInflater.from(getContext()).inflate(layoutId,null);
-        viewHolder = new ViewHolder();
-        viewHolder.headImage = (ImageView)layoutView.findViewById(R.id.head_img);
-        viewHolder.nameTv = (TextView)layoutView.findViewById(R.id.name_tv);
-        layoutView.setTag(viewHolder);
-    }else {
-       layoutView = convertView;
-       viewHolder = (ViewHolder)layoutView.getTag();
-    }
-    //--------在下面赋值 ----------------
-    viewHolder.headImage.setImageResource(user.getHeadImgId());
-    viewHolder.nameTv.setText(user.getName());
-
-    return layoutView;
-}
-
-class ViewHolder{
-    ImageView headImage;
-    TextView nameTv;
-  }
-}
-</code></pre>
-
-<h3>* px,dpi,dp,density</h3>
-
-<p>Android规定：如果手机一英寸长度上有160个px，那么手机的dpi就是160,此时1dp==1px，即density=1。所以如果一英寸长度上有320个px的话，那么手机的dpi就是320，此时1dp==2px,即density=2。</p>
-
-<p>结论：即相同大小的手机上的dp个数是不变的，如果相同大小的手机像素不同的话，只会影响dip和density的值,所以我们适配手机的时候用的长度单位要用 &mdash;- <code>dp</code></p>
-
-<pre><code>public static int getScreenWidthPx(Context context){
-    return  context.getResources().getDisplayMetrics().widthPixels;
-}
-
-public static int getScreenHeightPx(Context context){
-    return  context.getResources().getDisplayMetrics().heightPixels;
-}
-
-public static float getXdpi(Context context){
-    return  context.getResources().getDisplayMetrics().xdpi;
-}
-
-public static float getYdpi(Context context){
-    return  context.getResources().getDisplayMetrics().ydpi;
-}
-
-public static float getDensity(Context context){
-   return context.getResources().getDisplayMetrics().density;
-}
-</code></pre>
-
-<h3>* 9-patch图片</h3>
-
-<p>1，在<code>上</code>边绘制的<code>垂直区域</code>会被<code>水平拉伸</code>，在<code>左</code>边绘制的<code>横向区域</code>会被<code>垂直拉伸</code>。</p>
-
-<p>2，在<code>下</code>边和<code>右</code>边绘制的<code>交叉区域</code>是内容放置的区域。</p>
-
-<p><img src="http://andyfightting.github.io/myimg/android/9patch.jpg" alt="img" /></p>
-
-<h3>* Fragment</h3>
-
-<p>在fragment里可以用<code>getActivity()</code>得到与之关联的Activity。<code>FragmentTransaction</code>的实例可以调用<code>addToBackStack(null)</code>方法把这个事务添加到返回栈中，这样点击返回就是回到事务处理之前的状态,而不是退出Activity。fragment之间的通信可以通过与之共同关联的Activity来转达。</p>
-
-<p>fragment的生命周期与Activity类似，只不过比Activity多了<code>onAttach()</code>,<code>onCreateView()</code>,<code>onActivityCreated()</code>,<code>onDestroyView()</code>,<code>onDetach()</code>。</p>
-
-<p>由生到死依次是：<code>onAttach()</code>, <code>onCreate()</code>,<code>onCreateView()</code>,<code>onActivityCreated()</code>,<code>onStart()</code>,<code>onResume()</code>,<code>onPause()</code>,<code>onStop()</code>,<code>onDestroyView()</code>,<code>onDestroy()</code>,<code>onDetach()</code>。</p>
-
-<p>从返回栈回来后执行的第一个方法是<code>onActivityCreated()</code>,而Activity的轮回后执行的第一个方法是<code>onRestart()</code>,然后再<code>onStart()</code>,<code>onResume()</code>。</p>
-
-<p>同一个Activity怎样让它在不同大小的设备自动加载不同的布局文件呢？用<code>限定符</code>,即在<code>res</code>下建<code>layout-large</code>文件夹或者不同限定符的文件夹，在里面放<code>同名</code>的布局文件。限定符有：<code>small</code>,<code>normal</code>,<code>large</code>,<code>xlarge</code>以及分辨率限定符：<code>ldpi</code>:120dpi以下，<code>mdpi</code>:120-160dpi，<code>hdpi</code>:160-240dpi,<code>xhdpi</code>:240-320dpi，以及方向限定符：<code>land</code>:横屏,<code>port</code>:竖屏。</p>
-
-<p>还有个问题，<code>large</code>，大，到底多大算大呢？可以自己定义这个边界值。如<code>layout-sm600</code>,就是<code>宽度</code>大于600<code>dp</code>的设备叫大，否则叫小。<code>sm</code>的意思是：<code>smallest width</code>。</p>
-
-<h3>* Broadcast 广播</h3>
-
-<p>见名知意，即发一下消息，很多地方都可以收到。广播有两种：异步执行的广播 和 按顺序执行的同步广播。异步广播接收没有先后之分，可看做同时收到，这种广播发出之后不可被拦截。同步广播是按顺序一个一个执行，可以设置接收的优先级(设置<code>IntentFilter</code>的<code>priority</code>值,越大越优先)，这种广播可以被拦截(在<code>onReceive()</code>方法里调用<code>abortBroadcast()</code>废掉这条广播)。</p>
-
-<p>注册接收广播有两种方式：一种是用代码注册，也叫动态注册，动态注册(在<code>onCreate()</code>里调用Activity的方法<code>registerReceiver()</code>)的广播接收一定要在<code>onDestroy</code>中移除注册(调用Activity的<code>unregisterReceiver()</code>)。另一种叫静态注册，是在xml中配置的，这种注册不用移除。</p>
-
-<p>怎么写广播接收器？写个类继承<code>BroadcastReceiver</code>,它是个抽象类，然后重写<code>onReceive()</code>即可，可以通过<code>intent.getAction()</code>来区分不同广播，<strong>在<code>onReceive()</code>方法中不能开启线程</strong>。下面是一个监听网络变化的广播接收器。</p>
-
-<pre><code>class NetWorkChangeReceiver extends BroadcastReceiver{
-    @Override
-    public void onReceive(Context context,Intent intent){
-        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        if (networkInfo != null &amp;&amp; networkInfo.isAvailable()){
-            Toast.makeText(context,"网络可用",Toast.LENGTH_SHORT).show();
-        }else {
-            Toast.makeText(context,"网络不可用",Toast.LENGTH_SHORT).show();
-        }
-    }
-}
-</code></pre>
-
-<p>用Activity里的方法发送异步广播<code>sendBroadcaset(intent)</code>,和发送同步广播<code>sendOrderedBroadCaset(intent,null)</code>。这样发送的广播都是<code>跨应用</code>的，即A应用发出的广播，B应用也可以收到的！应为这些都是全局广播。</p>
-
-<p>本地广播，即发出的广播只会被<code>本身应用</code>接收到,手机里的其他应用就收不到了。本地广播要用<code>LocalBroadcastManager</code>这个类来管理，即注册和移除的时候不能用<code>Activity</code>的<code>registerReceiver()</code>和<code>unregisterReceiver()</code>方法，而应该用<code>LocalBroadcastManager</code>实例的<code>registerReceiver()</code>和<code>unregisterReceiver()</code>方法，简单吧！<strong>本地广播不会被静态注册的接收器收到！</strong>要接收本地广播，接收器都得用动态注册的方式。</p>
-
-<h3>* ContentProvider / ContentResolver</h3>
-
-<p>这个是用于在手机中<code>不同应用程序</code>间的数据传递，可以自己选择那些数据可暴露出来给其他应用获取。有些系统的应用程序已经提供这样的接口了，可以直接通过这种方式获取数据，如 短信应用，通讯录应用等，而我们自己写的应用程序则要自己写这个数据提供接口。</p>
-
-<p>获取数据通过<code>ContentResolver</code>类，可以通过Context 的 <code>getContentResolver()</code>得到实例，然后数据处理就是 <code>insert()</code>,<code>update()</code>,<code>delete()</code>,<code>quert()</code>,和<code>SQLiteDatabase</code>很像，但不是传<code>表名</code>而是传<code>Uri</code>。</p>
-
-<p>提供数据，要继承抽象类<code>ContentProvider</code>然后重写里面的六个方法：<code>onCreate()</code>,<code>quert()</code>,<code>insert()</code>,<code>update()</code>,<code>delete()</code>,<code>getType()</code>。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Octopress搭建个人博客]]></title>
-    <link href="http://andyfightting.github.io/blog/2015/11/14/jiaocheng/"/>
-    <updated>2015-11-14T11:21:39+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2015/11/14/jiaocheng</id>
-    <content type="html"><![CDATA[<p>本人的博客刚刚搭建好，并绑定了个人域名(<a href="http://guimingsu.com">guimingsu.com</a>)，现将该过程记录下来。</p>
-
-<p><a href="https://pages.github.com/">Github Pages</a>是Github提供的一个免费空间，相当于我们博客的免费托管服务器，我们写的博客就是放这上面的。它可以拥有一个独立的二级域名如xxx.github.io(如果有自己的个人域名，可以用自己的个人域名指向它)，允许开发者提交静态网页文件，用于介绍自己，或者自己的开源项目，可以看作是个人或项目主页。</p>
-
-<p><a href="http://octopress.org/">Octopress</a>“A blogging framework for hackers”，即像写代码似的写博客。一个博客网页生成框架，我们按照它要求的格式写博客内容，然后敲命令<code>rake generate</code>,<code>rake deploy</code>,就可以把网页放到Github服务器上，然后我们就可以看到了啊，它就是一个写博客的工具可以这样理解。</p>
-
-<p>个人域名，这个要自己买了，可以上<a href="http://wanwang.aliyun.com/">阿里云</a>上买，一年几十块，配置后面再讲。在注册阿里云的时候我用的QQ邮箱，就是收不到邮件，换成Gmail就收到了。不知道是我网络问题还是大公司间的任性撕逼，如果你也收不到邮件就换个邮箱注册吧。<!--more--></p>
-
-<ul>
-<li><p>在<a href="https://github.com">Github</a>上New repository, 名字为<code>yourNmae.github.io</code>确定提交，这里报错是因为我已经建好了。
-<img src="http://andyfightting.github.io/myimg/other/creat_rep.png" alt="creat_rep" />
-之后会生成一个HTTPS连接如 <a href="https://github.com/yourName/yourName.github.io.git">https://github.com/yourName/yourName.github.io.git</a> ,这个连接在之后的Octopress绑定配置中要用。</p></li>
-<li><p><a href="http://octopress.org/docs/setup/">Octopress</a>这个步骤比较多一点, 我用的系统是 OS X10.10.5。Octopress要用到ruby环境，且ruby版本要大于等于<code>1.9.3</code>。可以用<code>ruby -v</code>命令看一下ruby版本，我的是版本是<code>2.0.0p643</code>, 没有的话可以看<a href="https://ruby-china.org/wiki/install_ruby_guide">这里</a>安装ruby环境。</p></li>
-</ul>
-
-
-<p>环境装好后从网上下载Octopress框架到本地电脑上，这里我保存到octopress文件夹且放在桌面上</p>
-
-<p>下载： <code>git clone git://github.com/imathis/octopress.git /Users/suguiming/Desktop/octopress</code></p>
-
-<p>然后进入该文件夹：<code>cd  /Users/suguiming/Desktop/octopress</code></p>
-
-<p>然后：  <code>gem install bundler</code></p>
-
-<p>这里可能会报错，说缺少xxx依赖包，可以用<code>gem dependency</code>查看要依赖的包，然后把包都装上再敲上面的命令</p>
-
-<p>然后： <code>bundle install</code></p>
-
-<p>再然后：  <code>rake install</code></p>
-
-<p>这里Octopress就下载安装好了，之后要进行关联配置,把Octopress和Github关联起来，我们就可以把博客放到之前建的Github项目<code>yourNmae.github.io</code>里了。</p>
-
-<p>但关联前还有一个步骤就是SSH key处理。新建一个命令窗口<code>cd ~/.ssh</code>进入目录，<code>ls -a</code>查看内容，这时候一般没有<code>id_rsa</code>及<code>id_rsa.pub</code>这两个文件的，我们现在要创建这两个文件。<code>ssh-keygen -t rsa -C "Github登录账号邮箱@qq.com"</code>,然后按回车回车再回车就生成那两个文件了。然后把<code>id_rsa.pub</code>里的东西全选复制，在<a href="https://github.com/settings/ssh">这里</a>添加一个SSH key即可。</p>
-
-<p>回到octopress的命令窗口，输入命令<code>rake setup_github_pages</code> 此时要求输入Github项目<code>yourNmae.github.io</code>的地址，即前面得到的<code>https://github.com/yourName/yourName.github.io.git</code>,也可在Github中项目里的右下角的HTTPS链接复制过来然后</p>
-
-<pre><code>rake generate
-rake deploy
-git add .
-git commit -m 'say something'
-git push origin source
-</code></pre>
-
-<ul>
-<li>写博客，<code>rake new_post["file name"]</code>新建一个写博客的文件，它会在<code>/source/_posts</code>文件夹里生成,打开它在里面写博客内容就可以了。它是用markdown的方式写，可以在<a href="http://wowubuntu.com/markdown/">这里</a>和<a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">这里</a>查看markdown的使用规则，常用的就那几个，熟悉就可以了,大概长这样。推荐使用<a href="http://mouapp.com/">Mou</a>来编写markdown文件，<a href="https://maxiang.io/">马克飞象</a>这个在线编写工具也很好。
-  <img src="http://andyfightting.github.io/myimg/other/write_blog.png" alt="write_blog" />
-  写好后保存，<code>rake generate</code>生成博客，<code>rake preview</code>预览博客，在地址栏输入<code>http://localhost:4000/</code>查看，退出预览<code>control+C</code></li>
-</ul>
-
-
-<p>然后提交，之后在地址栏输入<code>yourName.github.io</code>就可以查看了</p>
-
-<pre><code>rake deploy
-git add .
-git commit -m 'say something'
-git push origin source
-</code></pre>
-
-<ul>
-<li><p>域名绑定，在<code>yourName.github.io</code>项目里新建一个文件，文件名必须是大写的<code>CNAME</code>,内容是你购买的域名如我的域名<code>guimingsu.com</code>,前面不要加www或http,参考<a href="https://help.github.com/articles/adding-a-cname-file-to-your-repository/">这里</a>,然后<code>git pull</code>把刚才建的文件同步到本地。
-然后在域名购买的服务商那里设置，我用的是<a href="http://www.aliyun.com/">阿里云</a>。登录账号，在控制管理，域名解析中添加域名指向,把图中的<code>andyfightting.github.io</code>换成你自己的，其他的不变,这样域名就配置好了
-<img src="http://andyfightting.github.io/myimg/other/yuming.png" alt="img" />
-参考<a href="https://help.github.com/articles/my-custom-domain-isn-t-working/">这里</a>
-<img src="http://andyfightting.github.io/myimg/other/dns_error.png" alt="img" /></p></li>
-<li><p>其他个性化配置，如在浏览器显示的icon替换，在source文件夹里面有个文件叫favicon.png，做一个16*16图片替换进去提交，可能不会立即有反应。还有博客的评论系统是用的第三方<a href="https://disqus.com">disqus</a>。在该网站上注册一个账号，然后把账号名填写在<code>/octopress/_config.yml</code>文件中对应的地方，把false改成true。</p></li>
-</ul>
-
-
-<p><img src="http://andyfightting.github.io/myimg/other/discus.png" alt="img" /></p>
-
-<p>由于访问国外disqus比较慢，我又把评论部分改用国内的<a href="http://duoshuo.com/">多说</a>了，使用方法都类似的，具体配置请看<a href="http://www.tuicool.com/articles/VbqYNjn">这里</a>,里面还说了性能优化可以跟着改改，提高网页的响应速度。</p>
 ]]></content>
   </entry>
   

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-09-12T11:01:45+08:00</updated>
+  <updated>2016-11-16T10:34:09+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -14,20 +14,363 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Android 一行代码选取图片]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/11/11/android-select-photo/"/>
+    <updated>2016-11-11T19:31:33+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/11/android-select-photo</id>
+    <content type="html"><![CDATA[<p>一行代码模仿iOS的选取图片效果。思路主要是把相机和相册的回调放在一个透明的Activity里，然后在这个透明的Activity中弹出自定义的ActionSheet选择框，选取调相机还是相册。相机比较简单，直接调系统的。相册就不用系统的了，不同手机差别太大，效果也不好。自己遍历本地图片文件然后显示。这样即时在不同手机上也能展示相同的效果了。封装后使用就简单了，一行代码调用就可以，不会和业务Activity耦合了！</p>
+
+<h4>使用:</h4>
+
+<p>1.选取一张正方形图片</p>
+
+<pre><code>   SelectPhotoSheet.showCropImageSheet(this, new AlbumResultListener() {
+            @Override
+            public void complete(View tapedView, List&lt;String&gt; pathList) {
+                cache.displayBmp(headImageView, pathList.get(0), new Point(100, 100));
+            }
+        });
+</code></pre>
+
+<p>2.选取限制数量的全尺寸图片</p>
+
+<pre><code>SelectPhotoSheet.showFullImageSheet(this, 8, new AlbumResultListener() {
+            @Override
+            public void complete(View tapedView, List&lt;String&gt; pathList) {
+                localPathList.clear();
+                localPathList.addAll(pathList);
+                adapter.notifyDataSetChanged();
+            }
+        });
+</code></pre>
+
+<p><img src="/myimg/android/one_select.png" alt="" /></p>
+
+<h4>实现</h4>
+
+<p>1.自定义ActionSheet，弄一个Sheet的工具类 BaseSheetActivity。</p>
+
+<pre><code>//用作弹出 action sheet 效果的 base activity
+public class BaseSheetActivity extends Activity {
+    protected int activityCloseEnterAnimation;
+    protected int activityCloseExitAnimation;
+
+public static ItemTapListener itemTapListener;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+    TypedArray activityStyle = getTheme().obtainStyledAttributes(new int[] {android.R.attr.windowAnimationStyle});
+    int windowAnimationStyleResId = activityStyle.getResourceId(0, 0);
+    activityStyle.recycle();
+
+    activityStyle = getTheme().obtainStyledAttributes(windowAnimationStyleResId, new int[] {android.R.attr.activityCloseEnterAnimation, android.R.attr.activityCloseExitAnimation});
+    activityCloseEnterAnimation = activityStyle.getResourceId(0, 0);
+    activityCloseExitAnimation = activityStyle.getResourceId(1, 0);
+    activityStyle.recycle();
+}
+
+@Override
+public boolean onTouchEvent(MotionEvent event) {
+    dismiss();
+    if (itemTapListener != null){
+        itemTapListener.itemTap(new View(this),"");
+    }
+    return super.onTouchEvent(event);
+}
+
+@Override
+public void finish() {
+    dismiss();
+}
+
+public void dismiss(){
+    super.finish();
+    overridePendingTransition(activityCloseEnterAnimation, activityCloseExitAnimation);
+}
+
+public static void show(Context context, Class showedActivityClass, ItemTapListener itemTapListener){
+    BaseSheetActivity.itemTapListener = itemTapListener;
+    Intent intent = new Intent(context,showedActivityClass);
+    context.startActivity(intent);
+}
+}
+</code></pre>
+
+<p>  要使用ActionSheet的效果话就是继承它，然后theme选择ActionSheetTheme。然后把界面的布局放在bottom就可以了。</p>
+
+<pre><code>  public class PhotoSheet extends BaseSheetActivity {
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.action_photo_sheet); //action_photo_sheet的布局从bottom开始
+
+}
+
+public void itemTap(View view){
+    dismiss();
+    if (itemTapListener != null){
+        itemTapListener.itemTap(view,"");
+    }
+}
+
+@Override
+public void onBackPressed() {
+    dismiss();
+    if (itemTapListener != null){
+        itemTapListener.itemTap(new View(this),"");
+    }
+}
+}
+
+   //设置为自定义的样式
+ &lt;activity
+        android:name=".photo_lib.photo.PhotoSheet"
+        android:theme="@style/ActionSheetTheme" /&gt;
+</code></pre>
+
+<p>2.读图片文件路径，不单单是相册里的图片</p>
+
+<pre><code>public void getLocalImages() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                ContentResolver mContentResolver = AlbumDirActivity.this.getContentResolver();
+
+            Cursor mCursor = mContentResolver.query(
+                    mImageUri,
+                    null,
+                    MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?",
+                    new String[]{"image/jpeg", "image/png", "image/jpg"},
+                    MediaStore.Images.Media.DATE_MODIFIED);
+
+            while (mCursor.moveToNext()) {
+                String path = mCursor.getString(mCursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                String parentName = new File(path).getParentFile().getName();
+
+                if (!dirMap.containsKey(parentName)) {
+                    List&lt;String&gt; chileList = new ArrayList&lt;&gt;();
+                    chileList.add(path);
+                    dirMap.put(parentName, chileList);
+                } else {
+                    dirMap.get(parentName).add(path);
+                }
+            }
+            mCursor.close();
+            mHandler.sendEmptyMessage(SCAN_OK);
+        }
+    }).start();
+}
+</code></pre>
+
+<p>3.用LruCache缓存显示压缩后的图片</p>
+
+<pre><code>public class LocalImageCache {
+
+private static LocalImageCache mInstance;
+
+private Handler mHander = new Handler();
+private LruCache&lt;String, Bitmap&gt; mMemoryCache;
+private CacheImageCallBack mCallBack;
+private ExecutorService mImageThreadPool = Executors.newFixedThreadPool(5);
+
+private LocalImageCache() {
+    final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+    final int cacheSize = maxMemory / 5;
+
+    mMemoryCache = new LruCache&lt;String, Bitmap&gt;(cacheSize) {
+        @Override
+        protected int sizeOf(String key, Bitmap bitmap) {
+            return bitmap.getByteCount()/1024;
+        }
+    };
+
+    mCallBack = new CacheImageCallBack() {
+        @Override
+        public void onImageLoader(ImageView imageView, Bitmap bitmap) {
+            if (bitmap != null &amp;&amp; imageView != null) {
+                imageView.setImageBitmap(bitmap);
+            }
+        }
+    };
+}
+
+public static LocalImageCache getInstance() {
+    synchronized (LocalImageCache.class) {
+        if (mInstance == null) {
+            mInstance = new LocalImageCache();
+        }
+        return mInstance;
+    }
+}
+
+public static void clearCache() {
+    LocalImageCache cache = getInstance();
+    cache.mMemoryCache.evictAll();
+}
+
+public void displayBmp(final ImageView imageView, final String path, final Point mPoint) {
+    if (TextUtils.isEmpty(path) || imageView == null) {
+        return;
+    }
+
+    Bitmap bitmap = getBitmapFromMemCache(path);
+    if (bitmap == null) {
+        imageView.setImageBitmap(null);
+
+        mImageThreadPool.execute(new Runnable() {
+            Bitmap mBitmap;
+
+            @Override
+            public void run() {
+                mBitmap = decodeThumbBitmapForFile(path, mPoint == null ? 0 : mPoint.x, mPoint == null ? 0 : mPoint.y);
+                mHander.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCallBack.onImageLoader(imageView, mBitmap);
+                    }
+                });
+                addBitmapToMemoryCache(path, mBitmap);
+            }
+        });
+    } else {
+        imageView.setImageBitmap(bitmap);
+    }
+}
+
+private void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+    if (getBitmapFromMemCache(key) == null &amp;&amp; bitmap != null) {
+        mMemoryCache.put(key, bitmap);
+    }
+}
+
+private Bitmap getBitmapFromMemCache(String key) {
+    return mMemoryCache.get(key);
+}
+
+private Bitmap decodeThumbBitmapForFile(String path, int viewWidth, int viewHeight) {
+    BitmapFactory.Options options = new BitmapFactory.Options();
+    options.inJustDecodeBounds = true;
+    BitmapFactory.decodeFile(path, options);
+    options.inSampleSize = computeScale(options, viewWidth, viewHeight);
+    options.inJustDecodeBounds = false;
+
+    return BitmapFactory.decodeFile(path, options);
+}
+
+private int computeScale(BitmapFactory.Options options, int viewWidth, int viewHeight) {
+    int inSampleSize = 1;
+    if (viewWidth == 0 || viewHeight == 0) {
+        return inSampleSize;
+    }
+    int bitmapWidth = options.outWidth;
+    int bitmapHeight = options.outHeight;
+
+    if (bitmapWidth &gt; viewWidth || bitmapHeight &gt; viewHeight) {
+        int widthScale = Math.round((float) bitmapWidth / (float) viewWidth);
+        int heightScale = Math.round((float) bitmapHeight / (float) viewHeight);
+
+        inSampleSize = (widthScale+heightScale)/2;
+    }
+    return inSampleSize;
+}
+
+
+private interface CacheImageCallBack {
+    void onImageLoader(ImageView imageView, Bitmap bitmap);
+}
+}
+</code></pre>
+
+<p>4.用DrawerLayout封装了一个手势返回的基础类</p>
+
+<pre><code>public class BaseSwipeActivity extends AppCompatActivity {
+
+private LinearLayout containerLayout;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    initSwipeView();
+}
+
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+}
+
+private void initSwipeView() {
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+    setContentView(R.layout.activity_base_swipe);
+
+    containerLayout = (LinearLayout) findViewById(R.id.container_layout);
+
+    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.base_drawer_layout);
+    drawer.openDrawer(GravityCompat.END);
+    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+        @Override
+        public void onDrawerClosed(View drawerView) {
+            super.onDrawerClosed(drawerView);
+            finish();
+        }
+    };
+    drawer.addDrawerListener(toggle);
+}
+
+//子类要手势返回就用setMainView!!!!
+public void setMainView(int viewId) {
+    LayoutInflater inflater = LayoutInflater.from(this);
+    View tmpView = inflater.inflate(viewId, null);
+
+    if (tmpView instanceof LinearLayout) {
+        LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(linearLayoutParams);
+    } else if (tmpView instanceof RelativeLayout) {
+        RelativeLayout.LayoutParams relativeLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(relativeLayoutParams);
+    }
+    containerLayout.removeAllViews();
+    containerLayout.addView(tmpView);
+}
+
+public void backViewTap(View v) {
+
+}
+
+public void backImageTap(View v) {
+    finish();
+}
+}
+</code></pre>
+
+<p>其他Activity需要手势返回的话就继承它，然后使用setMainView()替代setContentView()设置界面布局，其他什么都不用管啦！</p>
+
+<h4>注意要</h4>
+
+<p>在使用的Activity的onDestroy()方法中调用 FileUtil.deleteAllFile(); 清除选取的临时缓存图片！！！</p>
+
+<p><a href="https://github.com/AndyFightting/SelectPhoto_Android">下载</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[OkHttp and Retrofit]]></title>
     <link href="http://andyfightting.github.io/blog/2016/09/08/okhttp-retrofit/"/>
     <updated>2016-09-08T14:57:19+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/09/08/okhttp-retrofit</id>
     <content type="html"><![CDATA[<p><a href="http://square.github.io/okhttp/">OkHttp</a>和<a href="http://square.github.io/retrofit/">Retrofit</a>都是<a href="http://square.github.io/">Square</a>公司开源出来的网络请求框架。Retrofit是对OkHttp的封装，使其可以用注解的方式调用。</p>
 
-<h4>OkHttp封装</h4>
+<h4>OkHttp</h4>
 
-<pre><code>/**
- * Created by suguiming on 16/8/24.
- */
+<pre><code>//-----okhttp 网络请求 工具类-----
 
-public class OkHttpHelper {
-private static final Handler mainHandler = new Handler(Looper.getMainLooper()); //异步请求结果要在主线程回调！！！
+//异步请求结果放在主线程回调。
+private static final Handler mainHandler = new Handler(Looper.getMainLooper()); 
+
 private static final OkHttpClient client = new OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
@@ -35,14 +378,44 @@ private static final OkHttpClient client = new OkHttpClient.Builder()
         .build();
 
 public static void getRequest(String url, final OkHttpListener listener) {
-    Request request = new Request
-            .Builder()
+    Request request = new Request.Builder()
+            .header("token", getUserToken())
+            .header("client", "Android")
+            .header("versionCode", getVersionCode())
+            .header("versionName", getVersionName())
             .url(url)
             .build();
     beginRequest(request, listener);
 }
 
-public static void postRequest(String url, final Map&lt;String, Object&gt; params, final OkHttpListener listener) {
+//这样就不会有中文乱码问题
+public static void postRequest(String url, final Map&lt;String, String&gt; params, final OkHttpListener listener) {
+    StringBuilder stringBuilder = new StringBuilder("");
+    if (params != null) {
+        Set&lt;String&gt; keys = params.keySet();
+        for (String key : keys) {
+            String value = params.get(key);
+            stringBuilder.append(key + "=" + value + "&amp;");
+        }
+    }
+
+    MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded;charset=utf-8");
+    RequestBody body = RequestBody.create(mediaType, stringBuilder.toString());
+
+    Request request = new Request.Builder()
+            .header("token", getUserToken())
+            .header("client", "Android")
+            .header("versionCode", getVersionCode())
+            .header("versionName", getVersionName())
+            .url(url)
+            .post(body)
+            .build();
+
+    beginRequest(request, listener);
+}
+
+//可添加图片文件
+public static void postMutibleRequest(String url, final Map&lt;String, Object&gt; params, final OkHttpListener listener) {
     MultipartBody.Builder multipleBuilder = new MultipartBody.Builder();
     multipleBuilder.setType(MultipartBody.FORM);
 
@@ -53,20 +426,82 @@ public static void postRequest(String url, final Map&lt;String, Object&gt; param
 
             if (obj instanceof File) {
                 File tmpFile = (File) obj;
-                multipleBuilder.addFormDataPart(key,tmpFile.getName(),MultipartBody.create(MediaType.parse("image/png"), tmpFile));
+                multipleBuilder.addFormDataPart(key, tmpFile.getName(), MultipartBody.create(MediaType.parse("image/jpg"), tmpFile));
             } else {
-                multipleBuilder.addPart(Headers.of("Content-Disposition", "form-data; name=\"" + key + "\""), RequestBody.create(null, (String)obj));
+                multipleBuilder.addPart(Headers.of("Content-Disposition", "form-data; name=\"" + key + "\""), RequestBody.create(null, (String) obj));
             }
         }
     }
 
     RequestBody multipleBody = multipleBuilder.build();
     Request request = new Request.Builder()
+            .header("token", getUserToken())
+            .header("client", "Android")
+            .header("versionCode", getVersionCode())
+            .header("versionName", getVersionName())
             .url(url)
             .post(multipleBody)
             .build();
 
     beginRequest(request, listener);
+}
+
+//保存网络图片到相册,返回本地存储路径
+public static void downloadImageToSysPhoto(String imageUrl, final OkHttpListener listener) {
+    Request request = new Request.Builder().url(imageUrl).build();
+    Call call = client.newCall(request);
+    call.enqueue(new Callback() {
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            try {
+                //系统相册路径
+                final String localPath = "/storage/emulated/0/DCIM/Camera/" + CommonUtil.getUniqueString(10) + ".jpg";
+
+                InputStream is = response.body().byteStream();
+                FileOutputStream fos = new FileOutputStream(localPath);
+                byte[] buffer = new byte[1024];
+
+                int len;
+                while ((len = is.read(buffer)) != -1) {
+                    fos.write(buffer, 0, len);
+                }
+                is.close();
+                fos.close();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.success(localPath);
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.fail(0, "");
+                        }
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (listener != null) {
+                        listener.fail(0, "");
+                    }
+                }
+            });
+        }
+    });
 }
 
 private static void beginRequest(Request request, final OkHttpListener listener) {
@@ -79,7 +514,7 @@ private static void beginRequest(Request request, final OkHttpListener listener)
             final int code = response.code();
 
             if (response.isSuccessful()) {
-                MyTool.logJson(responseString);
+                CommonUtil.logJson(responseString);
 
                 mainHandler.post(new Runnable() {
                     @Override
@@ -90,13 +525,13 @@ private static void beginRequest(Request request, final OkHttpListener listener)
                     }
                 });
             } else {
-                //请求失败：400  ---------   {"code":100002,"msg":"手机号已注册","url":""}
-                MyTool.log("请求失败：" + code + "---------" + responseString);
+                //请求失败：    400  ---------   {"code":100004,"msg":"手机号已注册"}
+                CommonUtil.logString("请求失败：" + code + "---------" + responseString);
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (listener != null) {
-                            listener.fail();
+                            listener.fail(code, responseString);
                         }
                     }
                 });
@@ -106,24 +541,145 @@ private static void beginRequest(Request request, final OkHttpListener listener)
         @Override
         public void onFailure(Call call, IOException e) {
             e.printStackTrace();
-            MyTool.log("服务器错误");
+            CommonUtil.logString("请求错误");
             mainHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (listener != null) {
-                        listener.fail();
+                        listener.fail(0, "请求失败");
                     }
                 }
             });
         }
     });
 }
+
+public static String getFailedMsg(String response) {
+    try {
+        JSONObject jsonObject = new JSONObject(response);
+        return jsonObject.getString("msg");
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "请求失败";
 }
 
-//回调接口定义
+public static String getUserToken() {
+    UserModel userModel = UserModel.getUser();
+    if (userModel != null) {
+        return userModel.getToken();
+    }
+    return "";
+}
+
+public static String getVersionCode() {
+    try {
+        PackageInfo pi = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
+        return pi.versionCode + "";
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "";
+}
+
+public static String getVersionName() {
+    try {
+        PackageInfo pi = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
+        return pi.versionName;
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "";
+}
+
+//下载apk安装包，HUD是自定义的等待进度条
+private static int apkProgress;
+public static void downloadAPK(final Context context, String apkUrl) {
+    HUD.show(context, "下载中...");
+    HUD.setCancelable(false);
+
+    Request request = new Request.Builder().url(apkUrl).build();
+    Call call = client.newCall(request);
+    call.enqueue(new Callback() {
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            try {
+                FileUtil.createDir();//创建  ~/paiqi/ 文件夹
+                final String apkLocalPath = FileUtil.DIR_PATH + "paiqi.apk";
+
+                InputStream is = response.body().byteStream();
+                FileOutputStream fos = new FileOutputStream(apkLocalPath);
+                int readNum;
+                byte[] buffer = new byte[1024];
+
+                int progressCount = 0;
+                long totalLength = response.body().contentLength();
+
+                while ((readNum = is.read(buffer)) != -1) {
+                    progressCount += readNum;
+                    apkProgress = (int) (((float) progressCount / totalLength) * 100);
+
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            HUD.setMessage("下载中 " + apkProgress + "%");
+                        }
+                    });
+
+                    fos.write(buffer, 0, readNum);
+                }
+                is.close();
+                fos.close();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        HUD.dismiss();
+                        installAPK(context, apkLocalPath);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        HUD.dismiss();
+                        CommonUtil.showToast("下载失败");
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    HUD.dismiss();
+                    CommonUtil.showToast("下载失败");
+                }
+            });
+        }
+    });
+}
+
+//安装apk
+private static void installAPK(Context context, String apkPath) {
+    File apkFile = new File(apkPath);
+    if (!apkFile.exists()) {
+        CommonUtil.showToast("安装失败");
+        return;
+    }
+    Intent intent = new Intent(Intent.ACTION_VIEW);
+    intent.setDataAndType(Uri.parse("file://" + apkFile.toString()), "application/vnd.android.package-archive");
+    context.startActivity(intent);
+} 
+
+//请求回调接口定义
 public interface OkHttpListener {
-    void success(String response);
-    void fail();
+   void success(String response);
+   void fail(int code,String response);
 }
 </code></pre>
 
@@ -198,7 +754,7 @@ public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
     }
 </code></pre>
 
-<h4>Retrofit使用</h4>
+<h4>Retrofit</h4>
 
 <p><a href="http://square.github.io/retrofit/">Retrofit官网</a>上的例子中返回结果是Bean，但又没说添加了GsonConverterFactory，所以会报 Could not locate ResponseBody converter for XXBean 错误！所以要引入GsonConverterFactory转化库<code>compile 'com.squareup.retrofit2:converter-gson:2.0.2'</code>, 然后在Retrofit初始化的时候添加该库！官网后面说了 By default, Retrofit can only deserialize HTTP bodies into OkHttp&rsquo;s ResponseBody type and it can only accept its RequestBody type for @Body. 默认只会返回ResponseBody！并且只有ResponseBody才可以使用@Body注解！我个人还是不喜欢直接在这里得到Bean, 我还是喜欢先通过得到response.body().string()，然后再转化成Bean，各司其职。注意是<code>response.body().string()</code>，不是<code>response.body().toString()</code>!!</p>
 
@@ -699,158 +1255,6 @@ public void onSaveInstanceState(Bundle outState) {
 </code></pre>
 
 <p>在使用时还是要注意判断savedInstanceState是否为null，只有在为空时才add()。在不为空时就可以不用处理了，交由BaseFragment处理了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Android手势滑动返回]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/08/31/android-swipe/"/>
-    <updated>2016-08-31T15:16:10+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/08/31/android-swipe</id>
-    <content type="html"><![CDATA[<p>偶然间发现了一个Android自带的抽屉控件<a href="https://developer.android.com/training/implementing-navigation/nav-drawer.html">DrawerLayout</a>,就觉得应该可以用他来封装成手势返回的基础控件。思路就是先设置Activity的跳转动画是从右到左，并且前一个Activity不能动。然后设置DrawerLayout的menu从右边出来，然设置menu全屏，这个menu就相当于子Activity View的容器，默认打开menu,然后设置DrawerLayout容器透明，当DrawerLayout close的时候finish它所在的Activity！还要把状态栏设置成透明，不然DrawerLayout closed 再 finish Activity的时候会有视觉差！复杂的手势控制就交由自带的DrawerLayout处理啦，生命周期还是Activity的生命周期。怎么样，是不是机智如我！！😆</p>
-
-<p>遇到的问题：DrawerLayout的menu即时设置成match_parent也不能全屏！因为源码里设置了margin64dp! 那我们只好再设置回来：android:layout_marginLeft=&ldquo;-64dp"。</p>
-
-<pre><code> private static final int MIN_DRAWER_MARGIN = 64; // dp
-</code></pre>
-
-<p>BaseSwipeActivity</p>
-
-<pre><code>package com.suguiming.myandroid.base;
-import android.os.Bundle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-
-import com.suguiming.myandroid.R;
-
-public class BaseSwipeActivity extends AppCompatActivity {
-
-private DrawerLayout drawer;
-private LinearLayout containerLayout;
-
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-    setContentView(R.layout.activity_base_swipe);
-
-    containerLayout = (LinearLayout) findViewById(R.id.container_layout);
-
-    drawer = (DrawerLayout) findViewById(R.id.base_drawer_layout);
-    drawer.openDrawer(GravityCompat.END);
-    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-        @Override
-        public void onDrawerClosed(View drawerView) {
-            super.onDrawerClosed(drawerView);
-            finish();
-        }
-    };
-    drawer.setDrawerListener(toggle);
-}
-
-//子类不要用setContentView,用setMainView!!!!
-public void setMainView(int viewId) {
-    LayoutInflater inflater = LayoutInflater.from(this);
-    View tmpView = inflater.inflate(viewId, null);
-
-    if (tmpView instanceof LinearLayout) {
-        LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        tmpView.setLayoutParams(linearLayoutParams);
-    } else if (tmpView instanceof RelativeLayout) {
-        RelativeLayout.LayoutParams relativeLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        tmpView.setLayoutParams(relativeLayoutParams);
-    }
-    containerLayout.removeAllViews();
-    containerLayout.addView(tmpView);
-}
-
-}
-</code></pre>
-
-<p>对应的布局文件</p>
-
-<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@android:color/transparent"
-    tools:context="com.suguiming.myandroid.base.BaseSwipeActivity"&gt;
-
-&lt;android.support.v4.widget.DrawerLayout
-    android:id="@+id/base_drawer_layout"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/transparent"
-    tools:openDrawer="end"&gt;
-    &lt;LinearLayout
-        android:orientation="vertical"
-        android:background="@color/clear"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"&gt;
-    &lt;/LinearLayout&gt;
-
-    &lt;!---64dp是源码menu的margin,这里设置为65,不然会有一条黑线--&gt;
-    &lt;LinearLayout
-        android:id="@+id/container_layout"
-        android:orientation="vertical"
-        android:layout_gravity="end"
-        android:layout_marginLeft="-65dp"
-        android:background="@color/light_gray"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"&gt;
-    &lt;/LinearLayout&gt;
-&lt;/android.support.v4.widget.DrawerLayout&gt;
-&lt;/LinearLayout&gt;
-</code></pre>
-
-<p>push 的动画 style</p>
-
-<pre><code>&lt;!--手势返回theme--&gt;
-&lt;style name="BackSwipeTheme" parent="Theme.AppCompat.Light.NoActionBar"&gt;
-    &lt;item name="android:windowIsTranslucent"&gt;true&lt;/item&gt;
-    &lt;item name="android:windowBackground"&gt;@android:color/transparent&lt;/item&gt;
-    &lt;item name="android:windowNoTitle"&gt;true&lt;/item&gt;
-    &lt;item name="android:backgroundDimEnabled"&gt;false&lt;/item&gt;
-    &lt;item name="android:windowAnimationStyle"&gt;@style/ActivitySwipeBackAnimation&lt;/item&gt;
-&lt;/style&gt;
-&lt;style name="ActivitySwipeBackAnimation" parent="@android:style/Animation.Activity"&gt;
-    &lt;item name="android:activityOpenEnterAnimation"&gt;@anim/activity_swipe_in&lt;/item&gt;
-    &lt;item name="android:activityOpenExitAnimation"&gt;@anim/activity_swipe_out&lt;/item&gt;
-    &lt;item name="android:activityCloseEnterAnimation"&gt;@anim/activity_swipe_in&lt;/item&gt;
-    &lt;item name="android:activityCloseExitAnimation"&gt;@anim/activity_swipe_out&lt;/item&gt;
-&lt;/style&gt;
-</code></pre>
-
-<p>使用的话就是让Activity继承BaseSwipeActivity，然后设置Activity的Theme为BackSwipeTheme。</p>
-
-<pre><code>public class ActivitySwipeBack extends BaseSwipeActivity {
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    //要用setMainView，不要用setContentView
-    setMainView(R.layout.activity_activity_swipe_back);
-  }
-}
-
-&lt;activity android:name=".tab0.ActivitySwipeBack"
-            android:theme="@style/BackSwipeTheme"/&gt;
-</code></pre>
-
-<p>完整Demo请查看<a href="https://github.com/AndyFightting/MyAndroid">MyAndroid</a>中的"手势滑动返回"。</p>
-
-<p><img src="/myimg/android/android_swipe.png" alt="imge" /></p>
 ]]></content>
   </entry>
   
