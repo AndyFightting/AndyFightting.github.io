@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Android数据保存方式有： 文件存储, SharedPreference, Sqlite, SD卡存储。 * 文件存储 不对存储数据做任何格式化处理，原封不动的保存到文件中。使用于保存简单的文本数据或者二进制数据。 Context有个openFileOutput()方法接受两个参数，第一个： &hellip;">
+  <meta name="description" content="SQLite是一个轻量级的关系型数据库，在iOS和Android手机中都有用到，C语言的面向过程的函数式编程。SQLitePersistentObject和FMDB框架都是基于SQLite开发的。SQLitePersistentObject更像是个ORM框架，它是由Jeff &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,121 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/12/25/ios-sqlite/">iOS中的SQLite</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-12-25T10:44:52+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:44 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="/myimg/ios/sqlite.png" alt="image" /></p>
+
+<p><a href="http://www.sqlite.org/">SQLite</a>是一个轻量级的关系型数据库，在iOS和Android手机中都有用到，C语言的面向过程的函数式编程。<a href="https://github.com/woooooojianjie/SQLitePersistentObject">SQLitePersistentObject</a>和<a href="https://github.com/ccgus/fmdb">FMDB</a>框架都是基于SQLite开发的。SQLitePersistentObject更像是个ORM框架，它是由Jeff LaMarche在2008年开发的，所以不是ARC的，要用的请加上<strong>-fno-objc-arc</strong>，且作者已经没有维护了，所以还是推荐使用更加广泛的FMDB。</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/12/25/ios-sqlite/">阅读全文</a>
+    </footer>
+  
+
+
+      | <a href="/blog/2015/12/25/ios-sqlite/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/12/22/thread/">iOS中的多线程</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-12-22T14:28:22+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>2:28 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>1.什么是进程</p>
+
+<p>进程是指在系统中正在运行的一个应用程序，每个进程之间是独立的，每个进程均运行在其专用且受保护的内存空间内。
+<img src="/myimg/ios/jincheng.png" alt="image" /></div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/12/22/thread/">阅读全文</a>
+    </footer>
+  
+
+
+      | <a href="/blog/2015/12/22/thread/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/12/19/desigin-pattern/">设计模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-12-19T21:51:06+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:51 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>我理解的设计模式都是为了让代码模块化，结构化，各司其职，再把各个模块通过"接口"组合起来。封装变化；多用组合少用继承；针对接口编程，不针对实现编程；为交互对象之间的松耦合设计而努力；对扩展开放，对修改关闭。</p>
+
+<h3>1.MVC模式</h3>
+
+<p>看图就可以了，简洁明了~
+<img src="/myimg/other/mvc.png" alt="image" /></div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/12/19/desigin-pattern/">阅读全文</a>
+    </footer>
+  
+
+
+      | <a href="/blog/2015/12/19/desigin-pattern/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -320,23 +435,23 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/11/17/struts-spring-mybatis/">Struts + Spring + MyBatis 框架搭建</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/17/hibernate/">Hibernate 的简单使用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/17/spring-ioc/">Spring 依赖注入</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/11/14/react-native/">React Native Demo</a>
       </li>
     
       <li class="post">
         <a href="/blog/2016/11/14/springmvc-plus-mybatda-jian/">SpringMVC + MyBatis 框架搭建</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/11/14/mybatis/">MyBatis 的简单使用</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/11/11/android-select-photo/">Android 一行代码选取图片</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/09/12/link-bug/">iOS Not Found for Architecture Arm64</a>
       </li>
     
   </ul>
@@ -350,7 +465,7 @@
   <ul id="categories">
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (6)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (9)</a></li>
 
   </ul>
 </section>

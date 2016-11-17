@@ -9,54 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-let 声明常量，var 声明变量 &hellip;">
+  <meta name="description" content="本人用的环境是Mac 10.11.5, 需要用到的工具有：apktool, dex2jar, JD-GUI。 下面用淘宝2.2.1版本和微信2.3版本为例子来反编译。为什么用这么老的版本？因为可能老版本没有做代码混淆，反编译后会更好看一点。可以用安智市场来下载历史版本， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -123,6 +76,423 @@ let 声明常量，var 声明变量 &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/09/02/apk-decode/">反编译Android的APK</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-02T09:55:10+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2016</span></span> <span class='time'>9:55 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>本人用的环境是Mac 10.11.5, 需要用到的工具有：<a href="https://ibotpeaches.github.io/Apktool/">apktool</a>, <a href="https://sourceforge.net/projects/dex2jar/">dex2jar</a>, <a href="http://jd.benow.ca/">JD-GUI</a>。</p>
+
+<p>下面用淘宝2.2.1版本和微信2.3版本为例子来反编译。为什么用这么老的版本？因为可能老版本没有做代码混淆，反编译后会更好看一点。可以用<a href="http://www.anzhi.com/">安智市场</a>来下载历史版本，推荐用安智市场的手机APP来下载，会看到所有的历史版本，而电脑网站只能看到最近的几个历史版本。
+<img src="/myimg/android/az_taobao.png" alt="image" /></p>
+
+<h4>1.apktool</h4>
+
+<p>需要至少Java 7环境，通过<code>java -version</code>查看
+<img src="/myimg/android/javaVersion.png" alt="image" /></p>
+
+<p>配置apktool
+<img src="/myimg/android/apktool.png" alt="image" /></p>
+
+<p>输入apktool如下所示就成功了
+<img src="/myimg/android/apktool_result.png" alt="imag" /></p>
+
+<p>用apktool工具处理后就可以查看xml文件了。在桌面建一个文件夹test, 把apk文件放进去，进入该文件夹，然后执行<code>apktool d apk名称.apk</code>。就会在test文件夹里出现一个<code>apk名称</code>的文件夹。里面的资源文件和xml文件就可以打开查看了。
+<img src="/myimg/android/apktool1.png" alt="imag" />
+<img src="/myimg/android/apktool2.png" alt="imag" />
+<img src="/myimg/android/apktool3.png" alt="imag" /></p>
+
+<h4>2.dex2jar</h4>
+
+<p>dex2jar工具可以吧dex或者apk文件转成jar文件。dex2jar下载好后进入文件夹，执行<code>chmod a+x *.sh</code>命令启用.sh文件。</p>
+
+<h6>方式一</h6>
+
+<p>把apk文件的后缀名改为zip，然后解压得到classes.dex文件，把classes.dex文件放到dex2jar文件夹中，进入该文件夹，执行<code>sh d2j-dex2jar.sh classes.dex</code>命令，就会得到对应的jar文件。</p>
+
+<h6>方式二</h6>
+
+<p>直接把apk文件放入dex2jar文件夹中，执行<code>sh d2j-dex2jar.sh apk名称.apk</code>也会得到对应的jar文件。</p>
+
+<h4>3.JD-GUI</h4>
+
+<p>把JD-GUI下载下来，打开上面生成的jar文件就可查看了。
+<img src="/myimg/android/taobao211.png" alt="image" /></p>
+
+<p>下面是微信2.3处理后的结果
+<img src="/myimg/android/wx1.png" alt="image" />
+<img src="/myimg/android/wx2.png" alt="image" />
+<img src="/myimg/android/wx3.png" alt="image" />
+剩下的就看细心、耐心、和好奇心了&hellip;下面说说我是怎么查看QQ2.0的。</p>
+
+<h3>我的查看流程</h3>
+
+<p>找一个页面的特殊字符，如下面的"我的个人资料"
+<img src="/myimg/android/find00.jpg" alt="image" /></p>
+
+<p>然后Finder搜索，找到strings.xml文件，在里面找到"我的个人资料"对应的key &ndash; &ldquo;info_info"。
+<img src="/myimg/android/find0.png" alt="image" />
+<img src="/myimg/android/find1.png" alt="image" /></p>
+
+<p>然后搜"info_info"，找到对应的布局文件"info_self.xml"
+<img src="/myimg/android/find2.png" alt="image" /></p>
+
+<p>然后通过"info_self"布局文件名搜索，找到对应的smali文件
+<img src="/myimg/android/find3.png" alt="image" /></p>
+
+<p>然后通过smali文件名"InfoActivity"在JD-GUI的Search功能搜索，不是Find!找到对应的Activity，这样想看的东西应该都能找到了。
+<img src="/myimg/android/find4.png" alt="image" /></p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/09/02/apk-decode/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/09/01/fragment/">Android中的Fragment</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-01T11:38:27+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>11:38 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在 Android 3.0（API 11 级）中引入了Fragment，主要是为了给大屏幕上更加动态和灵活的 UI 设计提供支持。由于平板电脑的屏幕比手机屏幕大得多，因此可用于组合和交换 UI 组件的空间更大。利用Fragment实现此类设计时，无需管理对视图层次结构的复杂更改。它具有自己的生命周期，能接收自己的输入事件，并且可以在 Activity 运行时添加或删除Fragment，有点像可以在不同 Activity 中重复使用的"子 Activity"。 通过将 Activity 布局分成Fragment，可以在运行时修改 Activity 的外观，并在由 Activity 管理的返回栈中保留这些更改。Fragment必须始终嵌入在 Activity 中，其生命周期直接受宿主 Activity 生命周期的影响。当 Activity 暂停时，其中的所有Fragment也会暂停；当 Activity 被销毁时，所有Fragment也会被销毁。</p>
+
+<p>下面是Android官网上的<a href="https://developer.android.com/guide/components/activities.html">Activity</a>和<a href="https://developer.android.com/guide/components/fragments.html">Fragment</a>的生命周期图。</p>
+
+<p><img src="/myimg/android/activity_lifecycle.png" alt="imga" /> <img src="/myimg/android/fragment_lifecycle.png" alt="imga" /></p>
+
+<p>下面是网友整理的详细的<a href="https://github.com/xxv/android-lifecycle">周期图比较</a>。</p>
+
+<p><img src="/myimg/android/fragment.png" alt="image" /></p>
+
+<h4>用Fragment可能会遇到的问题</h4>
+
+<h5>getActivity()空指针</h5>
+
+<p>可能遇到过getActivity()返回null，或者平时运行完好的代码，在“内存重启”之后，调用getActivity()的地方却返回null，报了空指针异常。大多数情况下的原因：在调用了getActivity()时，当前的Fragment已经onDetach()了宿主Activity。比如在pop了Fragment之后，该Fragment的异步任务仍然在执行，并且在执行完成后调用了getActivity()方法，这样就会空指针。</p>
+
+<p>可以在Fragment基类里设置一个Activity mActivity的全局变量，在onAttach(Activity activity)里赋值，使用mActivity代替getActivity()，保证Fragment即使在onDetach后，仍持有Activity的引用。</p>
+
+<h5>Fragment重叠问题</h5>
+
+<p>如果add()了几个Fragment，然后使用show()、hide()方法控制，比如微信、QQ的底部tab等情景。如果你什么都不做的话，在“内存重启”后回，Tab的这几个Fragment界面会重叠。(手机横竖屏切换就可以模拟“内存重启”)。原因是FragmentManager帮我们管理Fragment，当发生“内存重启”，他会从栈底向栈顶的顺序恢复Fragment，但是因为没有保存Fragment的hidden属性，默认为false，所以所有Fragment都是以show的形式恢复，界面就重叠了。</p>
+
+<h5>解决方法一</h5>
+
+<p>不用add()的方式处理tab的Fragment，直接在Activity的布局文件中添加需要的Fragment,然后在Activity中通过getFragmentManager().findFragmentById()的方式得到Fragment，然后处理对应的hide,show。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;fragment
+</span><span class='line'>    android:id="@+id/fragment0"
+</span><span class='line'>    android:name="com.suguiming.myandroid.tab0.Fragment0"
+</span><span class='line'>    android:layout_above="@+id/tab_line"
+</span><span class='line'>    android:layout_width="match_parent"
+</span><span class='line'>    android:layout_height="match_parent"
+</span><span class='line'>    tools:layout="@layout/fragment_container"/&gt;
+</span><span class='line'>&lt;fragment
+</span><span class='line'>    android:id="@+id/fragment1"
+</span><span class='line'>    android:name="com.suguiming.myandroid.tab1.Fragment1"
+</span><span class='line'>    android:layout_above="@+id/tab_line"
+</span><span class='line'>    android:layout_width="match_parent"
+</span><span class='line'>    android:layout_height="match_parent"
+</span><span class='line'>    tools:layout="@layout/fragment_container"/&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>解决方法二</h5>
+
+<p>在用add()或者replace()时为Fragment绑定一个tag，一般用fragment的类名作为tag，然后在发生“内存重启”时，即savedInstanceState!=null 时，通过getFragmentManager().findFragmentByTag()找到对应的Fragment，然后hide、show 对应的Fragment。</p>
+
+<pre><code>protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity);
+
+TargetFragment targetFragment;
+HideFragment hideFragment;
+
+if (savedInstanceState != null) {  // “内存重启”时调用
+    targetFragment = getSupportFragmentManager().findFragmentByTag(TargetFragment.class.getName);
+    hideFragment = getSupportFragmentManager().findFragmentByTag(HideFragment.class.getName);
+    // 解决重叠问题
+    getFragmentManager().beginTransaction()
+            .show(targetFragment)
+            .hide(hideFragment)
+            .commit();
+}else{  // 正常时
+    targetFragment = TargetFragment.newInstance();
+    hideFragment = HideFragment.newInstance();
+
+    getFragmentManager().beginTransaction()
+            .add(R.id.container, targetFragment, targetFragment.getClass().getName())
+            .add(R.id,container,hideFragment,hideFragment.getClass().getName())
+            .hide(hideFragment)
+            .commit();
+}
+}
+</code></pre>
+
+<h5>解决方法三</h5>
+
+<p>由于造成重叠的原因是因为Fragment不会保存hide的状态，那我们可以在BaseFragment中手动保存然后处理啊！</p>
+
+<pre><code>private static final String FRAGMENT_IS_HIDDEN = "FRAGMENT_IS_HIDDEN";
+
+@Override
+public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    //解决重叠问题
+    if (savedInstanceState != null) {
+        boolean isHidden = savedInstanceState.getBoolean(FRAGMENT_IS_HIDDEN);
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        if (isHidden) {
+            ft.hide(this);
+        } else {
+            ft.show(this);
+        }
+        ft.commit();
+    }
+}
+
+@Override
+public void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putBoolean(FRAGMENT_IS_HIDDEN, isHidden());//保持fragment是否隐藏的状态
+}
+</code></pre>
+
+<p>在使用时还是要注意判断savedInstanceState是否为null，只有在为空时才add()。在不为空时就可以不用处理了，交由BaseFragment处理了。</p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/09/01/fragment/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/31/android-swipe/">Android手势滑动返回</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-31T15:16:10+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>3:16 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>偶然间发现了一个Android自带的抽屉控件<a href="https://developer.android.com/training/implementing-navigation/nav-drawer.html">DrawerLayout</a>,就觉得应该可以用他来封装成手势返回的基础控件。思路就是先设置Activity的跳转动画是从右到左，并且前一个Activity不能动。然后设置DrawerLayout的menu从右边出来，然设置menu全屏，这个menu就相当于子Activity View的容器，默认打开menu,然后设置DrawerLayout容器透明，当DrawerLayout close的时候finish它所在的Activity！还要把状态栏设置成透明，不然DrawerLayout closed 再 finish Activity的时候会有视觉差！复杂的手势控制就交由自带的DrawerLayout处理啦，生命周期还是Activity的生命周期。怎么样，是不是机智如我！！😆</p>
+
+<p>遇到的问题：DrawerLayout的menu即时设置成match_parent也不能全屏！因为源码里设置了margin64dp! 那我们只好再设置回来：android:layout_marginLeft=&ldquo;-64dp"。</p>
+
+<pre><code> private static final int MIN_DRAWER_MARGIN = 64; // dp
+</code></pre>
+
+<p>BaseSwipeActivity</p>
+
+<pre><code>package com.suguiming.myandroid.base;
+import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+
+import com.suguiming.myandroid.R;
+
+public class BaseSwipeActivity extends AppCompatActivity {
+
+private DrawerLayout drawer;
+private LinearLayout containerLayout;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+    setContentView(R.layout.activity_base_swipe);
+
+    containerLayout = (LinearLayout) findViewById(R.id.container_layout);
+
+    drawer = (DrawerLayout) findViewById(R.id.base_drawer_layout);
+    drawer.openDrawer(GravityCompat.END);
+    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+        @Override
+        public void onDrawerClosed(View drawerView) {
+            super.onDrawerClosed(drawerView);
+            finish();
+        }
+    };
+    drawer.setDrawerListener(toggle);
+}
+
+//子类不要用setContentView,用setMainView!!!!
+public void setMainView(int viewId) {
+    LayoutInflater inflater = LayoutInflater.from(this);
+    View tmpView = inflater.inflate(viewId, null);
+
+    if (tmpView instanceof LinearLayout) {
+        LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(linearLayoutParams);
+    } else if (tmpView instanceof RelativeLayout) {
+        RelativeLayout.LayoutParams relativeLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(relativeLayoutParams);
+    }
+    containerLayout.removeAllViews();
+    containerLayout.addView(tmpView);
+}
+
+}
+</code></pre>
+
+<p>对应的布局文件</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/transparent"
+    tools:context="com.suguiming.myandroid.base.BaseSwipeActivity"&gt;
+
+&lt;android.support.v4.widget.DrawerLayout
+    android:id="@+id/base_drawer_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    tools:openDrawer="end"&gt;
+    &lt;LinearLayout
+        android:orientation="vertical"
+        android:background="@color/clear"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"&gt;
+    &lt;/LinearLayout&gt;
+
+    &lt;!---64dp是源码menu的margin,这里设置为65,不然会有一条黑线--&gt;
+    &lt;LinearLayout
+        android:id="@+id/container_layout"
+        android:orientation="vertical"
+        android:layout_gravity="end"
+        android:layout_marginLeft="-65dp"
+        android:background="@color/light_gray"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"&gt;
+    &lt;/LinearLayout&gt;
+&lt;/android.support.v4.widget.DrawerLayout&gt;
+&lt;/LinearLayout&gt;
+</code></pre>
+
+<p>push 的动画 style</p>
+
+<pre><code>&lt;!--手势返回theme--&gt;
+&lt;style name="BackSwipeTheme" parent="Theme.AppCompat.Light.NoActionBar"&gt;
+    &lt;item name="android:windowIsTranslucent"&gt;true&lt;/item&gt;
+    &lt;item name="android:windowBackground"&gt;@android:color/transparent&lt;/item&gt;
+    &lt;item name="android:windowNoTitle"&gt;true&lt;/item&gt;
+    &lt;item name="android:backgroundDimEnabled"&gt;false&lt;/item&gt;
+    &lt;item name="android:windowAnimationStyle"&gt;@style/ActivitySwipeBackAnimation&lt;/item&gt;
+&lt;/style&gt;
+&lt;style name="ActivitySwipeBackAnimation" parent="@android:style/Animation.Activity"&gt;
+    &lt;item name="android:activityOpenEnterAnimation"&gt;@anim/activity_swipe_in&lt;/item&gt;
+    &lt;item name="android:activityOpenExitAnimation"&gt;@anim/activity_swipe_out&lt;/item&gt;
+    &lt;item name="android:activityCloseEnterAnimation"&gt;@anim/activity_swipe_in&lt;/item&gt;
+    &lt;item name="android:activityCloseExitAnimation"&gt;@anim/activity_swipe_out&lt;/item&gt;
+&lt;/style&gt;
+</code></pre>
+
+<p>使用的话就是让Activity继承BaseSwipeActivity，然后设置Activity的Theme为BackSwipeTheme。</p>
+
+<pre><code>public class ActivitySwipeBack extends BaseSwipeActivity {
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    //要用setMainView，不要用setContentView
+    setMainView(R.layout.activity_activity_swipe_back);
+  }
+}
+
+&lt;activity android:name=".tab0.ActivitySwipeBack"
+            android:theme="@style/BackSwipeTheme"/&gt;
+</code></pre>
+
+<p>完整Demo请查看<a href="https://github.com/AndyFightting/MyAndroid">MyAndroid</a>中的"手势滑动返回"。</p>
+
+<p><img src="/myimg/android/android_swipe.png" alt="imge" /></p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/08/31/android-swipe/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -667,121 +1037,6 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/25/ios-sqlite/">iOS中的SQLite</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-12-25T10:44:52+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:44 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img src="/myimg/ios/sqlite.png" alt="image" /></p>
-
-<p><a href="http://www.sqlite.org/">SQLite</a>是一个轻量级的关系型数据库，在iOS和Android手机中都有用到，C语言的面向过程的函数式编程。<a href="https://github.com/woooooojianjie/SQLitePersistentObject">SQLitePersistentObject</a>和<a href="https://github.com/ccgus/fmdb">FMDB</a>框架都是基于SQLite开发的。SQLitePersistentObject更像是个ORM框架，它是由Jeff LaMarche在2008年开发的，所以不是ARC的，要用的请加上<strong>-fno-objc-arc</strong>，且作者已经没有维护了，所以还是推荐使用更加广泛的FMDB。</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/12/25/ios-sqlite/">阅读全文</a>
-    </footer>
-  
-
-
-      | <a href="/blog/2015/12/25/ios-sqlite/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/22/thread/">iOS中的多线程</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-12-22T14:28:22+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>2:28 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>1.什么是进程</p>
-
-<p>进程是指在系统中正在运行的一个应用程序，每个进程之间是独立的，每个进程均运行在其专用且受保护的内存空间内。
-<img src="/myimg/ios/jincheng.png" alt="image" /></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/12/22/thread/">阅读全文</a>
-    </footer>
-  
-
-
-      | <a href="/blog/2015/12/22/thread/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/19/desigin-pattern/">设计模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-12-19T21:51:06+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:51 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>我理解的设计模式都是为了让代码模块化，结构化，各司其职，再把各个模块通过"接口"组合起来。封装变化；多用组合少用继承；针对接口编程，不针对实现编程；为交互对象之间的松耦合设计而努力；对扩展开放，对修改关闭。</p>
-
-<h3>1.MVC模式</h3>
-
-<p>看图就可以了，简洁明了~
-<img src="/myimg/other/mvc.png" alt="image" /></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/12/19/desigin-pattern/">阅读全文</a>
-    </footer>
-  
-
-
-      | <a href="/blog/2015/12/19/desigin-pattern/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -799,23 +1054,23 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/11/17/struts-spring-mybatis/">Struts + Spring + MyBatis 框架搭建</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/17/hibernate/">Hibernate 的简单使用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/17/spring-ioc/">Spring 依赖注入</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/11/14/react-native/">React Native Demo</a>
       </li>
     
       <li class="post">
         <a href="/blog/2016/11/14/springmvc-plus-mybatda-jian/">SpringMVC + MyBatis 框架搭建</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/11/14/mybatis/">MyBatis 的简单使用</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/11/11/android-select-photo/">Android 一行代码选取图片</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/09/12/link-bug/">iOS Not Found for Architecture Arm64</a>
       </li>
     
   </ul>
@@ -829,7 +1084,7 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
   <ul id="categories">
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (6)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (9)</a></li>
 
   </ul>
 </section>

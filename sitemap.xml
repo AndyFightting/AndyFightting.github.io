@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://andyfightting.github.io/blog/2016/11/17/struts-spring-mybatis/</loc>
+    <lastmod>2016-11-17T09:22:51+08:00</lastmod>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/blog/2016/11/17/hibernate/</loc>
+    <lastmod>2016-11-17T09:20:12+08:00</lastmod>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/blog/2016/11/17/spring-ioc/</loc>
+    <lastmod>2016-11-17T09:17:48+08:00</lastmod>
+  </url>
+  <url>
     <loc>http://andyfightting.github.io/blog/2016/11/14/react-native/</loc>
     <lastmod>2016-11-14T19:46:09+08:00</lastmod>
   </url>

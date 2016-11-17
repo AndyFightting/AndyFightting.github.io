@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Spring 依赖注入 - 阿贵</title>
+  <meta name="author" content="guimingsu">
+
+  
+  <meta name="description" content="Spring 依赖注入 Nov 17th, 2016 9:17 am Spring是一个大东西，框架集合。Spring MVC, Spring AOP, Spring IoC&hellip;等等。先看看Spring IoC(Inversion of Control)控制反转。就是把原先要手动 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://andyfightting.github.io/blog/2016/11/17/spring-ioc/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="阿贵" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">  -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+
+<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">阿贵</a></h1>
+  
+    <h2>Stay Hungry, Stay Foolish</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="andyfightting.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li> 
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Spring 依赖注入</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-17T09:17:48+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:17 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="https://spring.io/">Spring</a>是一个大东西，框架集合。Spring MVC, Spring AOP, Spring IoC&hellip;等等。先看看Spring IoC(Inversion of Control)控制反转。就是把原先要手动 new 一个对象，现在只要在Srping 的配置文件里配置就可以了，从主动控制对象，到被动接收对象，这就叫控制反转，也叫依赖注入(dependency injection)！ 依赖注入是Spring的核心机制，把对象之间的依赖关系转为用配置文件来管理，这有赖于它的核心组件 Beans, Core, Context 。</p>
+
+<p><img src="/myimg/java/spring_core.png" alt="" /></p>
+
+<p>开始之前要下载Spring jar包，但是官网上只看到了maven 和 gradle 的添加方式，要手动下载jar包还不好找呢，藏得跟宝藏似的。<a href="http://repo.spring.io/release/org/springframework/spring/">Spring jar 包下载</a>，还需要它的依赖包 <a href="http://commons.apache.org/proper/commons-logging/download_logging.cgi">Commons Logging</a>。</p>
+
+<p><img src="/myimg/java/spring_jar.png" alt="" /></p>
+
+<p>把上面的包下载下来添加到项目里，然后 Add to build path。</p>
+
+<p><img src="/myimg/java/spring_add.png" alt="" /></p>
+
+<p>Spring 可以用注解方式注入和xml方式注入。</p>
+
+<h5>1.注解的方式注入一个接口的实现</h5>
+
+<p>接口定义</p>
+
+<pre><code>public interface MessageInterface {
+   public String getMessage();
+   public String getName();
+}
+</code></pre>
+
+<p>操作Action</p>
+
+<pre><code>import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component //必须要
+public class MessageAction {
+
+final private MessageInterface service;
+
+@Autowired //可不要
+public MessageAction(MessageInterface service) {
+    this.service = service;
+}
+
+public void printMessage() {
+    System.out.println(this.service.getMessage() + this.service.getName());
+  }
+}
+</code></pre>
+
+<p>测试类</p>
+
+<pre><code>import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.*;
+
+@Configuration //可不要
+@ComponentScan //必须要
+public class Application {
+    @Bean
+    MessageInterface injectImp() {
+        return new MessageInterface() {
+            public String getMessage() {
+              return "Hello World!";
+            };
+
+        public String getName(){
+            return "sgm";
+        }
+    };
+}
+
+  public static void main(String[] args) {
+      ApplicationContext context = new AnnotationConfigApplicationContext(Application.class);
+      MessageAction printer = context.getBean(MessageAction.class);
+      printer.printMessage();
+  }
+}
+</code></pre>
+
+<p>结果打印出</p>
+
+<pre><code>Hello World!sgm
+</code></pre>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>@Configuration 用于标注一个类，表示bean定义的源文件
+</span><span class='line'>@ComponentScan  用于标注一个类，表示扫描指定包中的@Component标注的类。通过该实例得到 ApplicationContext
+</span><span class='line'>@Component  用于标注一个类组件，然后通过 ApplicationContext 对象获取
+</span><span class='line'>@Bean 用于注入一个实例对象，相当于Spring &lt;bean&gt;XML里的配置
+</span><span class='line'>@Autowired  用于标注setter方法，构造器，包含多个参数的方法，集合等等，用于自动注入绑定实例</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>2.用xml的方式注入一个接口的实现</h5>
+
+<p>如下，UserService是接口，里面定义一个print()方法。UserServiceImp是UserService的一个实现类，实现print(&ldquo;hello wrold&rdquo;)。</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd"&gt;
+
+    &lt;bean id="userService" class="com.sgm.implement.UserServiceImp"/&gt;
+
+&lt;/beans&gt;
+</code></pre>
+
+<p>userService.print()就会打印出绑定实现类里的"hello wrold"。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> ApplicationContext context =  new ClassPathXmlApplicationContext("com/sgm/spring/bean.xml");
+</span><span class='line'> UserService userService = (UserService) context.getBean("userService");
+</span><span class='line'> userService.print();</span></code></pre></td></tr></table></div></figure>
+
+
+<p>用xml的方式还可以通过类的构造函数注入，上面的例子是通过属性的set方法注入的。</p>
+
+<pre><code>&lt;bean id="serviceProvider" class="com.sgm.service.ServiceProvider"&gt;
+    &lt;constructor-arg ref="userService"&gt;&lt;/constructor-arg&gt;  
+&lt;/bean&gt; 
+
+&lt;bean id="userService" class="com.sgm.implement.UserServiceImp"/&gt;
+</code></pre>
+
+<p>xml默认都是注入一个单例对象的，即bean的属性 scope=&ldquo;singleton&rdquo; 为默认值。如果要每次都注入一个新对象，则设置bean的属性 scope=&ldquo;prototype"。</p>
+</div>
+
+
+      | <a href="#comments">Comments</a>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">guimingsu</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-11-17T09:17:48+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:17 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/other/'>other</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  <!-- JiaThis Button -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/11/14/react-native/" title="Previous Post: React Native Demo">&laquo; React Native Demo</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2016/11/17/hibernate/" title="Next Post: Hibernate 的简单使用">Hibernate 的简单使用 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-title="Octopress博客的个性化配置"></div>
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"tianweili"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+<!-- Duoshuo Comment END --></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/11/17/struts-spring-mybatis/">Struts + Spring + MyBatis 框架搭建</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/17/hibernate/">Hibernate 的简单使用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/17/spring-ioc/">Spring 依赖注入</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/14/react-native/">React Native Demo</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/14/springmvc-plus-mybatda-jian/">SpringMVC + MyBatis 框架搭建</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (9)</a></li>
+
+  </ul>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - guimingsu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
