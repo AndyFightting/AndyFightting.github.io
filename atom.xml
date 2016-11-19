@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-11-19T12:33:45+08:00</updated>
+  <updated>2016-11-19T14:58:35+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -50,7 +50,7 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Hibernate 的简单使用]]></title>
+    <title type="html"><![CDATA[Hibernate 的使用]]></title>
     <link href="http://andyfightting.github.io/blog/2016/11/17/hibernate/"/>
     <updated>2016-11-17T09:20:12+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/11/17/hibernate</id>
@@ -202,16 +202,16 @@ public class Application {
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[SpringMVC + MyBatis 框架搭建]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/11/14/springmvc-plus-mybatda-jian/"/>
+    <title type="html"><![CDATA[SpringMVC + Hibernate 框架搭建]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/11/14/springmvc-hibernate-jian/"/>
     <updated>2016-11-14T19:34:43+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/11/14/springmvc-plus-mybatda-jian</id>
+    <id>http://andyfightting.github.io/blog/2016/11/14/springmvc-hibernate-jian</id>
     <content type="html"><![CDATA[
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[MyBatis 的简单使用]]></title>
+    <title type="html"><![CDATA[MyBatis 的使用]]></title>
     <link href="http://andyfightting.github.io/blog/2016/11/14/mybatis/"/>
     <updated>2016-11-14T19:26:25+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/11/14/mybatis</id>
@@ -400,6 +400,68 @@ public static void main(String[] args) {
     }
 }
 </code></pre>
+
+<h3>传参方式</h3>
+
+<h5>1.用下标获取</h5>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>//Dao层接口定义
+</span><span class='line'>public User selectUser(String name,String password);
+</span><span class='line'>//对应的映射方法,用下标获取
+</span><span class='line'>&lt;select id="selectUser" resultMap="userList"&gt;
+</span><span class='line'>    select  *  from user where name = #{0} and password=#{1}
+</span><span class='line'>&lt;/select&gt;
+</span><span class='line'>//定义userList
+</span><span class='line'>&lt;resultMap type="User" id="userList"&gt;
+</span><span class='line'>  &lt;result column="id" property="id" /&gt;
+</span><span class='line'>  &lt;result column="name" property="name" /&gt;
+</span><span class='line'>  &lt;result column="password" property="password" /&gt;
+</span><span class='line'>&lt;/resultMap&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>2.传自定义对象</h5>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public void updateUser(User user);
+</span><span class='line'>&lt;update id="updateUser" parameterType="User"&gt;
+</span><span class='line'>  update user set name = #{name}, password = #{password} where id = #{id};
+</span><span class='line'>&lt;/update&gt;
+</span><span class='line'>//定义User别名
+</span><span class='line'>&lt;typeAliases&gt;
+</span><span class='line'>  &lt;typeAlias alias="User" type="com.sgm.bean.User" /&gt;
+</span><span class='line'>&lt;/typeAliases&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>3.用注解的方式</h5>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public User selectUser(@Param("name")String name,@Param("password")String password);
+</span><span class='line'>&lt;select id="selectUser" resultType="User"&gt;
+</span><span class='line'>  select * from user where name = #{name} and password = #{password};
+</span><span class='line'>&lt;/select&gt;</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>注意!</h3>
 

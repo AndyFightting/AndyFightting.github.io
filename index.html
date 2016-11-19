@@ -141,7 +141,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2016/11/17/hibernate/">Hibernate 的简单使用</a></h1>
+      <h1 class="entry-title"><a href="/blog/2016/11/17/hibernate/">Hibernate 的使用</a></h1>
     
     
       <p class="meta">
@@ -362,7 +362,7 @@ public class Application {
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2016/11/14/springmvc-plus-mybatda-jian/">SpringMVC + MyBatis 框架搭建</a></h1>
+      <h1 class="entry-title"><a href="/blog/2016/11/14/springmvc-hibernate-jian/">SpringMVC + Hibernate 框架搭建</a></h1>
     
     
       <p class="meta">
@@ -384,7 +384,7 @@ public class Application {
   
 
 
-      | <a href="/blog/2016/11/14/springmvc-plus-mybatda-jian/#comments">Comments</a>
+      | <a href="/blog/2016/11/14/springmvc-hibernate-jian/#comments">Comments</a>
 
 
     </article>
@@ -394,7 +394,7 @@ public class Application {
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2016/11/14/mybatis/">MyBatis 的简单使用</a></h1>
+      <h1 class="entry-title"><a href="/blog/2016/11/14/mybatis/">MyBatis 的使用</a></h1>
     
     
       <p class="meta">
@@ -595,6 +595,68 @@ public static void main(String[] args) {
     }
 }
 </code></pre>
+
+<h3>传参方式</h3>
+
+<h5>1.用下标获取</h5>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>//Dao层接口定义
+</span><span class='line'>public User selectUser(String name,String password);
+</span><span class='line'>//对应的映射方法,用下标获取
+</span><span class='line'>&lt;select id="selectUser" resultMap="userList"&gt;
+</span><span class='line'>    select  *  from user where name = #{0} and password=#{1}
+</span><span class='line'>&lt;/select&gt;
+</span><span class='line'>//定义userList
+</span><span class='line'>&lt;resultMap type="User" id="userList"&gt;
+</span><span class='line'>  &lt;result column="id" property="id" /&gt;
+</span><span class='line'>  &lt;result column="name" property="name" /&gt;
+</span><span class='line'>  &lt;result column="password" property="password" /&gt;
+</span><span class='line'>&lt;/resultMap&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>2.传自定义对象</h5>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public void updateUser(User user);
+</span><span class='line'>&lt;update id="updateUser" parameterType="User"&gt;
+</span><span class='line'>  update user set name = #{name}, password = #{password} where id = #{id};
+</span><span class='line'>&lt;/update&gt;
+</span><span class='line'>//定义User别名
+</span><span class='line'>&lt;typeAliases&gt;
+</span><span class='line'>  &lt;typeAlias alias="User" type="com.sgm.bean.User" /&gt;
+</span><span class='line'>&lt;/typeAliases&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>3.用注解的方式</h5>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public User selectUser(@Param("name")String name,@Param("password")String password);
+</span><span class='line'>&lt;select id="selectUser" resultType="User"&gt;
+</span><span class='line'>  select * from user where name = #{name} and password = #{password};
+</span><span class='line'>&lt;/select&gt;</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>注意!</h3>
 
@@ -2020,7 +2082,7 @@ private static class SerialExecutor implements Executor {
       </li>
     
       <li class="post">
-        <a href="/blog/2016/11/17/hibernate/">Hibernate 的简单使用</a>
+        <a href="/blog/2016/11/17/hibernate/">Hibernate 的使用</a>
       </li>
     
       <li class="post">
@@ -2032,7 +2094,7 @@ private static class SerialExecutor implements Executor {
       </li>
     
       <li class="post">
-        <a href="/blog/2016/11/14/springmvc-plus-mybatda-jian/">SpringMVC + MyBatis 框架搭建</a>
+        <a href="/blog/2016/11/14/springmvc-hibernate-jian/">SpringMVC + Hibernate 框架搭建</a>
       </li>
     
   </ul>

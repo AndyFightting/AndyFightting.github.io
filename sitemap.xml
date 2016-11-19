@@ -17,7 +17,7 @@
     <lastmod>2016-11-14T19:46:09+08:00</lastmod>
   </url>
   <url>
-    <loc>http://andyfightting.github.io/blog/2016/11/14/springmvc-plus-mybatda-jian/</loc>
+    <loc>http://andyfightting.github.io/blog/2016/11/14/springmvc-hibernate-jian/</loc>
     <lastmod>2016-11-14T19:34:43+08:00</lastmod>
   </url>
   <url>
@@ -129,5 +129,11 @@
   </url>
   <url>
     <loc>http://andyfightting.github.io/blog/categories/ios/</loc>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/posts/2/</loc>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/posts/3/</loc>
   </url>
 </urlset>
