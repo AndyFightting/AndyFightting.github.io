@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Struts + Spring + MyBatis 框架搭建 Nov 17th, 2016 9:22 am | Comments Hibernate 的简单使用 Nov 17th, 2016 9:20 am | Comments Spring 依赖注入 Nov 17th, 2016 9:17 &hellip;">
+  <meta name="description" content="Struts + Spring + MyBatis 框架搭建 Nov 17th, 2016 9:22 am 基本信息： Mac OS 10.11, Eclipse Neon, JDK1.8, Tomcat7, struts2.5.5, spring4.3.4, mybatis3.4.1, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -98,7 +98,34 @@
   </header>
 
 
-  <div class="entry-content">
+  <div class="entry-content"><h4>基本信息：</h4>
+
+<p><code>Mac OS 10.11</code>, <code>Eclipse Neon</code>, <code>JDK1.8</code>, <code>Tomcat7</code>, <code>struts2.5.5</code>, <code>spring4.3.4</code>, <code>mybatis3.4.1</code>,<code>mybatis-spring1.3</code>,<code>mysql数据库</code></p>
+
+<h4>结构简介：</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>用struts2来控制方法调用和页面跳转，jps和Action通过strtus2的标签方式传值(OGNL)。
+</span><span class='line'>Action负责业务逻辑处理，Action调用Service接口，Service接口注入某个Service的实现，
+</span><span class='line'>在Service的实现里调用Dao来处理数据库。
+</span><span class='line'>而Dao是用Mybatis通过对应的xml文件来映射的,
+</span><span class='line'>且Action里的Service实现类注入和Service实现类里的Dao注入,Dao的Section注入，
+</span><span class='line'>都是通过Spring配置文件实现的。</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>截图:</h4>
+
+<p><img src="/myimg/java/ssm_index.png" alt="" />
+<img src="/myimg/java/ssm_list.png" alt="" />
+<img src="/myimg/java/ssm_json.png" alt="" />
+<img src="/myimg/java/ssm.png" alt="" /></p>
+
+<p><a href="/mysrc/java/TestDynamicWeb.zip">下载</a></p>
 </div>
   
   
@@ -287,7 +314,7 @@ public class Application {
 &lt;bean id="userService" class="com.sgm.implement.UserServiceImp"/&gt;
 </code></pre>
 
-<p>xml默认都是注入一个单例对象的，即bean的属性 scope=&ldquo;singleton&rdquo; 为默认值。如果要每次都注入一个新对象，则设置bean的属性 scope=&ldquo;prototype"。</p>
+<p>xml默认都是注入一个单例对象的，即bean的属性 scope = &ldquo;singleton&rdquo; 为默认值。如果要每次都注入一个新对象，则设置bean的属性 scope = &ldquo;prototype"。</p>
 </div>
   
   
