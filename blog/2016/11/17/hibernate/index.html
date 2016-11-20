@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Hibernate 的使用 Nov 17th, 2016 9:20 am | Comments Posted by guimingsu Nov 17th, 2016 9:20 am other &laquo; Spring 依赖注入 Struts + Spring + MyBatis 框架搭建 &hellip;">
+  <meta name="description" content="Hibernate 的使用 Nov 17th, 2016 9:20 am 可以认为MyBatis是半自动化，而Hibernate是全自动化。MyBatis是面向表和列的SQL查询，而Hibernate是用面向对象和对象属性的 HQL查询。 HQL 查询被 Hibernate 翻译为传统的 SQL &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -95,7 +95,170 @@
   </header>
 
 
-<div class="entry-content">
+<div class="entry-content"><p>可以认为MyBatis是半自动化，而Hibernate是全自动化。MyBatis是面向表和列的SQL查询，而Hibernate是用面向对象和对象属性的 HQL查询。 HQL 查询被 Hibernate 翻译为传统的 SQL 查询从而对数据库进行操作。尽管Hibernate可以直接使用本地 SQL 语句，但还是尽可能的使用 HQL 语句，以避免数据库移植产生的麻烦。在 HQL 中一些关键字比如 SELECT ，FROM 和 WHERE 等，是不区分大小写的，但对象名和属性名是区分大小写的。Hibernate也可以用注解方式来进行对象和表的关系映射，类似于<a href="http://ormlite.com/">OrmLit</a>这样。</p>
+
+<p>和Mybatis 很像，都是加载配置文件得到SessionFactory, 然后通过SessionFactory获取 Session,然后用Session进行HQL操作。</p>
+
+<p>Hibernate配置文件</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="GBK"?&gt;  
+&lt;!DOCTYPE hibernate-configuration PUBLIC  
+    "-//Hibernate/Hibernate Configuration DTD 3.0//EN"  
+    "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd"&gt;
+&lt;hibernate-configuration&gt;
+    &lt;session-factory&gt;
+        &lt;property name="connection.driver_class"&gt;com.mysql.jdbc.Driver&lt;/property&gt;
+        &lt;property name="connection.url"&gt;jdbc:mysql://localhost:8889/java_db&lt;/property&gt;
+        &lt;property name="connection.username"&gt;root&lt;/property&gt;
+        &lt;property name="connection.password"&gt;root&lt;/property&gt;
+        &lt;!-- 指定连接池里最大连接数 --&gt;
+        &lt;property name="hibernate.c3p0.max_size"&gt;50&lt;/property&gt;
+        &lt;!-- 指定连接池里最小连接数 --&gt;
+        &lt;property name="hibernate.c3p0.min_size"&gt;5&lt;/property&gt;
+        &lt;!-- 指定连接池里连接的超时时长 --&gt;
+        &lt;property name="hibernate.c3p0.timeout"&gt;3000&lt;/property&gt;
+        &lt;!-- 指定连接池里最大缓存多少个Statement对象 --&gt;
+        &lt;property name="hibernate.c3p0.max_statements"&gt;100&lt;/property&gt;
+        &lt;property name="hibernate.c3p0.idle_test_perxiod"&gt;3000&lt;/property&gt;
+        &lt;property name="hibernate.c3p0.acquire_increment"&gt;2&lt;/property&gt;
+        &lt;property name="hibernate.c3p0.validate"&gt;true&lt;/property&gt;
+        &lt;!-- 指定数据库方言 --&gt;
+        &lt;property name="dialect"&gt;org.hibernate.dialect.MySQLInnoDBDialect&lt;/property&gt;
+        &lt;!-- 根据需要自动创建数据表 --&gt;
+        &lt;property name="hbm2ddl.auto"&gt;update&lt;/property&gt;
+        &lt;!-- 显示Hibernate持久化操作所生成的SQL --&gt;
+        &lt;property name="show_sql"&gt;true&lt;/property&gt;
+        &lt;!-- 将SQL脚本进行格式化后再输出 --&gt;
+        &lt;property name="hibernate.format_sql"&gt;true&lt;/property&gt;
+
+        &lt;!-- 下面罗列所有的映射文件 --&gt;
+        &lt;mapping resource="com/sgm/config/user.xml" /&gt;
+
+    &lt;/session-factory&gt;
+&lt;/hibernate-configuration&gt;
+</code></pre>
+
+<p>对象到表的映射文件</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;!DOCTYPE hibernate-mapping PUBLIC 
+ "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"&gt; 
+&lt;hibernate-mapping package="com.sgm.bean"&gt;
+   &lt;class name="User" table="user"&gt;
+      &lt;id name="id" type="int" column="id"&gt;
+         &lt;generator class="native"/&gt;
+      &lt;/id&gt;
+      &lt;property name="name" column="name" type="string"/&gt;
+      &lt;property name="password" column="password" type="string"/&gt;
+   &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+</code></pre>
+
+<p>基本使用</p>
+
+<pre><code>public class Main {
+    private static SessionFactory factory;
+    static{
+        try {
+            Configuration config = new Configuration().configure("com/sgm/config/hibernate.xml");
+            factory = config.buildSessionFactory();
+        } catch (Throwable ex) {
+            throw new ExceptionInInitializerError(ex);
+        }
+    }
+
+@SuppressWarnings("unchecked")
+public static void main(String[] args) {
+    Session session = factory.openSession();
+    Transaction transaction = null;
+    try {
+        transaction = session.beginTransaction();
+        //数据库处理
+
+        transaction.commit();
+    } catch (Exception e) {
+        if (transaction != null)
+            transaction.rollback();
+        e.printStackTrace();
+    } finally {
+        session.close();
+    }
+  }
+}
+</code></pre>
+
+<p><img src="/myimg/java/hibernate_zsg.png" alt="" /></p>
+
+<p>一般情况下，用不带entityName参数的方法就可以了。带entityName的是hibernate在探索不使用pojo类进行O/R，不建议使用。</p>
+
+<h4>查询</h4>
+
+<pre><code>//from后面是对象！不是表名！对象和表在mapper文件里关联好了。hql面向的是对象，不是表！
+String hql = "FROM User as u where u.id &gt;= 17 ";
+Query&lt;User&gt; query = session.createQuery(hql);
+List&lt;User&gt; list = query.getResultList();
+
+//用setParameter设置查询参数，setFirstResult和setMaxResults可用于分页
+String hql="from User as u where u.name=? and u.password = :password ORDER BY u.id DESC";
+Query&lt;User&gt; query=session.createQuery(hql);
+query.setParameter(0, "andy");
+query.setParameter("password", "123");
+query.setFirstResult(1);//从结果集的那一条开始(包括这一条)
+query.setMaxResults(2);//最多几条
+List&lt;User&gt; list=query.getResultList();
+
+//query也可以用于批量修改和删除 
+String hql = "UPDATE User set name = :name WHERE id &gt;= :id";
+//String hql = "DELETE from User WHERE name = :name and id &gt;= :id";
+Query&lt;User&gt; query = session.createQuery(hql);
+query.setParameter("name", "andy hello");
+query.setParameter("id", 19);
+int result = query.executeUpdate();
+System.out.println("处理了几条数据: " + result);
+</code></pre>
+
+<h4>CriteriaQuery <a href="https://github.com/treehouse/giflib-hibernate/commit/f97a2828a466e849d8ae84884b5dce60a66cf412">废弃更新日志</a></h4>
+
+<p>注意新的创建方式引用的包是 <code>import javax.persistence.criteria.CriteriaQuery</code>,而不是<code>import org.hibernate.criterion.CriteriaQuery</code>!!!</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>//旧的已被废弃
+</span><span class='line'>session.createCriteria(User.class) 的创建方式已经被废弃
+</span><span class='line'>//改为这样
+</span><span class='line'>CriteriaBuilder cb = session.getCriteriaBuilder();
+</span><span class='line'>CriteriaQuery&lt;User&gt; query = cb.createQuery(User.class);
+</span><span class='line'>Root&lt;User&gt; user = query.from(User.class);
+</span><span class='line'>query.select(user).where(cb.equal(user.get("name"), "andy"));
+</span><span class='line'>List&lt;User&gt; list = session.createQuery(query).getResultList();</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>原生SQL</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>String sql = "select * from user where id = :tmpId";
+</span><span class='line'>NativeQuery&lt;User&gt; nativeQuery = session.createNativeQuery(sql,User.class);
+</span><span class='line'>nativeQuery.setParameter("tmpId", 19);
+</span><span class='line'>nativeQuery.setFirstResult(1);
+</span><span class='line'>nativeQuery.setMaxResults(2);
+</span><span class='line'>List&lt;User&gt; list = nativeQuery.getResultList();
+</span><span class='line'>//nativeQuery.executeUpdate(); 修改或者删除</span></code></pre></td></tr></table></div></figure>
+
+
+
 </div>
 
 
