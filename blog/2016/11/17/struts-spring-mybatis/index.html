@@ -107,11 +107,13 @@
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>用struts2来控制方法调用和页面跳转，jps和Action通过strtus2的标签方式传值(OGNL)。
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>用struts2的配置文件来控制方法的调用和页面的跳转，
+</span><span class='line'>jps和Action通过strtus2标签方式传值取值(OGNL)。
 </span><span class='line'>Action负责业务逻辑处理，Action调用Service接口，Service接口注入某个Service的实现，
 </span><span class='line'>在Service的实现里调用Dao来处理数据库。
-</span><span class='line'>而Dao是用Mybatis通过对应的xml文件来映射的,
-</span><span class='line'>且Action里的Service实现类注入和Service实现类里的Dao注入,Dao的Section注入，
+</span><span class='line'>而Dao是用Mybatis通过对应的xml映射文件来关联的,
+</span><span class='line'>且Action里的Service实现注入,Service实现类里的Dao注入,Dao的Section注入，
 </span><span class='line'>都是通过Spring配置文件实现的。</span></code></pre></td></tr></table></div></figure>
 
 

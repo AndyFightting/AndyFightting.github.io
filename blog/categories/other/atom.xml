@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Other | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/other/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-11-20T18:19:32+08:00</updated>
+  <updated>2016-11-21T09:59:05+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -24,11 +24,12 @@
 
 <h4>结构简介：</h4>
 
-<pre><code>用struts2来控制方法调用和页面跳转，jps和Action通过strtus2的标签方式传值(OGNL)。
+<pre><code>用struts2的配置文件来控制方法的调用和页面的跳转，
+jps和Action通过strtus2标签方式传值取值(OGNL)。
 Action负责业务逻辑处理，Action调用Service接口，Service接口注入某个Service的实现，
 在Service的实现里调用Dao来处理数据库。
-而Dao是用Mybatis通过对应的xml文件来映射的,
-且Action里的Service实现类注入和Service实现类里的Dao注入,Dao的Section注入，
+而Dao是用Mybatis通过对应的xml映射文件来关联的,
+且Action里的Service实现注入,Service实现类里的Dao注入,Dao的Section注入，
 都是通过Spring配置文件实现的。
 </code></pre>
 
@@ -48,11 +49,13 @@ Action负责业务逻辑处理，Action调用Service接口，Service接口注入
     <link href="http://andyfightting.github.io/blog/2016/11/17/hibernate/"/>
     <updated>2016-11-17T09:20:12+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/11/17/hibernate</id>
-    <content type="html"><![CDATA[<p>可以认为MyBatis是半自动化，而Hibernate是全自动化。MyBatis是面向表和列的SQL查询，而Hibernate是用面向对象和对象属性的 HQL查询。 HQL 查询被 Hibernate 翻译为传统的 SQL 查询从而对数据库进行操作。尽管Hibernate可以直接使用本地 SQL 语句，但还是尽可能的使用 HQL 语句，以避免数据库移植产生的麻烦。在 HQL 中一些关键字比如 SELECT ，FROM 和 WHERE 等，是不区分大小写的，但对象名和属性名是区分大小写的。Hibernate也可以用注解方式来进行对象和表的关系映射，类似于<a href="http://ormlite.com/">OrmLit</a>这样。</p>
+    <content type="html"><![CDATA[<p>可以认为MyBatis是半自动化，而Hibernate是全自动化(也可半自动)。MyBatis是面向表和列的SQL查询，而Hibernate是用面向对象和对象属性的 HQL查询。 HQL 查询被 Hibernate 翻译为传统的 SQL 查询从而对数据库进行操作。尽管Hibernate可以直接使用本地 SQL 语句，但还是尽可能的使用 HQL 语句，以避免数据库移植产生的麻烦。在 HQL 中一些关键字比如 SELECT ，FROM 和 WHERE 等，是不区分大小写的，但对象名和属性名是区分大小写的。Hibernate也可以用注解方式来进行对象和表的关系映射，类似于<a href="http://ormlite.com/">OrmLit</a>这样。</p>
+
+<p><img src="/myimg/java/hibernate_frame.png" alt="" /></p>
 
 <p>和Mybatis 很像，都是加载配置文件得到SessionFactory, 然后通过SessionFactory获取 Session,然后用Session进行HQL操作。</p>
 
-<p>Hibernate配置文件</p>
+<p>Hibernate(5.2.4)配置文件</p>
 
 <pre><code>&lt;?xml version="1.0" encoding="GBK"?&gt;  
 &lt;!DOCTYPE hibernate-configuration PUBLIC  
@@ -171,13 +174,13 @@ int result = query.executeUpdate();
 System.out.println("处理了几条数据: " + result);
 </code></pre>
 
-<h4>CriteriaQuery <a href="https://github.com/treehouse/giflib-hibernate/commit/f97a2828a466e849d8ae84884b5dce60a66cf412">废弃更新日志</a></h4>
+<h4><a href="https://docs.jboss.org/hibernate/entitymanager/3.5/reference/en/html/querycriteria.html">CriteriaQuery</a> <a href="https://github.com/treehouse/giflib-hibernate/commit/f97a2828a466e849d8ae84884b5dce60a66cf412">废弃更新日志</a></h4>
 
 <p>注意新的创建方式引用的包是 <code>import javax.persistence.criteria.CriteriaQuery</code>,而不是<code>import org.hibernate.criterion.CriteriaQuery</code>!!!</p>
 
 <pre><code>//旧的已被废弃
 session.createCriteria(User.class) 的创建方式已经被废弃
-//改为这样
+//改为这样,因为5.2.4的session已经继承了EntityManager，所以可以直接getCriteriaBuilder()。
 CriteriaBuilder cb = session.getCriteriaBuilder();
 CriteriaQuery&lt;User&gt; query = cb.createQuery(User.class);
 Root&lt;User&gt; user = query.from(User.class);
@@ -195,6 +198,125 @@ nativeQuery.setMaxResults(2);
 List&lt;User&gt; list = nativeQuery.getResultList();
 //nativeQuery.executeUpdate(); 修改或者删除
 </code></pre>
+
+<h4>one-to-many / many-to-one</h4>
+
+<p>举个栗子： <code>User(单方)----Book(多方)</code>,一个user有多个book, 一个book只属于一个user。</p>
+
+<pre><code>public class User {
+    public int id;
+    public String name;
+    private Set&lt;Book&gt; books = new HashSet&lt;Book&gt;();
+    //下面 getter setter
+}
+
+public class Book {
+    public int id;
+    public String name;
+    public User user;
+    //下面 getter setter
+}
+</code></pre>
+
+<p>User mapper</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;!DOCTYPE hibernate-mapping PUBLIC 
+ "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"&gt;
+&lt;hibernate-mapping package="com.sgm.bean"&gt;
+    &lt;class name="User" table="user"&gt;
+        &lt;id name="id" type="int" column="id"&gt;
+            &lt;generator class="native" /&gt;
+        &lt;/id&gt;
+        &lt;property name="name" column="name" type="string" /&gt;
+
+        &lt;set name="books" inverse="true" cascade="all"&gt;
+            &lt;key column="userId"&gt;&lt;/key&gt;
+            &lt;one-to-many class="com.sgm.bean.Book" /&gt;
+        &lt;/set&gt;
+    &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+</code></pre>
+
+<p>Book mapper</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;!DOCTYPE hibernate-mapping PUBLIC 
+ "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"&gt;
+&lt;hibernate-mapping package="com.sgm.bean"&gt;
+    &lt;class name="Book" table="book"&gt;
+        &lt;id name="id" type="int" column="id"&gt;
+            &lt;generator class="native" /&gt;
+        &lt;/id&gt;
+        &lt;property name="name" column="name" type="string" /&gt;
+
+        &lt;many-to-one name="user" class="com.sgm.bean.User"&gt;
+            &lt;column name="userId"&gt;&lt;/column&gt;
+        &lt;/many-to-one&gt;
+    &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+</code></pre>
+
+<p>测试</p>
+
+<pre><code>public class Main {
+    private static SessionFactory factory;
+    static {
+        try {
+            Configuration config = new Configuration().configure("com/sgm/config/hibernate.xml");
+            factory = config.buildSessionFactory();
+        } catch (Throwable ex) {
+            throw new ExceptionInInitializerError(ex);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void main(String[] args) {
+        Session session = factory.openSession();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            // do some work
+            User user = new User();
+            user.setName("andy");
+
+            Book book1 = new Book();
+            book1.setName("哈利波特");
+            book1.setUser(user);
+
+            Book book2 = new Book();
+            book2.setName("功夫之王");
+            book2.setUser(user);
+
+            user.getBooks().add(book1);
+            user.getBooks().add(book2);
+
+            session.save(user);
+
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null)
+                transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+    }
+}
+</code></pre>
+
+<p><img src="/myimg/java/hibernate_om.png" alt="" /></p>
+
+<h4>中文乱码</h4>
+
+<p>用Hibernate 插入中文到MySQL数据库时，即使MySQL数据库设置编码 <code>Character set = utf-8</code> 还是乱码。要改Hibernate 的配置：
+<code>
+&lt;property name="connection.url"&gt;jdbc:mysql://localhost:8889/java_db&lt;/property&gt;
+//改为
+&lt;property name="connection.url"&gt;&lt;![CDATA[jdbc:mysql://localhost:8889/java_db?useUnicode=true&amp;characterEncoding=utf8]]&gt;&lt;/property&gt;
+</code></p>
 ]]></content>
   </entry>
   

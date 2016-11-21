@@ -343,6 +343,19 @@ public static void main(String[] args) {
 </span><span class='line'>&lt;/select&gt;</span></code></pre></td></tr></table></div></figure>
 
 
+<h4>动态SQL语句</h4>
+
+<pre><code>&lt;select id="selectSameAddressUser" parameterType="User" resultType="userList"&gt;
+    select * from user 
+        &lt;if test="name != null"&gt;
+            title = #{name}
+        &lt;/if&gt;
+        &lt;if test="address != null"&gt;
+            and address = #{address}
+        &lt;/if&gt;
+&lt;/select&gt;
+</code></pre>
+
 <h3>注意!</h3>
 
 <h5>SqlSessionFactoryBuilder</h5>
