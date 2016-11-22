@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Other | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/other/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-11-21T09:59:05+08:00</updated>
+  <updated>2016-11-22T16:39:46+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -14,18 +14,18 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Struts + Spring + MyBatis 框架搭建]]></title>
+    <title type="html"><![CDATA[Struts + Spring + MyBatis]]></title>
     <link href="http://andyfightting.github.io/blog/2016/11/17/struts-spring-mybatis/"/>
     <updated>2016-11-17T09:22:51+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/11/17/struts-spring-mybatis</id>
     <content type="html"><![CDATA[<h4>基本信息：</h4>
 
-<p><code>Mac OS 10.11</code>, <code>Eclipse Neon</code>, <code>JDK1.8</code>, <code>Tomcat7</code>, <code>struts2.5.5</code>, <code>spring4.3.4</code>, <code>mybatis3.4.1</code>,<code>mybatis-spring1.3</code>,<code>mysql数据库</code></p>
+<p><code>Mac OS 10.11</code>, <code>eclipse neon</code>, <code>jdk1.8</code>, <code>tomcat7</code>, <code>struts2.5.5</code>, <code>spring4.3.4</code>, <code>mybatis3.4.1</code>,<code>mybatis-spring1.3</code>,<code>mysql数据库</code></p>
 
 <h4>结构简介：</h4>
 
 <pre><code>用struts2的配置文件来控制方法的调用和页面的跳转，
-jps和Action通过strtus2标签方式传值取值(OGNL)。
+jps和Action通过strtus2标签方式或者EL表达式传值取值。
 Action负责业务逻辑处理，Action调用Service接口，Service接口注入某个Service的实现，
 在Service的实现里调用Dao来处理数据库。
 而Dao是用Mybatis通过对应的xml映射文件来关联的,
@@ -40,7 +40,7 @@ Action负责业务逻辑处理，Action调用Service接口，Service接口注入
 <img src="/myimg/java/ssm_json.png" alt="" />
 <img src="/myimg/java/ssm.png" alt="" /></p>
 
-<p><a href="/mysrc/java/TestDynamicWeb.zip">下载</a></p>
+<p><a href="/mysrc/java/SSM.zip">下载</a></p>
 ]]></content>
   </entry>
   
@@ -456,11 +456,60 @@ public class Application {
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[SpringMVC + Hibernate 框架搭建]]></title>
+    <title type="html"><![CDATA[SpringMVC + Spring + Hibernate]]></title>
     <link href="http://andyfightting.github.io/blog/2016/11/14/springmvc-hibernate-jian/"/>
     <updated>2016-11-14T19:34:43+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/11/14/springmvc-hibernate-jian</id>
-    <content type="html"><![CDATA[
+    <content type="html"><![CDATA[<h4>基本信息：</h4>
+
+<p><code>Mac OS 10.11</code>, <code>eclipse neon</code>, <code>jdk1.8</code>, <code>tomcat7</code>, <code>spring4.3.4</code>, <code>Hibernate5.2.4</code>,<code>jackson2.5</code>,<code>mysql数据库</code></p>
+
+<h4>截图:</h4>
+
+<p><img src="/myimg/java/ssh_frame.png" alt="" />
+<img src="/myimg/java/ssh_pack.png" alt="" /></p>
+
+<h4>Controller从JSP取值</h4>
+
+<pre><code>//1.使用HttpServletRequest获取
+public String addUser(HttpServletRequest request) {
+    String name = request.getParameter("name");
+    String pass = request.getParameter("password");
+    return "/addUser";
+}
+//2.使用注解
+public String addUser(@RequestParam("name") String name,@RequestParam("password") String password) {
+    System.out.println(name+password);
+    return "/addUser";
+}
+//3.自动注入Entity属性
+public String addUser(User user) {
+    System.out.println(user.getName() + user.getPassword());
+    return "/addUser";
+}
+</code></pre>
+
+<h4>Controller传值给JSP</h4>
+
+<pre><code>//1.使用HttpServletRequest 然后setAttribute()，就和Servlet中一样
+public String getAllUser(HttpServletRequest request) {
+    request.setAttribute("userList", userService.getAllUser());
+    return "/index";
+}
+//2.使用Spring的ModelMap `public class ModelMap extends LinkedHashMap&lt;String, Object&gt;`，ModelMap数据会利用HttpServletRequest的Attribute传值
+public String getAllUser(ModelMap modelMap) {
+    modelMap.put("userList", userService.getAllUser());
+    return "/index";
+}
+//3.HttpServletReequest的getSession()  
+public String getAllUser(HttpServletRequest request) {
+    HttpSession session = request.getSession();
+    session.setAttribute("userList", userService.getAllUser());
+    return "/index";
+}
+</code></pre>
+
+<p><a href="/mysrc/java/SSH.zip">下载</a></p>
 ]]></content>
   </entry>
   

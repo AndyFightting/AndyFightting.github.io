@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>SpringMVC + Hibernate 框架搭建 - 阿贵</title>
+  <title>SpringMVC + Spring + Hibernate - 阿贵</title>
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="SpringMVC + Hibernate 框架搭建 Nov 14th, 2016 7:34 pm | Comments Posted by guimingsu Nov 14th, 2016 7:34 pm other &laquo; MyBatis 的使用 React Native Demo &hellip;">
+  <meta name="description" content="SpringMVC + Spring + Hibernate Nov 14th, 2016 7:34 pm 基本信息： Mac OS 10.11, eclipse neon, jdk1.8, tomcat7, spring4.3.4, Hibernate5.2.4,jackson2.5, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -48,8 +48,6 @@
   <header role="banner"><hgroup>
   <h1><a href="/">阿贵</a></h1>
   
-    <h2>Stay Hungry, Stay Foolish</h2>
-  
 </hgroup>
 
 </header>
@@ -79,7 +77,7 @@
   
   <header>
     
-      <h1 class="entry-title">SpringMVC + Hibernate 框架搭建</h1>
+      <h1 class="entry-title">SpringMVC + Spring + Hibernate</h1>
     
     
       <p class="meta">
@@ -95,7 +93,56 @@
   </header>
 
 
-<div class="entry-content">
+<div class="entry-content"><h4>基本信息：</h4>
+
+<p><code>Mac OS 10.11</code>, <code>eclipse neon</code>, <code>jdk1.8</code>, <code>tomcat7</code>, <code>spring4.3.4</code>, <code>Hibernate5.2.4</code>,<code>jackson2.5</code>,<code>mysql数据库</code></p>
+
+<h4>截图:</h4>
+
+<p><img src="/myimg/java/ssh_frame.png" alt="" />
+<img src="/myimg/java/ssh_pack.png" alt="" /></p>
+
+<h4>Controller从JSP取值</h4>
+
+<pre><code>//1.使用HttpServletRequest获取
+public String addUser(HttpServletRequest request) {
+    String name = request.getParameter("name");
+    String pass = request.getParameter("password");
+    return "/addUser";
+}
+//2.使用注解
+public String addUser(@RequestParam("name") String name,@RequestParam("password") String password) {
+    System.out.println(name+password);
+    return "/addUser";
+}
+//3.自动注入Entity属性
+public String addUser(User user) {
+    System.out.println(user.getName() + user.getPassword());
+    return "/addUser";
+}
+</code></pre>
+
+<h4>Controller传值给JSP</h4>
+
+<pre><code>//1.使用HttpServletRequest 然后setAttribute()，就和Servlet中一样
+public String getAllUser(HttpServletRequest request) {
+    request.setAttribute("userList", userService.getAllUser());
+    return "/index";
+}
+//2.使用Spring的ModelMap `public class ModelMap extends LinkedHashMap&lt;String, Object&gt;`，ModelMap数据会利用HttpServletRequest的Attribute传值
+public String getAllUser(ModelMap modelMap) {
+    modelMap.put("userList", userService.getAllUser());
+    return "/index";
+}
+//3.HttpServletReequest的getSession()  
+public String getAllUser(HttpServletRequest request) {
+    HttpSession session = request.getSession();
+    session.setAttribute("userList", userService.getAllUser());
+    return "/index";
+}
+</code></pre>
+
+<p><a href="/mysrc/java/SSH.zip">下载</a></p>
 </div>
 
 
@@ -174,7 +221,7 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2016/11/17/struts-spring-mybatis/">Struts + Spring + MyBatis 框架搭建</a>
+        <a href="/blog/2016/11/17/struts-spring-mybatis/">Struts + Spring + MyBatis</a>
       </li>
     
       <li class="post">
@@ -190,7 +237,7 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2016/11/14/springmvc-hibernate-jian/">SpringMVC + Hibernate 框架搭建</a>
+        <a href="/blog/2016/11/14/springmvc-hibernate-jian/">SpringMVC + Spring + Hibernate</a>
       </li>
     
   </ul>
