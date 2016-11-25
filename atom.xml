@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-11-23T18:46:34+08:00</updated>
+  <updated>2016-11-25T13:49:41+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,150 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[React 基础知识]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/11/24/react-javascript/"/>
+    <updated>2016-11-24T14:31:57+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/24/react-javascript</id>
+    <content type="html"><![CDATA[<h4>React 的核心思想是：封装组件! 封装组件 !封装组件! 重要的事说三遍。React 应用都是构建在组件之上，各个组件维护自己的状态和 UI，当状态变更，自动重新渲染整个组件。</h4>
+
+<h4>Declarative</h4>
+
+<p><a href="http://reactjs.cn/react/index.html">React</a> 可以很好的创建交互式组件，设计不同状态下的组件，并且React可以根据组件的不同参数高效的刷新渲染。这样的组件可以让你的代码更加的可预测并且更方便调试。</p>
+
+<h4>Component-Based</h4>
+
+<p>基于组件，封装一个组件，让它们管理自己的状态，然后用它们去组成更加复杂的UI。由于组件的逻辑是写在JavaScript里的而不是模板里，这样你可以很轻松的让它穿梭于复杂的数据之间，并且在DOM外保持自己的状态。</p>
+
+<h4>Learn Once, Write Anywhere</h4>
+
+<p>我们不假定你现在的技术栈是怎样的，所以你可以不用重写已存在的代码来用React开放新的功能。React也可以在服务器端渲染，也可以用React Native创建强大的移动应用。</p>
+
+<h4>A Simple Component</h4>
+
+<p>React 组件调用 <code>render()</code> 方法来输入参数然后返回要显示的样子。这个例子用一个类似XML语言的我们称之为JSX，通过<code>this.props</code>输入数据传到组件内部可以被<code>render()</code>方法获取。使用React的话，JSX是可选的，不是必须要使用的。试着点击<code>Complied JS</code>去看看通过JSX编译器产生的原生的JavaScript 代码。</p>
+
+<h4>A Stateful Component</h4>
+
+<p>除了通过<code>this.props</code>来传入参数，组件可以通过<code>this.state</code>来维护自己内部状态的数据。当组件的状态数据改变时，渲染器就会重新调用<code>render()</code>方法来刷新。</p>
+
+<h4>An Application</h4>
+
+<p>使用<code>props</code>和<code>state</code>我们可以收集一个小型的代办事项申请。这个例子用<code>state</code>来跟踪当前列表和用户输入的数据。虽然事件处理程序似乎是呈现内联,他们会通过事件代理被收集和使用。</p>
+
+<h4>A Component Using External Plugins</h4>
+
+<p>React 是灵活的，并且提供了一个钩子来和库或框架进行链接。这个例子使用<code>remarkable</code>,一个外部的 Markdown 库，来实时转化文本内容。</p>
+
+<p>哎呀~ 自己翻译果然别扭&hellip;😞  React 是什么呢？React 是Facebook 封装的一组JS代码库：</p>
+
+<p><img src="http://andyfightting.github.io/myimg/java/react.png" alt="" /></p>
+
+<p>按它规则可封装一个一个模块组件，这个模块组件有自己的状态，自己的逻辑等，它是一个独立的东西，然后把这样的组件一个一个组合起来。我理解的这不就是iOS或者Android自定义View 模块化吗？按照React 的规则可以混合着写JavaScript和HTML,这样的一个组件就是一个独立的模块化的View。</p>
+
+<p>React 还封装了一个自己的虚拟的DOM，通过这个Virtual DOM去更新真实的DOM，由这个Virtual DOM管理真实DOM的更新。因为如果大面积的操作 DOM，性能会是一个很大的问题，所以 React 实现了一个虚拟 DOM，组件 DOM 结构就是映射到这个虚拟 DOM 上，React 在这个虚拟 DOM 上实现了一个 <a href="http://www.ruanyifeng.com/blog/2012/08/how_to_read_diff.html">diff</a> 算法，当要更新组件的时候，会通过 diff 寻找到要变更的 DOM 节点，再把这个修改更新到浏览器实际的 DOM 节点上，所以实际上不是真的渲染整个 DOM 树。这个虚拟 DOM 是一个纯粹的 JS 数据结构，所以性能会比原生 DOM 快很多。</p>
+
+<h4>Hello World</h4>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;script src="../build/react.js"&gt;&lt;/script&gt;
+    &lt;script src="../build/react-dom.js"&gt;&lt;/script&gt;
+    &lt;script src="../build/browser.min.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="example"&gt;&lt;/div&gt;
+
+    &lt;script type="text/babel"&gt;
+    var MyComponent = React.createClass({
+      render: function() {
+        return &lt;div&gt;Hello {this.props.name}&lt;/div&gt;;
+      }
+    });
+
+    ReactDOM.render(&lt;MyComponent name="World !" /&gt;,
+                    document.getElementById('example') );
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>上面的代码中用React的语法自定义了一个组件叫<code>MyComponent</code>,这个组件返回一个块区间，里面显示 Hello + 这个组件的<code>name</code>属性值。注意script 的type 要声明为<code>text/babel</code>。这样就可以在其他地方使用这个自定义的组件了。可以把 <code>props</code> 看作是组件的配置属性，在组件内部是不变的，只是在调用这个组件的时候传入不同的属性值来定制显示这个组件。当组件状态 <code>state</code> 有更改的时候，React 会自动调用组件的 <code>render()</code> 方法重新渲染整个组件的 UI。上面的代码把 HTML 直接嵌入了 JS 代码里面了，这就是 React 提出的一种叫 JSX 的语法。把原来网页设计的代码分离，现在又融合了！</p>
+
+<p><img src="http://andyfightting.github.io/myimg/java/react_hello.png" alt="" /></p>
+
+<p>Hello World 运行起来了！嗯~ 我已经成功了一半！😆</p>
+
+<h4>组件组合</h4>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;script src="../build/react.js"&gt;&lt;/script&gt;
+    &lt;script src="../build/react-dom.js"&gt;&lt;/script&gt;
+    &lt;script src="../build/browser.min.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="example"&gt;&lt;/div&gt;
+
+    &lt;script type="text/babel"&gt;
+
+    var Avatar = React.createClass({
+        render: function() {
+            return (
+                &lt;div&gt;
+                    &lt;ProfilePic username={this.props.username} /&gt;
+                    &lt;ProfileName username={this.props.username} /&gt;
+                &lt;/div&gt;
+            );
+        }
+       });
+
+    var ProfilePic = React.createClass({
+        render: function() {
+            return (
+                &lt;img src={'https://gss0.bdstatic.com/70cFsj3f_gcX8t7mm9GUKT-xh_/avatar/100/r6s1g6.gif'} /&gt;
+            );
+        }
+    });
+
+    var ProfileName = React.createClass({
+        render: function() {
+            return (
+              &lt;div&gt;
+                &lt;a href={'http://guimingsu.com'}&gt;
+                    {this.props.username}
+                &lt;/a&gt;
+              &lt;/div&gt;
+            );
+        }
+    });
+
+    ReactDOM.render(
+        &lt;Avatar username="hello world " /&gt;,
+        document.getElementById('example')
+      );
+
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>这里显示了一个Avatar 组件，这个Avatar 组件是由两个更小的组件ProfilePic和ProfileName组合而成的。
+<img src="http://andyfightting.github.io/myimg/java/react_hello0.png" alt="" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Atom 使用]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/11/24/atom-edit/"/>
+    <updated>2016-11-24T14:31:17+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/24/atom-edit</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[React Native Android真机运行]]></title>
@@ -2834,635 +2978,6 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
                                                               usingBlock:^(NSNotification * _Nonnull note) {
                                                                   [self doSomething];
                                                               }];
-</code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[iOS中的Runloop与Runtime]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/08/01/runtime/"/>
-    <updated>2016-08-01T10:20:14+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/08/01/runtime</id>
-    <content type="html"><![CDATA[<h3><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html">Runloop</a></h3>
-
-<p>Runloop与线程息息相关，它是线程的基础架构部分，每个线程都有自己的runloop对象，可以用[NSRunLoop currentRunLoop]来得到它。主线程中的runloop是启动运行状态，而自己创建的线程中的runloop默认是没有启动的，需要的话要手动去启动。Runloop是一个事件处理循环，用来不停的监听输入事件或者定时事件，并将其分配到对应的目标上进行处理。它可以使线程在有工作的时候工作，没有工作的时候休眠。</p>
-
-<p>Runloop同时也负责autorelease pool的创建和释放，每当一个运行循环结束的时候，它都会释放autorelease pool，同时pool中的所有自动释放类型变量都会被释放掉。NSRunloop不是线程安全的，而CFRunLoopRef是线程安全的。RunLoop要指定在特定Mode下Run：</p>
-
-<p>*NSDefaultRunLoopMode：处理大多数的操作，一般情况下用这个。</p>
-
-<p>*NSRunLoopCommonModes：For Cocoa applications, this set includes the default, modal, and event tracking modes by default. Core Foundation includes just the default mode initially.</p>
-
-<p>而且通过scheduleInRunLoop的方式启动的请求，虽然是在主线程中执行！但也会有异步的效果！SDWebImageDownloader 中的 NSURLConnection 就是这样启动请求的！！</p>
-
-<pre><code>- (void)start{
-    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:15];
-    self.connection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
-    [connection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-    [connection start];
-    if (connection){
-        self.imageData = [NSMutableData data];
-    }else{
-        if ([delegate respondsToSelector:@selector(imageDownloader:didFailWithError:)]){
-            [delegate performSelector:@selector(imageDownloader:didFailWithError:) withObject:self withObject:nil];
-        }
-    }
-}
-</code></pre>
-
-<p>NSURLConnection在代理方法中打印出的线程：
-<img src="http://andyfightting.github.io/myimg/ios/sdrunloop.png" alt="iamge" /></p>
-
-<p>runloop监听用户输入事件和定时事件
-<img src="http://andyfightting.github.io/myimg/ios/runloop.png" alt="image" /><!--more--></p>
-
-<h3><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html">Runtime</a></h3>
-
-<p>Runtime是个很重要的概念，iOS之所以是动态语言就是因为它。它的核心是一个用C和编译语言写的Runtime库。它是Objective-C面向对象和动态机制的基石。静态语言是在编译的时候就已经绑定好了某个方法名会执行哪段函数地址。而动态语言不是在编译的时候就已经绑定好了，它是在具体要执行的某个方法的时候，才根据方法名去寻找具体执行的方法地址，所以可以在这时候动态的改变它的绑定。可以在<a href="https://opensource.apple.com/tarballs/objc4/">这里</a>下载源码查看。</p>
-
-<p>&ldquo;计算机界，只要再加一层中间层，就没有解决不了的问题。如果有，那再加一层，直到它解决。"这句话不知道是在哪里看到的了&hellip;不过说的挺有道理的。而Runtime库正是Objective-C之所以为动态语言的中间层！</p>
-
-<p>在Objective-C中，类、对象和方法都是一个C的结构体，从objc/objc.h头文件中，我们可以找到他们的定义：</p>
-
-<pre><code>//---NSObject-----
-@interface NSObject &lt;NSObject&gt; {
-     Class isa 
-}
-
-//---Class-----
-typedef struct objc_class *Class;
-
-//---objc_class-----
-struct objc_class {
-    Class isa 
-    Class super_class                                        
-    const char *name                                         
-    long version                                             
-    long info                                                
-    long instance_size //对象大小                                      
-    struct objc_ivar_list *ivars //属性列表                             
-    struct objc_method_list **methodLists //方法列表                   
-    struct objc_cache *cache  //方法映射缓存                               
-    struct objc_protocol_list *protocols   //代理列表                   
-};
-
-//---objc_method----
-struct objc_method {  
-    SEL method_name //方法名
-    char *method_types //a string representing argument/return types
-    IMP method_imp  //方法地址
-};
-</code></pre>
-
-<p>Objective-C的函数调用在编译的时候会被翻译为 -objc_msgSend(执行的对象，方法名，参数&hellip;),先通过isa指针找到它的Class,然后在method list里找方法，没有的话就上superClass中找，一旦找到，就去执行，然后把方法名和对应的方法地址映射保存在objc_cache中，下次就直接从这缓存中取。如果都没找到，会在程序报unrecognized selector sent to&hellip;错误之前还有机会补救，就是动态的给它指定一个执行方法！</p>
-
-<p>首先，Objective-C运行时会调用+resolveInstanceMethod:或者+resolveClassMethod:，让你有机会提供一个函数实现。如果你添加了函数并返回YES，那运行时系统就会重新启动一次消息发送的过程。下面用当我调用test方法的时候，没有test的实现方法，但把它动态绑定给了newTest方法去执行！</p>
-
-<pre><code>- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self performSelector:@selector(test) withObject:nil afterDelay:0];
-}
-
-void newTest(){
-    NSLog(@"success !!");
-}
-
-+ (BOOL)resolveInstanceMethod:(SEL)aSEL{
-    if(aSEL == @selector(test)){
-        class_addMethod([self class], aSEL, (IMP)newTest, nil);
-        return YES;
-    }
-    return [super resolveInstanceMethod:aSEL];
-}
-</code></pre>
-
-<p>如果resolveInstanceMethod：方法返回NO话，就会转到-forwardingTargetForSelector:方法中去执行,让这个方法在其他对象中去执行！如下面把test方法传递给 viewController2 对象去执行，在 viewController2 对象中实现的 test 方法就会被调用！！</p>
-
-<pre><code>+ (BOOL)resolveInstanceMethod:(SEL)aSEL{
-    return NO;
-}
-
-- (id)forwardingTargetForSelector:(SEL)aSelector{
-    if(aSelector == @selector(test)){
-        return viewController2;//传递给viewController2对象去执行 test方法
-    }
-    return [super forwardingTargetForSelector:aSelector];
-}
-</code></pre>
-
-<p>如果forwardingTargetForSelector：方法返回nil或者self的时候，就会进入- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector:方法中去执行，如果这方法返回了一个NSMethodSignature对象，这会进入-forwardInvocation:方法中，把消息传给对应的对象去执行！如下将会在viewController2中执行test方法！！</p>
-
-<pre><code>+ (BOOL)resolveInstanceMethod:(SEL)aSEL{
-    return NO;
-}
-
-- (id)forwardingTargetForSelector:(SEL)aSelector{
-    return self;
-}
-
-- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector{
-    NSMethodSignature* signature = [super methodSignatureForSelector:aSelector];
-    if (signature==nil) {
-        signature = [viewController2 methodSignatureForSelector:aSelector];
-    }
-    return signature;
-}
-
-- (void)forwardInvocation:(NSInvocation *)invocation{
-    SEL sel = invocation.selector;
-    if([viewController2 respondsToSelector:sel]) {
-        [invocation invokeWithTarget:viewController2];
-    }else {
-        [self doesNotRecognizeSelector:sel];
-    }
-}
-</code></pre>
-
-<p>如果这三个过程下来都没绑定具体的执行方法，则会进入- (void)doesNotRecognizeSelector:(SEL)aSelector方法，然后程序奔溃!!</p>
-
-<p><a href="http://nshipster.com/method-swizzling/">Method Swizzling</a>下面的例子中，当调用test1方法的时候，具体执行是跑到test2方法中的！！</p>
-
-<pre><code>@implementation ViewController
-+ (void)load {
-static dispatch_once_t onceToken;
-dispatch_once(&amp;onceToken, ^{
-    Class class = [self class];
-
-    SEL originalSelector = @selector(test1);
-    SEL swizzledSelector = @selector(test2);
-
-    Method originalMethod = class_getInstanceMethod(class, originalSelector);
-    Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
-
-    BOOL didAddMethod =
-    class_addMethod(class,
-                    originalSelector,
-                    method_getImplementation(swizzledMethod),
-                    method_getTypeEncoding(swizzledMethod));
-
-    if (didAddMethod) {
-        class_replaceMethod(class,
-                            swizzledSelector,
-                            method_getImplementation(originalMethod),
-                            method_getTypeEncoding(originalMethod));
-    } else {
-        method_exchangeImplementations(originalMethod, swizzledMethod);
-    }
-});
-}
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self test1];
-}
--(void)test1{
-    NSLog(@"开始1");
-}
--(void)test2{
-    NSLog(@"开始2");
-}
-</code></pre>
-
-<p>Swizzling应该总是在+load中执行,在Objective-C中，运行时会自动调用每个类的两个方法。+load会在类初始加载时调用，+initialize会在第一次调用类的类方法或实例方法之前被调用。</p>
-
-<p>这两个方法是可选的，且只有在实现了它们时才会被调用。由于method swizzling会影响到类的全局状态，因此要尽量避免在并发处理中出现竞争的情况。+load能保证在类的初始化过程中被加载，并保证这种改变应用级别的行为的一致性。相比之下，+initialize在其执行时不提供这种保证—事实上，如果在应用中没为给这个类发送消息，则它可能永远不会被调用。</p>
-
-<p>Swizzling应该总是在dispatch_once中执行, 因为swizzling会改变全局状态，所以我们需要它确保代码只被执行一次，不管有多少个线程，而GCD的dispatch_once可以确保这种行为。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[iOS中的CoreText]]></title>
-    <link href="http://andyfightting.github.io/blog/2015/12/26/core-text/"/>
-    <updated>2015-12-26T15:16:23+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2015/12/26/core-text</id>
-    <content type="html"><![CDATA[<p>CoreText进行图文混排的核心思想是把需要摆放图片的位置用空字符替换原来的字符，并且实现CTRunDelegate，用于动态设置空字符的高度和宽度（代表图片的大小），并且对这些空字符设置一个属性名来区别于其他CTRun，之后进行图片渲染的时候就能通过该属性来区分哪些空字符是代表图片的占位符，哪些是普通的空字符。使用CoreText处理点击事件的关键是判断点击的位置是本文内容中的第几个字符，然后通过判断该字符是否在需要处理点击事件的字符串范围内。</p>
-
-<p><img src="http://andyfightting.github.io/myimg/ios/text2.png" alt="image" /><!--more-->
-<img src="http://andyfightting.github.io/myimg/ios/coreText.png" alt="image" /></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-<span class='line-number'>165</span>
-<span class='line-number'>166</span>
-<span class='line-number'>167</span>
-<span class='line-number'>168</span>
-<span class='line-number'>169</span>
-<span class='line-number'>170</span>
-<span class='line-number'>171</span>
-<span class='line-number'>172</span>
-<span class='line-number'>173</span>
-<span class='line-number'>174</span>
-<span class='line-number'>175</span>
-<span class='line-number'>176</span>
-<span class='line-number'>177</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>
-</span><span class='line'>#import "CoreTextView.h"
-</span><span class='line'>#import &lt;CoreText/CoreText.h&gt;
-</span><span class='line'>
-</span><span class='line'>@implementation CoreTextView{
-</span><span class='line'>    CTFrameRef ctFrame;
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>- (id)initWithFrame:(CGRect)frame
-</span><span class='line'>{
-</span><span class='line'>    self = [super initWithFrame:frame];
-</span><span class='line'>    if (self) {
-</span><span class='line'>        // Initialization code
-</span><span class='line'>    }
-</span><span class='line'>    return self;
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>- (void)drawRect:(CGRect)rect
-</span><span class='line'>{
-</span><span class='line'>    //得到当前用于绘制画布的上下文，用于后续将内容绘制在画布上
-</span><span class='line'>    CGContextRef context = UIGraphicsGetCurrentContext();
-</span><span class='line'>    
-</span><span class='line'>    //翻转当前的坐标系, 因为对于底层绘制引擎来说，屏幕左下角为（0，0)
-</span><span class='line'>    CGContextSetTextMatrix(context, CGAffineTransformIdentity);
-</span><span class='line'>    CGContextTranslateCTM(context, 0, self.bounds.size.height);
-</span><span class='line'>    CGContextScaleCTM(context, 1.0, -1.0);
-</span><span class='line'>    
-</span><span class='line'>    //要绘制的文字
-</span><span class='line'>    NSMutableAttributedString* attributedString = [[NSMutableAttributedString alloc] initWithString:@"少年不识愁滋味，爱上层楼。爱上层楼。为赋新词强说愁。而今识尽愁滋味，欲说还休。欲说还休。却道天凉好个秋。"];
-</span><span class='line'>    //为所有文本设置字体
-</span><span class='line'>    [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:10] range:NSMakeRange(0, [attributedString length])];
-</span><span class='line'>    //设置某些字体更大
-</span><span class='line'>    [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:30] range:NSMakeRange(10, 10)];
-</span><span class='line'>    //index 从0开始的2个字符 字体颜色 设置为蓝色
-</span><span class='line'>    [attributedString addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(0, 2)];
-</span><span class='line'>    //index 从2开始的3个字符 字体颜色 设置为红色
-</span><span class='line'>    [attributedString addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(2, 3)];
-</span><span class='line'>    //设置行间距 50
-</span><span class='line'>    CGFloat lineSpacing = 50;
-</span><span class='line'>    CTParagraphStyleSetting theSettings[3] = {
-</span><span class='line'>        {kCTParagraphStyleSpecifierLineSpacingAdjustment, sizeof(CGFloat), &lineSpacing},
-</span><span class='line'>        {kCTParagraphStyleSpecifierMaximumLineSpacing, sizeof(CGFloat), &lineSpacing},
-</span><span class='line'>        {kCTParagraphStyleSpecifierMinimumLineSpacing, sizeof(CGFloat), &lineSpacing}
-</span><span class='line'>    };
-</span><span class='line'>    CTParagraphStyleRef theParagraphRef = CTParagraphStyleCreate(theSettings, 3);
-</span><span class='line'>    [attributedString addAttribute:(id)kCTParagraphStyleAttributeName value:(__bridge id)theParagraphRef range:NSMakeRange(0, attributedString.length)];
-</span><span class='line'>    CFRelease(theParagraphRef);
-</span><span class='line'>    
-</span><span class='line'>    //要插入的图片
-</span><span class='line'>    NSString *imageName = @"testImage.png";
-</span><span class='line'>    
-</span><span class='line'>    //为图片设置CTRunDelegate 计算留给图片的空间大小
-</span><span class='line'>    CTRunDelegateCallbacks imageCallbacks;
-</span><span class='line'>    imageCallbacks.version = kCTRunDelegateVersion1;
-</span><span class='line'>    imageCallbacks.getAscent = GetAscentCallback;
-</span><span class='line'>    imageCallbacks.getDescent = GetDescentCallback;
-</span><span class='line'>    imageCallbacks.getWidth = GetWidthCallback;
-</span><span class='line'>    
-</span><span class='line'>    //设置图片位置，大小
-</span><span class='line'>    CTRunDelegateRef runDelegate = CTRunDelegateCreate(&imageCallbacks, imageName);
-</span><span class='line'>    NSMutableAttributedString *imageAttributedString = [[NSMutableAttributedString alloc] initWithString:@" "];//空格用于给图片留位置
-</span><span class='line'>    [imageAttributedString addAttribute:(NSString *)kCTRunDelegateAttributeName value:(id)runDelegate range:NSMakeRange(0, 1)];//用代理设置图片
-</span><span class='line'>    CFRelease(runDelegate);
-</span><span class='line'>    
-</span><span class='line'>    //把图片插入到字符串中
-</span><span class='line'>    [imageAttributedString addAttribute:@"imageAttribute" value:imageName range:NSMakeRange(0, 1)];
-</span><span class='line'>    [attributedString insertAttributedString:imageAttributedString atIndex:1];//图片插入位置，不能越界
-</span><span class='line'>    [attributedString insertAttributedString:imageAttributedString atIndex:3];//图片插入位置，不能越界
-</span><span class='line'>    [attributedString insertAttributedString:imageAttributedString atIndex:5];//图片插入位置，不能越界
-</span><span class='line'>    
-</span><span class='line'>    //根据attributedString生成CTFramesetterRef
-</span><span class='line'>    CTFramesetterRef ctFramesetter = CTFramesetterCreateWithAttributedString((CFMutableAttributedStringRef)attributedString);
-</span><span class='line'>    CGMutablePathRef path = CGPathCreateMutable();
-</span><span class='line'>    CGRect bounds = CGRectMake(0.0, 0.0, self.bounds.size.width, self.bounds.size.height);
-</span><span class='line'>    CGPathAddRect(path, NULL, bounds);
-</span><span class='line'>    
-</span><span class='line'>    //绘制文字
-</span><span class='line'>    ctFrame = CTFramesetterCreateFrame(ctFramesetter,CFRangeMake(0, [attributedString length ]), path, NULL);
-</span><span class='line'>    CTFrameDraw(ctFrame, context);
-</span><span class='line'>    
-</span><span class='line'>    //下面都是为了绘制图片
-</span><span class='line'>    CFArrayRef lines = CTFrameGetLines(ctFrame);
-</span><span class='line'>    CGPoint lineOrigins[CFArrayGetCount(lines)];
-</span><span class='line'>    CTFrameGetLineOrigins(ctFrame, CFRangeMake(0, 0), lineOrigins);
-</span><span class='line'>    
-</span><span class='line'>    //遍历每个CTLine
-</span><span class='line'>    for (int i = 0; i &lt; CFArrayGetCount(lines); i++) {
-</span><span class='line'>        CTLineRef line = CFArrayGetValueAtIndex(lines, i);
-</span><span class='line'>        CGFloat lineAscent;
-</span><span class='line'>        CGFloat lineDescent;
-</span><span class='line'>        CGFloat lineLeading;
-</span><span class='line'>        CTLineGetTypographicBounds(line, &lineAscent, &lineDescent, &lineLeading);
-</span><span class='line'>        
-</span><span class='line'>        CFArrayRef runs = CTLineGetGlyphRuns(line);
-</span><span class='line'>        for (int j = 0; j &lt; CFArrayGetCount(runs); j++) {
-</span><span class='line'>            CGFloat runAscent;
-</span><span class='line'>            CGFloat runDescent;
-</span><span class='line'>            CGPoint lineOrigin = lineOrigins[i];
-</span><span class='line'>            CTRunRef run = CFArrayGetValueAtIndex(runs, j);
-</span><span class='line'>            NSDictionary* attributes = (NSDictionary*)CTRunGetAttributes(run);
-</span><span class='line'>            
-</span><span class='line'>            CGRect runRect;
-</span><span class='line'>            runRect.size.width = CTRunGetTypographicBounds(run, CFRangeMake(0,0), &runAscent, &runDescent, NULL);
-</span><span class='line'>            runRect=CGRectMake(lineOrigin.x + CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location, NULL), lineOrigin.y - runDescent, runRect.size.width, runAscent + runDescent);
-</span><span class='line'>            
-</span><span class='line'>            NSString *isImage = [attributes objectForKey:@"imageAttribute"];
-</span><span class='line'>            //图片渲染逻辑
-</span><span class='line'>            if (isImage) {
-</span><span class='line'>                UIImage *image = [UIImage imageNamed:imageName];
-</span><span class='line'>                if (image) {
-</span><span class='line'>                    CGRect imageDrawRect;
-</span><span class='line'>                    imageDrawRect.size = image.size;
-</span><span class='line'>                    imageDrawRect.origin.x = runRect.origin.x + lineOrigin.x;
-</span><span class='line'>                    imageDrawRect.origin.y = lineOrigin.y;
-</span><span class='line'>                    CGContextDrawImage(context, imageDrawRect, image.CGImage);
-</span><span class='line'>                }
-</span><span class='line'>            }
-</span><span class='line'>        }
-</span><span class='line'>    }
-</span><span class='line'>    //释放资源
-</span><span class='line'>    //    CFRelease(ctFrame); //因为点击要用ctFrame，所以放dealloc里释放
-</span><span class='line'>    CFRelease(path);
-</span><span class='line'>    CFRelease(ctFramesetter);
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>//接受触摸事件
-</span><span class='line'>-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-</span><span class='line'>    UITouch *touch = [touches anyObject];
-</span><span class='line'>    CGPoint location = [touch locationInView:self];
-</span><span class='line'>    
-</span><span class='line'>    //获取每一行
-</span><span class='line'>    CFArrayRef lines = CTFrameGetLines(ctFrame);
-</span><span class='line'>    CGPoint origins[CFArrayGetCount(lines)];
-</span><span class='line'>    //获取每行的原点坐标
-</span><span class='line'>    CTFrameGetLineOrigins(ctFrame, CFRangeMake(0, 0), origins);
-</span><span class='line'>    CTLineRef line = NULL;
-</span><span class='line'>    CGPoint lineOrigin = CGPointZero;
-</span><span class='line'>    for (int i= 0; i &lt; CFArrayGetCount(lines); i++){
-</span><span class='line'>        CGPoint origin = origins[i];
-</span><span class='line'>        CGPathRef path = CTFrameGetPath(ctFrame);
-</span><span class='line'>        //获取整个CTFrame的大小
-</span><span class='line'>        CGRect rect = CGPathGetBoundingBox(path);
-</span><span class='line'>        //坐标转换，把每行的原点坐标转换为uiview的坐标体系
-</span><span class='line'>        CGFloat y = rect.origin.y + rect.size.height - origin.y;
-</span><span class='line'>        //判断点击的位置处于那一行范围内
-</span><span class='line'>        if ((location.y &lt;= y) && (location.x &gt;= origin.x)){
-</span><span class='line'>            line = CFArrayGetValueAtIndex(lines, i);
-</span><span class='line'>            lineOrigin = origin;
-</span><span class='line'>            break;
-</span><span class='line'>        }
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>    location.x -= lineOrigin.x;
-</span><span class='line'>    //获取点击位置所处的字符位置，就是相当于点击了第几个字符
-</span><span class='line'>    CFIndex index = CTLineGetStringIndexForPosition(line, location)-1;//index从0开始
-</span><span class='line'>    UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"提示" message:[NSString stringWithFormat:@"点击了第 %d 个字符！！",(int)index] delegate:self cancelButtonTitle:@"ok" otherButtonTitles:nil, nil];
-</span><span class='line'>    [alert show];
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>-(void)dealloc{
-</span><span class='line'>    [super dealloc];
-</span><span class='line'>    CFRelease(ctFrame);
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>#pragma mark CTRunDelegate Callbacks
-</span><span class='line'>CGFloat GetAscentCallback( void *refCon ){
-</span><span class='line'>    NSString *imageName = (NSString *)refCon;
-</span><span class='line'>    return [UIImage imageNamed:imageName].size.height;
-</span><span class='line'>}
-</span><span class='line'>CGFloat GetDescentCallback(void *refCon){
-</span><span class='line'>    return 0;
-</span><span class='line'>}
-</span><span class='line'>CGFloat GetWidthCallback(void *refCon){
-</span><span class='line'>    NSString *imageName = (NSString *)refCon;
-</span><span class='line'>    return [UIImage imageNamed:imageName].size.width;
-</span><span class='line'>}
-</span><span class='line'>@end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>运行结果
-<img src="http://andyfightting.github.io/myimg/ios/coreResult.png" alt="image" /></p>
-
-<h3>*TextKit</h3>
-
-<p>由于用CoreText是用绘图方式实现图文混排，复杂难用。所以在iOS7新推出了新的文字排版技术 &ndash; TextKit。使用TextKit可以很方便的实现富文本、表情混排和图文混排等效果。它是UIKit framework中定义的一组用于提供高性能的排版、布局和展示文字的类和协议，比如展示特别的字间距、行间距、断行规则。从上面图2可知，它是基于CoreText的，且UILabel,UITextField,UITextView又都是基于TextKit的。</p>
-
-<pre><code>UILabel* label = [[UILabel alloc]initWithFrame:self.view.bounds];
-label.text = @"少年不识愁滋味，爱上层楼。爱上层楼。为赋新词强说愁。而今识尽愁滋味，欲说还休。欲说还休。却道天凉好个秋。";
-label.numberOfLines = 0;
-label.userInteractionEnabled = YES;
-[self.view addSubview:label];
-
-NSMutableAttributedString * attributeString = [label.attributedText mutableCopy];
-[attributeString addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(0, 10)];//设置颜色
-[attributeString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:25] range:NSMakeRange(0, 5)];//设置字体
-[attributeString addAttribute:NSUnderlineStyleAttributeName value:@(NSUnderlineStyleSingle) range:NSMakeRange(0, 15)];//设置下划线
-[attributeString addAttribute:NSStrokeWidthAttributeName value:@(2) range:NSMakeRange(0, 3)];//设置空心字
-
-//插入图片1
-UIImage * image1 = [UIImage imageNamed:@"fengye.png"];
-NSTextAttachment * attachment1 = [[NSTextAttachment alloc] init];
-attachment1.bounds = CGRectMake(0, 0, 60, 60);
-attachment1.image = image1;
-NSAttributedString * attachStr1 = [NSAttributedString attributedStringWithAttachment:attachment1];
-[attributeString insertAttributedString:attachStr1 atIndex:1];
-
-//插入图片2
-UIImage * image2 = [UIImage imageNamed:@"fengye.png"];
-NSTextAttachment * attachment2 = [[NSTextAttachment alloc] init];
-attachment2.bounds = CGRectMake(0, 0, 30, 30);
-attachment2.image = image2;
-NSAttributedString * attachStr2 = [NSAttributedString attributedStringWithAttachment:attachment2];
-[attributeString insertAttributedString:attachStr2 atIndex:5];
-
-label.attributedText = [attributeString copy];
-
-//    TextView 通过如下可以设置环绕图片的文字
-//    UIBezierPath * path = [UIBezierPath bezierPathWithRect:rect];
-//    textView.textContainer.exclusionPaths = @[path];
-</code></pre>
-
-<p><img src="http://andyfightting.github.io/myimg/ios/textkit1.png" alt="image" /></p>
-
-<pre><code> NSAttributedString属性key的说明
- NSFontAttributeName                设置字体属性，默认值：字体：Helvetica(Neue) 字号：12
- NSForegroundColorAttributeName     设置字体颜色，取值为 UIColor对象，默认值为黑色
- NSBackgroundColorAttributeName     设置字体所在区域背景颜色，取值为 UIColor对象，默认值为nil, 透明色
- NSLigatureAttributeName            设置连体属性，取值为NSNumber 对象(整数)，0 表示没有连体字符，1 表示使用默认的连体字符
- NSKernAttributeName                设定字符间距，取值为 NSNumber 对象（整数），正值间距加宽，负值间距变窄
- NSStrikethroughStyleAttributeName  设置删除线，取值为 NSNumber 对象（整数）
- NSStrikethroughColorAttributeName  设置删除线颜色，取值为 UIColor 对象，默认值为黑色
- NSUnderlineStyleAttributeName      设置下划线，取值为 NSNumber 对象（整数），枚举常量 NSUnderlineStyle中的值，与删除线类似
- NSUnderlineColorAttributeName      设置下划线颜色，取值为 UIColor 对象，默认值为黑色
- NSStrokeWidthAttributeName         设置笔画宽度，取值为 NSNumber 对象（整数），负值填充效果，正值中空效果
- NSStrokeColorAttributeName         填充部分颜色，不是字体颜色，取值为 UIColor 对象
- NSShadowAttributeName              设置阴影属性，取值为 NSShadow 对象
- NSTextEffectAttributeName          设置文本特殊效果，取值为 NSString 对象，目前只有图版印刷效果可用：
- NSBaselineOffsetAttributeName      设置基线偏移值，取值为 NSNumber （float）,正值上偏，负值下偏
- NSObliquenessAttributeName         设置字形倾斜度，取值为 NSNumber （float）,正值右倾，负值左倾
- NSExpansionAttributeName           设置文本横向拉伸属性，取值为 NSNumber （float）,正值横向拉伸文本，负值横向压缩文本
- NSWritingDirectionAttributeName    设置文字书写方向，从左向右书写或者从右向左书写
- NSVerticalGlyphFormAttributeName   设置文字排版方向，取值为 NSNumber 对象(整数)，0 表示横排文本，1 表示竖排文本
- NSLinkAttributeName                设置链接属性，点击后调用浏览器打开指定URL地址
- NSAttachmentAttributeName          设置文本附件,取值为NSTextAttachment对象,常用于文字图片混排
- NSParagraphStyleAttributeName      设置文本段落排版格式，取值为 NSParagraphStyle 对象
 </code></pre>
 ]]></content>
   </entry>

@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="React Native Android真机运行 Nov 23rd, 2016 6:46 pm iOS和Android模拟器运行都很顺利，但Android真机运行就不那么顺利了&hellip; 设备：小米 red note MUI 8.0 1.运行不起来 按照官网的步骤一步一步下来运行报： &hellip;">
+  <meta name="description" content="React 基础知识 Nov 24th, 2016 2:31 pm React 的核心思想是：封装组件! 封装组件 !封装组件! 重要的事说三遍。React 应用都是构建在组件之上，各个组件维护自己的状态和 UI，当状态变更，自动重新渲染整个组件。 Declarative React &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,196 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/24/react-javascript/">React 基础知识</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-24T14:31:57+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:31 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>React 的核心思想是：封装组件! 封装组件 !封装组件! 重要的事说三遍。React 应用都是构建在组件之上，各个组件维护自己的状态和 UI，当状态变更，自动重新渲染整个组件。</h4>
+
+<h4>Declarative</h4>
+
+<p><a href="http://reactjs.cn/react/index.html">React</a> 可以很好的创建交互式组件，设计不同状态下的组件，并且React可以根据组件的不同参数高效的刷新渲染。这样的组件可以让你的代码更加的可预测并且更方便调试。</p>
+
+<h4>Component-Based</h4>
+
+<p>基于组件，封装一个组件，让它们管理自己的状态，然后用它们去组成更加复杂的UI。由于组件的逻辑是写在JavaScript里的而不是模板里，这样你可以很轻松的让它穿梭于复杂的数据之间，并且在DOM外保持自己的状态。</p>
+
+<h4>Learn Once, Write Anywhere</h4>
+
+<p>我们不假定你现在的技术栈是怎样的，所以你可以不用重写已存在的代码来用React开放新的功能。React也可以在服务器端渲染，也可以用React Native创建强大的移动应用。</p>
+
+<h4>A Simple Component</h4>
+
+<p>React 组件调用 <code>render()</code> 方法来输入参数然后返回要显示的样子。这个例子用一个类似XML语言的我们称之为JSX，通过<code>this.props</code>输入数据传到组件内部可以被<code>render()</code>方法获取。使用React的话，JSX是可选的，不是必须要使用的。试着点击<code>Complied JS</code>去看看通过JSX编译器产生的原生的JavaScript 代码。</p>
+
+<h4>A Stateful Component</h4>
+
+<p>除了通过<code>this.props</code>来传入参数，组件可以通过<code>this.state</code>来维护自己内部状态的数据。当组件的状态数据改变时，渲染器就会重新调用<code>render()</code>方法来刷新。</p>
+
+<h4>An Application</h4>
+
+<p>使用<code>props</code>和<code>state</code>我们可以收集一个小型的代办事项申请。这个例子用<code>state</code>来跟踪当前列表和用户输入的数据。虽然事件处理程序似乎是呈现内联,他们会通过事件代理被收集和使用。</p>
+
+<h4>A Component Using External Plugins</h4>
+
+<p>React 是灵活的，并且提供了一个钩子来和库或框架进行链接。这个例子使用<code>remarkable</code>,一个外部的 Markdown 库，来实时转化文本内容。</p>
+
+<p>哎呀~ 自己翻译果然别扭&hellip;😞  React 是什么呢？React 是Facebook 封装的一组JS代码库：</p>
+
+<p><img src="/myimg/java/react.png" alt="" /></p>
+
+<p>按它规则可封装一个一个模块组件，这个模块组件有自己的状态，自己的逻辑等，它是一个独立的东西，然后把这样的组件一个一个组合起来。我理解的这不就是iOS或者Android自定义View 模块化吗？按照React 的规则可以混合着写JavaScript和HTML,这样的一个组件就是一个独立的模块化的View。</p>
+
+<p>React 还封装了一个自己的虚拟的DOM，通过这个Virtual DOM去更新真实的DOM，由这个Virtual DOM管理真实DOM的更新。因为如果大面积的操作 DOM，性能会是一个很大的问题，所以 React 实现了一个虚拟 DOM，组件 DOM 结构就是映射到这个虚拟 DOM 上，React 在这个虚拟 DOM 上实现了一个 <a href="http://www.ruanyifeng.com/blog/2012/08/how_to_read_diff.html">diff</a> 算法，当要更新组件的时候，会通过 diff 寻找到要变更的 DOM 节点，再把这个修改更新到浏览器实际的 DOM 节点上，所以实际上不是真的渲染整个 DOM 树。这个虚拟 DOM 是一个纯粹的 JS 数据结构，所以性能会比原生 DOM 快很多。</p>
+
+<h4>Hello World</h4>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;script src="../build/react.js"&gt;&lt;/script&gt;
+    &lt;script src="../build/react-dom.js"&gt;&lt;/script&gt;
+    &lt;script src="../build/browser.min.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="example"&gt;&lt;/div&gt;
+
+    &lt;script type="text/babel"&gt;
+    var MyComponent = React.createClass({
+      render: function() {
+        return &lt;div&gt;Hello {this.props.name}&lt;/div&gt;;
+      }
+    });
+
+    ReactDOM.render(&lt;MyComponent name="World !" /&gt;,
+                    document.getElementById('example') );
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>上面的代码中用React的语法自定义了一个组件叫<code>MyComponent</code>,这个组件返回一个块区间，里面显示 Hello + 这个组件的<code>name</code>属性值。注意script 的type 要声明为<code>text/babel</code>。这样就可以在其他地方使用这个自定义的组件了。可以把 <code>props</code> 看作是组件的配置属性，在组件内部是不变的，只是在调用这个组件的时候传入不同的属性值来定制显示这个组件。当组件状态 <code>state</code> 有更改的时候，React 会自动调用组件的 <code>render()</code> 方法重新渲染整个组件的 UI。上面的代码把 HTML 直接嵌入了 JS 代码里面了，这就是 React 提出的一种叫 JSX 的语法。把原来网页设计的代码分离，现在又融合了！</p>
+
+<p><img src="/myimg/java/react_hello.png" alt="" /></p>
+
+<p>Hello World 运行起来了！嗯~ 我已经成功了一半！😆</p>
+
+<h4>组件组合</h4>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;script src="../build/react.js"&gt;&lt;/script&gt;
+    &lt;script src="../build/react-dom.js"&gt;&lt;/script&gt;
+    &lt;script src="../build/browser.min.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="example"&gt;&lt;/div&gt;
+
+    &lt;script type="text/babel"&gt;
+
+    var Avatar = React.createClass({
+        render: function() {
+            return (
+                &lt;div&gt;
+                    &lt;ProfilePic username={this.props.username} /&gt;
+                    &lt;ProfileName username={this.props.username} /&gt;
+                &lt;/div&gt;
+            );
+        }
+       });
+
+    var ProfilePic = React.createClass({
+        render: function() {
+            return (
+                &lt;img src={'https://gss0.bdstatic.com/70cFsj3f_gcX8t7mm9GUKT-xh_/avatar/100/r6s1g6.gif'} /&gt;
+            );
+        }
+    });
+
+    var ProfileName = React.createClass({
+        render: function() {
+            return (
+              &lt;div&gt;
+                &lt;a href={'http://guimingsu.com'}&gt;
+                    {this.props.username}
+                &lt;/a&gt;
+              &lt;/div&gt;
+            );
+        }
+    });
+
+    ReactDOM.render(
+        &lt;Avatar username="hello world " /&gt;,
+        document.getElementById('example')
+      );
+
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>这里显示了一个Avatar 组件，这个Avatar 组件是由两个更小的组件ProfilePic和ProfileName组合而成的。
+<img src="/myimg/java/react_hello0.png" alt="" /></p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/11/24/react-javascript/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/24/atom-edit/">Atom 使用</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-24T14:31:17+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:31 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/11/24/atom-edit/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -1506,959 +1696,6 @@ public void backImageTap(View v) {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/09/08/okhttp-retrofit/">OkHttp and Retrofit</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-09-08T14:57:19+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:57 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="http://square.github.io/okhttp/">OkHttp</a>和<a href="http://square.github.io/retrofit/">Retrofit</a>都是<a href="http://square.github.io/">Square</a>公司开源出来的网络请求框架。Retrofit是对OkHttp的封装，使其可以用注解的方式调用。</p>
-
-<h4>OkHttp</h4>
-
-<pre><code>//-----okhttp 网络请求 工具类-----
-
-//异步请求结果放在主线程回调。
-private static final Handler mainHandler = new Handler(Looper.getMainLooper()); 
-
-private static final OkHttpClient client = new OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .writeTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(10, TimeUnit.SECONDS)
-        .build();
-
-public static void getRequest(String url, final OkHttpListener listener) {
-    Request request = new Request.Builder()
-            .header("token", getUserToken())
-            .header("client", "Android")
-            .header("versionCode", getVersionCode())
-            .header("versionName", getVersionName())
-            .url(url)
-            .build();
-    beginRequest(request, listener);
-}
-
-//这样就不会有中文乱码问题
-public static void postRequest(String url, final Map&lt;String, String&gt; params, final OkHttpListener listener) {
-    StringBuilder stringBuilder = new StringBuilder("");
-    if (params != null) {
-        Set&lt;String&gt; keys = params.keySet();
-        for (String key : keys) {
-            String value = params.get(key);
-            stringBuilder.append(key + "=" + value + "&amp;");
-        }
-    }
-
-    MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded;charset=utf-8");
-    RequestBody body = RequestBody.create(mediaType, stringBuilder.toString());
-
-    Request request = new Request.Builder()
-            .header("token", getUserToken())
-            .header("client", "Android")
-            .header("versionCode", getVersionCode())
-            .header("versionName", getVersionName())
-            .url(url)
-            .post(body)
-            .build();
-
-    beginRequest(request, listener);
-}
-
-//可添加图片文件
-public static void postMutibleRequest(String url, final Map&lt;String, Object&gt; params, final OkHttpListener listener) {
-    MultipartBody.Builder multipleBuilder = new MultipartBody.Builder();
-    multipleBuilder.setType(MultipartBody.FORM);
-
-    if (params != null) {
-        Set&lt;String&gt; keys = params.keySet();
-        for (String key : keys) {
-            Object obj = params.get(key);
-
-            if (obj instanceof File) {
-                File tmpFile = (File) obj;
-                multipleBuilder.addFormDataPart(key, tmpFile.getName(), MultipartBody.create(MediaType.parse("image/jpg"), tmpFile));
-            } else {
-                multipleBuilder.addPart(Headers.of("Content-Disposition", "form-data; name=\"" + key + "\""), RequestBody.create(null, (String) obj));
-            }
-        }
-    }
-
-    RequestBody multipleBody = multipleBuilder.build();
-    Request request = new Request.Builder()
-            .header("token", getUserToken())
-            .header("client", "Android")
-            .header("versionCode", getVersionCode())
-            .header("versionName", getVersionName())
-            .url(url)
-            .post(multipleBody)
-            .build();
-
-    beginRequest(request, listener);
-}
-
-//保存网络图片到相册,返回本地存储路径
-public static void downloadImageToSysPhoto(String imageUrl, final OkHttpListener listener) {
-    Request request = new Request.Builder().url(imageUrl).build();
-    Call call = client.newCall(request);
-    call.enqueue(new Callback() {
-        @Override
-        public void onResponse(Call call, Response response) throws IOException {
-            try {
-                //系统相册路径
-                final String localPath = "/storage/emulated/0/DCIM/Camera/" + CommonUtil.getUniqueString(10) + ".jpg";
-
-                InputStream is = response.body().byteStream();
-                FileOutputStream fos = new FileOutputStream(localPath);
-                byte[] buffer = new byte[1024];
-
-                int len;
-                while ((len = is.read(buffer)) != -1) {
-                    fos.write(buffer, 0, len);
-                }
-                is.close();
-                fos.close();
-
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (listener != null) {
-                            listener.success(localPath);
-                        }
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (listener != null) {
-                            listener.fail(0, "");
-                        }
-                    }
-                });
-            }
-        }
-
-        @Override
-        public void onFailure(Call call, IOException e) {
-            mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (listener != null) {
-                        listener.fail(0, "");
-                    }
-                }
-            });
-        }
-    });
-}
-
-private static void beginRequest(Request request, final OkHttpListener listener) {
-    Call call = client.newCall(request);
-
-    call.enqueue(new Callback() {//enqueue是异步请求
-        @Override
-        public void onResponse(Call call, Response response) throws IOException {
-            final String responseString = response.body().string();
-            final int code = response.code();
-
-            if (response.isSuccessful()) {
-                CommonUtil.logJson(responseString);
-
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (listener != null) {
-                            listener.success(responseString);
-                        }
-                    }
-                });
-            } else {
-                //请求失败：    400  ---------   {"code":100004,"msg":"手机号已注册"}
-                CommonUtil.logString("请求失败：" + code + "---------" + responseString);
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (listener != null) {
-                            listener.fail(code, responseString);
-                        }
-                    }
-                });
-            }
-        }
-
-        @Override
-        public void onFailure(Call call, IOException e) {
-            e.printStackTrace();
-            CommonUtil.logString("请求错误");
-            mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (listener != null) {
-                        listener.fail(0, "请求失败");
-                    }
-                }
-            });
-        }
-    });
-}
-
-public static String getFailedMsg(String response) {
-    try {
-        JSONObject jsonObject = new JSONObject(response);
-        return jsonObject.getString("msg");
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    return "请求失败";
-}
-
-public static String getUserToken() {
-    UserModel userModel = UserModel.getUser();
-    if (userModel != null) {
-        return userModel.getToken();
-    }
-    return "";
-}
-
-public static String getVersionCode() {
-    try {
-        PackageInfo pi = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
-        return pi.versionCode + "";
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    return "";
-}
-
-public static String getVersionName() {
-    try {
-        PackageInfo pi = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
-        return pi.versionName;
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    return "";
-}
-
-//下载apk安装包，HUD是自定义的等待进度条
-private static int apkProgress;
-public static void downloadAPK(final Context context, String apkUrl) {
-    HUD.show(context, "下载中...");
-    HUD.setCancelable(false);
-
-    Request request = new Request.Builder().url(apkUrl).build();
-    Call call = client.newCall(request);
-    call.enqueue(new Callback() {
-        @Override
-        public void onResponse(Call call, Response response) throws IOException {
-            try {
-                FileUtil.createDir();//创建  ~/paiqi/ 文件夹
-                final String apkLocalPath = FileUtil.DIR_PATH + "paiqi.apk";
-
-                InputStream is = response.body().byteStream();
-                FileOutputStream fos = new FileOutputStream(apkLocalPath);
-                int readNum;
-                byte[] buffer = new byte[1024];
-
-                int progressCount = 0;
-                long totalLength = response.body().contentLength();
-
-                while ((readNum = is.read(buffer)) != -1) {
-                    progressCount += readNum;
-                    apkProgress = (int) (((float) progressCount / totalLength) * 100);
-
-                    mainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            HUD.setMessage("下载中 " + apkProgress + "%");
-                        }
-                    });
-
-                    fos.write(buffer, 0, readNum);
-                }
-                is.close();
-                fos.close();
-
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        HUD.dismiss();
-                        installAPK(context, apkLocalPath);
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        HUD.dismiss();
-                        CommonUtil.showToast("下载失败");
-                    }
-                });
-            }
-        }
-
-        @Override
-        public void onFailure(Call call, IOException e) {
-            mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    HUD.dismiss();
-                    CommonUtil.showToast("下载失败");
-                }
-            });
-        }
-    });
-}
-
-//安装apk
-private static void installAPK(Context context, String apkPath) {
-    File apkFile = new File(apkPath);
-    if (!apkFile.exists()) {
-        CommonUtil.showToast("安装失败");
-        return;
-    }
-    Intent intent = new Intent(Intent.ACTION_VIEW);
-    intent.setDataAndType(Uri.parse("file://" + apkFile.toString()), "application/vnd.android.package-archive");
-    context.startActivity(intent);
-} 
-
-//请求回调接口定义
-public interface OkHttpListener {
-   void success(String response);
-   void fail(int code,String response);
-}
-</code></pre>
-
-<p>要注意的是enqueue方法是异步请求，所以要把结果回调放在主线程中进行。</p>
-
-<pre><code> mainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (listener != null) {
-                                listener.success(responseString);
-                            }
-                        }
-                    });
-</code></pre>
-
-<p>之前看过一个同事的网络库封装，把网络回调接口放在BaseActivity里，然后在子Activity里重写回调方法！这样导致的结果就是，Fragment里的请求都要通过Activity来重写方法，然后再转发给Fragment&hellip;简直想骂街啊有木有！下面这样调用是不是很简单呢~!</p>
-
-<pre><code>//get异步请求,回调都已放在主线程中
- OkHttpHelper.getRequest(ulr, new OkHttpListener() {
-        @Override
-        public void success(String response) {
-
-        }
-
-        @Override
-        public void fail() {
-
-        }
-    });
-
-   //post异步请求，回调都已放在主线程中，也可以用于提交File
-    Map&lt;String, Object&gt; paramter = new HashMap&lt;&gt;();
-    paramter.put("name", "阿贵");
-    paramter.put("file", new File("filePath"));//提交图片文件
-
-    OkHttpHelper.postRequest(url, paramter, new OkHttpListener() {
-        @Override
-        public void success(String response) {
-
-        }
-
-        @Override
-        public void fail() {
-
-        }
-    });
-</code></pre>
-
-<p>还有很多人喜欢把网络请求和结果解析写在一起，比如通过请求结果直接得到对应的Bean。这样导致的结果就是网球请求结果类型不统一，返回各种Bean。个人不太喜欢这样，可以对结果解析进行简单封装一下，这样网络返回的结果也会统一，数据解析也就一行代码。</p>
-
-<pre><code>//使用: getBean(json, User.class);
-public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
-    T bean = null;
-    try {
-        Gson gson = new Gson();
-        bean = gson.fromJson(json, clazz);
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    return bean;
-}
-
-   //使用：getBeanList(json, User[].class);
-    public static &lt;T&gt; List&lt;T&gt; getBeanList(String json, Class&lt;T[]&gt; type) {
-        try{
-            T[] list = new Gson().fromJson(json, type);
-            return Arrays.asList(list);
-        }catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
-    }
-</code></pre>
-
-<h4>Retrofit</h4>
-
-<p><a href="http://square.github.io/retrofit/">Retrofit官网</a>上的例子中返回结果是Bean，但又没说添加了GsonConverterFactory，所以会报 Could not locate ResponseBody converter for XXBean 错误！所以要引入GsonConverterFactory转化库<code>compile 'com.squareup.retrofit2:converter-gson:2.0.2'</code>, 然后在Retrofit初始化的时候添加该库！官网后面说了 By default, Retrofit can only deserialize HTTP bodies into OkHttp&rsquo;s ResponseBody type and it can only accept its RequestBody type for @Body. 默认只会返回ResponseBody！并且只有ResponseBody才可以使用@Body注解！我个人还是不喜欢直接在这里得到Bean, 我还是喜欢先通过得到response.body().string()，然后再转化成Bean，各司其职。注意是<code>response.body().string()</code>，不是<code>response.body().toString()</code>!!</p>
-
-<pre><code>    Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.github.com/")
-                .addConverterFactory(GsonConverterFactory.create()) //添加Bean转化库
-                .build();
-
-    ServiceInterface service = retrofit.create(ServiceInterface.class);
-
-    Call&lt;TestBean&gt; requestCall = service.getUserInfo();
-
-    requestCall.enqueue(new Callback&lt;TestBean&gt;() {
-        @Override
-        public void onResponse(Call&lt;TestBean&gt; call, Response&lt;TestBean&gt; response) {
-
-                TestBean b = response.body();
-        }
-
-        @Override
-        public void onFailure(Call&lt;TestBean&gt; call, Throwable t) {
-
-        }
-    });
-
- public interface ServiceInterface {
-    @GET("users/andyfightting")
-    Call&lt;TestBean&gt; getUserInfo();
-
-    //这里继续添加其他接口
-
-}
-</code></pre>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/09/08/okhttp-retrofit/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/09/07/asynctask/">Android中的AsyncTask</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-09-07T10:15:12+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:15 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Android和iOS一样，对UI的操作只能放在主线程中进行，即UI线程。如果在UI线程中执行比较耗时的方法，就会造成界面卡顿假死无反应，所以应该把耗时操作放在<code>非UI线程</code>中处理，处理完成后再在<code>UI线程</code>中更新界面。</p>
-
-<p>在没有AsyncTask类的时候，是通过在子线程处理，然后sendMessage(Message msg)给主线程中创建的Handler,然后在主线程中实现handleMessage(Message msg)处理相应信息。而这些工作AsyncTask帮我们做了，AsyncTask就是对Thread和Handler的封装。</p>
-
-<h4>AsyncTask使用</h4>
-
-<p>AsyncTask是一个抽象类，所以必须创建一个子类去继承它。在继承时我们可以为AsyncTask类指定三个参数类型,这三个类型会影响重写方法对应的参数类型。</p>
-
-<ol>
-<li>Params: 在execute()启动任务时需要传入的参数</li>
-<li>Progress: 后台任务执行过程中，需要实时反馈出来的信息，比如执行进度什么的</li>
-<li>Result: 后台任务执行完毕后，如果需要对结果进行返回，则返回该类型</li>
-</ol>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>//on开通的方法都是在UI线程中执行的
-</span><span class='line'>class MyAsyncTask extends AsyncTask&lt;Void,Integer,Boolean&gt;{
-</span><span class='line'>    @Override
-</span><span class='line'>    protected void onPreExecute() {//在执行实际的后台的doInBackground方法前
-</span><span class='line'>        super.onPreExecute();
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>    @Override
-</span><span class='line'>    protected Boolean doInBackground(Void... params) {//在onPreExecute 方法执行后马上执行，该方法运行在后台线程中
-</span><span class='line'>        for (int i = 0; i &lt;= 100; i++) {
-</span><span class='line'>            publishProgress(i);//调用onProgressUpdate
-</span><span class='line'>            try {
-</span><span class='line'>                Thread.sleep(1000);
-</span><span class='line'>            } catch (InterruptedException e) {
-</span><span class='line'>                e.printStackTrace();
-</span><span class='line'>            }
-</span><span class='line'>        }
-</span><span class='line'>        return true;//可以判断是否顺利执行完了啊
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    @Override
-</span><span class='line'>    protected void onProgressUpdate(Integer... values) {//这个函数在doInBackground调用publishProgress时被调用后
-</span><span class='line'>        super.onProgressUpdate(values);
-</span><span class='line'>        //比如实时更新进度条
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    @Override
-</span><span class='line'>    protected void onPostExecute(Boolean aBoolean) {
-</span><span class='line'>        super.onPostExecute(aBoolean);
-</span><span class='line'>        //后台顺利执行完后要干啥呢
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    @Override
-</span><span class='line'>    protected void onCancelled() {
-</span><span class='line'>        super.onCancelled();
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<ol>
-<li>Task的实例必须在UI 线程中创建</li>
-<li>execute方法必须在UI 线程中调用</li>
-<li>不要手动的调用onPreExecute(), onPostExecute(Result)，doInBackground(Params&hellip;)等方法</li>
-<li>该task只能被执行一次，否则多次调用时将会抛出异常</li>
-</ol>
-
-
-<h4>AsyncTask源码</h4>
-
-<p>AsyncTask有个handler内部类，用它来处理在主线程中实时更新和任务完成后的回调</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>private static InternalHandler sHandler;
-</span><span class='line'>
-</span><span class='line'>private static Handler getHandler() {
-</span><span class='line'>    synchronized (AsyncTask.class) {
-</span><span class='line'>        if (sHandler == null) {
-</span><span class='line'>            sHandler = new InternalHandler();
-</span><span class='line'>        }
-</span><span class='line'>        return sHandler;
-</span><span class='line'>    }
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>private static class InternalHandler extends Handler {
-</span><span class='line'>    public InternalHandler() {
-</span><span class='line'>        super(Looper.getMainLooper());
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    @SuppressWarnings({"unchecked", "RawUseOfParameterizedType"})
-</span><span class='line'>    @Override
-</span><span class='line'>    public void handleMessage(Message msg) {
-</span><span class='line'>        AsyncTaskResult&lt;?&gt; result = (AsyncTaskResult&lt;?&gt;) msg.obj;
-</span><span class='line'>        switch (msg.what) {
-</span><span class='line'>            case MESSAGE_POST_RESULT:
-</span><span class='line'>                // There is only one result
-</span><span class='line'>                result.mTask.finish(result.mData[0]);
-</span><span class='line'>                break;
-</span><span class='line'>            case MESSAGE_POST_PROGRESS:
-</span><span class='line'>                result.mTask.onProgressUpdate(result.mData);
-</span><span class='line'>                break;
-</span><span class='line'>        }
-</span><span class='line'>    }
-</span><span class='line'>}
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当我们调用publishProgress方法时，就是得到handler单列然后发消息</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>   protected final void publishProgress(Progress... values) {
-</span><span class='line'>        if (!isCancelled()) {
-</span><span class='line'>            getHandler().obtainMessage(MESSAGE_POST_PROGRESS,
-</span><span class='line'>                    new AsyncTaskResult&lt;Progress&gt;(this, values)).sendToTarget();
-</span><span class='line'>        }
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>   private static class AsyncTaskResult&lt;Data&gt; {
-</span><span class='line'>        final AsyncTask mTask;
-</span><span class='line'>        final Data[] mData;
-</span><span class='line'>
-</span><span class='line'>     AsyncTaskResult(AsyncTask task, Data... data) {
-</span><span class='line'>            mTask = task;
-</span><span class='line'>            mData = data;
-</span><span class='line'>        }
-</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当执行execute()方法时，会在后台任务doInBackground(mParams)开始执行前调用onPreExecute方法。从下面可以看出，当task已经在运行或者已经结束的时候不可以再调用execute()方法，否则会报错。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> public final AsyncTask&lt;Params, Progress, Result&gt; execute(Params... params) {
-</span><span class='line'>        return executeOnExecutor(sDefaultExecutor, params);
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>  public final AsyncTask&lt;Params, Progress, Result&gt; executeOnExecutor(Executor exec,
-</span><span class='line'>            Params... params) {
-</span><span class='line'>        if (mStatus != Status.PENDING) {
-</span><span class='line'>            switch (mStatus) {
-</span><span class='line'>                case RUNNING:
-</span><span class='line'>                    throw new IllegalStateException("Cannot execute task:"
-</span><span class='line'>                            + " the task is already running.");
-</span><span class='line'>                case FINISHED:
-</span><span class='line'>                    throw new IllegalStateException("Cannot execute task:"
-</span><span class='line'>                            + " the task has already been executed "
-</span><span class='line'>                            + "(a task can be executed only once)");
-</span><span class='line'>            }
-</span><span class='line'>        }
-</span><span class='line'>
-</span><span class='line'>        mStatus = Status.RUNNING;
-</span><span class='line'>
-</span><span class='line'>        onPreExecute(); //后台任务开始前执行
-</span><span class='line'>
-</span><span class='line'>        mWorker.mParams = params;
-</span><span class='line'>        exec.execute(mFuture);
-</span><span class='line'>
-</span><span class='line'>        return this;
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>     mWorker = new WorkerRunnable&lt;Params, Result&gt;() {
-</span><span class='line'>            public Result call() throws Exception {
-</span><span class='line'>                mTaskInvoked.set(true);
-</span><span class='line'>
-</span><span class='line'>                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-</span><span class='line'>                //noinspection unchecked
-</span><span class='line'>                Result result = doInBackground(mParams);   //这里开始执行后台任务！！！
-</span><span class='line'>                Binder.flushPendingCommands();
-</span><span class='line'>                return postResult(result);
-</span><span class='line'>            }
-</span><span class='line'>        };
-</span><span class='line'>
-</span><span class='line'>        mFuture = new FutureTask&lt;Result&gt;(mWorker) {
-</span><span class='line'>            @Override
-</span><span class='line'>            protected void done() {
-</span><span class='line'>                try {
-</span><span class='line'>                    postResultIfNotInvoked(get());    //后台任务执行完毕！！！
-</span><span class='line'>                } catch (InterruptedException e) {
-</span><span class='line'>                    android.util.Log.w(LOG_TAG, e);
-</span><span class='line'>                } catch (ExecutionException e) {
-</span><span class='line'>                    throw new RuntimeException("An error occurred while executing doInBackground()",
-</span><span class='line'>                            e.getCause());
-</span><span class='line'>                } catch (CancellationException e) {
-</span><span class='line'>                    postResultIfNotInvoked(null);
-</span><span class='line'>                }
-</span><span class='line'>            }
-</span><span class='line'>        };
-</span><span class='line'>    
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>后台任务执行完毕时，也是通过handler发消息，然后判断是不是取消状态来调用相应的方法</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> mFuture = new FutureTask&lt;Result&gt;(mWorker) {
-</span><span class='line'>            @Override
-</span><span class='line'>            protected void done() {
-</span><span class='line'>                try {
-</span><span class='line'>                    postResultIfNotInvoked(get());   //后台任务执行完毕！！！
-</span><span class='line'>                } catch (InterruptedException e) {
-</span><span class='line'>                    android.util.Log.w(LOG_TAG, e);
-</span><span class='line'>                } catch (ExecutionException e) {
-</span><span class='line'>                    throw new RuntimeException("An error occurred while executing doInBackground()",
-</span><span class='line'>                            e.getCause());
-</span><span class='line'>                } catch (CancellationException e) {
-</span><span class='line'>                    postResultIfNotInvoked(null);
-</span><span class='line'>                }
-</span><span class='line'>            }
-</span><span class='line'>        };
-</span><span class='line'>        
-</span><span class='line'>   private void postResultIfNotInvoked(Result result) {
-</span><span class='line'>        final boolean wasTaskInvoked = mTaskInvoked.get();
-</span><span class='line'>        if (!wasTaskInvoked) {
-</span><span class='line'>            postResult(result);
-</span><span class='line'>        }
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>   private Result postResult(Result result) {
-</span><span class='line'>        @SuppressWarnings("unchecked")
-</span><span class='line'>        Message message = getHandler().obtainMessage(MESSAGE_POST_RESULT,
-</span><span class='line'>                new AsyncTaskResult&lt;Result&gt;(this, result));
-</span><span class='line'>        message.sendToTarget();
-</span><span class='line'>        return result;
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'> private void finish(Result result) {
-</span><span class='line'>        if (isCancelled()) {
-</span><span class='line'>            onCancelled(result);
-</span><span class='line'>        } else {
-</span><span class='line'>            onPostExecute(result);
-</span><span class='line'>        }
-</span><span class='line'>        mStatus = Status.FINISHED;
-</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
-
-
-<p>从下面的代码可以看出，ThreadPoolExecutor是类变量，所以不管创建多少个AsyncTask子类的对象，他们都共用一个线程池。默认线程池可维护的线程数和最大数量，与可用的CUP处理器个数有关。线程池中超过corePoolSize数目的空闲线程最大存活时间1，单位SECONDS。如果线程池的线程数量小于CORE_POOL_SIZE，这个时候新添加一个异步任务则会新建一个线程；如果线程池的数量大于等于CORE_POOL_SIZE，这个时候新建一个异步任务这个任务会被放入缓存队列中等待执行。缓存队列大小为128，并且SerialExecutor是异步顺序执行任务的。</p>
-
-<pre><code>private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
-private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
-private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
-private static final int KEEP_ALIVE = 1;
-
-private static final BlockingQueue&lt;Runnable&gt; sPoolWorkQueue = new LinkedBlockingQueue&lt;Runnable&gt;(128);
-
-public static final Executor THREAD_POOL_EXECUTOR
-        = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE,
-                TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);
-
-
-private static class SerialExecutor implements Executor {
-    final ArrayDeque&lt;Runnable&gt; mTasks = new ArrayDeque&lt;Runnable&gt;();
-    Runnable mActive;
-
-    public synchronized void execute(final Runnable r) {
-        mTasks.offer(new Runnable() {
-            public void run() {
-                try {
-                    r.run();
-                } finally {
-                    scheduleNext();
-                }
-            }
-        });
-        if (mActive == null) {
-            scheduleNext();
-        }
-    }
-
-    protected synchronized void scheduleNext() {
-        if ((mActive = mTasks.poll()) != null) {
-            THREAD_POOL_EXECUTOR.execute(mActive);
-        }
-    }
-}
-</code></pre>
-
-<h4>问题</h4>
-
-<p>AsyncTask处理任务的时候，一般都是习惯在onPreExecute显示进度条，在数据处理完成之后的onPostExecute关闭进度条。但是当横竖屏切换或者内存重启导致Activity重新启动时，假设你还在onPostExecute写了一些其他逻辑，这个时候的AsyncTask已经与之前的Activity没有关联了，会导致onPostExecute无效问题。</p>
-
-<p>解决办法是在onPostExecute方法里用EventBus,Otto类库或者自己写通知，把结果发送给Activity去处理！！</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>@Override
-</span><span class='line'>    protected void onPostExecute(String result) {
-</span><span class='line'>        EventBus.getDefault().post(new AsyncTaskResultEvent(result));
-</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>个人看法</h4>
-
-<p>觉得Android很喜欢造这种中型轮子啊！好像没什么必要再造个AsyncTask这样的轮子放在SDK里啊? 像AsyncTask这种任务不应该是开发者去完成的吗？还有比如NavigationView，真的有必要吗？这不是应该让开发者来自定义的View吗？反正我不是很理解，这可能也是Android为什么如此碎片化的原因之一吧！&mdash;- 喜欢造中型轮子！</p>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/09/07/asynctask/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -2474,6 +1711,14 @@ private static class SerialExecutor implements Executor {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/11/24/react-javascript/">React 基础知识</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/24/atom-edit/">Atom 使用</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/11/23/react-native/">React Native Android真机运行</a>
       </li>
     
@@ -2483,14 +1728,6 @@ private static class SerialExecutor implements Executor {
     
       <li class="post">
         <a href="/blog/2016/11/17/hibernate/">Hibernate 的使用</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/11/17/spring-ioc/">Spring 依赖注入</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/11/14/springmvc-hibernate-jian/">SpringMVC + Spring + Hibernate</a>
       </li>
     
   </ul>
@@ -2505,7 +1742,7 @@ private static class SerialExecutor implements Executor {
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (8)</a></li>
-<li class='category'><a href='/blog/categories/react/'>react (1)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (3)</a></li>
 
   </ul>
 </section>
