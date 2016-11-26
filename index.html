@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="React 基础知识 Nov 24th, 2016 2:31 pm React 的核心思想是：封装组件! 封装组件 !封装组件! 重要的事说三遍。React 应用都是构建在组件之上，各个组件维护自己的状态和 UI，当状态变更，自动重新渲染整个组件。组件的第一个字母必须大写, &hellip;">
+  <meta name="description" content="React Native 基础知识 Nov 26th, 2016 11:16 am | Comments React 基础知识 Nov 24th, 2016 2:31 pm React 的核心思想是：封装组件! 封装组件 !封装组件! 重要的事说三遍。React 应用都是构建在组件之上， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -48,7 +48,7 @@
   <header role="banner"><hgroup>
   <h1><a href="/">阿贵</a></h1>
   
-    <h2>JUST DO IT</h2>
+    <h2>All growth is a leap in the dark.</h2>
   
 </hgroup>
 
@@ -82,6 +82,38 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/11/26/react-native-basic/">React Native 基础知识</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-26T11:16:25+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:16 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/11/26/react-native-basic/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/11/24/react-javascript/">React 基础知识</a></h1>
     
     
@@ -102,7 +134,7 @@
 
 <h4>Declarative</h4>
 
-<p><a href="http://reactjs.cn/react/index.html">React</a> 可以很好的创建交互式组件，设计不同状态下的组件，并且React可以根据组件的不同参数高效的刷新渲染。这样的组件可以让你的代码更加的可预测并且更方便调试。</p>
+<p><a href="https://facebook.github.io/react/">React</a> 可以很好的创建交互式组件，设计不同状态下的组件，并且React可以根据组件的不同参数高效的刷新渲染。这样的组件可以让你的代码更加的可预测并且更方便调试。</p>
 
 <h4>Component-Based</h4>
 
@@ -223,8 +255,9 @@
 &lt;/html&gt;
 </code></pre>
 
-<p>这里显示了一个Avatar 组件，这个Avatar 组件是由两个更小的组件ProfilePic和ProfileName组合而成的。
-<img src="/myimg/java/react_hello0.png" alt="" /></p>
+<p>这里显示了一个Avatar 组件，这个Avatar 组件是由两个更小的组件ProfilePic和ProfileName组合而成的。父组件和子组件间可以通过<code>props</code>一层一层的传值。Remember: React is all about one-way data flow down the component hierarchy.</p>
+
+<p><img src="/myimg/java/react_hello0.png" alt="" /></p>
 
 <h4>状态变化</h4>
 
@@ -302,6 +335,16 @@
 
 
 <p><img src="/myimg/java/react_life.png" alt="" /></p>
+
+<p>把这个<a href="https://facebook.github.io/react/docs/thinking-in-react.html">官方例子</a>看完就能收获不少了。主要在于思考，拿到设计图如何拆分模块，如何组建，如何选取放置状态参数，如何看懂别人写好的代码等。<a href="/mysrc/java/reactPriceDemo.zip">下载</a></p>
+
+<h5>链接</h5>
+
+<ol>
+<li><a href="http://www.cnblogs.com/sakurayeah/category/868210.html">React入门</a></li>
+<li><a href="http://es6.ruanyifeng.com/">ECMAScript 6入门</a></li>
+</ol>
+
 </div>
   
   
@@ -349,7 +392,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2016/11/23/react-native/">React Native Android真机运行</a></h1>
+      <h1 class="entry-title"><a href="/blog/2016/11/23/react-native-run-bug/">React Native 问题汇总</a></h1>
     
     
       <p class="meta">
@@ -365,9 +408,7 @@
   </header>
 
 
-  <div class="entry-content"><p>iOS和Android模拟器运行都很顺利，但Android真机运行就不那么顺利了&hellip;</p>
-
-<p>设备：小米 red note MUI 8.0</p>
+  <div class="entry-content"><p>Android 设备:小米 red note MUI 8.0, iOS 设备:iPhone 6Plus 8.3</p>
 
 <h5>1.运行不起来</h5>
 
@@ -411,12 +452,16 @@
 <p>如果提示没有 assets 文件夹，则先手动建一个再运行。之后就能真机运行起来了：</p>
 
 <p><img src="/myimg/java/react_android.png" alt="" /></p>
+
+<h5>iOS模拟器Cmd+R不刷新，Cmd+D也没弹出框</h5>
+
+<p>解决：要开启模拟器的键盘链接。模拟器菜单<code>Hardware</code>-><code>Keyboard</code> 选中 <code>Connect Hardware Keyboard</code></p>
 </div>
   
   
 
 
-      | <a href="/blog/2016/11/23/react-native/#comments">Comments</a>
+      | <a href="/blog/2016/11/23/react-native-run-bug/#comments">Comments</a>
 
 
     </article>
@@ -1727,52 +1772,6 @@ public void backImageTap(View v) {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/09/12/link-bug/">iOS Not Found for Architecture Arm64</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-09-12T10:00:18+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>接手维护一个项目，更新一下出现了下面这问题👇
-<img src="/myimg/ios/arm64.png" alt="image" /></p>
-
-<p>好像不常见的问题，谷歌一下</p>
-
-<p><a href="http://stackoverflow.com/questions/19213782/undefined-symbols-for-architecture-arm64">Stack Overflow</a>
-<img src="/myimg/ios/stackoverflow.png" alt="image" /></p>
-
-<p>说是Architectures设置问题&hellip; 说是Other Linker Flags问题&hellip;说是Target Membership问题&hellip; 改了好像都没用啊，问题还是一动不动的出现在那里&hellip;
-<img src="/myimg/ios/targetMap.png" alt="image" /></p>
-
-<p>继续找找找&hellip;用对应的类文件全局搜一下&hellip;诶~ 好像那里不对啊&hellip;路径怎么这样子??怎么和别的不一样~~ 喜出望外，好像知道原因了，果然项目文件夹里看不到该文件，Add Files to &ldquo;XXX"添加文件!
-<img src="/myimg/ios/errorLoad.png" alt="image" /></p>
-
-<p>还是不行&hellip;把对应的.h .m文件拖到桌面上，再重新添加到项目里，解决了！！为什么一开始不怀疑是文件索引问题呢？ 因为项目编译没报 XXX.h not found &hellip;以为文件都好好的呢，以为是项目的配置问题&hellip; 所以一开始找问题的方向就跑偏了！其实这问题之前也遇到过，一般是第三方的XXX.a文件出现这问题，只是这次脑袋没长记性&hellip;这问题一般是多人开发项目用SVN更来更去导致的<code>project.pbxproj</code>里对应的文件索引没了。好了，再遇到这问题就不要跑偏了，把对应的文件重新添加就可以了！！</p>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/09/12/link-bug/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1788,6 +1787,10 @@ public void backImageTap(View v) {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/11/26/react-native-basic/">React Native 基础知识</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/11/24/react-javascript/">React 基础知识</a>
       </li>
     
@@ -1796,15 +1799,11 @@ public void backImageTap(View v) {
       </li>
     
       <li class="post">
-        <a href="/blog/2016/11/23/react-native/">React Native Android真机运行</a>
+        <a href="/blog/2016/11/23/react-native-run-bug/">React Native 问题汇总</a>
       </li>
     
       <li class="post">
         <a href="/blog/2016/11/17/struts-spring-mybatis/">Struts + Spring + MyBatis</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/11/17/hibernate/">Hibernate 的使用</a>
       </li>
     
   </ul>
@@ -1819,7 +1818,7 @@ public void backImageTap(View v) {
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (8)</a></li>
-<li class='category'><a href='/blog/categories/react/'>react (3)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (4)</a></li>
 
   </ul>
 </section>

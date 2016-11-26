@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-11-25T19:12:58+08:00</updated>
+  <updated>2016-11-26T21:36:48+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,15 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[React Native 基础知识]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/11/26/react-native-basic/"/>
+    <updated>2016-11-26T11:16:25+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/26/react-native-basic</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[React 基础知识]]></title>
@@ -22,7 +31,7 @@
 
 <h4>Declarative</h4>
 
-<p><a href="http://reactjs.cn/react/index.html">React</a> 可以很好的创建交互式组件，设计不同状态下的组件，并且React可以根据组件的不同参数高效的刷新渲染。这样的组件可以让你的代码更加的可预测并且更方便调试。</p>
+<p><a href="https://facebook.github.io/react/">React</a> 可以很好的创建交互式组件，设计不同状态下的组件，并且React可以根据组件的不同参数高效的刷新渲染。这样的组件可以让你的代码更加的可预测并且更方便调试。</p>
 
 <h4>Component-Based</h4>
 
@@ -143,8 +152,9 @@
 &lt;/html&gt;
 </code></pre>
 
-<p>这里显示了一个Avatar 组件，这个Avatar 组件是由两个更小的组件ProfilePic和ProfileName组合而成的。
-<img src="http://andyfightting.github.io/myimg/java/react_hello0.png" alt="" /></p>
+<p>这里显示了一个Avatar 组件，这个Avatar 组件是由两个更小的组件ProfilePic和ProfileName组合而成的。父组件和子组件间可以通过<code>props</code>一层一层的传值。Remember: React is all about one-way data flow down the component hierarchy.</p>
+
+<p><img src="http://andyfightting.github.io/myimg/java/react_hello0.png" alt="" /></p>
 
 <h4>状态变化</h4>
 
@@ -222,6 +232,16 @@
 
 
 <p><img src="http://andyfightting.github.io/myimg/java/react_life.png" alt="" /></p>
+
+<p>把这个<a href="https://facebook.github.io/react/docs/thinking-in-react.html">官方例子</a>看完就能收获不少了。主要在于思考，拿到设计图如何拆分模块，如何组建，如何选取放置状态参数，如何看懂别人写好的代码等。<a href="http://andyfightting.github.io/mysrc/java/reactPriceDemo.zip">下载</a></p>
+
+<h5>链接</h5>
+
+<ol>
+<li><a href="http://www.cnblogs.com/sakurayeah/category/868210.html">React入门</a></li>
+<li><a href="http://es6.ruanyifeng.com/">ECMAScript 6入门</a></li>
+</ol>
+
 ]]></content>
   </entry>
   
@@ -235,13 +255,11 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[React Native Android真机运行]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/11/23/react-native/"/>
+    <title type="html"><![CDATA[React Native 问题汇总]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/11/23/react-native-run-bug/"/>
     <updated>2016-11-23T18:46:09+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/11/23/react-native</id>
-    <content type="html"><![CDATA[<p>iOS和Android模拟器运行都很顺利，但Android真机运行就不那么顺利了&hellip;</p>
-
-<p>设备：小米 red note MUI 8.0</p>
+    <id>http://andyfightting.github.io/blog/2016/11/23/react-native-run-bug</id>
+    <content type="html"><![CDATA[<p>Android 设备:小米 red note MUI 8.0, iOS 设备:iPhone 6Plus 8.3</p>
 
 <h5>1.运行不起来</h5>
 
@@ -285,6 +303,10 @@
 <p>如果提示没有 assets 文件夹，则先手动建一个再运行。之后就能真机运行起来了：</p>
 
 <p><img src="http://andyfightting.github.io/myimg/java/react_android.png" alt="" /></p>
+
+<h5>iOS模拟器Cmd+R不刷新，Cmd+D也没弹出框</h5>
+
+<p>解决：要开启模拟器的键盘链接。模拟器菜单<code>Hardware</code>-><code>Keyboard</code> 选中 <code>Connect Hardware Keyboard</code></p>
 ]]></content>
   </entry>
   
@@ -2955,107 +2977,6 @@ layer.position=CGPointMake(size.width/2, size.height/2);
     <updated>2016-08-04T16:22:02+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/08/04/session</id>
     <content type="html"><![CDATA[
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[iOS中的block]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/08/04/block/"/>
-    <updated>2016-08-04T16:21:41+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/08/04/block</id>
-    <content type="html"><![CDATA[<p>block就是一个代码块，闭包，会捕获上下文的匿名函数，它可以作为参数或者返回值进行传递。在objc中，根据对象的定义，凡是首地址是*isa的结构体指针，都可以认为是对象(id)，所以block实际上就算是对象，但它的内存管理又和NSObject有点不一样。</p>
-
-<h4>声明:</h4>
-
-<pre><code>*变量：returnType (^blockName)(parameterTypes) = ^returnType(parameters) {...};
-
-*属性：@property (nonatomic, copy) returnType (^blockName)(parameterTypes);
-
-*方法：-(void)someMethod:(returnType (^nullability)(parameterTypes))blockName;
-
-*回调：[object  method:^returnType (parameters) {...}];
-
-*定义：typedef returnType (^TypeName)(parameterTypes); --&gt; TypeName blockName = ^returnType(parameters) {...};
-</code></pre>
-
-<p>block中的isa指向的是该block的Class,主要有三种类型：</p>
-
-<pre><code>_NSConcreteGlobalBlock 全局的静态 block，不会访问任何外部变量。
-_NSConcreteStackBlock 保存在栈中的 block，当函数返回时会被销毁。
-_NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被销毁。
-</code></pre>
-
-<p>当block第一次被创建时，它是存在于该函数的栈上的，其Class是固定的NSConcreteStackBlock。其捕获的变量是会赋值到结构体的成员上，所以当block初始化完成后，捕获到的变量不能更改。当函数返回时，函数的栈被销毁，这个block的内存也会被清除。所以在函数结束后仍然需要这个block时，就必须用Block_copy()方法将它拷贝到堆上，类型变为NSConcreteMallocBlock，向它发送retain，增加block的引用计数。</p>
-
-<p>默认block捕获到的局部变量，都是赋值给block的结构体的，相当于const不可改。为了让block能访问并修改外面的局部变量，需要加上__block修饰词。</p>
-
-<pre><code>void test(){
- __block int i = 3;
-  void(^myBlock)(void) = ^{
-     i = 5;//局部变量没有__block修饰的话不可修改
-  };
- myBlock();
-}
-</code></pre>
-
-<h4>捕获规则：</h4>
-
-<pre><code>1.静态存储区的变量,例如全局变量、方法中的static变量:
-  引用，可修改。
-
-2.block接受的参数传值:
-  可修改，和一般函数的参数相同。
-
-3.栈变量(局部变量):
-  常量，不可修改，block会对id类型的变量产生强引用。
-
-4.栈变量(有__block前缀的局部变量):
-  引用，可以修改。如果是id类型则不会被block retain、如果该类型是C类型变量，该值会被挪动到堆中。
-</code></pre>
-
-<p>在ARC中，block被赋值传递的时候会自动拷贝到堆上，堆上的对象就有可能被释放掉，所以要用copy强引用着,以免野指针crash。</p>
-
-<h4>循环引用:</h4>
-
-<p>当block被copy到堆之后，该block对它捕获的对象产生强引用，所以有时需要避免block copy后产生的循环引用。</p>
-
-<p>如self引用了block，block又捕获了self，这样就会有循环引用,因此，需要用weak来声明self。</p>
-
-<pre><code>- (void)test {
-    ViewController * __weak weakSelf = self;
-    self.block = ^{
-        [weakSelf doSomething]; //用弱引用,打破循环引用
-    }
-}
-</code></pre>
-
-<p>如果捕获到的是对象的成员变量对象，也会间接造成对self的循环引用，同样也要避免。</p>
-
-<pre><code>- (void)test {
-    id tempPropertyObj = _propertyObj; //用临时变量,避免了循环引用
-    self.block = ^{
-        [tempPropertyObj doSomething];
-    }
-}
-</code></pre>
-
-<h4>问题</h4>
-
-<pre><code>[UIView animateWithDuration:0.5 animations:^{
-        [self doSomething];
-    }];
-</code></pre>
-
-<p>上面例子并不会造成循环引用，因为block强引用了self,而self并没有强引用block。如果像下面就会循环引用：self &ndash;> _observer &ndash;> block &ndash;> self 这也是一个循环引用。</p>
-
-<pre><code>//_observer 是self的实例变量
-    _observer = [[NSNotificationCenter defaultCenter] addObserverForName:@"test"
-                                                                  object:nil
-                                                                   queue:[NSOperationQueue mainQueue]
-                                                              usingBlock:^(NSNotification * _Nonnull note) {
-                                                                  [self doSomething];
-                                                              }];
-</code></pre>
 ]]></content>
   </entry>
   
