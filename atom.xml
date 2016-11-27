@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-11-26T21:36:48+08:00</updated>
+  <updated>2016-11-27T21:22:42+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -19,6 +19,62 @@
     <updated>2016-11-26T11:16:25+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/11/26/react-native-basic</id>
     <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[React Native 问题汇总]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/11/25/react-native-run-bug/"/>
+    <updated>2016-11-25T18:46:09+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/25/react-native-run-bug</id>
+    <content type="html"><![CDATA[<p>Android 设备:小米 red note MUI 8.0, iOS 设备:iPhone 6Plus 8.3</p>
+
+<h5>1.运行不起来</h5>
+
+<p>按照<a href="https://facebook.github.io/react-native/docs/getting-started.html#content">官网</a>的步骤一步一步下来运行报：</p>
+
+<pre><code>com.android.builder.testing.api.DeviceException: com.android.ddmlib.InstallException: Failed to establish session
+</code></pre>
+
+<p><a href="https://github.com/facebook/react-native/issues/6499">这里</a>说小米系列的手机都这样，我们平时用Android Studio调试运行不是会弹出个弹出框问是否安装吗？这是用USB链接的，所以没问题，但是用命令就掉动不起来那弹出框&hellip;
+<img src="http://andyfightting.github.io/myimg/java/react_error_xm0.png" alt="" /></p>
+
+<p>解决办法如下，关键是第4步，关闭小米的优化
+<img src="http://andyfightting.github.io/myimg/java/react_error_xm1.png" alt="" /></p>
+
+<h5>2.运行不起来</h5>
+
+<p>报错：</p>
+
+<pre><code>com.android.builder.testing.api.DeviceException: com.android.ddmlib.InstallException: Unable to upload some APKs
+</code></pre>
+
+<p>解决：把 /项目/android/build.gradle 文件里的 <code>classpath 'com.android.tools.build:gradle:1.3.1'</code> 改成 <code>classpath 'com.android.tools.build:gradle:1.2.3'</code>就可以了&hellip;.why? yeah,why?</p>
+
+<h5>3.白屏</h5>
+
+<p>运行起来了，等啊等，怎么还是白屏？不是有东西的吗？摇啊摇不是有弹出框的吗？弹出框呢？？</p>
+
+<p>解决：进系统设置，应用管理，找到这个应用，点击应用详情里的权限管理，开启显示悬浮框。刷新一下再摇一摇就有弹出框了。</p>
+
+<h5>4.Could not connect to development server</h5>
+
+<p>摇啊摇弹出框后，点击最后的 <code>Dev Settings</code> ，然后设置 <code>Debug server host &amp; port for device</code> 为<code>本机IP:8081</code>后返回刷新出现如下错误:</p>
+
+<p><img src="http://andyfightting.github.io/myimg/java/react_error2.png" alt="" /></p>
+
+<p>解决：命令行进入项目文件夹，运行如下命令：</p>
+
+<pre><code>react-native start &gt; /dev/null 2&gt;&amp;1 &amp; curl "http://localhost:8081/index.android.bundle?platform=android" -o "android/app/src/main/assets/index.android.bundle"
+</code></pre>
+
+<p>如果提示没有 assets 文件夹，则先手动建一个再运行。之后就能真机运行起来了：</p>
+
+<p><img src="http://andyfightting.github.io/myimg/java/react_android.png" alt="" /></p>
+
+<h5>iOS模拟器Cmd+R不刷新，Cmd+D也没弹出框</h5>
+
+<p>解决：要开启模拟器的键盘链接。模拟器菜单<code>Hardware</code>-><code>Keyboard</code> 选中 <code>Connect Hardware Keyboard</code></p>
 ]]></content>
   </entry>
   
@@ -239,82 +295,115 @@
 
 <ol>
 <li><a href="http://www.cnblogs.com/sakurayeah/category/868210.html">React入门</a></li>
+<li><a href="https://babeljs.io/docs/learn-es2015/">ECMAScript 2015</a></li>
 <li><a href="http://es6.ruanyifeng.com/">ECMAScript 6入门</a></li>
+<li><a href="http://bbs.reactnative.cn/topic/15/react-react-native-%E7%9A%84es5-es6%E5%86%99%E6%B3%95%E5%AF%B9%E7%85%A7%E8%A1%A8">ES5和ES6的写法对照表</a></li>
 </ol>
 
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Atom 使用]]></title>
+    <title type="html"><![CDATA[Atom]]></title>
     <link href="http://andyfightting.github.io/blog/2016/11/24/atom-edit/"/>
     <updated>2016-11-24T14:31:17+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/11/24/atom-edit</id>
-    <content type="html"><![CDATA[
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[React Native 问题汇总]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/11/23/react-native-run-bug/"/>
-    <updated>2016-11-23T18:46:09+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/11/23/react-native-run-bug</id>
-    <content type="html"><![CDATA[<p>Android 设备:小米 red note MUI 8.0, iOS 设备:iPhone 6Plus 8.3</p>
+    <content type="html"><![CDATA[<p><a href="https://atom.io/">Atom</a>是由GitHub开发的一款免费开源的编辑器，通过给它安装不同的插件包，就可以变成一款智能的IDE了。这里主要记录一下为了开发<a href="https://facebook.github.io/react-native/">React Native</a>所安装的插件包及基本使用。</p>
 
-<h5>1.运行不起来</h5>
+<p><a href="https://nuclide.io/">Nuclide</a>是官方推荐的开发React Native的基于Atom的工具。Nuclide 安装好后进入设置，选中<code>Install Recommented Packages on Startup</code>选项，下次启动的时候就会安装Nuclide所建议安装的插件了。</p>
 
-<p>按照<a href="https://facebook.github.io/react-native/docs/getting-started.html#content">官网</a>的步骤一步一步下来运行报：</p>
+<p><a href="https://nuclide.io/"><code>nuclide</code></a></p>
 
-<pre><code>com.android.builder.testing.api.DeviceException: com.android.ddmlib.InstallException: Failed to establish session
-</code></pre>
+<p><code>atom-beautify</code></p>
 
-<p><a href="https://github.com/facebook/react-native/issues/6499">这里</a>说小米系列的手机都这样，我们平时用Android Studio调试运行不是会弹出个弹出框问是否安装吗？这是用USB链接的，所以没问题，但是用命令就掉动不起来那弹出框&hellip;
-<img src="http://andyfightting.github.io/myimg/java/react_error_xm0.png" alt="" /></p>
+<p><code>atom-ctags</code></p>
 
-<p>解决办法如下，关键是第4步，关闭小米的优化
-<img src="http://andyfightting.github.io/myimg/java/react_error_xm1.png" alt="" /></p>
+<p><code>atom-html-preview</code></p>
 
-<h5>2.运行不起来</h5>
+<p><code>atom-jade</code></p>
 
-<p>报错：</p>
+<p><code>atom-react-native-autocomplete</code></p>
 
-<pre><code>com.android.builder.testing.api.DeviceException: com.android.ddmlib.InstallException: Unable to upload some APKs
-</code></pre>
+<p><code>atom-ternjs</code></p>
 
-<p>解决：把 /项目/android/build.gradle 文件里的 <code>classpath 'com.android.tools.build:gradle:1.3.1'</code> 改成 <code>classpath 'com.android.tools.build:gradle:1.2.3'</code>就可以了&hellip;.why? yeah,why?</p>
+<p><code>atom-typescript</code></p>
 
-<h5>3.白屏</h5>
+<p><code>auto-detect-indentation</code></p>
 
-<p>运行起来了，等啊等，怎么还是白屏？不是有东西的吗？摇啊摇不是有弹出框的吗？弹出框呢？？</p>
+<p><code>autocomplete-paths</code></p>
 
-<p>解决：进系统设置，应用管理，找到这个应用，点击应用详情里的权限管理，开启显示悬浮框。刷新一下再摇一摇就有弹出框了。</p>
+<p><code>color-picker</code></p>
 
-<h5>4.Could not connect to development server</h5>
+<p>选中颜色
+<img src="http://andyfightting.github.io/myimg/java/color-picker.png" alt="" /></p>
 
-<p>摇啊摇弹出框后，点击最后的 <code>Dev Settings</code> ，然后设置 <code>Debug server host &amp; port for device</code> 为<code>本机IP:8081</code>后返回刷新出现如下错误:</p>
+<p><code>docblockr</code></p>
 
-<p><img src="http://andyfightting.github.io/myimg/java/react_error2.png" alt="" /></p>
+<p><code>emmet</code></p>
 
-<p>解决：命令行进入项目文件夹，运行如下命令：</p>
+<p><code>file-icons</code></p>
 
-<pre><code>react-native start &gt; /dev/null 2&gt;&amp;1 &amp; curl "http://localhost:8081/index.android.bundle?platform=android" -o "android/app/src/main/assets/index.android.bundle"
-</code></pre>
+<p>给文件加icon</p>
 
-<p>如果提示没有 assets 文件夹，则先手动建一个再运行。之后就能真机运行起来了：</p>
+<p><img src="http://andyfightting.github.io/myimg/java/file-icons.png" alt="" /></p>
 
-<p><img src="http://andyfightting.github.io/myimg/java/react_android.png" alt="" /></p>
+<p><code>haskell-grammer</code></p>
 
-<h5>iOS模拟器Cmd+R不刷新，Cmd+D也没弹出框</h5>
+<p><code>highlight-selected</code></p>
 
-<p>解决：要开启模拟器的键盘链接。模拟器菜单<code>Hardware</code>-><code>Keyboard</code> 选中 <code>Connect Hardware Keyboard</code></p>
+<p>选中相同的字符串高亮
+<img src="http://andyfightting.github.io/myimg/java/highlight-selected.png" alt="" /></p>
+
+<p><code>js-hyperclick</code></p>
+
+<p><code>language-ini</code></p>
+
+<p><code>language-javascript-jsx</code></p>
+
+<p><code>language-ocaml</code></p>
+
+<p><code>language-swift</code></p>
+
+<p><code>language-thrift</code></p>
+
+<p><code>linter</code></p>
+
+<p><code>linter-csslint</code></p>
+
+<p><code>merge-conflicts</code></p>
+
+<p><code>minimap</code></p>
+
+<p>右边位置小地图
+<img src="http://andyfightting.github.io/myimg/java/minimap.png" alt="" /></p>
+
+<p><strong>nuclide-formate-js :</strong></p>
+
+<p><strong>pgiments :</strong> 显示颜色。 快捷面里 Pigments: Show Palette 可以打开调色板🎨。这个没有菜单按钮&hellip;</p>
+
+<p><strong>pretty-json :</strong> Json 格式化。Packages->PrettyJson->Prettify</p>
+
+<p><strong>react-snippets :</strong> React代码块快捷输入
+<img src="http://andyfightting.github.io/myimg/java/react-snippets.png" alt="" /></p>
+
+<p><strong>sort-lines :</strong>把列按字母排序。功能键 f5(电脑，设置，键盘里要开启功能选项) 或者 Edit->Lines->Sort</p>
+
+<p><strong>tool-bar :</strong>上面显示工具栏，ctrl-alt-t 开/关
+<img src="http://andyfightting.github.io/myimg/java/tool-bar.png" alt="" /></p>
+
+<p>cmd-shift-p : 打开快捷面板</p>
+
+<h4>链接</h4>
+
+<p><a href="https://github.com/kompasim/atom-plugins">92款插件推荐</a></p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[Struts + Spring + MyBatis]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/11/17/struts-spring-mybatis/"/>
-    <updated>2016-11-17T09:22:51+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/11/17/struts-spring-mybatis</id>
+    <link href="http://andyfightting.github.io/blog/2016/11/18/struts-spring-mybatis/"/>
+    <updated>2016-11-18T09:22:51+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/18/struts-spring-mybatis</id>
     <content type="html"><![CDATA[<h4>基本信息：</h4>
 
 <p><code>Mac OS 10.11</code>, <code>eclipse neon</code>, <code>jdk1.8</code>, <code>tomcat7</code>, <code>struts2.5.5</code>, <code>spring4.3.4</code>, <code>mybatis3.4.1</code>,<code>mybatis-spring1.3</code>,<code>mysql数据库</code></p>
@@ -349,10 +438,68 @@
   </entry>
   
   <entry>
+    <title type="html"><![CDATA[SpringMVC + Spring + Hibernate]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/11/17/springmvc-hibernate-jian/"/>
+    <updated>2016-11-17T19:34:43+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/17/springmvc-hibernate-jian</id>
+    <content type="html"><![CDATA[<h4>基本信息：</h4>
+
+<p><code>Mac OS 10.11</code>, <code>eclipse neon</code>, <code>jdk1.8</code>, <code>tomcat7</code>, <code>spring4.3.4</code>, <code>Hibernate5.2.4</code>,<code>jackson2.5</code>,<code>mysql数据库</code></p>
+
+<h4>截图:</h4>
+
+<p><img src="http://andyfightting.github.io/myimg/java/ssh_frame.png" alt="" />
+<img src="http://andyfightting.github.io/myimg/java/ssh_pack.png" alt="" /></p>
+
+<h4>Controller从JSP取值</h4>
+
+<pre><code>//1.使用HttpServletRequest获取
+public String addUser(HttpServletRequest request) {
+    String name = request.getParameter("name");
+    String pass = request.getParameter("password");
+    return "/addUser";
+}
+//2.使用注解
+public String addUser(@RequestParam("name") String name,@RequestParam("password") String password) {
+    System.out.println(name+password);
+    return "/addUser";
+}
+//3.自动注入Entity属性
+public String addUser(User user) {
+    System.out.println(user.getName() + user.getPassword());
+    return "/addUser";
+}
+</code></pre>
+
+<h4>Controller传值给JSP</h4>
+
+<pre><code>//1.使用HttpServletRequest 然后setAttribute()，就和Servlet中一样
+public String getAllUser(HttpServletRequest request) {
+    request.setAttribute("userList", userService.getAllUser());
+    return "/index";
+}
+//2.使用Spring的ModelMap `public class ModelMap extends LinkedHashMap&lt;String, Object&gt;`，ModelMap数据会利用HttpServletRequest的Attribute传值
+public String getAllUser(ModelMap modelMap) {
+    modelMap.put("userList", userService.getAllUser());
+    return "/index";
+}
+//3.HttpServletReequest的getSession()  
+public String getAllUser(HttpServletRequest request) {
+    HttpSession session = request.getSession();
+    session.setAttribute("userList", userService.getAllUser());
+    return "/index";
+}
+</code></pre>
+
+<p><a href="http://andyfightting.github.io/mysrc/java/SSH.zip">下载</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Hibernate 的使用]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/11/17/hibernate/"/>
-    <updated>2016-11-17T09:20:12+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/11/17/hibernate</id>
+    <link href="http://andyfightting.github.io/blog/2016/11/16/hibernate/"/>
+    <updated>2016-11-16T09:20:12+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/16/hibernate</id>
     <content type="html"><![CDATA[<p>可以认为MyBatis是半自动化，而Hibernate是全自动化(也可半自动)。MyBatis是面向表和列的SQL查询，而Hibernate是用面向对象和对象属性的 HQL查询。 HQL 查询被 Hibernate 翻译为传统的 SQL 查询从而对数据库进行操作。尽管Hibernate可以直接使用本地 SQL 语句，但还是尽可能的使用 HQL 语句，以避免数据库移植产生的麻烦。在 HQL 中一些关键字比如 SELECT ，FROM 和 WHERE 等，是不区分大小写的，但对象名和属性名是区分大小写的。Hibernate也可以用注解方式来进行对象和表的关系映射，类似于<a href="http://ormlite.com/">OrmLit</a>这样。</p>
 
 <p><img src="http://andyfightting.github.io/myimg/java/hibernate_frame.png" alt="" /></p>
@@ -646,9 +793,9 @@ public class Book {
   
   <entry>
     <title type="html"><![CDATA[Spring 依赖注入]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/11/17/spring-ioc/"/>
-    <updated>2016-11-17T09:17:48+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/11/17/spring-ioc</id>
+    <link href="http://andyfightting.github.io/blog/2016/11/15/spring-ioc/"/>
+    <updated>2016-11-15T09:17:48+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/15/spring-ioc</id>
     <content type="html"><![CDATA[<p><a href="https://spring.io/">Spring</a>是一个大东西，框架集合。Spring MVC, Spring AOP, Spring IoC&hellip;等等。先看看Spring IoC(Inversion of Control)控制反转。就是把原先要手动 new 一个对象，现在只要在Srping 的配置文件里配置就可以了，从主动控制对象，到被动接收对象，这就叫控制反转，也叫依赖注入(dependency injection)！ 依赖注入是Spring的核心机制，把对象之间的依赖关系转为用配置文件来管理，这有赖于它的核心组件 Beans, Core, Context 。</p>
 
 <p><img src="http://andyfightting.github.io/myimg/java/spring_core.png" alt="" /></p>
@@ -775,64 +922,6 @@ public class Application {
 </code></pre>
 
 <p>xml默认都是注入一个单例对象的，即bean的属性 scope = &ldquo;singleton&rdquo; 为默认值。如果要每次都注入一个新对象，则设置bean的属性 scope = &ldquo;prototype"。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[SpringMVC + Spring + Hibernate]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/11/14/springmvc-hibernate-jian/"/>
-    <updated>2016-11-14T19:34:43+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/11/14/springmvc-hibernate-jian</id>
-    <content type="html"><![CDATA[<h4>基本信息：</h4>
-
-<p><code>Mac OS 10.11</code>, <code>eclipse neon</code>, <code>jdk1.8</code>, <code>tomcat7</code>, <code>spring4.3.4</code>, <code>Hibernate5.2.4</code>,<code>jackson2.5</code>,<code>mysql数据库</code></p>
-
-<h4>截图:</h4>
-
-<p><img src="http://andyfightting.github.io/myimg/java/ssh_frame.png" alt="" />
-<img src="http://andyfightting.github.io/myimg/java/ssh_pack.png" alt="" /></p>
-
-<h4>Controller从JSP取值</h4>
-
-<pre><code>//1.使用HttpServletRequest获取
-public String addUser(HttpServletRequest request) {
-    String name = request.getParameter("name");
-    String pass = request.getParameter("password");
-    return "/addUser";
-}
-//2.使用注解
-public String addUser(@RequestParam("name") String name,@RequestParam("password") String password) {
-    System.out.println(name+password);
-    return "/addUser";
-}
-//3.自动注入Entity属性
-public String addUser(User user) {
-    System.out.println(user.getName() + user.getPassword());
-    return "/addUser";
-}
-</code></pre>
-
-<h4>Controller传值给JSP</h4>
-
-<pre><code>//1.使用HttpServletRequest 然后setAttribute()，就和Servlet中一样
-public String getAllUser(HttpServletRequest request) {
-    request.setAttribute("userList", userService.getAllUser());
-    return "/index";
-}
-//2.使用Spring的ModelMap `public class ModelMap extends LinkedHashMap&lt;String, Object&gt;`，ModelMap数据会利用HttpServletRequest的Attribute传值
-public String getAllUser(ModelMap modelMap) {
-    modelMap.put("userList", userService.getAllUser());
-    return "/index";
-}
-//3.HttpServletReequest的getSession()  
-public String getAllUser(HttpServletRequest request) {
-    HttpSession session = request.getSession();
-    session.setAttribute("userList", userService.getAllUser());
-    return "/index";
-}
-</code></pre>
-
-<p><a href="http://andyfightting.github.io/mysrc/java/SSH.zip">下载</a></p>
 ]]></content>
   </entry>
   
