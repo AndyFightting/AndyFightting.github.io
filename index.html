@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="React Native 基础知识 Nov 26th, 2016 11:16 am | Comments React Native 问题汇总 Nov 25th, 2016 6:46 pm Android 设备:小米 red note MUI 8.0, iOS 设备:iPhone 6Plus 8. &hellip;">
+  <meta name="description" content="React Native 基础知识 Nov 26th, 2016 11:16 am 属性 布局 事件 网络 存储 | Comments React Native 问题汇总 Nov 25th, 2016 6:46 pm Android 设备:小米 red note MUI 8.0, iOS 设备: &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -98,7 +98,15 @@
   </header>
 
 
-  <div class="entry-content">
+  <div class="entry-content"><h4>属性</h4>
+
+<h4>布局</h4>
+
+<h4>事件</h4>
+
+<h4>网络</h4>
+
+<h4>存储</h4>
 </div>
   
   
@@ -209,7 +217,7 @@
   </header>
 
 
-  <div class="entry-content"><h4>React 的核心思想是：封装组件! 封装组件 !封装组件! 重要的事说三遍。React 应用都是构建在组件之上，各个组件维护自己的状态和 UI，当状态变更，自动重新渲染整个组件。组件的第一个字母必须大写,组件只能包含一个顶层标签。</h4>
+  <div class="entry-content"><h4>React 的核心思想是：封装组件!React 应用都是构建在组件之上，各个组件维护自己的状态和 UI，当状态变更，自动重新渲染自身组件。组件的第一个字母必须大写,组件只能包含一个顶层标签。</h4>
 
 <h4>Declarative</h4>
 
@@ -461,88 +469,113 @@
 
 <p><a href="https://nuclide.io/">Nuclide</a>是官方推荐的开发React Native的基于Atom的工具。Nuclide 安装好后进入设置，选中<code>Install Recommented Packages on Startup</code>选项，下次启动的时候就会安装Nuclide所建议安装的插件了。</p>
 
-<p><a href="https://nuclide.io/"><code>nuclide</code></a></p>
+<h4>插件</h4>
 
-<p><code>atom-beautify</code></p>
+<p><strong>atom-react-native-autocomplete :</strong>React Native自动提示。</p>
 
-<p><code>atom-ctags</code></p>
+<p><strong>atom-beautify :</strong> 文件排版格式化。ctrl-alt-b，可以进它的设置里选中 Beauty on Save 自动格式化。</p>
 
-<p><code>atom-html-preview</code></p>
+<p><strong>atom-html-preview :</strong> html预览。 ctrl-shift-h
+<img src="/myimg/java/atom-html-preview.png" width="700" alt="" /></p>
 
-<p><code>atom-jade</code></p>
+<p><strong>autocomplete-paths :</strong> 文件路径提示</p>
 
-<p><code>atom-react-native-autocomplete</code></p>
+<p><img src="/myimg/java/autocomplete-paths.png" width="500" alt="" /></p>
 
-<p><code>atom-ternjs</code></p>
+<p><strong>color-picker :</strong>颜色选取器，点击色块即可弹出，或者右键选择 Color Picker.</p>
 
-<p><code>atom-typescript</code></p>
+<p><img src="/myimg/java/color-picker.png" width="500" alt="" /></p>
 
-<p><code>auto-detect-indentation</code></p>
+<p><strong>docblockr :</strong> 快捷文档注释</p>
 
-<p><code>autocomplete-paths</code></p>
+<p><strong>emmet :</strong>web开发神器</p>
 
-<p><code>color-picker</code></p>
+<p><strong>file-icons :</strong>给文件加icon</p>
 
-<p>选中颜色
-<img src="/myimg/java/color-picker.png" alt="" /></p>
+<p><img src="/myimg/java/file-icons.png" width="200" alt="" /></p>
 
-<p><code>docblockr</code></p>
+<p><strong>highlight-selected :</strong>选中相同的字符串高亮
+<img src="/myimg/java/highlight-selected.png" width="500" alt="" /></p>
 
-<p><code>emmet</code></p>
+<p><strong>js-hyperclick :</strong> js对象 cmd-点击 跳转</p>
 
-<p><code>file-icons</code></p>
+<p><strong>merge-conflicts :</strong>解决版本冲突</p>
 
-<p>给文件加icon</p>
+<p><strong>minimap :</strong>右边位置小地图
+<img src="/myimg/java/minimap.png" width="700" alt="" /></p>
 
-<p><img src="/myimg/java/file-icons.png" alt="" /></p>
+<p><strong>pigments :</strong> 显示颜色。 快捷面板里搜 Pigments: Show Palette 可以打开调色板🎨。</p>
 
-<p><code>haskell-grammer</code></p>
-
-<p><code>highlight-selected</code></p>
-
-<p>选中相同的字符串高亮
-<img src="/myimg/java/highlight-selected.png" alt="" /></p>
-
-<p><code>js-hyperclick</code></p>
-
-<p><code>language-ini</code></p>
-
-<p><code>language-javascript-jsx</code></p>
-
-<p><code>language-ocaml</code></p>
-
-<p><code>language-swift</code></p>
-
-<p><code>language-thrift</code></p>
-
-<p><code>linter</code></p>
-
-<p><code>linter-csslint</code></p>
-
-<p><code>merge-conflicts</code></p>
-
-<p><code>minimap</code></p>
-
-<p>右边位置小地图
-<img src="/myimg/java/minimap.png" alt="" /></p>
-
-<p><strong>nuclide-formate-js :</strong></p>
-
-<p><strong>pgiments :</strong> 显示颜色。 快捷面里 Pigments: Show Palette 可以打开调色板🎨。这个没有菜单按钮&hellip;</p>
+<p><img src="/myimg/java/pigment.png" width="400" alt="" /></p>
 
 <p><strong>pretty-json :</strong> Json 格式化。Packages->PrettyJson->Prettify</p>
 
 <p><strong>react-snippets :</strong> React代码块快捷输入
-<img src="/myimg/java/react-snippets.png" alt="" /></p>
+<img src="/myimg/java/react-snippets.png" width="700" alt="" /></p>
 
 <p><strong>sort-lines :</strong>把列按字母排序。功能键 f5(电脑，设置，键盘里要开启功能选项) 或者 Edit->Lines->Sort</p>
 
 <p><strong>tool-bar :</strong>上面显示工具栏，ctrl-alt-t 开/关
-<img src="/myimg/java/tool-bar.png" alt="" /></p>
+<img src="/myimg/java/tool-bar.png" width="500" alt="" /></p>
+
+<p>安装后的插件包不在Atom应用文件夹里，在 <code>/Users/用户名/.atom/packages/</code> 文件夹里。且 <code>.atom</code> 文件夹默认是隐藏的。在命令窗口输入显示文件夹命令。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>//显示隐藏文件
+</span><span class='line'>defaults write com.apple.finder AppleShowAllFiles -boolean true ; killall Finder
+</span><span class='line'>//隐藏文件
+</span><span class='line'>defaults write com.apple.finder AppleShowAllFiles -boolean false ; killall Finder</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/myimg/java/packages.png" width="300" alt="" /></p>
+
+<h4>包的默认值修改</h4>
+
+<p>可以直接点击<code>View Code</code>打开包的代码修改。也可以像上面先显示文件夹，找到对应的包，然后修改里面的默认配置。在Settings -> Open Config Folder 也可以打开所有插件包的配置。
+<img src="/myimg/java/package_change.png" width="700" alt="" /></p>
+
+<h4>快捷键</h4>
+
+<p>ctrl-space : 补全提示 (Mac要把设置->键盘->快捷键->Spotlight 里对应的快捷键取消掉! 不然电脑的优先级更高)</p>
+
+<p>ctrl-alt-b : atom-beautify插件 代码格式化，为什么JSX格式化后有点乱&hellip;</p>
 
 <p>cmd-shift-p : 打开快捷面板</p>
 
-<h4>链接</h4>
+<p>cmd-f : 文件里搜索</p>
+
+<p>cmd-shift-f : 项目里搜索</p>
+
+<p>cmd-alt-[ : 折叠代码</p>
+
+<p>cmd-alt-] : 展开代码</p>
+
+<p>cmd-alt-shift-{ : 折叠所有代码</p>
+
+<p>cmd-alt-shift-} : 展开所有代码</p>
+
+<p>ctrl-[ : 左移动</p>
+
+<p>ctrl-] : 右移动</p>
+
+<p>ctrl-g : 跳转到某行</p>
+
+<p>cmd-\ : 左边目录显示或隐藏</p>
+
+<p>cmd-shift-o : 打开文件夹</p>
+
+<p>cmd-b : 在打开的文件间切换</p>
+
+<p>cmd-delete : 删除光标左边的</p>
+
+<p>ctrl-shift-l : 删除一整行</p>
+
+<p>ctrl-shift-&ldquo;+&rdquo; : 增大字体</p>
+
+<p>ctrl-shift-&ldquo;-&rdquo; : 缩小字体</p>
 
 <p><a href="https://github.com/kompasim/atom-plugins">92款插件推荐</a></p>
 </div>
