@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="block就是一个代码块，闭包，会捕获上下文的匿名函数，它可以作为参数或者返回值进行传递。在objc中，根据对象的定义，凡是首地址是*isa的结构体指针，都可以认为是对象(id)，所以block实际上就算是对象，但它的内存管理又和NSObject有点不一样。 声明: *变量：returnType &hellip;">
+  <meta name="description" content="偶然间发现了一个Android自带的抽屉控件DrawerLayout,就觉得应该可以用他来封装成手势返回的基础控件。思路就是先设置Activity的跳转动画是从右到左，并且前一个Activity不能动。然后设置DrawerLayout的menu从右边出来，然设置menu全屏， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,497 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/31/android-swipe/">Android手势滑动返回</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-31T15:16:10+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>3:16 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>偶然间发现了一个Android自带的抽屉控件<a href="https://developer.android.com/training/implementing-navigation/nav-drawer.html">DrawerLayout</a>,就觉得应该可以用他来封装成手势返回的基础控件。思路就是先设置Activity的跳转动画是从右到左，并且前一个Activity不能动。然后设置DrawerLayout的menu从右边出来，然设置menu全屏，这个menu就相当于子Activity View的容器，默认打开menu,然后设置DrawerLayout容器透明，当DrawerLayout close的时候finish它所在的Activity！还要把状态栏设置成透明，不然DrawerLayout closed 再 finish Activity的时候会有视觉差！复杂的手势控制就交由自带的DrawerLayout处理啦，生命周期还是Activity的生命周期。怎么样，是不是机智如我！！😆</p>
+
+<p>遇到的问题：DrawerLayout的menu即时设置成match_parent也不能全屏！因为源码里设置了margin64dp! 那我们只好再设置回来：android:layout_marginLeft=&ldquo;-64dp"。</p>
+
+<pre><code> private static final int MIN_DRAWER_MARGIN = 64; // dp
+</code></pre>
+
+<p>BaseSwipeActivity</p>
+
+<pre><code>package com.suguiming.myandroid.base;
+import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+
+import com.suguiming.myandroid.R;
+
+public class BaseSwipeActivity extends AppCompatActivity {
+
+private DrawerLayout drawer;
+private LinearLayout containerLayout;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+    setContentView(R.layout.activity_base_swipe);
+
+    containerLayout = (LinearLayout) findViewById(R.id.container_layout);
+
+    drawer = (DrawerLayout) findViewById(R.id.base_drawer_layout);
+    drawer.openDrawer(GravityCompat.END);
+    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+        @Override
+        public void onDrawerClosed(View drawerView) {
+            super.onDrawerClosed(drawerView);
+            finish();
+        }
+    };
+    drawer.setDrawerListener(toggle);
+}
+
+//子类不要用setContentView,用setMainView!!!!
+public void setMainView(int viewId) {
+    LayoutInflater inflater = LayoutInflater.from(this);
+    View tmpView = inflater.inflate(viewId, null);
+
+    if (tmpView instanceof LinearLayout) {
+        LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(linearLayoutParams);
+    } else if (tmpView instanceof RelativeLayout) {
+        RelativeLayout.LayoutParams relativeLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(relativeLayoutParams);
+    }
+    containerLayout.removeAllViews();
+    containerLayout.addView(tmpView);
+}
+
+}
+</code></pre>
+
+<p>对应的布局文件</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/transparent"
+    tools:context="com.suguiming.myandroid.base.BaseSwipeActivity"&gt;
+
+&lt;android.support.v4.widget.DrawerLayout
+    android:id="@+id/base_drawer_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    tools:openDrawer="end"&gt;
+    &lt;LinearLayout
+        android:orientation="vertical"
+        android:background="@color/clear"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"&gt;
+    &lt;/LinearLayout&gt;
+
+    &lt;!---64dp是源码menu的margin,这里设置为65,不然会有一条黑线--&gt;
+    &lt;LinearLayout
+        android:id="@+id/container_layout"
+        android:orientation="vertical"
+        android:layout_gravity="end"
+        android:layout_marginLeft="-65dp"
+        android:background="@color/light_gray"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"&gt;
+    &lt;/LinearLayout&gt;
+&lt;/android.support.v4.widget.DrawerLayout&gt;
+&lt;/LinearLayout&gt;
+</code></pre>
+
+<p>push 的动画 style</p>
+
+<pre><code>&lt;!--手势返回theme--&gt;
+&lt;style name="BackSwipeTheme" parent="Theme.AppCompat.Light.NoActionBar"&gt;
+    &lt;item name="android:windowIsTranslucent"&gt;true&lt;/item&gt;
+    &lt;item name="android:windowBackground"&gt;@android:color/transparent&lt;/item&gt;
+    &lt;item name="android:windowNoTitle"&gt;true&lt;/item&gt;
+    &lt;item name="android:backgroundDimEnabled"&gt;false&lt;/item&gt;
+    &lt;item name="android:windowAnimationStyle"&gt;@style/ActivitySwipeBackAnimation&lt;/item&gt;
+&lt;/style&gt;
+&lt;style name="ActivitySwipeBackAnimation" parent="@android:style/Animation.Activity"&gt;
+    &lt;item name="android:activityOpenEnterAnimation"&gt;@anim/activity_swipe_in&lt;/item&gt;
+    &lt;item name="android:activityOpenExitAnimation"&gt;@anim/activity_swipe_out&lt;/item&gt;
+    &lt;item name="android:activityCloseEnterAnimation"&gt;@anim/activity_swipe_in&lt;/item&gt;
+    &lt;item name="android:activityCloseExitAnimation"&gt;@anim/activity_swipe_out&lt;/item&gt;
+&lt;/style&gt;
+</code></pre>
+
+<p>使用的话就是让Activity继承BaseSwipeActivity，然后设置Activity的Theme为BackSwipeTheme。</p>
+
+<pre><code>public class ActivitySwipeBack extends BaseSwipeActivity {
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    //要用setMainView，不要用setContentView
+    setMainView(R.layout.activity_activity_swipe_back);
+  }
+}
+
+&lt;activity android:name=".tab0.ActivitySwipeBack"
+            android:theme="@style/BackSwipeTheme"/&gt;
+</code></pre>
+
+<p>完整Demo请查看<a href="https://github.com/AndyFightting/MyAndroid">MyAndroid</a>中的"手势滑动返回"。</p>
+
+<p><img src="/myimg/android/android_swipe.png" alt="imge" /></p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/08/31/android-swipe/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/04/swift-read/">Swift阅读笔记</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-04T16:23:05+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:23 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>let 声明常量，var 声明变量，会自动进行类型推断(小数推断为Double),一行末尾可不加分号(;)。
+</span><span class='line'>值永远不会被隐式转换为其他类型，务必显示强制转换。
+</span><span class='line'>if语句的条件不能默认非0为真。 类型后加?号表示可选值，要么有值，要么是nil。
+</span><span class='line'>用 if let(或者var) name = optionName 来获取可选值处理。 
+</span><span class='line'>switch的case中自带break，switch要保证全部遍历，否则必须要有default选项。
+</span><span class='line'>0&lt; x &lt;4 等价 0..&lt;4 , 0&lt; x &lt;=4 等价 0...4 。 
+</span><span class='line'>用 func 声明函数，用-&gt;指定返回类型func greet(name: String, day: String) -&gt; String { ... }。 
+</span><span class='line'>元组概念，一般用做函数返回值。 
+</span><span class='line'>func sumOf(numbers: Int...) -&gt; Int {}，...表示可变个数的参数。 
+</span><span class='line'>函数是一等类型，像int float一样，可用作参数或者返回值。 
+</span><span class='line'>class 声明类,属性都要赋值，要么在声明直接写死，要么在init方法中赋值。 
+</span><span class='line'>重写父类方法必须用 override 标记。 属性可以有get set willGet didSet 等方法。 
+</span><span class='line'>mutating关键字用来标记一个会修改结构体(属性)的方法。 
+</span><span class='line'>extension来为现有的类型添加功能，比如新的方法和计算属性。
+</span><span class='line'>泛型(指定类型)就是java中的泛型。 Bool值是true或false。 
+</span><span class='line'>typealies name = 类型 给类型起个别名。 
+</span><span class='line'>OC中的nil只用在对象上(int不行)，Swift中nil可指任何东西(对象或int)。
+</span><span class='line'>使用!来获取一个不存在的可选值会导致错误。隐式解析可选类型(类型!)就是可选类型，但是可以当做非可选类型来使用(不用!解析,没值时会报错)。 
+</span><span class='line'>throws do try catch 的使用。Swift的赋值操作不返回任何值。% 浮点数也可以取余运算。 
+</span><span class='line'>空合运算符(a ?? b)对可选类型a进行空判断，如果a包含一个值就进行解封，否则就返回一个默认值b(b和a要类型相同)。逻辑 &&，|| 都是短路计算的。
+</span><span class='line'>条件中的下划线 _ 来忽略对值的访问，case 中的下划线 _ 表示所有可能的值,case中可进行值绑定，case条件可用where语句。 
+</span><span class='line'>字典的遍历顺序和插入顺序可能不同(字典无序的)。 
+</span><span class='line'>Swift语言的repeat-while循环合其他语言中的do-while循环是类似的。
+</span><span class='line'>注意循环中switch中的continue(开始下次)和break(跳到switch}后面继续执行)的差别，switch中的fallthrouth进入下一个case时不会再进行条件判断。
+</span><span class='line'>guard(守卫)语句总是有一个else分句。 
+</span><span class='line'>调用函数时第一个参数名不要，之后的参数名要，用逗号分开(第一个参数省略其外部参数名，第二个以后的参数使用其本地参数名作为自己的外部参数名。
+</span><span class='line'>所有参数需要有不同的本地参数名，但可以共享相同的外部参数名。如果你提供了外部参数名，那么函数在被调用时，必须使用外部参数名。如果你不想为第二个及后续的参数设置参数名，用下划线_代替)。
+</span><span class='line'>一个函数最多只能有一个可变参数(...),如果函数同时有默认参数和可变参数要把可变参数放最后。 
+</span><span class='line'>函数参数默认是常量，修改会报错，但可以用var声明为变量,修改只在函数体内有效。 
+</span><span class='line'>inout参数(只能传入变量)会替换原来的值，使用时在变量名前加&符号。 
+</span><span class='line'>原数组不会被sort()方法修改。 闭包就是用{}包起来的函数代码块，用in分开返回值和处理代码，参数不能有默认值。如果需要将闭包作为最后一个参数，可变成尾随闭包。
+</span><span class='line'>Array的map方法可返回不同类型。 函数和闭包都是引用类型。
+</span><span class='line'>结构体和枚举是值类型，所有的基本类型都是值类型，并且都是以结构体的形式在后台所实现。
+</span><span class='line'>类是引用类型。常量实例依然可改变其中的变量属性值。
+</span><span class='line'>swift指针并不直接指向内存中的某个地址，而且也不要求你使用星号（*）来表明你在创建一个引用。
+</span><span class='line'>结构体实例总是通过值传递，类实例总是通过引用传递。
+</span><span class='line'>Swift 中字符串（String）,数组（Array）和字典（Dictionary）均以结构体的形式实现的值类型,而在OC中是以类的形式实现的引用类型。
+</span><span class='line'>计算属性可以用于类、结构体和枚举，存储属性只能用于类和结构体。
+</span><span class='line'>如果创建了一个结构体的实例并将其赋值给一个常量，则无法修改该实例的任何属性，即使定义了变量存储属性，由于结构体（struct）属于值类型，当值类型的实例被声明为常量的时候，它的所有属性也就成了常量。
+</span><span class='line'>必须将延迟存储属性声明成变量（使用var关键字），因为属性的初始值可能在实例构造完成之后才会得到。
+</span><span class='line'>而常量属性在构造过程完成之前必须要有初始值，因此无法声明成延迟属性。
+</span><span class='line'>计算属性不直接存储值，而是提供一个 get和一个可选的set，来间接获取和设置其他属性或变量的值。
+</span><span class='line'>必须使用var关键字定义计算属性，包括只读计算属性，因为它们的值不是固定的。
+</span><span class='line'>父类的属性在子类的构造器中被赋值时，它在父类中的willSet和didSet观察器会被调用。
+</span><span class='line'>全局的常量或变量都是延迟计算的，跟延迟存储属性相似，不同的地方在于，全局的常量或变量不需要标记lazy特性。局部范围的常量或变量不会延迟计算。
+</span><span class='line'>必须给存储类型的类属性指定默认值，因为类型本身无法在初始化过程中使用构造器给类型属性赋值。
+</span><span class='line'>结构体和枚举能够定义方法是 Swift 与 C/Objective-C 的主要区别之一。</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/08/04/swift-read/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/04/animation/">iOS中的动画</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-04T16:22:41+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:22 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>动画是作用的UIView的CALayer上的，UIView是CALayer的代理，给CALayer提供数据参数，CALayer负责渲染和动画。UIView是在UIKit框架中，而CALayer是在QuartzCore框架中。UIView可以响应用户事件，而CALayer不可以响应用户事件。CALayer也可以像UIView一样添加子Layer。
+<img src="/myimg/ios/calayer.png" alt="image" /></p>
+
+<h4>CALayer常用属性</h4>
+
+<pre><code>anchorPoint 和中心点position重合的一个点，称为“锚点”，锚点的描述是相对于x、y位置比例而言的默认在图像中心点(0.5,0.5)的位置
+backgroundColor 图层背景颜色  
+borderColor 边框颜色    
+borderWidth 边框宽度    
+bounds  图层大小    
+contents    图层显示内容，例如可以将图片作为图层内容显示
+contentsRect    图层显示内容的大小和位置    
+cornerRadius    圆角半径    
+doubleSided 图层背面是否显示，默认为YES 
+frame   图层大小和位置，不支持隐式动画，所以CALayer中很少使用frame，通常使用bounds和position代替
+hidden  是否隐藏    
+mask    图层蒙版    
+maskToBounds    子图层是否剪切图层边界，默认为NO 
+opacity 透明度 ，类似于UIView的alpha    
+position    图层中心点位置，类似于UIView的center
+shadowColor 阴影颜色    
+shadowOffset    阴影偏移量 
+shadowOpacity   阴影透明度，注意默认为0，如果设置阴影必须设置此属性
+shadowPath  阴影的形状 
+shadowRadius    阴影模糊半径  
+sublayers   子图层   
+sublayerTransform   子图层形变 
+transform   图层形变
+</code></pre>
+
+<p>要注意position和anchorPoint的区别：<strong>position是layer中的anchorPoint点在superLayer中的位置坐标！position点是相对suerLayer的，anchorPoint点是相对自身layer的！</strong> 所以说position不变，但anchorPoint改变的话，也会改变layer在superLayer中的位置！</p>
+
+<pre><code>layer=[[CALayer alloc]init];
+layer.backgroundColor=[UIColor purpleColor].CGColor;
+layer.bounds=CGRectMake(0, 0, 100,100);
+layer.shadowColor=[UIColor redColor].CGColor;
+layer.shadowOffset=CGSizeMake(5, 5);
+layer.shadowOpacity=0.7;
+layer.borderColor=[UIColor yellowColor].CGColor;
+layer.borderWidth=3;
+layer.position=CGPointMake(size.width/2, size.height/2);
+[self.view.layer addSublayer:layer];
+
+//layer.anchorPoint=CGPointMake(0, 0); //图一
+//layer.anchorPoint=CGPointMake(0, 1); //图二
+</code></pre>
+
+<p>图中position一样，但anchorPoint不一样，所以图片位置也不一样。  <br/>
+<img src="/myimg/ios/layer_position.png" alt="image" />
+注意如果要设置圆角，对于图层本身而言可以正常显示，但是对于图层中绘制的图片无法正确显示。如果想要图片正确显示则必须设置masksToBounds=YES，剪切子图层。但设置layer.masksToBounds=YES后，图层的影效果无法和masksToBounds=YES同时使用，因为masksToBounds的目的就是剪切外边框。如果同时要阴影又要圆角的话，就用两个重叠的图层,底部负责绘制阴影，上层负责绘制圆角。</p>
+
+<h4>Core Animation</h4>
+
+<p>iOS的核心动画Core Animation包含在Quartz Core框架中。核心动画分为几类：基础动画、关键帧动画、动画组、转场动画,各个类的关系大致如下：
+<img src="/myimg/ios/core_animation.png" alt="image" />
+*CAAnimation：核心动画的基础类，不能直接使用，负责动画运行时间、速度的控制，本身实现了CAMediaTiming协议。</p>
+
+<p>*CAPropertyAnimation：属性动画的基类，通过属性进行动画设置，不能直接使用。</p>
+
+<p>*CAAnimationGroup：动画组合模式，可以通过动画组来进行所有动画行为的统一控制，组中所有动画效果可以并发执行。</p>
+
+<p>*CATransition：转场动画，主要通过滤镜进行动画效果设置。</p>
+
+<p>*CABasicAnimation：基础动画，通过属性修改进行动画参数控制，只有初始状态和结束状态。</p>
+
+<p>*CAKeyframeAnimation：关键帧动画，同样是通过属性进行动画参数控制，但是同基础动画不同的是它可以有多个状态控制。</p>
+
+<p>基础动画、关键帧动画都属于属性动画，就是通过修改属性值产生动画效果，只需要设置初始值和结束值，中间的过程动画由系统自动计算产生。和基础动画不同的是关键帧动画可以设置多个属性值，每两个属性中间的过渡动画由系统自动完成。</p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/08/04/animation/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/04/core-data/">iOS中的Core Data</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-04T16:22:22+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:22 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://developer.apple.com/library/watchos/documentation/Cocoa/Conceptual/CoreData/index.html">Core Data</a>是一个对sqlite数据库进行封装的ORM(Object Relation Mapping)框架。它主要由以下几部分组成：</p>
+
+<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObject_Class/">NSManagedObject</a></h4>
+
+<p>NSManagedObject is a generic class that implements all the basic behavior required of a Core Data model object. It is not possible to use instances of direct subclasses of NSObject (or any other class not inheriting from NSManagedObject) with a managed object context. You may create custom subclasses of NSManagedObject, although this is not always required. If no custom logic is needed, a complete object graph can be formed with NSManagedObject instances.</p>
+
+<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObjectModel_Class/">NSManagedObjectModel</a></h4>
+
+<p>An NSManagedObjectModel object describes a schema, a collection of entities (data models) that you use in your application.</p>
+
+<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObjectContext_Class/">NSManagedObjectContext</a></h4>
+
+<p>An instance of NSManagedObjectContext represents a single “object space” or scratch pad in an application. Its primary responsibility is to manage a collection of managed objects. These objects form a group of related model objects that represent an internally consistent view of one or more persistent stores. A single managed object instance exists in one and only one context, but multiple copies of an object can exist in different contexts. Thus object uniquing is scoped to a particular context.</p>
+
+<h4><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSPersistentStoreCoordinator_Class/">NSPersistentStoreCoordinator</a></h4>
+
+<p>Instances of NSPersistentStoreCoordinator associate persistent stores (by type) with a model (or more accurately, a configuration of a model) and serve to mediate between the persistent store or stores and the managed object context or contexts. Instances of NSManagedObjectContext use a coordinator to save object graphs to persistent storage and to retrieve model information. A context without a coordinator is not fully functional as it cannot access a model except through a coordinator. The coordinator is designed to present a façade to the managed object contexts such that a group of persistent stores appears as an aggregate store. A managed object context can then create an object graph based on the union of all the data stores the coordinator covers.</p>
+
+<h4><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSFetchRequest_Class/index.html#//apple_ref/occ/cl/NSFetchRequest">NSFetchRequest</a></h4>
+
+<p>An instance of NSFetchRequest describes search criteria used to retrieve data from a persistent store.</p>
+
+<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSPredicate_Class/">NSPredicate</a></h4>
+
+<p>The NSPredicate class is used to define logical conditions used to constrain a search either for a fetch or for in-memory filtering.</p>
+
+<p><img src="/myimg/ios/cd_orm.png" alt="image" />
+<img src="/myimg/ios/cd_table.png" alt="image" /></p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/08/04/core-data/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/04/session/">iOS中的NSURLSession</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-04T16:22:02+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:22 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/08/04/session/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -379,241 +870,6 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/19/desigin-pattern/">设计模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-12-19T21:51:06+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:51 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>我理解的设计模式都是为了让代码模块化，结构化，各司其职，再把各个模块通过"接口"组合起来。封装变化；多用组合少用继承；针对接口编程，不针对实现编程；为交互对象之间的松耦合设计而努力；对扩展开放，对修改关闭。</p>
-
-<h3>1.MVC模式</h3>
-
-<p>看图就可以了，简洁明了~
-<img src="/myimg/other/mvc.png" alt="image" /></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/12/19/desigin-pattern/">阅读全文</a>
-    </footer>
-  
-
-
-      | <a href="/blog/2015/12/19/desigin-pattern/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/23/androidsave/">Android基本存储</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-23T19:48:52+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>7:48 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Android数据保存方式有： 文件存储, SharedPreference, Sqlite, SD卡存储。</p>
-
-<h3>* 文件存储</h3>
-
-<p>不对存储数据做任何格式化处理，原封不动的保存到文件中。使用于保存简单的文本数据或者二进制数据。</p>
-
-<p>Context有个<code>openFileOutput()</code>方法接受两个参数，第一个：文件名，<strong>不要包含路径</strong>，第二个：操作方式，有两种，<code>MODE_PRIVATE</code>(覆盖原文件内容),<code>MODE_APPEND</code>(在原文件尾部追加内容)，默认第一种。文件默认保存在：<code>/data/data/packageName/files/</code>这个目录里。</p>
-
-<pre><code> public static void saveText(Context context,String fileName,String text){
-    FileOutputStream outputStream ;
-    BufferedWriter bufferedWriter = null;
-    try {
-       outputStream = context.openFileOutput(fileName,Context.MODE_PRIVATE);
-        bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-        bufferedWriter.write(text);
-    }catch (IOException e){
-        e.printStackTrace();
-    }finally {
-        try {
-            if (bufferedWriter != null){
-                bufferedWriter.close();
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-}
-</code></pre>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/11/23/androidsave/">阅读全文</a>
-    </footer>
-  
-
-
-      | <a href="/blog/2015/11/23/androidsave/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/22/studioplugin/">Android Studio插件</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-22T14:10:45+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>2:10 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>* Logger</h3>
-
-<p>推荐一款打印工具<a href="https://github.com/orhanobut/logger">Logger</a>,比自带的打印效果更好，主要是json打印是格式化的！Github上写的地址<code>compile 'com.github.orhanobut:logger:1.12'</code>我下载失败，我用的是<code>compile 'com.orhanobut:logger:1.11'</code>。
-<img src="/myimg/android/logger.png" alt="img" />
-打印颜色可以在preference里设置，要先<code>Save as</code>保存一下，然后把右边的<code>Use inherited attributes</code>取消，然后就可以选择颜色了</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/11/22/studioplugin/">阅读全文</a>
-    </footer>
-  
-
-
-      | <a href="/blog/2015/11/22/studioplugin/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/21/androidBase0/">Android 基础知识</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-21T09:26:15+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>9:26 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>* Activity启动模式</h3>
-
-<p>在AndroidMainfest.xml里的activity里设置android:launchMode = “xxx”</p>
-
-<p><strong>standard:</strong> 默认模式，每次都会创建一个新的放在栈顶，即使栈里已经有了</p>
-
-<p><strong>singleTop:</strong> 已经在<strong>栈顶</strong>了就不创建，否则还是会创建，即使栈里已经有了</p>
-
-<p><strong>singleTask:</strong> 在活动栈中有了就不创建，直接推到栈顶，<strong>在它之前的全部会被挤出栈</strong>，若活动栈中没有就创建</p>
-
-<p><strong>singleInstance:</strong> 会创建一个<strong>新的活动栈</strong>把自己放进去</p>
-
-<h3>* 随时随地退出程序</h3>
-
-<p>在任何页面都可以被踢下线的实现技巧</p>
-
-<p>创建一个收集Activity的管理类，在BaseActivity的<code>onCreate()</code>方法中添加<code>ActivityManager.addActivity(this)</code>,在<code>onDestroy</code>方法中添加<code>ActivityManager.removeActivity(this)</code>。然后在任何要强退的地方调用<code>ActivityManager.finishAllActivity()</code>。</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/11/21/androidBase0/">阅读全文</a>
-    </footer>
-  
-
-
-      | <a href="/blog/2015/11/21/androidBase0/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/14/jiaocheng/">Octopress搭建个人博客</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-14T11:21:39+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:21 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本人的博客刚刚搭建好，并绑定了个人域名(<a href="http://guimingsu.com">guimingsu.com</a>)，现将该过程记录下来。</p>
-
-<p><a href="https://pages.github.com/">Github Pages</a>是Github提供的一个免费空间，相当于我们博客的免费托管服务器，我们写的博客就是放这上面的。它可以拥有一个独立的二级域名如xxx.github.io(如果有自己的个人域名，可以用自己的个人域名指向它)，允许开发者提交静态网页文件，用于介绍自己，或者自己的开源项目，可以看作是个人或项目主页。</p>
-
-<p><a href="http://octopress.org/">Octopress</a>“A blogging framework for hackers”，即像写代码似的写博客。一个博客网页生成框架，我们按照它要求的格式写博客内容，然后敲命令<code>rake generate</code>,<code>rake deploy</code>,就可以把网页放到Github服务器上，然后我们就可以看到了啊，它就是一个写博客的工具可以这样理解。</p>
-
-<p>个人域名，这个要自己买了，可以上<a href="http://wanwang.aliyun.com/">阿里云</a>上买，一年几十块，配置后面再讲。在注册阿里云的时候我用的QQ邮箱，就是收不到邮件，换成Gmail就收到了。不知道是我网络问题还是大公司间的任性撕逼，如果你也收不到邮件就换个邮箱注册吧。</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/11/14/jiaocheng/">阅读全文</a>
-    </footer>
-  
-
-
-      | <a href="/blog/2015/11/14/jiaocheng/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -631,23 +887,23 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2016/11/28/react-native-run-bug/">React Native 问题汇总</a>
+        <a href="/blog/2016/12/01/es5-es6/">ES5/ES6 学习</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2016/11/26/react-native-basic/">React Native 基础知识</a>
+        <a href="/blog/2016/11/30/angularjs/">AngularJs 学习</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2016/11/24/react-javascript/">React 基础知识</a>
+        <a href="/blog/2016/11/29/node-js/">Node.js 学习</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2016/11/24/atom-edit/">Atom</a>
+        <a href="/blog/2016/11/28/ajax/">Ajax 学习</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2016/11/18/struts-spring-mybatis/">Struts + Spring + MyBatis</a>
+        <a href="/blog/2016/11/28/redux/">Redux 学习</a>
       </li>
     
   </ul>
@@ -661,6 +917,7 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
   <ul id="categories">
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
+<li class='category'><a href='/blog/categories/js/'>js (5)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (8)</a></li>
 <li class='category'><a href='/blog/categories/react/'>react (4)</a></li>
 

@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://andyfightting.github.io/blog/2016/12/01/es5-es6/</loc>
+    <lastmod>2016-12-01T21:38:24+08:00</lastmod>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/blog/2016/11/30/angularjs/</loc>
+    <lastmod>2016-11-30T21:35:16+08:00</lastmod>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/blog/2016/11/29/node-js/</loc>
+    <lastmod>2016-11-29T21:31:50+08:00</lastmod>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/blog/2016/11/28/ajax/</loc>
+    <lastmod>2016-11-28T21:41:26+08:00</lastmod>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/blog/2016/11/28/redux/</loc>
+    <lastmod>2016-11-28T21:40:08+08:00</lastmod>
+  </url>
+  <url>
     <loc>http://andyfightting.github.io/blog/2016/11/28/react-native-run-bug/</loc>
     <lastmod>2016-11-28T18:46:09+08:00</lastmod>
   </url>
@@ -144,6 +164,9 @@
   </url>
   <url>
     <loc>http://andyfightting.github.io/blog/categories/react/</loc>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/blog/categories/js/</loc>
   </url>
   <url>
     <loc>http://andyfightting.github.io/posts/2/</loc>
