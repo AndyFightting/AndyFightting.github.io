@@ -4,7 +4,7 @@
   <title><![CDATA[Category: React | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/react/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-11-28T21:47:42+08:00</updated>
+  <updated>2016-11-30T08:04:43+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,102 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[React Native 布局]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/11/29/rn-style/"/>
+    <updated>2016-11-29T22:27:51+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/29/rn-style</id>
+    <content type="html"><![CDATA[<p>React Native 采用CSS样式来布局，不过都是单个单个的选取器，没有像web似的组合选取器。只要在样式表中书写一个不存在的样式，就会报错，提示该样式不存在，然后提供所有可用的样式：
+<img src="/myimg/java/style.png" alt="" /></p>
+
+<pre><code>//边框
+borderBottomWidth 
+borderLeftWidth 
+borderRightWidth 
+borderTopWidth 
+borderWidth 
+</code></pre>
+
+<pre><code>//边框颜色
+borderBottomColor
+borderLeftColor
+borderRightColor
+borderTopColor
+borderColor
+</code></pre>
+
+<pre><code>//外边距
+marginTop
+marginBottom
+marginLeft
+marginRight
+marginVertical //相当于marginTop 和 marginBottom
+marginHorizontal //相当于 marginLeft 和 marginRight
+margin
+</code></pre>
+
+<pre><code>//内边距  
+paddingTop  
+paddingBottom
+paddingLeft  
+paddingRight  
+paddingVertical //相当于 paddingTop 和 paddingBottom
+paddingHorizontal  //相当于 paddingLeft 和 paddingRight
+padding 
+</code></pre>
+
+<pre><code>//边框圆角
+borderTopLeftRadius
+borderTopRightRadius
+borderBottomLeftRadius
+borderBottomRightRadius
+borderRadius
+</code></pre>
+
+<pre><code>//flex 布局
+flex number 
+flexDirection enum('row', 'column') 
+flexWrap enum('wrap', 'nowrap') 
+alignItems enum('flex-start', 'flex-end', 'center', 'stretch') 
+alignSelf enum('auto', 'flex-start', 'flex-end', 'center', 'stretch') 
+justifyContent enum('flex-start', 'flex-end', 'center', 'space-between', 'space-around') 
+position属性值为absolute和relative，当使用绝对布局时，定位根据屏幕来进行。
+</code></pre>
+
+<pre><code>//字体相关属性
+color 字体颜色
+fontFamily 字体族
+fontSize 字体大小
+fontStyle 字体样式，正常，倾斜等，值为enum('normal', 'italic')
+fontWeight 字体粗细，值为enum("normal", 'bold', '100', '200', '300', '400', '500', '600', '700', '800', '900')
+letterSpacing 字符间隔
+lineHeight 行高
+textAlign 字体对齐方式，值为enum("auto", 'left', 'right', 'center', 'justify')
+textDecorationLine 貌似没效果，字体修饰，上划线，下划线，删除线，无修饰，值为enum("none", 'underline', 'line-through', 'underline line-through')
+textDecorationStyle enum("solid", 'double', 'dotted', 'dashed') 貌似没效果，修饰的线的类型
+textDecorationColor 貌似没效果，修饰的线的颜色
+writingDirection enum("auto", 'ltr', 'rtl') 不知道什么属性，写作方向？从左到右？从右到左？
+</code></pre>
+
+<pre><code>//图片相关属性
+resizeMode enum('cover', 'contain', 'stretch')
+overflow enum('visible', 'hidden') 超出部分是否显示，hidden为隐藏
+tintColor 着色，rgb字符串类型
+opacity 透明度
+scaleX:水平方向缩放
+scaleY:垂直方向缩放
+rotation:旋转
+translateX:水平方向平移
+translateY:水平方向平移
+//阴影
+shadowColor
+shadowOffset
+shadowOpacity
+shadowRadius
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[React Native 问题汇总]]></title>
@@ -74,23 +170,6 @@
     <link href="http://andyfightting.github.io/blog/2016/11/26/react-native-basic/"/>
     <updated>2016-11-26T11:16:25+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/11/26/react-native-basic</id>
-    <content type="html"><![CDATA[<h4>属性</h4>
-
-<h4>布局</h4>
-
-<h4>事件</h4>
-
-<h4>网络</h4>
-
-<h4>存储</h4>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[React 基础知识]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/11/24/react-javascript/"/>
-    <updated>2016-11-24T14:31:57+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/11/24/react-javascript</id>
     <content type="html"><![CDATA[<h4>React 的核心思想是：封装组件!React 应用都是构建在组件之上，各个组件维护自己的状态和 UI，当状态变更，自动重新渲染自身组件。组件的第一个字母必须大写,组件只能包含一个顶层标签。</h4>
 
 <h4>Declarative</h4>
