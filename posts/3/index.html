@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="| Comments iOS中的block Aug 4th, 2016 4:21 pm block就是一个代码块，闭包，会捕获上下文的匿名函数，它可以作为参数或者返回值进行传递。在objc中，根据对象的定义，凡是首地址是*isa的结构体指针，都可以认为是对象(id)， &hellip;">
+  <meta name="description" content="Core Data是一个对sqlite数据库进行封装的ORM(Object Relation Mapping)框架。它主要由以下几部分组成： NSManagedObject NSManagedObject is a generic class that implements all the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,65 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/04/core-data/">iOS中的Core Data</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-04T16:22:22+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:22 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://developer.apple.com/library/watchos/documentation/Cocoa/Conceptual/CoreData/index.html">Core Data</a>是一个对sqlite数据库进行封装的ORM(Object Relation Mapping)框架。它主要由以下几部分组成：</p>
+
+<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObject_Class/">NSManagedObject</a></h4>
+
+<p>NSManagedObject is a generic class that implements all the basic behavior required of a Core Data model object. It is not possible to use instances of direct subclasses of NSObject (or any other class not inheriting from NSManagedObject) with a managed object context. You may create custom subclasses of NSManagedObject, although this is not always required. If no custom logic is needed, a complete object graph can be formed with NSManagedObject instances.</p>
+
+<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObjectModel_Class/">NSManagedObjectModel</a></h4>
+
+<p>An NSManagedObjectModel object describes a schema, a collection of entities (data models) that you use in your application.</p>
+
+<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObjectContext_Class/">NSManagedObjectContext</a></h4>
+
+<p>An instance of NSManagedObjectContext represents a single “object space” or scratch pad in an application. Its primary responsibility is to manage a collection of managed objects. These objects form a group of related model objects that represent an internally consistent view of one or more persistent stores. A single managed object instance exists in one and only one context, but multiple copies of an object can exist in different contexts. Thus object uniquing is scoped to a particular context.</p>
+
+<h4><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSPersistentStoreCoordinator_Class/">NSPersistentStoreCoordinator</a></h4>
+
+<p>Instances of NSPersistentStoreCoordinator associate persistent stores (by type) with a model (or more accurately, a configuration of a model) and serve to mediate between the persistent store or stores and the managed object context or contexts. Instances of NSManagedObjectContext use a coordinator to save object graphs to persistent storage and to retrieve model information. A context without a coordinator is not fully functional as it cannot access a model except through a coordinator. The coordinator is designed to present a façade to the managed object contexts such that a group of persistent stores appears as an aggregate store. A managed object context can then create an object graph based on the union of all the data stores the coordinator covers.</p>
+
+<h4><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSFetchRequest_Class/index.html#//apple_ref/occ/cl/NSFetchRequest">NSFetchRequest</a></h4>
+
+<p>An instance of NSFetchRequest describes search criteria used to retrieve data from a persistent store.</p>
+
+<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSPredicate_Class/">NSPredicate</a></h4>
+
+<p>The NSPredicate class is used to define logical conditions used to constrain a search either for a fetch or for in-memory filtering.</p>
+
+<p><img src="/myimg/ios/cd_orm.png" alt="image" />
+<img src="/myimg/ios/cd_table.png" alt="image" /></p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/08/04/core-data/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -554,57 +613,6 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/21/androidBase0/">Android 基础知识</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-21T09:26:15+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>9:26 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>* Activity启动模式</h3>
-
-<p>在AndroidMainfest.xml里的activity里设置android:launchMode = “xxx”</p>
-
-<p><strong>standard:</strong> 默认模式，每次都会创建一个新的放在栈顶，即使栈里已经有了</p>
-
-<p><strong>singleTop:</strong> 已经在<strong>栈顶</strong>了就不创建，否则还是会创建，即使栈里已经有了</p>
-
-<p><strong>singleTask:</strong> 在活动栈中有了就不创建，直接推到栈顶，<strong>在它之前的全部会被挤出栈</strong>，若活动栈中没有就创建</p>
-
-<p><strong>singleInstance:</strong> 会创建一个<strong>新的活动栈</strong>把自己放进去</p>
-
-<h3>* 随时随地退出程序</h3>
-
-<p>在任何页面都可以被踢下线的实现技巧</p>
-
-<p>创建一个收集Activity的管理类，在BaseActivity的<code>onCreate()</code>方法中添加<code>ActivityManager.addActivity(this)</code>,在<code>onDestroy</code>方法中添加<code>ActivityManager.removeActivity(this)</code>。然后在任何要强退的地方调用<code>ActivityManager.finishAllActivity()</code>。</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/11/21/androidBase0/">阅读全文</a>
-    </footer>
-  
-
-
-      | <a href="/blog/2015/11/21/androidBase0/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -622,6 +630,10 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/11/30/react-native-life/">React Native组件生命周期</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/11/30/css-flex-box/">Flexbox 布局</a>
       </li>
     
@@ -637,10 +649,6 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
         <a href="/blog/2016/11/26/react-native-basic/">React Native 基础知识</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/11/24/atom-edit/">Atom</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -653,7 +661,7 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (8)</a></li>
-<li class='category'><a href='/blog/categories/react/'>react (5)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (6)</a></li>
 
   </ul>
 </section>

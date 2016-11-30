@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://andyfightting.github.io/blog/2016/11/30/react-native-life/</loc>
+    <lastmod>2016-11-30T11:08:59+08:00</lastmod>
+  </url>
+  <url>
     <loc>http://andyfightting.github.io/blog/2016/11/30/css-flex-box/</loc>
     <lastmod>2016-11-30T08:56:06+08:00</lastmod>
   </url>
@@ -148,5 +152,14 @@
   </url>
   <url>
     <loc>http://andyfightting.github.io/blog/categories/react/</loc>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/posts/2/</loc>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/posts/3/</loc>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/posts/4/</loc>
   </url>
 </urlset>

@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-11-30T10:45:24+08:00</updated>
+  <updated>2016-11-30T16:03:45+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,57 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[React Native组件生命周期]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/11/30/react-native-life/"/>
+    <updated>2016-11-30T11:08:59+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/30/react-native-life</id>
+    <content type="html"><![CDATA[<p>生命周期就是一个对象从开始生成到最后消亡所经历的状态，理解生命周期是开发的基础。ES5语法和ES6语法有所变化，在ES5语法中，有getDefaultPropTypes方法，这个方法在组件被创建时调用一次，它的返回值成为了this.props的初始值。而ES6语法中，属性的类型和默认值声明不像ES5语法那样在组件定义内部声明,而是在组件定义的外部声明，所以没有了getDefaultPropTypes方法.</p>
+
+<p><img src="http://andyfightting.github.io/myimg/java/life2.png" alt="" /></p>
+
+<h4>可以把组件生命周期大致分为三个阶段：</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>第一阶段：是组件第一次绘制阶段，如图中的上面虚线框内，在这里完成了组件的加载和初始化；
+</span><span class='line'>第二阶段：是组件在运行和交互阶段，如图中左下角虚线框，这个阶段组件可以处理用户交互接收事件更新界面；
+</span><span class='line'>第三阶段：是组件卸载消亡的阶段，如图中右下角的虚线框中，这里做一些组件的清理工作。</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>constructor(props) :</strong>这个方法会在组件创建的时候调用一次。 这个方法中可以通过this.state初始化状态参数，ES5是通过getInitialState()方法初始化的。</p>
+
+<p><strong>getDefaultProps() :</strong>在组件类创建的时候调用一次，然后返回值被缓存下来。全局调用一次，所有实例共享。</p>
+
+<p><strong>getInitialState() :</strong>在组件挂载之前调用一次。返回值将会作为 this.state 的初始值。</p>
+
+<p><strong>componentWillMount() :</strong>在组件创建并初始化了状态之后，在第一次 render() 之前。可以在这里做一些初始化操作。这个函数在整个生命周期中只被调用一次。</p>
+
+<p><strong>render() :</strong>这个方法是必须的，对视图进行渲染，也可以返回 null 或者 false 来表明不需要渲染任何东西.</p>
+
+<p><strong>componentDidMount() :</strong>在组件第一次绘制之后，会调用该方法通知组件已经加载完成。这个方法调用的时候，其虚拟 DOM 已经构建完成，可以在这个函数里获取其中的元素或者子组件。框架是先调用子组件的该方法，然后再调用父组件的。可以在这里发起网络请求等。</p>
+
+<p><strong>componentWillReceiveProps(nextProps) :</strong> 父组件改变子组件的属性的时候会调用该方法,初次渲染时不会调用该方法。参数nextProps是即将被设置的属性，旧的属性还是可以通过 this.props 来获取。</p>
+
+<p><strong>shouldComponentUpdate(nextProps,nextState) :</strong>当组件接收到新的属性或状态改变的话会调用该方法。参数 nextProps 和上面的方法一样。nextState 表示组件即将更新的状态值。这个方法的返回值决定是否需要更新组件，默认返回true。可以重载这个函数来决定组件是否需要更新。</p>
+
+<p><strong>componentWillUpdate(nextProps,nextState) :</strong>如果组件状态改变，并且上面的方法返回为true，就会开始准更新组件。这里可以做一些在更新组件之前要做的事情。<strong>在这个方法里面不能再调用 this.setState 来修改状态</strong>。这个方法调用之后，就会把 nextProps 和 nextState 分别设置到 this.props 和 this.state 中。紧接着就会调用 render() 来更新组件了。</p>
+
+<p><strong>componentDidUpdate(prevProps,prevState) :</strong>在调用了 render() 更新组件同步到 DOM 中之后立刻调用该方法。因为到这里已经完成了属性和状态的更新了，此方法的参数变成了 prevProps 和 prevState。</p>
+
+<p><strong>componentWillUnmount() :</strong>当组件从 DOM 中移除的时候就会调用该方法。可以这个方法中做一些资源清理工作。</p>
+
+<p><a href="http://bbs.reactnative.cn/topic/15/react-react-native-%E7%9A%84es5-es6%E5%86%99%E6%B3%95%E5%AF%B9%E7%85%A7%E8%A1%A8">ES5 ES6写法对照表</a></p>
+
+<p><a href="http://blog.kdchang.cc/2016/04/04/react-react-native-es5-es6-cheat-sheet/">ES5 ES6区别</a></p>
+
+<p><a href="https://babeljs.io/blog/2015/06/07/react-on-es6-plus">React on ES6</a></p>
+
+<p><a href="http://egorsmirnov.me/2015/06/14/react-and-es6-part2.html">React and ES6</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Flexbox 布局]]></title>
@@ -3263,42 +3314,6 @@ layer.position=CGPointMake(size.width/2, size.height/2);
 <p>*CAKeyframeAnimation：关键帧动画，同样是通过属性进行动画参数控制，但是同基础动画不同的是它可以有多个状态控制。</p>
 
 <p>基础动画、关键帧动画都属于属性动画，就是通过修改属性值产生动画效果，只需要设置初始值和结束值，中间的过程动画由系统自动计算产生。和基础动画不同的是关键帧动画可以设置多个属性值，每两个属性中间的过渡动画由系统自动完成。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[iOS中的Core Data]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/08/04/core-data/"/>
-    <updated>2016-08-04T16:22:22+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/08/04/core-data</id>
-    <content type="html"><![CDATA[<p><a href="https://developer.apple.com/library/watchos/documentation/Cocoa/Conceptual/CoreData/index.html">Core Data</a>是一个对sqlite数据库进行封装的ORM(Object Relation Mapping)框架。它主要由以下几部分组成：</p>
-
-<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObject_Class/">NSManagedObject</a></h4>
-
-<p>NSManagedObject is a generic class that implements all the basic behavior required of a Core Data model object. It is not possible to use instances of direct subclasses of NSObject (or any other class not inheriting from NSManagedObject) with a managed object context. You may create custom subclasses of NSManagedObject, although this is not always required. If no custom logic is needed, a complete object graph can be formed with NSManagedObject instances.</p>
-
-<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObjectModel_Class/">NSManagedObjectModel</a></h4>
-
-<p>An NSManagedObjectModel object describes a schema, a collection of entities (data models) that you use in your application.</p>
-
-<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObjectContext_Class/">NSManagedObjectContext</a></h4>
-
-<p>An instance of NSManagedObjectContext represents a single “object space” or scratch pad in an application. Its primary responsibility is to manage a collection of managed objects. These objects form a group of related model objects that represent an internally consistent view of one or more persistent stores. A single managed object instance exists in one and only one context, but multiple copies of an object can exist in different contexts. Thus object uniquing is scoped to a particular context.</p>
-
-<h4><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSPersistentStoreCoordinator_Class/">NSPersistentStoreCoordinator</a></h4>
-
-<p>Instances of NSPersistentStoreCoordinator associate persistent stores (by type) with a model (or more accurately, a configuration of a model) and serve to mediate between the persistent store or stores and the managed object context or contexts. Instances of NSManagedObjectContext use a coordinator to save object graphs to persistent storage and to retrieve model information. A context without a coordinator is not fully functional as it cannot access a model except through a coordinator. The coordinator is designed to present a façade to the managed object contexts such that a group of persistent stores appears as an aggregate store. A managed object context can then create an object graph based on the union of all the data stores the coordinator covers.</p>
-
-<h4><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSFetchRequest_Class/index.html#//apple_ref/occ/cl/NSFetchRequest">NSFetchRequest</a></h4>
-
-<p>An instance of NSFetchRequest describes search criteria used to retrieve data from a persistent store.</p>
-
-<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSPredicate_Class/">NSPredicate</a></h4>
-
-<p>The NSPredicate class is used to define logical conditions used to constrain a search either for a fetch or for in-memory filtering.</p>
-
-<p><img src="http://andyfightting.github.io/myimg/ios/cd_orm.png" alt="image" />
-<img src="http://andyfightting.github.io/myimg/ios/cd_table.png" alt="image" /></p>
 ]]></content>
   </entry>
   
