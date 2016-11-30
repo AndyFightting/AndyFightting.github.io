@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Struts + Spring + MyBatis - 阿贵</title>
+  <title>Flexbox 布局 - 阿贵</title>
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Struts + Spring + MyBatis Nov 18th, 2016 9:22 am 基本信息： Mac OS 10.11, eclipse neon, jdk1.8, tomcat7, struts2.5.5, spring4.3.4, mybatis3.4.1,mybatis- &hellip;">
+  <meta name="description" content="Flexbox 布局 Nov 30th, 2016 8:56 am 弹性盒子布局由弹性容器和弹性子item组成。容器默认存在两根轴：水平的主轴和垂直的交叉轴。主轴的开始位置叫做main start，结束位置叫做main end；交叉轴的开始位置叫做cross start，结束位置叫做cross &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://andyfightting.github.io/blog/2016/11/18/struts-spring-mybatis/">
+  <link rel="canonical" href="http://andyfightting.github.io/blog/2016/11/30/css-flex-box/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="阿贵" type="application/atom+xml">
@@ -79,7 +79,7 @@
   
   <header>
     
-      <h1 class="entry-title">Struts + Spring + MyBatis</h1>
+      <h1 class="entry-title">Flexbox 布局</h1>
     
     
       <p class="meta">
@@ -88,18 +88,35 @@
 
 
 
-<time class='entry-date' datetime='2016-11-18T09:22:51+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:22 am</span></time>
+<time class='entry-date' datetime='2016-11-30T08:56:06+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>8:56 am</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h4>基本信息：</h4>
+<div class="entry-content"><p>弹性盒子布局由弹性容器和弹性子item组成。容器默认存在两根轴：水平的主轴和垂直的交叉轴。主轴的开始位置叫做main start，结束位置叫做main end；交叉轴的开始位置叫做cross start，结束位置叫做cross end。item默认沿主轴排列。item占据的主轴空间叫做main size，占据的交叉轴空间叫做cross size
+<img src="/myimg/java/flexbox.png" width="600" alt="" /></p>
 
-<p><code>Mac OS 10.11</code>, <code>eclipse neon</code>, <code>jdk1.8</code>, <code>tomcat7</code>, <code>struts2.5.5</code>, <code>spring4.3.4</code>, <code>mybatis3.4.1</code>,<code>mybatis-spring1.3</code>,<code>mysql数据库</code></p>
+<p><strong>用在容器上的属性：</strong></p>
 
-<h4>结构简介：</h4>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>flex-direction :决定item的排列方向。(row,row-reverse,column,column-reverse)
+</span><span class='line'>flex-wrap :决定item如何换行。(nowrap,wrap,wrap-reverse)
+</span><span class='line'>justify-content :决定itme在主轴上的对齐方式。(flex-start,flex-end,center,space-between,space-around)
+</span><span class='line'>align-items :决定item在交叉轴上的对齐方式。(stretch,flex-start,flex-end,center,baseline:item第一行文字基线对齐)
+</span><span class='line'>align-content :决定多条交叉轴线的对齐方式。(flex-start,flex-end,center,space-between,space-around,stretch)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>align-content:</p>
+
+<p><img src="/myimg/java/flex1.png" width="400" alt="" /></p>
+
+<p><strong>用在Item上的属性</strong></p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -108,23 +125,26 @@
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>用struts2的配置文件来控制方法的调用和页面的跳转，
-</span><span class='line'>jps和Action通过strtus2标签方式或者EL表达式传值取值。
-</span><span class='line'>Action负责业务逻辑处理，Action调用Service接口，Service接口注入某个Service的实现，
-</span><span class='line'>在Service的实现里调用Dao来处理数据库。
-</span><span class='line'>而Dao是用Mybatis通过对应的xml映射文件来关联的,
-</span><span class='line'>且Action里的Service实现注入,Service实现类里的Dao注入,Dao的Section注入，
-</span><span class='line'>都是通过Spring配置文件实现的。</span></code></pre></td></tr></table></div></figure>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>order :定义item的排列顺序。数值越小，排列越靠前，默认为0。
+</span><span class='line'>flex-grow :定义item的放大比例。默认为0，即如果存在剩余空间也不放大。有多个的话按比例均分。
+</span><span class='line'>flex-shrink :定义item的缩小比例。默认为1，即如果空间不足，该项目将缩小。0则不缩小。
+</span><span class='line'>flex-basis :定义了在分配多余空间之前，item占据的主轴空间,默认auto,即本来大小。
+</span><span class='line'>flex : flex-grow, flex-shrink 和 flex-basis的简写，默认值为0 1 auto。
+</span><span class='line'>align-self :设置item自身在交叉轴上的对齐方式。可覆盖align-items属性。
+</span><span class='line'>默认值为auto，表示继承父元素的align-items属性，如果没有父元素，则等同于stretch。
+</span><span class='line'>(auto,flex-start,flex-end,center,baseline,stretch)</span></code></pre></td></tr></table></div></figure>
 
 
-<h4>截图:</h4>
+<p>React Native中的Flexbox的工作原理和web上的CSS基本一致，也有些差异:flexDirection的默认值是column而不是row，alignItems的默认值是stretch而不是flex-start。使用flexDirection、alignItems和 justifyContent三个样式属性就已经能满足大多数布局需求。</p>
 
-<p><img src="/myimg/java/ssm_index.png" alt="" />
-<img src="/myimg/java/ssm_list.png" alt="" />
-<img src="/myimg/java/ssm_json.png" alt="" />
-<img src="/myimg/java/ssm.png" alt="" /></p>
+<p><code>flexDirection</code>: 决定布局的主轴。子元素是沿着水平轴方向排列，还是沿着竖直轴方向排列。</p>
 
-<p><a href="/mysrc/java/SSM.zip">下载</a></p>
+<p><code>justifyContent</code>: 决定子元素沿着主轴的排列方式。有flex-start、center、flex-end、space-around 和 space-between。</p>
+
+<p><code>alignItems</code>: 决定其子元素沿着交叉轴的排列方式。有flex-start、center、flex-end以及stretch。<strong>注意：要使stretch选项生效的话，子元素在次轴方向上不能固定尺寸。</strong></p>
+
+<p><a href="http://www.ruanyifeng.com/blog/2015/07/flex-examples.html">Fexbox布局实例</a></p>
 </div>
 
 
@@ -143,12 +163,12 @@
 
 
 
-<time class='entry-date' datetime='2016-11-18T09:22:51+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:22 am</span></time>
+<time class='entry-date' datetime='2016-11-30T08:56:06+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>8:56 am</span></time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/other/'>other</a>
+    <a class='category' href='/blog/categories/react/'>react</a>
   
 </span>
 
@@ -166,10 +186,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2016/11/17/springmvc-hibernate-jian/" title="Previous Post: SpringMVC + Spring + Hibernate">&laquo; SpringMVC + Spring + Hibernate</a>
+        <a class="basic-alignment left" href="/blog/2016/11/29/rn-style/" title="Previous Post: React Native 样式属性">&laquo; React Native 样式属性</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2016/11/24/atom-edit/" title="Next Post: Atom">Atom &raquo;</a>
       
     </p>
   </footer>

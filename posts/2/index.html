@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="iOS Not Found for Architecture Arm64 Sep 12th, 2016 10:00 am 接手维护一个项目，更新一下出现了下面这问题👇 好像不常见的问题，谷歌一下 Stack Overflow 说是Architectures设置问题&hellip; 说是Other &hellip;">
+  <meta name="description" content="Android 一行代码选取图片 Nov 11th, 2016 7:31 pm 一行代码模仿iOS的选取图片效果。思路主要是把相机和相册的回调放在一个透明的Activity里，然后在这个透明的Activity中弹出自定义的ActionSheet选择框，选取调相机还是相册。相机比较简单， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,373 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/11/android-select-photo/">Android 一行代码选取图片</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-11T19:31:33+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:31 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>一行代码模仿iOS的选取图片效果。思路主要是把相机和相册的回调放在一个透明的Activity里，然后在这个透明的Activity中弹出自定义的ActionSheet选择框，选取调相机还是相册。相机比较简单，直接调系统的。相册就不用系统的了，不同手机差别太大，效果也不好。自己遍历本地图片文件然后显示。这样即时在不同手机上也能展示相同的效果了。封装后使用就简单了，一行代码调用就可以，不会和业务Activity耦合了！</p>
+
+<h4>使用:</h4>
+
+<p>1.选取一张正方形图片</p>
+
+<pre><code>   SelectPhotoSheet.showCropImageSheet(this, new AlbumResultListener() {
+            @Override
+            public void complete(View tapedView, List&lt;String&gt; pathList) {
+                cache.displayBmp(headImageView, pathList.get(0), new Point(100, 100));
+            }
+        });
+</code></pre>
+
+<p>2.选取限制数量的全尺寸图片</p>
+
+<pre><code>SelectPhotoSheet.showFullImageSheet(this, 8, new AlbumResultListener() {
+            @Override
+            public void complete(View tapedView, List&lt;String&gt; pathList) {
+                localPathList.clear();
+                localPathList.addAll(pathList);
+                adapter.notifyDataSetChanged();
+            }
+        });
+</code></pre>
+
+<p><img src="/myimg/android/one_select.png" alt="" /></p>
+
+<h4>实现</h4>
+
+<p>1.自定义ActionSheet，弄一个Sheet的工具类 BaseSheetActivity。</p>
+
+<pre><code>//用作弹出 action sheet 效果的 base activity
+public class BaseSheetActivity extends Activity {
+    protected int activityCloseEnterAnimation;
+    protected int activityCloseExitAnimation;
+
+public static ItemTapListener itemTapListener;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+    TypedArray activityStyle = getTheme().obtainStyledAttributes(new int[] {android.R.attr.windowAnimationStyle});
+    int windowAnimationStyleResId = activityStyle.getResourceId(0, 0);
+    activityStyle.recycle();
+
+    activityStyle = getTheme().obtainStyledAttributes(windowAnimationStyleResId, new int[] {android.R.attr.activityCloseEnterAnimation, android.R.attr.activityCloseExitAnimation});
+    activityCloseEnterAnimation = activityStyle.getResourceId(0, 0);
+    activityCloseExitAnimation = activityStyle.getResourceId(1, 0);
+    activityStyle.recycle();
+}
+
+@Override
+public boolean onTouchEvent(MotionEvent event) {
+    dismiss();
+    if (itemTapListener != null){
+        itemTapListener.itemTap(new View(this),"");
+    }
+    return super.onTouchEvent(event);
+}
+
+@Override
+public void finish() {
+    dismiss();
+}
+
+public void dismiss(){
+    super.finish();
+    overridePendingTransition(activityCloseEnterAnimation, activityCloseExitAnimation);
+}
+
+public static void show(Context context, Class showedActivityClass, ItemTapListener itemTapListener){
+    BaseSheetActivity.itemTapListener = itemTapListener;
+    Intent intent = new Intent(context,showedActivityClass);
+    context.startActivity(intent);
+}
+}
+</code></pre>
+
+<p>  要使用ActionSheet的效果话就是继承它，然后theme选择ActionSheetTheme。然后把界面的布局从bottom开始布局。</p>
+
+<pre><code>  public class PhotoSheet extends BaseSheetActivity {
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.action_photo_sheet); //action_photo_sheet的布局从bottom开始
+
+}
+
+public void itemTap(View view){
+    dismiss();
+    if (itemTapListener != null){
+        itemTapListener.itemTap(view,"");
+    }
+}
+
+@Override
+public void onBackPressed() {
+    dismiss();
+    if (itemTapListener != null){
+        itemTapListener.itemTap(new View(this),"");
+    }
+}
+}
+
+   //设置为自定义的样式
+ &lt;activity
+        android:name=".photo_lib.photo.PhotoSheet"
+        android:theme="@style/ActionSheetTheme" /&gt;
+</code></pre>
+
+<p>2.读图片文件路径，不单单是相册里的图片</p>
+
+<pre><code>public void getLocalImages() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                ContentResolver mContentResolver = AlbumDirActivity.this.getContentResolver();
+
+            Cursor mCursor = mContentResolver.query(
+                    mImageUri,
+                    null,
+                    MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?",
+                    new String[]{"image/jpeg", "image/png", "image/jpg"},
+                    MediaStore.Images.Media.DATE_MODIFIED);
+
+            while (mCursor.moveToNext()) {
+                String path = mCursor.getString(mCursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                String parentName = new File(path).getParentFile().getName();
+
+                if (!dirMap.containsKey(parentName)) {
+                    List&lt;String&gt; chileList = new ArrayList&lt;&gt;();
+                    chileList.add(path);
+                    dirMap.put(parentName, chileList);
+                } else {
+                    dirMap.get(parentName).add(path);
+                }
+            }
+            mCursor.close();
+            mHandler.sendEmptyMessage(SCAN_OK);
+        }
+    }).start();
+}
+</code></pre>
+
+<p>3.用LruCache缓存显示压缩后的图片</p>
+
+<pre><code>public class LocalImageCache {
+
+private static LocalImageCache mInstance;
+
+private Handler mHander = new Handler();
+private LruCache&lt;String, Bitmap&gt; mMemoryCache;
+private CacheImageCallBack mCallBack;
+private ExecutorService mImageThreadPool = Executors.newFixedThreadPool(5);
+
+private LocalImageCache() {
+    final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+    final int cacheSize = maxMemory / 5;
+
+    mMemoryCache = new LruCache&lt;String, Bitmap&gt;(cacheSize) {
+        @Override
+        protected int sizeOf(String key, Bitmap bitmap) {
+            return bitmap.getByteCount()/1024;
+        }
+    };
+
+    mCallBack = new CacheImageCallBack() {
+        @Override
+        public void onImageLoader(ImageView imageView, Bitmap bitmap) {
+            if (bitmap != null &amp;&amp; imageView != null) {
+                imageView.setImageBitmap(bitmap);
+            }
+        }
+    };
+}
+
+public static LocalImageCache getInstance() {
+    synchronized (LocalImageCache.class) {
+        if (mInstance == null) {
+            mInstance = new LocalImageCache();
+        }
+        return mInstance;
+    }
+}
+
+public static void clearCache() {
+    LocalImageCache cache = getInstance();
+    cache.mMemoryCache.evictAll();
+}
+
+public void displayBmp(final ImageView imageView, final String path, final Point mPoint) {
+    if (TextUtils.isEmpty(path) || imageView == null) {
+        return;
+    }
+
+    Bitmap bitmap = getBitmapFromMemCache(path);
+    if (bitmap == null) {
+        imageView.setImageBitmap(null);
+
+        mImageThreadPool.execute(new Runnable() {
+            Bitmap mBitmap;
+
+            @Override
+            public void run() {
+                mBitmap = decodeThumbBitmapForFile(path, mPoint == null ? 0 : mPoint.x, mPoint == null ? 0 : mPoint.y);
+                mHander.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCallBack.onImageLoader(imageView, mBitmap);
+                    }
+                });
+                addBitmapToMemoryCache(path, mBitmap);
+            }
+        });
+    } else {
+        imageView.setImageBitmap(bitmap);
+    }
+}
+
+private void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+    if (getBitmapFromMemCache(key) == null &amp;&amp; bitmap != null) {
+        mMemoryCache.put(key, bitmap);
+    }
+}
+
+private Bitmap getBitmapFromMemCache(String key) {
+    return mMemoryCache.get(key);
+}
+
+private Bitmap decodeThumbBitmapForFile(String path, int viewWidth, int viewHeight) {
+    BitmapFactory.Options options = new BitmapFactory.Options();
+    options.inJustDecodeBounds = true;
+    BitmapFactory.decodeFile(path, options);
+    options.inSampleSize = computeScale(options, viewWidth, viewHeight);
+    options.inJustDecodeBounds = false;
+
+    return BitmapFactory.decodeFile(path, options);
+}
+
+private int computeScale(BitmapFactory.Options options, int viewWidth, int viewHeight) {
+    int inSampleSize = 1;
+    if (viewWidth == 0 || viewHeight == 0) {
+        return inSampleSize;
+    }
+    int bitmapWidth = options.outWidth;
+    int bitmapHeight = options.outHeight;
+
+    if (bitmapWidth &gt; viewWidth || bitmapHeight &gt; viewHeight) {
+        int widthScale = Math.round((float) bitmapWidth / (float) viewWidth);
+        int heightScale = Math.round((float) bitmapHeight / (float) viewHeight);
+
+        inSampleSize = (widthScale+heightScale)/2;
+    }
+    return inSampleSize;
+}
+
+
+private interface CacheImageCallBack {
+    void onImageLoader(ImageView imageView, Bitmap bitmap);
+}
+}
+</code></pre>
+
+<p>4.用DrawerLayout封装了一个手势返回的基础类</p>
+
+<pre><code>public class BaseSwipeActivity extends AppCompatActivity {
+
+private LinearLayout containerLayout;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    initSwipeView();
+}
+
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+}
+
+private void initSwipeView() {
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+    setContentView(R.layout.activity_base_swipe);
+
+    containerLayout = (LinearLayout) findViewById(R.id.container_layout);
+
+    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.base_drawer_layout);
+    drawer.openDrawer(GravityCompat.END);
+    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+        @Override
+        public void onDrawerClosed(View drawerView) {
+            super.onDrawerClosed(drawerView);
+            finish();
+        }
+    };
+    drawer.addDrawerListener(toggle);
+}
+
+//子类要手势返回就用setMainView!!!!
+public void setMainView(int viewId) {
+    LayoutInflater inflater = LayoutInflater.from(this);
+    View tmpView = inflater.inflate(viewId, null);
+
+    if (tmpView instanceof LinearLayout) {
+        LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(linearLayoutParams);
+    } else if (tmpView instanceof RelativeLayout) {
+        RelativeLayout.LayoutParams relativeLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        tmpView.setLayoutParams(relativeLayoutParams);
+    }
+    containerLayout.removeAllViews();
+    containerLayout.addView(tmpView);
+}
+
+public void backViewTap(View v) {
+
+}
+
+public void backImageTap(View v) {
+    finish();
+}
+}
+</code></pre>
+
+<p>其他Activity需要手势返回的话就继承它，然后使用setMainView()替代setContentView()设置界面布局，其他什么都不用管啦！</p>
+
+<h4>注意</h4>
+
+<p>要在使用的Activity的onDestroy()方法中调用 FileUtil.deleteAllFile(); 清除选取的临时缓存图片！！！</p>
+
+<p><a href="https://github.com/AndyFightting/SelectPhoto_Android">下载</a></p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/11/11/android-select-photo/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -1777,38 +2144,6 @@ layer.position=CGPointMake(size.width/2, size.height/2);
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/08/04/session/">iOS中的NSURLSession</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-08-04T16:22:02+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:22 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content">
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/08/04/session/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -1826,7 +2161,11 @@ layer.position=CGPointMake(size.width/2, size.height/2);
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2016/11/29/rn-style/">React Native 布局</a>
+        <a href="/blog/2016/11/30/css-flex-box/">Flexbox 布局</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/29/rn-style/">React Native 样式属性</a>
       </li>
     
       <li class="post">
@@ -1841,10 +2180,6 @@ layer.position=CGPointMake(size.width/2, size.height/2);
         <a href="/blog/2016/11/24/atom-edit/">Atom</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/11/18/struts-spring-mybatis/">Struts + Spring + MyBatis</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -1857,7 +2192,7 @@ layer.position=CGPointMake(size.width/2, size.height/2);
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (8)</a></li>
-<li class='category'><a href='/blog/categories/react/'>react (4)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (5)</a></li>
 
   </ul>
 </section>

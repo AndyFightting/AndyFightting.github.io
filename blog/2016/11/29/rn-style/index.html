@@ -5,16 +5,17 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>React Native 布局 - 阿贵</title>
+  <title>React Native 样式属性 - 阿贵</title>
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="React Native 布局 Nov 29th, 2016 10:27 pm React Native 采用CSS样式来布局，不过都是单个单个的选取器，没有像web似的组合选取器。只要在样式表中书写一个不存在的样式，就会报错，提示该样式不存在，然后提供所有可用的样式： 1
+  <meta name="description" content="React Native 样式属性 Nov 29th, 2016 10:27 pm React Native 采用CSS样式来布局，也会有继承和覆盖作用。只要在样式表中书写一个不存在的样式，就会报错，提示该样式不存在，然后提供所有可用的样式： 1
 2
 3
 4
 5
-6 &hellip;">
+6
+//边框 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -84,7 +85,7 @@
   
   <header>
     
-      <h1 class="entry-title">React Native 布局</h1>
+      <h1 class="entry-title">React Native 样式属性</h1>
     
     
       <p class="meta">
@@ -100,7 +101,7 @@
   </header>
 
 
-<div class="entry-content"><p>React Native 采用CSS样式来布局，不过都是单个单个的选取器，没有像web似的组合选取器。只要在样式表中书写一个不存在的样式，就会报错，提示该样式不存在，然后提供所有可用的样式：
+<div class="entry-content"><p>React Native 采用CSS样式来布局，也会有继承和覆盖作用。只要在样式表中书写一个不存在的样式，就会报错，提示该样式不存在，然后提供所有可用的样式：
 <img src="/myimg/java/style.png" alt="" /></p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -221,10 +222,10 @@
 </span><span class='line'>letterSpacing 字符间隔
 </span><span class='line'>lineHeight 行高
 </span><span class='line'>textAlign 字体对齐方式，值为enum("auto", 'left', 'right', 'center', 'justify')
-</span><span class='line'>textDecorationLine 貌似没效果，字体修饰，上划线，下划线，删除线，无修饰，值为enum("none", 'underline', 'line-through', 'underline line-through')
-</span><span class='line'>textDecorationStyle enum("solid", 'double', 'dotted', 'dashed') 貌似没效果，修饰的线的类型
-</span><span class='line'>textDecorationColor 貌似没效果，修饰的线的颜色
-</span><span class='line'>writingDirection enum("auto", 'ltr', 'rtl') 不知道什么属性，写作方向？从左到右？从右到左？</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>textDecorationLine 上划线，下划线，删除线，无修饰，值为enum("none", 'underline', 'line-through', 'underline line-through')
+</span><span class='line'>textDecorationStyle 修饰的线的类型 enum("solid", 'double', 'dotted', 'dashed')
+</span><span class='line'>textDecorationColor 修饰的线的颜色
+</span><span class='line'>writingDirection enum("auto", 'ltr', 'rtl') 书写方向，从左往右写还是从右往左写</span></code></pre></td></tr></table></div></figure>
 
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -252,7 +253,7 @@
 </span><span class='line'>rotation:旋转
 </span><span class='line'>translateX:水平方向平移
 </span><span class='line'>translateY:水平方向平移
-</span><span class='line'>//阴影
+</span><span class='line'>//阴影,默认透明的，要设置shadowOpacity大于0才有效果
 </span><span class='line'>shadowColor
 </span><span class='line'>shadowOffset
 </span><span class='line'>shadowOpacity
@@ -304,6 +305,8 @@
         <a class="basic-alignment left" href="/blog/2016/11/28/react-native-run-bug/" title="Previous Post: React Native 问题汇总">&laquo; React Native 问题汇总</a>
       
       
+        <a class="basic-alignment right" href="/blog/2016/11/30/css-flex-box/" title="Next Post: Flexbox 布局">Flexbox 布局 &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -336,7 +339,11 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2016/11/29/rn-style/">React Native 布局</a>
+        <a href="/blog/2016/11/30/css-flex-box/">Flexbox 布局</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/29/rn-style/">React Native 样式属性</a>
       </li>
     
       <li class="post">
@@ -351,10 +358,6 @@
         <a href="/blog/2016/11/24/atom-edit/">Atom</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/11/18/struts-spring-mybatis/">Struts + Spring + MyBatis</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -367,7 +370,7 @@
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (8)</a></li>
-<li class='category'><a href='/blog/categories/react/'>react (4)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (5)</a></li>
 
   </ul>
 </section>
