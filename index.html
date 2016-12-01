@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="React Native组件生命周期 Nov 30th, 2016 11:08 am 生命周期就是一个对象从开始生成到最后消亡所经历的状态，理解生命周期是开发的基础。ES5语法和ES6语法有所变化，在ES5语法中，有getDefaultPropTypes方法，这个方法在组件被创建时调用一次， &hellip;">
+  <meta name="description" content="React Native Navigator Dec 1st, 2016 9:27 am 这里主要记录一下Navigator的基本使用，页面间的传参，回调，以及在push,pop过程中生命周期方法的调用顺序。 React 的“页面”的概念和Android或iOS有点不一样， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,304 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/12/01/react-navigator/">React Native Navigator</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-01T09:27:30+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>9:27 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>这里主要记录一下Navigator的基本使用，页面间的传参，回调，以及在push,pop过程中生命周期方法的调用顺序。</p>
+
+<p>React 的“页面”的概念和Android或iOS有点不一样，不像Android有个Activity作为页面容器，iOS有Controller作为页面容器。React 的“页面”本身就是一个组件集合，和Text,Image等基础组件是一个级别的东西。只不过是把多个组件拼起来充满屏幕，就组成一个“页面”了。</p>
+
+<p>通过在Navigator的route里放置一个params参数，params里面放key-value传参。注意，方法也是对象，也可以当做value传递，这样就可回调了。就像Android的接口回调或iOS的block似的，在A页面实现方法，然后传递给B页面，在B页面使用方法，这样数据就从B回传给A了。数据从方法使用的地方传到方法实现的地方。</p>
+
+<h4>在Index.js里初始化Navigator并且显示第一个页面FirstView:</h4>
+
+<p><img src="/myimg/java/lift0.png" width="500" alt="" /></p>
+
+<h4>从FirstView push 到SecondView</h4>
+
+<p><img src="/myimg/java/lift1.png" width="500" alt="" /></p>
+
+<h4>在SecondView里点击返回的时候，先掉用FirstView的回调方法, 在回调方法里调用 setState() 刷新FirstView，然后 pop 。</h4>
+
+<p><img src="/myimg/java/lift2.png" width="500" alt="" /></p>
+
+<h4>如果在返回的时候不调用FirstView的回调方法直接pop。不管是从A到B还是从B返回A,A的componentWillReceiveProps都会被调用？</h4>
+
+<p><img src="/myimg/java/life3.png" width="500" alt="" /></p>
+
+<p><img src="/myimg/java/life4.png" width="600" alt="" /></p>
+
+<h4>index.ios.js</h4>
+
+<pre><code>import React, {Component} from 'react';
+import {View,Navigator,AppRegistry} from 'react-native';
+import FirstView from './FirstView';
+
+   var logName = 'Index:--------';
+
+   export default class BaseNavigator extends Component {
+     constructor(props){
+          console.log(logName + 'constructor');
+          super(props);
+      }
+      componentWillMount(){
+          console.log(logName + 'componentWillMount');
+      }
+       render() {
+         console.log(logName+'render')
+        return (
+        &lt;Navigator
+          //把下面一行的/都去掉，因为Markdown转化不了所以加的
+          initialRoute=/{/{params: /{/},view: FirstView /}/}
+          renderScene={(route, navigator) =&gt; {
+            let ShowedView = route.view;
+            return &lt;ShowedView {...route.params} nav={navigator} /&gt;
+          }} /&gt;
+        );
+       }
+
+       componentDidMount() {
+           console.log(logName + 'componentDidMount');
+       }
+
+       componentWillReceiveProps(nextprops){
+              console.log(logName + 'componentWillReceiveProps');
+        }
+        shouldComponentUpdate(nextProps,nextState){
+              console.log(logName + 'shouldComponentUpdate');
+            return true;
+        }
+        componentWillUpdate(nextProps,nextState){
+              console.log(logName + 'componentWillUpdate');
+        }
+        componentDidUpdate(prevProps,prevState){
+            console.log(logName + 'componentDidUpdate');
+        }
+        componentWillUnmount(){
+            console.log(logName + 'componentWillUnmount');
+        }
+   }
+AppRegistry.registerComponent('MyReact', () =&gt; BaseNavigator);
+</code></pre>
+
+<h4>FirstView.js</h4>
+
+<pre><code>import React,{Component} from 'react';
+import {View,StyleSheet,Text} from 'react-native';
+import SecondView from './SecondView';
+
+var logName = 'FirstView:--------';
+export default class FirstView extends Component { 
+  constructor(props) {
+    console.log(logName + 'constructor');
+        super(props);
+        this.state = {
+            callBackMsg: '',
+        };
+    }
+   componentWillMount(){
+       console.log(logName + 'componentWillMount');
+   }
+
+    render() {
+      console.log(logName+'render')
+        return (
+            &lt;View style={styles.backView}&gt;
+                  &lt;Text style={styles.tapView}  onPress={this.pressedFun.bind(this)}&gt;点击跳转&lt;/Text&gt;
+                  &lt;Text style={styles.msgView}&gt;
+                    {this.state.callBackMsg}
+                  &lt;/Text&gt;
+            &lt;/View&gt;
+        );
+    }
+    componentDidMount() {
+        console.log(logName + 'componentDidMount');
+    }
+
+    componentWillReceiveProps(nextprops){
+           console.log(logName + 'componentWillReceiveProps');
+     }
+     shouldComponentUpdate(nextProps,nextState){
+           console.log(logName + 'shouldComponentUpdate');
+         return true;
+     }
+     componentWillUpdate(nextProps,nextState){
+           console.log(logName + 'componentWillUpdate');
+     }
+     componentDidUpdate(prevProps,prevState){
+         console.log(logName + 'componentDidUpdate');
+     }
+     componentWillUnmount(){
+         console.log(logName + 'componentWillUnmount');
+     }
+//-------个人方法--------
+    pressedFun() {
+        let nav = this.props.nav;
+        let tmpThis = this;
+            nav.push({
+                view: SecondView,
+                params:{
+                  userId: 123,
+                  userName: 'andy',
+                  callBackFun: function(newMsg){
+                      tmpThis.setState({
+                        callBackMsg: newMsg,
+                      })
+                  },
+                },
+            });
+          }
+}
+
+const styles = StyleSheet.create({
+  backView:{
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'azure',
+  },
+  tapView:{
+    fontSize: 20,
+    alignSelf: 'center',
+    textAlign: 'center',
+    width: 130,
+    height: 50,
+    lineHeight: 50,
+    color: 'yellow',
+    borderColor: 'yellow',
+    borderWidth: 2,
+    borderRadius: 25,
+    backgroundColor: 'blue',
+    overflow: 'hidden',//不然边角会有背景色
+  },
+  msgView:{
+    fontSize: 16,
+    marginTop: 30,
+    textAlign: 'center',
+  },
+});
+</code></pre>
+
+<h4>SecondView.js</h4>
+
+<pre><code>import React,{Component} from 'react';
+import {View,Navigator,StyleSheet,TouchableWithoutFeedback,Image,Text,} from 'react-native';
+
+var logName = 'SecondView:--------';
+export default class SecondView extends Component {
+  static defaultProps = {
+      // testProp: 'testProp默认值',
+  }
+  static propTypes = {
+      // testProp: React.PropTypes.string.isRequired,
+  }
+  constructor(props) {
+        console.log(logName + 'constructor');
+        super(props);
+        this.state = {};
+    }
+    componentWillMount(){
+        console.log(logName + 'componentWillMount');
+    }
+    render() {
+      console.log(logName+'render')
+       return (
+            &lt;View style={styles.backView}&gt;
+              &lt;View style={styles.titleBackView}&gt;
+              &lt;TouchableWithoutFeedback onPress={this.backPressed.bind(this)}&gt;
+                 &lt;Image style={styles.backImage} source= {require('./images/backImage.png')}/&gt;
+              &lt;/TouchableWithoutFeedback&gt;
+                &lt;Text style={styles.titleView}&gt;标题&lt;/Text&gt;
+              &lt;/View&gt;
+                &lt;Text&gt;上个页面传来的参数userId: {this.props.userId}&lt;/Text&gt;
+                &lt;Text&gt;上个页面传来的参数userName: {this.props.userName}&lt;/Text&gt;
+            &lt;/View&gt;
+        );
+    }
+    componentDidMount() {
+        console.log(logName + 'componentDidMount');
+    }
+
+    componentWillReceiveProps(nextprops){
+           console.log(logName + 'componentWillReceiveProps');
+     }
+     shouldComponentUpdate(nextProps,nextState){
+           console.log(logName + 'shouldComponentUpdate');
+         return true;
+     }
+     componentWillUpdate(nextProps,nextState){
+           console.log(logName + 'componentWillUpdate');
+     }
+     componentDidUpdate(prevProps,prevState){
+         console.log(logName + 'componentDidUpdate');
+     }
+     componentWillUnmount(){
+         console.log(logName + 'componentWillUnmount');
+     }
+
+//------个人方法--------
+     backPressed() {
+         let nav = this.props.nav;
+             this.props.callBackFun('这是消失的页面通过回调方法传来的数据！');
+             nav.pop();
+     }
+}
+const styles = StyleSheet.create({
+  backView:{
+    flex: 1,
+    backgroundColor: 'bisque',
+  },
+  titleBackView:{
+    height: 65,
+    backgroundColor: 'darkkhaki',
+    flexDirection: 'row'
+  },
+  titleView:{
+    height:45,
+    lineHeight:45,
+    marginTop:20,
+    color: 'white',
+    fontSize: 18,
+    textAlign: 'center',
+    alignSelf: 'center',
+    flex: 1,
+    marginRight:20,
+  },
+  backImage:{
+    marginTop:35,
+    marginLeft:10,
+    width: 10,
+    height: 20,
+  },
+});
+</code></pre>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/12/01/react-navigator/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -1355,163 +1653,6 @@ public class Book {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/11/15/spring-ioc/">Spring 依赖注入</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-11-15T09:17:48+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:17 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="https://spring.io/">Spring</a>是一个大东西，框架集合。Spring MVC, Spring AOP, Spring IoC&hellip;等等。先看看Spring IoC(Inversion of Control)控制反转。就是把原先要手动 new 一个对象，现在只要在Srping 的配置文件里配置就可以了，从主动控制对象，到被动接收对象，这就叫控制反转，也叫依赖注入(dependency injection)！ 依赖注入是Spring的核心机制，把对象之间的依赖关系转为用配置文件来管理，这有赖于它的核心组件 Beans, Core, Context 。</p>
-
-<p><img src="/myimg/java/spring_core.png" alt="" /></p>
-
-<p>开始之前要下载Spring jar包，但是官网上只看到了maven 和 gradle 的添加方式，要手动下载jar包还不好找呢，藏得跟宝藏似的。<a href="http://repo.spring.io/release/org/springframework/spring/">Spring jar 包下载</a>，还需要它的依赖包 <a href="http://commons.apache.org/proper/commons-logging/download_logging.cgi">Commons Logging</a>。</p>
-
-<p><img src="/myimg/java/spring_jar.png" alt="" /></p>
-
-<p>把上面的包下载下来添加到项目里，然后 Add to build path。</p>
-
-<p><img src="/myimg/java/spring_add.png" alt="" /></p>
-
-<p>Spring 可以用注解方式注入和xml方式注入。</p>
-
-<h5>1.注解的方式注入一个接口的实现</h5>
-
-<p>接口定义</p>
-
-<pre><code>public interface MessageInterface {
-   public String getMessage();
-   public String getName();
-}
-</code></pre>
-
-<p>操作Action</p>
-
-<pre><code>import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-@Component //必须要
-public class MessageAction {
-
-final private MessageInterface service;
-
-@Autowired //可不要
-public MessageAction(MessageInterface service) {
-    this.service = service;
-}
-
-public void printMessage() {
-    System.out.println(this.service.getMessage() + this.service.getName());
-  }
-}
-</code></pre>
-
-<p>测试类</p>
-
-<pre><code>import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.*;
-
-@Configuration //可不要
-@ComponentScan //必须要
-public class Application {
-    @Bean
-    MessageInterface injectImp() {
-        return new MessageInterface() {
-            public String getMessage() {
-              return "Hello World!";
-            };
-
-        public String getName(){
-            return "sgm";
-        }
-    };
-}
-
-  public static void main(String[] args) {
-      ApplicationContext context = new AnnotationConfigApplicationContext(Application.class);
-      MessageAction printer = context.getBean(MessageAction.class);
-      printer.printMessage();
-  }
-}
-</code></pre>
-
-<p>结果打印出</p>
-
-<pre><code>Hello World!sgm
-</code></pre>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>@Configuration 用于标注一个类，表示bean定义的源文件
-</span><span class='line'>@ComponentScan  用于标注一个类，表示扫描指定包中的@Component标注的类。通过该实例得到 ApplicationContext
-</span><span class='line'>@Component  用于标注一个类组件，然后通过 ApplicationContext 对象获取
-</span><span class='line'>@Bean 用于注入一个实例对象，相当于Spring &lt;bean&gt;XML里的配置
-</span><span class='line'>@Autowired  用于标注setter方法，构造器，包含多个参数的方法，集合等等，用于自动注入绑定实例</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>2.用xml的方式注入一个接口的实现</h5>
-
-<p>如下，UserService是接口，里面定义一个print()方法。UserServiceImp是UserService的一个实现类，实现print(&ldquo;hello wrold&rdquo;)。</p>
-
-<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans.xsd"&gt;
-
-    &lt;bean id="userService" class="com.sgm.implement.UserServiceImp"/&gt;
-
-&lt;/beans&gt;
-</code></pre>
-
-<p>userService.print()就会打印出绑定实现类里的"hello wrold"。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> ApplicationContext context =  new ClassPathXmlApplicationContext("com/sgm/spring/bean.xml");
-</span><span class='line'> UserService userService = (UserService) context.getBean("userService");
-</span><span class='line'> userService.print();</span></code></pre></td></tr></table></div></figure>
-
-
-<p>用xml的方式还可以通过类的构造函数注入，上面的例子是通过属性的set方法注入的。</p>
-
-<pre><code>&lt;bean id="serviceProvider" class="com.sgm.service.ServiceProvider"&gt;
-    &lt;constructor-arg ref="userService"&gt;&lt;/constructor-arg&gt;  
-&lt;/bean&gt; 
-
-&lt;bean id="userService" class="com.sgm.implement.UserServiceImp"/&gt;
-</code></pre>
-
-<p>xml默认都是注入一个单例对象的，即bean的属性 scope = &ldquo;singleton&rdquo; 为默认值。如果要每次都注入一个新对象，则设置bean的属性 scope = &ldquo;prototype"。</p>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/11/15/spring-ioc/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1525,6 +1666,10 @@ public class Application {
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/12/01/react-navigator/">React Native Navigator</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/11/30/react-native-life/">React Native组件生命周期</a>
@@ -1542,10 +1687,6 @@ public class Application {
         <a href="/blog/2016/11/28/react-native-run-bug/">React Native 问题汇总</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/11/26/react-native-basic/">React Native 基础知识</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -1558,7 +1699,7 @@ public class Application {
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (8)</a></li>
-<li class='category'><a href='/blog/categories/react/'>react (6)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (7)</a></li>
 
   </ul>
 </section>

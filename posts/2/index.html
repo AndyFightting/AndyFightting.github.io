@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="MyBatis 的使用 Nov 14th, 2016 7:26 pm Mybatis是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以对配置和原生Map使用简单的 XML 或注解， &hellip;">
+  <meta name="description" content="Spring 依赖注入 Nov 15th, 2016 9:17 am Spring是一个大东西，框架集合。Spring MVC, Spring AOP, Spring IoC&hellip;等等。先看看Spring IoC(Inversion of Control)控制反转。就是把原先要手动 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,163 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/15/spring-ioc/">Spring 依赖注入</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-15T09:17:48+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:17 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://spring.io/">Spring</a>是一个大东西，框架集合。Spring MVC, Spring AOP, Spring IoC&hellip;等等。先看看Spring IoC(Inversion of Control)控制反转。就是把原先要手动 new 一个对象，现在只要在Srping 的配置文件里配置就可以了，从主动控制对象，到被动接收对象，这就叫控制反转，也叫依赖注入(dependency injection)！ 依赖注入是Spring的核心机制，把对象之间的依赖关系转为用配置文件来管理，这有赖于它的核心组件 Beans, Core, Context 。</p>
+
+<p><img src="/myimg/java/spring_core.png" alt="" /></p>
+
+<p>开始之前要下载Spring jar包，但是官网上只看到了maven 和 gradle 的添加方式，要手动下载jar包还不好找呢，藏得跟宝藏似的。<a href="http://repo.spring.io/release/org/springframework/spring/">Spring jar 包下载</a>，还需要它的依赖包 <a href="http://commons.apache.org/proper/commons-logging/download_logging.cgi">Commons Logging</a>。</p>
+
+<p><img src="/myimg/java/spring_jar.png" alt="" /></p>
+
+<p>把上面的包下载下来添加到项目里，然后 Add to build path。</p>
+
+<p><img src="/myimg/java/spring_add.png" alt="" /></p>
+
+<p>Spring 可以用注解方式注入和xml方式注入。</p>
+
+<h5>1.注解的方式注入一个接口的实现</h5>
+
+<p>接口定义</p>
+
+<pre><code>public interface MessageInterface {
+   public String getMessage();
+   public String getName();
+}
+</code></pre>
+
+<p>操作Action</p>
+
+<pre><code>import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component //必须要
+public class MessageAction {
+
+final private MessageInterface service;
+
+@Autowired //可不要
+public MessageAction(MessageInterface service) {
+    this.service = service;
+}
+
+public void printMessage() {
+    System.out.println(this.service.getMessage() + this.service.getName());
+  }
+}
+</code></pre>
+
+<p>测试类</p>
+
+<pre><code>import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.*;
+
+@Configuration //可不要
+@ComponentScan //必须要
+public class Application {
+    @Bean
+    MessageInterface injectImp() {
+        return new MessageInterface() {
+            public String getMessage() {
+              return "Hello World!";
+            };
+
+        public String getName(){
+            return "sgm";
+        }
+    };
+}
+
+  public static void main(String[] args) {
+      ApplicationContext context = new AnnotationConfigApplicationContext(Application.class);
+      MessageAction printer = context.getBean(MessageAction.class);
+      printer.printMessage();
+  }
+}
+</code></pre>
+
+<p>结果打印出</p>
+
+<pre><code>Hello World!sgm
+</code></pre>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>@Configuration 用于标注一个类，表示bean定义的源文件
+</span><span class='line'>@ComponentScan  用于标注一个类，表示扫描指定包中的@Component标注的类。通过该实例得到 ApplicationContext
+</span><span class='line'>@Component  用于标注一个类组件，然后通过 ApplicationContext 对象获取
+</span><span class='line'>@Bean 用于注入一个实例对象，相当于Spring &lt;bean&gt;XML里的配置
+</span><span class='line'>@Autowired  用于标注setter方法，构造器，包含多个参数的方法，集合等等，用于自动注入绑定实例</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>2.用xml的方式注入一个接口的实现</h5>
+
+<p>如下，UserService是接口，里面定义一个print()方法。UserServiceImp是UserService的一个实现类，实现print(&ldquo;hello wrold&rdquo;)。</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd"&gt;
+
+    &lt;bean id="userService" class="com.sgm.implement.UserServiceImp"/&gt;
+
+&lt;/beans&gt;
+</code></pre>
+
+<p>userService.print()就会打印出绑定实现类里的"hello wrold"。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> ApplicationContext context =  new ClassPathXmlApplicationContext("com/sgm/spring/bean.xml");
+</span><span class='line'> UserService userService = (UserService) context.getBean("userService");
+</span><span class='line'> userService.print();</span></code></pre></td></tr></table></div></figure>
+
+
+<p>用xml的方式还可以通过类的构造函数注入，上面的例子是通过属性的set方法注入的。</p>
+
+<pre><code>&lt;bean id="serviceProvider" class="com.sgm.service.ServiceProvider"&gt;
+    &lt;constructor-arg ref="userService"&gt;&lt;/constructor-arg&gt;  
+&lt;/bean&gt; 
+
+&lt;bean id="userService" class="com.sgm.implement.UserServiceImp"/&gt;
+</code></pre>
+
+<p>xml默认都是注入一个单例对象的，即bean的属性 scope = &ldquo;singleton&rdquo; 为默认值。如果要每次都注入一个新对象，则设置bean的属性 scope = &ldquo;prototype"。</p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/11/15/spring-ioc/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -2307,105 +2464,6 @@ protected void onCreate(Bundle savedInstanceState) {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/08/04/animation/">iOS中的动画</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-08-04T16:22:41+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:22 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>动画是作用的UIView的CALayer上的，UIView是CALayer的代理，给CALayer提供数据参数，CALayer负责渲染和动画。UIView是在UIKit框架中，而CALayer是在QuartzCore框架中。UIView可以响应用户事件，而CALayer不可以响应用户事件。CALayer也可以像UIView一样添加子Layer。
-<img src="/myimg/ios/calayer.png" alt="image" /></p>
-
-<h4>CALayer常用属性</h4>
-
-<pre><code>anchorPoint 和中心点position重合的一个点，称为“锚点”，锚点的描述是相对于x、y位置比例而言的默认在图像中心点(0.5,0.5)的位置
-backgroundColor 图层背景颜色  
-borderColor 边框颜色    
-borderWidth 边框宽度    
-bounds  图层大小    
-contents    图层显示内容，例如可以将图片作为图层内容显示
-contentsRect    图层显示内容的大小和位置    
-cornerRadius    圆角半径    
-doubleSided 图层背面是否显示，默认为YES 
-frame   图层大小和位置，不支持隐式动画，所以CALayer中很少使用frame，通常使用bounds和position代替
-hidden  是否隐藏    
-mask    图层蒙版    
-maskToBounds    子图层是否剪切图层边界，默认为NO 
-opacity 透明度 ，类似于UIView的alpha    
-position    图层中心点位置，类似于UIView的center
-shadowColor 阴影颜色    
-shadowOffset    阴影偏移量 
-shadowOpacity   阴影透明度，注意默认为0，如果设置阴影必须设置此属性
-shadowPath  阴影的形状 
-shadowRadius    阴影模糊半径  
-sublayers   子图层   
-sublayerTransform   子图层形变 
-transform   图层形变
-</code></pre>
-
-<p>要注意position和anchorPoint的区别：<strong>position是layer中的anchorPoint点在superLayer中的位置坐标！position点是相对suerLayer的，anchorPoint点是相对自身layer的！</strong> 所以说position不变，但anchorPoint改变的话，也会改变layer在superLayer中的位置！</p>
-
-<pre><code>layer=[[CALayer alloc]init];
-layer.backgroundColor=[UIColor purpleColor].CGColor;
-layer.bounds=CGRectMake(0, 0, 100,100);
-layer.shadowColor=[UIColor redColor].CGColor;
-layer.shadowOffset=CGSizeMake(5, 5);
-layer.shadowOpacity=0.7;
-layer.borderColor=[UIColor yellowColor].CGColor;
-layer.borderWidth=3;
-layer.position=CGPointMake(size.width/2, size.height/2);
-[self.view.layer addSublayer:layer];
-
-//layer.anchorPoint=CGPointMake(0, 0); //图一
-//layer.anchorPoint=CGPointMake(0, 1); //图二
-</code></pre>
-
-<p>图中position一样，但anchorPoint不一样，所以图片位置也不一样。  <br/>
-<img src="/myimg/ios/layer_position.png" alt="image" />
-注意如果要设置圆角，对于图层本身而言可以正常显示，但是对于图层中绘制的图片无法正确显示。如果想要图片正确显示则必须设置masksToBounds=YES，剪切子图层。但设置layer.masksToBounds=YES后，图层的影效果无法和masksToBounds=YES同时使用，因为masksToBounds的目的就是剪切外边框。如果同时要阴影又要圆角的话，就用两个重叠的图层,底部负责绘制阴影，上层负责绘制圆角。</p>
-
-<h4>Core Animation</h4>
-
-<p>iOS的核心动画Core Animation包含在Quartz Core框架中。核心动画分为几类：基础动画、关键帧动画、动画组、转场动画,各个类的关系大致如下：
-<img src="/myimg/ios/core_animation.png" alt="image" />
-*CAAnimation：核心动画的基础类，不能直接使用，负责动画运行时间、速度的控制，本身实现了CAMediaTiming协议。</p>
-
-<p>*CAPropertyAnimation：属性动画的基类，通过属性进行动画设置，不能直接使用。</p>
-
-<p>*CAAnimationGroup：动画组合模式，可以通过动画组来进行所有动画行为的统一控制，组中所有动画效果可以并发执行。</p>
-
-<p>*CATransition：转场动画，主要通过滤镜进行动画效果设置。</p>
-
-<p>*CABasicAnimation：基础动画，通过属性修改进行动画参数控制，只有初始状态和结束状态。</p>
-
-<p>*CAKeyframeAnimation：关键帧动画，同样是通过属性进行动画参数控制，但是同基础动画不同的是它可以有多个状态控制。</p>
-
-<p>基础动画、关键帧动画都属于属性动画，就是通过修改属性值产生动画效果，只需要设置初始值和结束值，中间的过程动画由系统自动计算产生。和基础动画不同的是关键帧动画可以设置多个属性值，每两个属性中间的过渡动画由系统自动完成。</p>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/08/04/animation/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -2423,6 +2481,10 @@ layer.position=CGPointMake(size.width/2, size.height/2);
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/12/01/react-navigator/">React Native Navigator</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/11/30/react-native-life/">React Native组件生命周期</a>
       </li>
     
@@ -2438,10 +2500,6 @@ layer.position=CGPointMake(size.width/2, size.height/2);
         <a href="/blog/2016/11/28/react-native-run-bug/">React Native 问题汇总</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/11/26/react-native-basic/">React Native 基础知识</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -2454,7 +2512,7 @@ layer.position=CGPointMake(size.width/2, size.height/2);
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (8)</a></li>
-<li class='category'><a href='/blog/categories/react/'>react (6)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (7)</a></li>
 
   </ul>
 </section>
