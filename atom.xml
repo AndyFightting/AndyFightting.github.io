@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-01T18:11:21+08:00</updated>
+  <updated>2016-12-01T20:32:25+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[React Native组件生命周期]]></title>
+    <title type="html"><![CDATA[React Native 组件生命周期]]></title>
     <link href="http://andyfightting.github.io/blog/2016/11/30/react-native-life/"/>
     <updated>2016-11-30T11:08:59+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/11/30/react-native-life</id>
@@ -1030,6 +1030,8 @@ const styles = StyleSheet.create({
 <p>ctrl-shift-&ldquo;-&rdquo; : 缩小字体</p>
 
 <p><a href="https://github.com/kompasim/atom-plugins">[92款插件推荐]</a></p>
+
+<p><strong>嗯，还是WebStorm好用！！提示更智能也更多东西可以跳转查看，Atom没跳两下就跳不了了&hellip;</strong></p>
 ]]></content>
   </entry>
   
