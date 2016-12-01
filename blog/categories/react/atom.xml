@@ -4,7 +4,7 @@
   <title><![CDATA[Category: React | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/react/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-01T16:09:20+08:00</updated>
+  <updated>2016-12-01T18:11:21+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -32,15 +32,55 @@
 
 <p><img src="/myimg/java/lift1.png" width="500" alt="" /></p>
 
-<h4>在SecondView里点击返回的时候，先掉用FirstView的回调方法, 在回调方法里调用 setState() 刷新FirstView，然后 pop 。</h4>
-
-<p><img src="/myimg/java/lift2.png" width="500" alt="" /></p>
-
-<h4>如果在返回的时候不调用FirstView的回调方法直接pop。不管是从A到B还是从B返回A,A的componentWillReceiveProps都会被调用？</h4>
+<h4>不调用FirstView的回调方法直接pop。</h4>
 
 <p><img src="/myimg/java/life3.png" width="500" alt="" /></p>
 
+<h4>如果在SecondView里点击返回的时候，先掉用FirstView的回调方法, 在回调方法里调用 setState() 刷新FirstView，然后 pop 。</h4>
+
+<p><img src="/myimg/java/lift2.png" width="500" alt="" /></p>
+
+<p>从上面可以看出不管是从A到B还是从B返回A,A的componentWillReceiveProps都会被调用! A的更新流程都会先走一遍！</p>
+
 <p><img src="/myimg/java/life4.png" width="600" alt="" /></p>
+
+<pre><code>configureScene 属性用来配置场景动画。
+configureScene={(route, routeStack) =&gt; {
+                return Navigator.SceneConfigs.PushFromRight;
+              }}
+</code></pre>
+
+<pre><code>在/node_modules/react-native/Libraries/CustomComponents/Navigator/NavigatorSceneConfigs 中预设了很多转场动画。
+PushFromRight
+PushFromLeft
+FloatFromRight // We will want to customize this soon
+FloatFromLeft
+FloatFromBottom
+FloatFromBottomAndroid
+FadeAndroid
+HorizontalSwipeJump
+HorizontalSwipeJumpFromRight
+HorizontalSwipeJumpFromLeft
+VerticalUpSwipeJump
+VerticalDownSwipeJump
+</code></pre>
+
+<h4>其他方法</h4>
+
+<pre><code>getCurrentRoutes() - 获取当前栈里的所有路由
+jumpBack() - 跳回之前的路由，还保留现在的，还可以再跳回来，会保留原样
+jumpForward() - 与上一个方法对应
+jumpTo(route) - 跳转到已有的场景并且不卸载
+push(route) - 跳转到新的场景，并且将场景入栈
+pop() - 跳转回去并且卸载掉当前场景
+replace(route) - 用一个新的路由替换掉当前场景
+replaceAtIndex(route, index) - 替换掉指定序列的路由场景
+replacePrevious(route) - 替换掉之前的场景
+resetTo(route) - 跳转到新的场景，并且重置整个路由栈
+immediatelyResetRouteStack(routeStack) - 用新的路由数组来重置路由栈
+popToRoute(route) - pop到路由指定的场景，在整个路由栈中，处于指定场景之后的场景将会被卸载
+popToTop() - pop到栈中的第一个场景，卸载掉所有的其他场景
+</code></pre>
 
 <h4>index.ios.js</h4>
 
