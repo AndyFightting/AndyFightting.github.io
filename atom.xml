@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-02T20:12:27+08:00</updated>
+  <updated>2016-12-02T20:18:06+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -44,30 +44,7 @@ scroll:内容会被修剪，但是浏览器会显示滚动条以便查看其余�
 
 //zIndex是从屏幕指向外的z轴。
 
-//一般用TouchableWithoutFeedback onPress 来接收点击事件。        
-</code></pre>
-
-<h4>Text</h4>
-
-<pre><code>//Text里也可以嵌套其他组件。嵌套的空间是span样式而不是div块。
-
-//文字居中除了要设置textAlign='center'，外还需设置lineHeight = height,因为textAlign只是水平对齐方式。
-
-//Text本身设置alignSelf为flex-start,center,flex-end也会宽度自适应。
-
-//fontStyle: (italic,normal,oblique).
-
-//textDecorationLine:(none,underline,line-through,underline line-through)
-
-//textDecorationStyle: (dashed,dotted,double,solid)
-
-//letterSpacing: 字符间距
-
-//Text有onPress，onLongPress.样式属性值可以通过state动态改变。
-
-//ellipsizeMode: (clip,head,middle,tail,wordWrapping) wordWrapping:三个点都不显示
-
-//adjustsFontSizeToFit: iOS的自动调整字体大小
+//一般用TouchableWithoutFeedback onPress 来接收点击事件。  
 </code></pre>
 
 <h4>Image</h4>
@@ -107,6 +84,29 @@ Image.resizeMode.repeat(原比例重复显示)
 <h4>图片加载失败</h4>
 
 <p><img src="http://andyfightting.github.io/myimg/react/imagee.png" width="400" alt="" /></p>
+
+<h4>Text</h4>
+
+<pre><code>//Text里也可以嵌套其他组件。嵌套的空间是span样式而不是div块。
+
+//文字居中除了要设置textAlign='center'，外还需设置lineHeight = height,因为textAlign只是水平对齐方式。
+
+//Text本身设置alignSelf为flex-start,center,flex-end也会宽度自适应。
+
+//fontStyle: (italic,normal,oblique).
+
+//textDecorationLine:(none,underline,line-through,underline line-through)
+
+//textDecorationStyle: (dashed,dotted,double,solid)
+
+//letterSpacing: 字符间距
+
+//Text有onPress，onLongPress.样式属性值可以通过state动态改变。
+
+//ellipsizeMode: (clip,head,middle,tail,wordWrapping) wordWrapping:三个点都不显示
+
+//adjustsFontSizeToFit: iOS的自动调整字体大小
+</code></pre>
 
 <h4>Button</h4>
 
