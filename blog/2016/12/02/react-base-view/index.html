@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>React Native 基础组件 - 阿贵</title>
+  <meta name="author" content="guimingsu">
+
+  
+  <meta name="description" content="React Native 基础组件 Dec 2nd, 2016 9:12 am 这里主要记录看 React Native 官方例子 的基础组件过程中，记录一些比较特殊或需要注意的地方。 View //宽度自适应,需要在Text的父控件上设置alignSelf属性！
+必须把文字放在&lt;Text &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://andyfightting.github.io/blog/2016/12/02/react-base-view/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="阿贵" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">  -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+
+<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">阿贵</a></h1>
+  
+    <h2>All growth is a leap in the dark.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="andyfightting.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li> 
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">React Native 基础组件</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-02T09:12:24+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2016</span></span> <span class='time'>9:12 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>这里主要记录看 <a href="https://github.com/facebook/react-native">React Native 官方例子</a> 的基础组件过程中，记录一些比较特殊或需要注意的地方。
+<img src="/myimg/react/view0.png" width="800" alt="" /></p>
+
+<h4>View</h4>
+
+<pre><code>//宽度自适应,需要在Text的父控件上设置alignSelf属性！
+必须把文字放在&lt;Text&gt;组件内。不能直接在&lt;View&gt;下放置一段文字。
+值为flex-start,center,flex-end都会自适应！而auto,stretch则不会！
+&lt;View style=&gt;
+    &lt;Text&gt;这里的文字会自适应宽度！&lt;/Text&gt;
+&lt;/View&gt;
+
+//背景色和圆角问题
+当设置了背景色又设置了圆角时，需要设置 overflow: 'hidden' ，否则四个角会有背景色！前提是这个View里有子组件，
+因为像css似的背景色会继承到子组件中！四个角显示的是子组件的背景色。
+所以不用overflow,把子组件背景色设置透明transparent也可以。 
+
+//overflow:(visible,hidden,scroll),设置子组件超出父组件的话该如何显示。
+visible:默认值。内容不会被修剪，会呈现在元素框之外。
+hidden:内容会被修剪，并且其余内容是不可见的。
+scroll:内容会被修剪，但是浏览器会显示滚动条以便查看其余的内容。
+
+//不透明opacity:(0~1),1不透明，0透明。
+
+//zIndex是从屏幕指向外的z轴。
+
+//一般用TouchableWithoutFeedback onPress 来接收点击事件。        
+</code></pre>
+
+<h4>Text</h4>
+
+<pre><code>//Text里也可以嵌套其他组件。嵌套的空间是span样式而不是div块。
+
+//文字居中除了要设置textAlign='center'，外还需设置lineHeight = height,因为textAlign只是水平对齐方式。
+
+//Text本身设置alignSelf为flex-start,center,flex-end也会宽度自适应。
+
+//fontStyle: (italic,normal,oblique).
+
+//textDecorationLine:(none,underline,line-through,underline line-through)
+
+//textDecorationStyle: (dashed,dotted,double,solid)
+
+//letterSpacing: 字符间距
+
+//Text有onPress，onLongPress.样式属性值可以通过state动态改变。
+
+//ellipsizeMode: (clip,head,middle,tail,wordWrapping) wordWrapping:三个点都不显示
+
+//adjustsFontSizeToFit: iOS的自动调整字体大小
+</code></pre>
+
+<h4>Image</h4>
+
+<pre><code>//Image里也可以嵌套。也可以显示gif
+
+//capInsets {top, left, bottom, right} ,9-patch图片效果。
+
+//tintColor: 为所有非透明的像素指定一个颜色.(tint:染，给...着色)
+
+//resizeMode: 图片如何显示
+Image.resizeMode.cover(按比例充满),(默认值)
+Image.resizeMode.contain(按比例包含),
+Image.resizeMode.stretch(拉伸充满),
+Image.resizeMode.center(按比例居中),
+Image.resizeMode.repeat(原比例重复显示)
+
+ //如果 source 或者 uri 属性值有http前缀的话，会自动下载图片。
+
+  //加载网络图片的一些回调方法，不论成功失败都会调用onLoadEnd
+  &lt;Image
+     style=
+     defaultSource={require('./images/msg.png')}
+     onLoadStart={() =&gt; { console.log('Image:-----onLoadStart') }}
+     onProgress={() =&gt; { console.log('Image:-----onProgress')  }}
+     onLoad={() =&gt; { console.log('Image:-----onLoad')  }}//成功
+     onError={() =&gt; { console.log('Image:-----onError')  }}//失败
+     onLoadEnd={() =&gt; { console.log('Image:-----onLoadEnd')  }}//不论成功失败都会被调用
+     source=/{/{uri:'https:xxx.png'/}/} //把/都去掉
+    /&gt;
+</code></pre>
+
+<h4>图片加载成功</h4>
+
+<p><img src="/myimg/react/images.png" width="400" alt="" /></p>
+
+<h4>图片加载失败</h4>
+
+<p><img src="/myimg/react/imagee.png" width="400" alt="" /></p>
+
+<h4>Button</h4>
+
+<pre><code>//color: iOS是设置文字颜色，而Android是设置背景色.title 和 onPress两个属性是必须的。
+Button可以属性很少啊，style样式都没用...一般用TouchableOpacity或TouchableNativeFeedback嵌套Text来自定义按钮。
+</code></pre>
+</div>
+
+
+      | <a href="#comments">Comments</a>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">guimingsu</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-12-02T09:12:24+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2016</span></span> <span class='time'>9:12 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/react/'>react</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  <!-- JiaThis Button -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/12/01/react-navigator/" title="Previous Post: React Native Navigator">&laquo; React Native Navigator</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-title="Octopress博客的个性化配置"></div>
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"tianweili"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+<!-- Duoshuo Comment END --></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/12/02/react-base-view/">React Native 基础组件</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/01/react-navigator/">React Native Navigator</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/30/react-native-life/">React Native 组件生命周期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/30/css-flex-box/">Flexbox 布局</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/29/rn-style/">React Native 样式属性</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (8)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (8)</a></li>
+
+  </ul>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - guimingsu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

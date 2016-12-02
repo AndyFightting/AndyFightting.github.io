@@ -4,7 +4,7 @@
   <title><![CDATA[Category: React | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/react/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-01T21:07:53+08:00</updated>
+  <updated>2016-12-02T20:09:43+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,109 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[React Native 基础组件]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/12/02/react-base-view/"/>
+    <updated>2016-12-02T09:12:24+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/12/02/react-base-view</id>
+    <content type="html"><![CDATA[<p>这里主要记录看 <a href="https://github.com/facebook/react-native">React Native 官方例子</a> 的基础组件过程中，记录一些比较特殊或需要注意的地方。
+<img src="/myimg/react/view0.png" width="800" alt="" /></p>
+
+<h4>View</h4>
+
+<pre><code>//宽度自适应,需要在Text的父控件上设置alignSelf属性！
+必须把文字放在&lt;Text&gt;组件内。不能直接在&lt;View&gt;下放置一段文字。
+值为flex-start,center,flex-end都会自适应！而auto,stretch则不会！
+&lt;View style=&gt;
+    &lt;Text&gt;这里的文字会自适应宽度！&lt;/Text&gt;
+&lt;/View&gt;
+
+//背景色和圆角问题
+当设置了背景色又设置了圆角时，需要设置 overflow: 'hidden' ，否则四个角会有背景色！前提是这个View里有子组件，
+因为像css似的背景色会继承到子组件中！四个角显示的是子组件的背景色。
+所以不用overflow,把子组件背景色设置透明transparent也可以。 
+
+//overflow:(visible,hidden,scroll),设置子组件超出父组件的话该如何显示。
+visible:默认值。内容不会被修剪，会呈现在元素框之外。
+hidden:内容会被修剪，并且其余内容是不可见的。
+scroll:内容会被修剪，但是浏览器会显示滚动条以便查看其余的内容。
+
+//不透明opacity:(0~1),1不透明，0透明。
+
+//zIndex是从屏幕指向外的z轴。
+
+//一般用TouchableWithoutFeedback onPress 来接收点击事件。        
+</code></pre>
+
+<h4>Text</h4>
+
+<pre><code>//Text里也可以嵌套其他组件。嵌套的空间是span样式而不是div块。
+
+//文字居中除了要设置textAlign='center'，外还需设置lineHeight = height,因为textAlign只是水平对齐方式。
+
+//Text本身设置alignSelf为flex-start,center,flex-end也会宽度自适应。
+
+//fontStyle: (italic,normal,oblique).
+
+//textDecorationLine:(none,underline,line-through,underline line-through)
+
+//textDecorationStyle: (dashed,dotted,double,solid)
+
+//letterSpacing: 字符间距
+
+//Text有onPress，onLongPress.样式属性值可以通过state动态改变。
+
+//ellipsizeMode: (clip,head,middle,tail,wordWrapping) wordWrapping:三个点都不显示
+
+//adjustsFontSizeToFit: iOS的自动调整字体大小
+</code></pre>
+
+<h4>Image</h4>
+
+<pre><code>//Image里也可以嵌套。也可以显示gif
+
+//capInsets {top, left, bottom, right} ,9-patch图片效果。
+
+//tintColor: 为所有非透明的像素指定一个颜色.(tint:染，给...着色)
+
+//resizeMode: 图片如何显示
+Image.resizeMode.cover(按比例充满),(默认值)
+Image.resizeMode.contain(按比例包含),
+Image.resizeMode.stretch(拉伸充满),
+Image.resizeMode.center(按比例居中),
+Image.resizeMode.repeat(原比例重复显示)
+
+ //如果 source 或者 uri 属性值有http前缀的话，会自动下载图片。
+
+  //加载网络图片的一些回调方法，不论成功失败都会调用onLoadEnd
+  &lt;Image
+     style=
+     defaultSource={require('./images/msg.png')}
+     onLoadStart={() =&gt; { console.log('Image:-----onLoadStart') }}
+     onProgress={() =&gt; { console.log('Image:-----onProgress')  }}
+     onLoad={() =&gt; { console.log('Image:-----onLoad')  }}//成功
+     onError={() =&gt; { console.log('Image:-----onError')  }}//失败
+     onLoadEnd={() =&gt; { console.log('Image:-----onLoadEnd')  }}//不论成功失败都会被调用
+     source=/{/{uri:'https:xxx.png'/}/} //把/都去掉
+    /&gt;
+</code></pre>
+
+<h4>图片加载成功</h4>
+
+<p><img src="/myimg/react/images.png" width="400" alt="" /></p>
+
+<h4>图片加载失败</h4>
+
+<p><img src="/myimg/react/imagee.png" width="400" alt="" /></p>
+
+<h4>Button</h4>
+
+<pre><code>//color: iOS是设置文字颜色，而Android是设置背景色.title 和 onPress两个属性是必须的。
+Button可以属性很少啊，style样式都没用...一般用TouchableOpacity或TouchableNativeFeedback嵌套Text来自定义按钮。
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[React Native Navigator]]></title>
@@ -513,62 +616,6 @@ shadowOffset
 shadowOpacity
 shadowRadius
 </code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[React Native 问题汇总]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/11/28/react-native-run-bug/"/>
-    <updated>2016-11-28T18:46:09+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/11/28/react-native-run-bug</id>
-    <content type="html"><![CDATA[<p>Android 设备:小米 red note MUI 8.0, iOS 设备:iPhone 6Plus 8.3</p>
-
-<h5>1.运行不起来</h5>
-
-<p>按照<a href="https://facebook.github.io/react-native/docs/getting-started.html#content">官网</a>的步骤一步一步下来运行报：</p>
-
-<pre><code>com.android.builder.testing.api.DeviceException: com.android.ddmlib.InstallException: Failed to establish session
-</code></pre>
-
-<p><a href="https://github.com/facebook/react-native/issues/6499">这里</a>说小米系列的手机都这样，我们平时用Android Studio调试运行不是会弹出个弹出框问是否安装吗？这是用USB链接的，所以没问题，但是用命令就掉动不起来那弹出框&hellip;
-<img src="/myimg/java/react_error_xm0.png" alt="" /></p>
-
-<p>解决办法如下，关键是第4步，关闭小米的优化
-<img src="/myimg/java/react_error_xm1.png" alt="" /></p>
-
-<h5>2.运行不起来</h5>
-
-<p>报错：</p>
-
-<pre><code>com.android.builder.testing.api.DeviceException: com.android.ddmlib.InstallException: Unable to upload some APKs
-</code></pre>
-
-<p>解决：把 /项目/android/build.gradle 文件里的 <code>classpath 'com.android.tools.build:gradle:1.3.1'</code> 改成 <code>classpath 'com.android.tools.build:gradle:1.2.3'</code>就可以了&hellip;.why? yeah,why?</p>
-
-<h5>3.白屏</h5>
-
-<p>运行起来了，等啊等，怎么还是白屏？不是有东西的吗？摇啊摇不是有弹出框的吗？弹出框呢？？</p>
-
-<p>解决：进系统设置，应用管理，找到这个应用，点击应用详情里的权限管理，开启显示悬浮框。刷新一下再摇一摇就有弹出框了。</p>
-
-<h5>4.Could not connect to development server</h5>
-
-<p>摇啊摇弹出框后，点击最后的 <code>Dev Settings</code> ，然后设置 <code>Debug server host &amp; port for device</code> 为<code>本机IP:8081</code>后返回刷新出现如下错误:</p>
-
-<p><img src="/myimg/java/react_error2.png" alt="" /></p>
-
-<p>解决：命令行进入项目文件夹，运行如下命令：</p>
-
-<pre><code>react-native start &gt; /dev/null 2&gt;&amp;1 &amp; curl "http://localhost:8081/index.android.bundle?platform=android" -o "android/app/src/main/assets/index.android.bundle"
-</code></pre>
-
-<p>如果提示没有 assets 文件夹，则先手动建一个再运行。之后就能真机运行起来了：</p>
-
-<p><img src="/myimg/java/react_android.png" alt="" /></p>
-
-<h5>iOS模拟器Cmd+R不刷新，Cmd+D也没弹出框</h5>
-
-<p>解决：要开启模拟器的键盘链接。模拟器菜单<code>Hardware</code>-><code>Keyboard</code> 选中 <code>Connect Hardware Keyboard</code></p>
 ]]></content>
   </entry>
   

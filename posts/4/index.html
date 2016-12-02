@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="* Logger 推荐一款打印工具Logger,比自带的打印效果更好，主要是json打印是格式化的！Github上写的地址compile 'com.github.orhanobut:logger:1.12'我下载失败，我用的是compile 'com.orhanobut:logger:1.11 &hellip;">
+  <meta name="description" content="Android数据保存方式有： 文件存储, SharedPreference, Sqlite, SD卡存储。 * 文件存储 不对存储数据做任何格式化处理，原封不动的保存到文件中。使用于保存简单的文本数据或者二进制数据。 Context有个openFileOutput()方法接受两个参数，第一个： &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,70 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/23/androidsave/">Android基本存储</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-23T19:48:52+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>7:48 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Android数据保存方式有： 文件存储, SharedPreference, Sqlite, SD卡存储。</p>
+
+<h3>* 文件存储</h3>
+
+<p>不对存储数据做任何格式化处理，原封不动的保存到文件中。使用于保存简单的文本数据或者二进制数据。</p>
+
+<p>Context有个<code>openFileOutput()</code>方法接受两个参数，第一个：文件名，<strong>不要包含路径</strong>，第二个：操作方式，有两种，<code>MODE_PRIVATE</code>(覆盖原文件内容),<code>MODE_APPEND</code>(在原文件尾部追加内容)，默认第一种。文件默认保存在：<code>/data/data/packageName/files/</code>这个目录里。</p>
+
+<pre><code> public static void saveText(Context context,String fileName,String text){
+    FileOutputStream outputStream ;
+    BufferedWriter bufferedWriter = null;
+    try {
+       outputStream = context.openFileOutput(fileName,Context.MODE_PRIVATE);
+        bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
+        bufferedWriter.write(text);
+    }catch (IOException e){
+        e.printStackTrace();
+    }finally {
+        try {
+            if (bufferedWriter != null){
+                bufferedWriter.close();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/11/23/androidsave/">阅读全文</a>
+    </footer>
+  
+
+
+      | <a href="/blog/2015/11/23/androidsave/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -256,6 +320,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/12/02/react-base-view/">React Native 基础组件</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/12/01/react-navigator/">React Native Navigator</a>
       </li>
     
@@ -271,10 +339,6 @@
         <a href="/blog/2016/11/29/rn-style/">React Native 样式属性</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/11/28/react-native-run-bug/">React Native 问题汇总</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -287,7 +351,7 @@
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (8)</a></li>
-<li class='category'><a href='/blog/categories/react/'>react (7)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (8)</a></li>
 
   </ul>
 </section>
