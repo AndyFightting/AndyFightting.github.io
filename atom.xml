@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-02T20:09:43+08:00</updated>
+  <updated>2016-12-02T20:12:27+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -89,7 +89,7 @@ Image.resizeMode.repeat(原比例重复显示)
 
   //加载网络图片的一些回调方法，不论成功失败都会调用onLoadEnd
   &lt;Image
-     style=
+     style=/{/{width:300,height:100/}/} //把/去掉
      defaultSource={require('./images/msg.png')}
      onLoadStart={() =&gt; { console.log('Image:-----onLoadStart') }}
      onProgress={() =&gt; { console.log('Image:-----onProgress')  }}
