@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-02T20:18:06+08:00</updated>
+  <updated>2016-12-03T16:08:10+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,353 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Node.js]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/12/03/node-js/"/>
+    <updated>2016-12-03T10:24:36+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/12/03/node-js</id>
+    <content type="html"><![CDATA[<p>Node.js 是运行在服务端的 JavaScript。Node.js 应用是由几部分组成的：</p>
+
+<pre><code>1. 引入 require 模块：可以使用 require 指令来载入 Node.js 模块。
+2. 创建服务器：服务器可以监听客户端的请求
+3. 接收请求与响应请求: 可以使用浏览器或客户端发送 HTTP 请求，服务器接收请求后返回响应数据。
+</code></pre>
+
+<h4>Hello World</h4>
+
+<p>创建一个test.js文件，里面输入如下内容。终端进入文件所在文件夹，执行<code>node test.js</code>,浏览器地址栏输入<code>http://127.0.0.1:8888/</code>就可以看到Hello World了。</p>
+
+<pre><code>//引用http模块
+var http = require('http');
+http.createServer(function (request, response) {
+    // 发送 HTTP 头部 
+    // HTTP 状态值: 200 : OK
+    // 内容类型: text/plain
+    response.writeHead(200, {'Content-Type': 'text/plain'});
+    // 发送响应数据 "Hello World"
+    response.end('Hello World！\n');
+}).listen(8888);
+</code></pre>
+
+<p><img src="http://andyfightting.github.io/myimg/react/nodeHello.png" width="400" alt="" /></p>
+
+<h4>NPM</h4>
+
+<p>npm 是js包管理工具，像 CocoaPods 似的可以下载被人编写的第三方包，也可以把自己写的包上传的npm服务器。</p>
+
+<p><code>npm install 包名</code> 本地安装,将安装包放在 ./node_modules 下，如果没有 node_modules 文件夹，会在当前执行 npm 命令的目录下生成 node_modules 文件夹。然后就可以通过require(包名) 来引入本地安装的包。</p>
+
+<p><code>npm install 包名字 -g</code> 全局安装，将安装包放在 /usr/local 下或者 node 的安装目录。</p>
+
+<p><code>npm uninstall 包名</code> 卸载包</p>
+
+<p><code>npm update 包名</code> 更新包</p>
+
+<p><code>npm search 包名</code> 搜索包</p>
+
+<h4>package.json</h4>
+
+<p>package.json 用于表示需要安装的包的属性，如名字，版本，依赖等。package.json 文件是必不可少的。可通过<code>npm init</code>创建该文件。</p>
+
+<pre><code>//Package.json 属性说明
+name - 包名。
+version - 包的版本号。
+description - 包的描述。
+homepage - 包的官网 url 。
+author - 包的作者姓名。
+contributors - 包的其他贡献者姓名。
+dependencies - 依赖包列表。如果依赖包没有安装，npm 会自动将依赖包安装在 node_module 目录下。
+repository - 包代码存放的地方的类型，可以是 git 或 svn，git 可在 Github 上。
+main - main 字段是一个模块ID，它是一个指向你程序的主要项目。就是说，如果你包的名字叫 express，然后用户安装它，然后require("express")。
+keywords - 关键字
+</code></pre>
+
+<h4>回调函数</h4>
+
+<p>Node.js 异步编程的直接体现就是回调。Node 使用了大量的回调函数，Node 所有 API 都支持回调函数。</p>
+
+<pre><code>//顺序执行
+var fs = require("fs");
+var data = fs.readFileSync('input.txt');
+console.log(data.toString());
+console.log("程序执行结束!");
+
+//异步回调
+var fs = require("fs");
+fs.readFile('input.txt', function (err, data) {
+    if (err) return console.error(err);
+    console.log(data.toString());
+});
+console.log("程序执行结束!");
+</code></pre>
+
+<h4>事件驱动</h4>
+
+<p>Node.js 每一个 API 都是异步的，并作为一个独立线程运行，使用异步函数调用并处理并发。基本上所有的事件机制都是用观察者模式实现。当web server接收到请求，就把它关闭然后进行处理，然后去服务下一个web请求。
+当这个请求完成，它被放回处理队列，当到达队列开头，这个结果被返回给用户。</p>
+
+<p><img src="http://andyfightting.github.io/myimg/react/reactevent.png" width="400" alt="" /></p>
+
+<p>在 Node 应用程序中，执行异步操作将回调函数作为最后一个参数， 回调函数里接收错误的对象作为回调函数的第一个参数。</p>
+
+<pre><code>//回调函数是readFile的最后一个参数，err是回调函数的第一个参数
+var fs = require("fs");
+fs.readFile('input.txt', function (err, data) {
+   if (err){
+      console.log(err.stack);
+      return;
+   }
+   console.log(data.toString());
+});
+console.log("程序执行完毕");
+</code></pre>
+
+<p>Node.js 所有的异步 I/O 操作在完成时都会发送一个事件到事件队列。许多对象都会分发事件，如一个net.Server对象会在每次有新连接时分发一个事件， 一个fs.readStream对象会在文件被打开的时候发出一个事件。 所有这些产生事件的对象都是基于 events.EventEmitter 的实例。</p>
+
+<p>events 模块只提供了一个对象： events.EventEmitter(事件分发器)。EventEmitter 的核心就是事件触发与事件监听器功能的封装。
+可以通过require(&ldquo;events&rdquo;);来访问该模块。EventEmitter 对象如果在实例化时发生错误，会触发 &lsquo;error&rsquo; 事件。当添加新的监听器时，'newListener' 事件会触发，当监听器被移除时，'removeListener' 事件被触发。EventEmitter 的每个事件由一个事件名和若干个参数组成，事件名是一个字符串。对于每个事件，EventEmitter 支持 若干个事件监听器。当事件触发时，注册到这个事件的事件监听器被依次调用，事件参数作为回调函数参数传递。</p>
+
+<pre><code>var events = require('events'); 
+var emitter = new events.EventEmitter(); 
+emitter.on('someEvent', function(arg1, arg2) { 
+    console.log('listener1', arg1, arg2); 
+}); 
+emitter.on('someEvent', function(arg1, arg2) { 
+    console.log('listener2', arg1, arg2); 
+}); 
+emitter.emit('someEvent', 'arg1 参数', 'arg2 参数'); 
+
+//打印出
+//listener1 arg1 参数 arg2 参数
+//listener2 arg1 参数 arg2 参数
+</code></pre>
+
+<h4>EventEmitter 方法</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>addListener(eventName, listenerFun): 为指定事件添加一个监听器到监听器数组的尾部。
+</span><span class='line'>on(eventName, listenerFun):为指定事件注册一个监听器，接受一个字符串 eventName 和一个回调函数。
+</span><span class='line'>once(eventName, listenerFun): 为指定事件注册一个单次监听器，即 监听器最多只会触发一次，触发后立刻解除该监听器。
+</span><span class='line'>removeListener(eventName, listenerFun):移除指定事件的某个监听器，监听器 必须是该事件已经注册过的监听器。
+</span><span class='line'>removeAllListeners([eventName]):移除所有事件的所有监听器， 如果指定事件，则移除指定事件的所有监听器。
+</span><span class='line'>setMaxListeners(n)：默认情况下， EventEmitters 如果你添加的监听器超过 10 个就会输出警告信息。 setMaxListeners 函数用于提高监听器的默认限制的数量。
+</span><span class='line'>listeners(eventName)：返回指定事件的监听器数组。
+</span><span class='line'>emit(eventName, [arg1], [arg2], [...]):按参数的顺序执行每个监听器，如果事件有注册监听返回 true，否则返回 false。
+</span><span class='line'>listenerCount(emitter, eventName):类方法，返回指定事件的监听器数量。</span></code></pre></td></tr></table></div></figure>
+
+
+<p>实例：</p>
+
+<pre><code>var events = require('events');
+var eventEmitter = new events.EventEmitter();
+
+// 监听器1   
+var listener1 = function listener1() {
+   console.log('监听器 listener1 执行。');
+}
+
+// 监听器2       
+var listener2 = function listener2() {
+  console.log('监听器 listener2 执行。');
+}
+
+// 绑定 connection 事件，处理函数为 listener1 
+eventEmitter.addListener('connection', listener1);
+
+// 绑定 connection 事件，处理函数为 listener2
+eventEmitter.on('connection', listener2);
+
+var eventListeners = require('events').EventEmitter.listenerCount(eventEmitter,'connection');
+console.log(eventListeners + " 个监听器监听连接事件。");
+
+// 处理 connection 事件 
+eventEmitter.emit('connection');
+
+// 移除监绑定的 listener1 函数
+eventEmitter.removeListener('connection', listener1);
+console.log("listener1 不再受监听。");
+
+// 触发连接事件
+eventEmitter.emit('connection');
+
+eventListeners = require('events').EventEmitter.listenerCount(eventEmitter,'connection');
+console.log(eventListeners + " 个监听器监听连接事件。");
+
+console.log("程序执行完毕。");
+
+//打印结果
+//2 个监听器监听连接事件。
+//监听器 listener1 执行。
+//监听器 listener2 执行。
+//listener1 不再受监听。
+//监听器 listener2 执行。
+//1 个监听器监听连接事件。
+//程序执行完毕
+</code></pre>
+
+<h5>error 事件</h5>
+
+<p>EventEmitter 定义了一个特殊的事件<code>error</code>，它包含了错误的语义，在遇到异常的时候通常会触发 error 事件。
+当 error 被触发时，如果没有对应的监听器就会把它当作异常，退出程序并输出错误信息。
+所以要为会触发 error 事件的对象设置监听器，避免遇到错误后整个程序崩溃。</p>
+
+<p>大多数时候不会直接使用 EventEmitter，而是在对象中继承它。包括 fs、net、 http 在内的，
+只要是支持事件响应的核心模块都是 EventEmitter 的子类。</p>
+
+<h4>Buffer 类</h4>
+
+<p>JavaScript 语言自身只有字符串数据类型，没有二进制数据类型。但在处理文件流时，必须使用到二进制数据。
+所以在 Node.js中，定义了一个 Buffer 类，该类用来创建一个专门存放二进制数据的缓存区。可以让 Node.js 处理二进制数据，
+每当需要在 Node.js 中处理I/O操作中移动的数据时，就有可能使用 Buffer 库。原始数据存储在 Buffer 类的实例中。
+一个 Buffer 类似于一个整数数组，utf-8 是默认的编码方式。</p>
+
+<pre><code>//写数据
+buf.write(string, offset, length, encoding)；
+string - 写入缓冲区的字符串。
+offset - 缓冲区开始写入的索引值，默认为 0 。
+length - 写入的字节数，默认为 buffer.length。
+encoding - 使用的编码。默认为 'utf8' 。
+返回实际写入的大小。如果 buffer 空间不足， 则只会写入部分字符串。
+
+//读数据
+buf.toString(encoding, start, end)；
+encoding - 使用的编码。默认为 'utf8' 。
+start - 指定开始读取的索引位置，默认为 0。
+end - 结束位置，默认为缓冲区的末尾。
+返回值是用指定的编码返回字符串。
+</code></pre>
+
+<h5>常用方法</h5>
+
+<pre><code>new Buffer(size)：配一个新的 size 大小单位为8位字节的 buffer。
+new Buffer(buffer)：拷贝参数 buffer 的数据到 Buffer 实例。
+new Buffer(str, encoding)分配一个新的 buffer ，其中包含着传入的 str 字符串。 encoding 编码方式默认为 'utf8'。
+buf.length: 返回这个 buffer 的 bytes 数。注意这未必是 buffer 里面内容的大小。length 是 buffer 对象所分配的内存数，它不会随着这个 buffer 对象内容的改变而改变。
+buf.write(string[, offset[, length]][, encoding]):写入数据。
+buf.toJSON()：将 Buffer 实例转换为 JSON 对象。
+buf.equals(otherBuffer)：比较两个缓冲区是否相等。
+buf.compare(otherBuffer):比较两个 Buffer 对象，返回一个数字，表示 buf 在 otherBuffer 之前，之后或相同。
+buf.copy(targetBuffer[, targetStart[, sourceStart[, sourceEnd]]]):buffer 拷贝，源和目标可以相同。 
+targetStart 目标开始偏移和 sourceStart 源开始偏移默认都是 0。 sourceEnd 源结束位置偏移默认是源的长度 buffer.length 。
+</code></pre>
+
+<h4>Stream 流</h4>
+
+<p>Stream 是一个抽象接口，Node 中有很多对象实现了这个接口。例如，对http 服务器发起请求的request 对象就是一个 Stream，还有stdout（标准输出）。
+<strong>所有的 Stream 对象都是 EventEmitter 的实例</strong></p>
+
+<pre><code>Stream 有四种流类型：
+1. Readable - 可读操作。
+2. Writable - 可写操作。
+3. Duplex - 可读可写操作.
+4. Transform - 操作被写入数据，然后读出结果。
+
+所有的 Stream 对象都是 EventEmitter 的实例。常用的事件有：
+data - 当有数据可读时触发。
+end - 没有更多的数据可读时触发。
+error - 在接收和写入过程中发生错误时触发。
+finish - 所有数据已被写入到底层系统时触发。
+</code></pre>
+
+<p>读取文件例子：</p>
+
+<pre><code>var fs = require("fs");
+var data = '';
+
+// 创建可读流
+var readerStream = fs.createReadStream('input.txt');
+
+// 设置编码为 utf8。
+readerStream.setEncoding('UTF8');
+
+// 处理流事件 --&gt; data, end, and error
+readerStream.on('data', function(chunk) {
+   data += chunk;
+});
+
+readerStream.on('end',function(){
+   console.log(data);
+});
+
+readerStream.on('error', function(err){
+   console.log(err.stack);
+});
+
+console.log("程序执行完毕");
+</code></pre>
+
+<h4>模块系统</h4>
+
+<p>模块是Node.js 应用程序的基本组成部分，文件和模块是一一对应的。一个 Node.js 文件就是一个模块，这个文件可能是JavaScript、JSON 或者编译过的C/C++ 扩展等。
+Node.js 提供了<code>exports</code> 和 <code>require</code> 两个对象，其中 exports 是模块公开的接口，require 用于从外部获取一个模块的接口，即所获取模块的 exports 对象。</p>
+
+<p>require方法中的文件查找策略：</p>
+
+<p><img src="http://andyfightting.github.io/myimg/react/require.png" width="400" alt="" /></p>
+
+<h4>函数</h4>
+
+<p>在JavaScript中，一个函数可以作为另一个函数的参数。可以先定义一个函数变量，然后传递，也可以在传递参数的地方直接定义函数(不要名字的函数，匿名函数)。</p>
+
+<pre><code>function say(word) {
+  console.log(word);
+}
+
+function execute(someFunction, value) {
+  someFunction(value);
+}
+
+execute(say, "Hello");
+
+//也可以直接传递匿名函数
+
+function execute(someFunction, value) {
+  someFunction(value);
+}
+
+execute(function(word){ console.log(word) }, "Hello");
+</code></pre>
+
+<h4>全局对象</h4>
+
+<p>JavaScript 中有一个特殊的对象，称为全局对象，它及其所有属性都可以在程序的任何地方访问，即全局变量。
+在浏览器 JavaScript 中，通常 window 是全局对象， 而 Node.js 中的全局对象是 global，所有全局变量（除了 global 本身以外）都是 global 对象的属性。
+在 Node.js 可以直接访问到 global 对象的属性，而不需要在应用中包含它。<strong>注意： 永远使用 var 定义变量以避免引入全局变量，因为全局变量会污染命名空间，提高代码的耦合风险。</strong></p>
+
+<pre><code>满足以下条 件的变量是全局变量：
+1.在最外层定义的变量；
+2.全局对象的属性；
+3.隐式定义的变量（未定义直接赋值的变量）。
+</code></pre>
+
+<p><strong>__filename ：</strong>表示当前正在执行的文件名,输出文件的绝对路径。</p>
+
+<p><strong>__dirname ：</strong>表示当前正在执行的文件目录。</p>
+
+<p><strong>setTimeout(cb, ms) :</strong> 全局函数,在指定的毫秒(ms)数后执行指定函数(cb)。只执行一次指定函数。返回一个代表定时器的句柄值。</p>
+
+<p><strong>clearTimeout(t) :</strong> 全局函数,用于停止一个之前通过 setTimeout() 创建的定时器。 参数 t 是通过 setTimeout() 函数创建的定时器。</p>
+
+<p><strong>setInterval(cb, ms) :</strong>setInterval(cb, ms) 全局函数在指定的毫秒(ms)数后执行指定函数(cb)。
+返回一个代表定时器的句柄值。可以使用 clearInterval(t) 函数来清除定时器。
+setInterval() 方法会不停地调用函数，直到 clearInterval() 被调用或窗口被关闭。</p>
+
+<p><strong>console :</strong> 全局对象，常用方法有<code>console.log()</code>,<code>console.info()</code>,<code>console.warn()</code>,<code>console.error()</code></p>
+
+<p><strong>process :</strong>全局变量，即 global 对象的属性。便于我们更好的控制系统的交互,很多属性和方法。<code>process.stdout</code>,<code>process.exet()</code>&hellip;</p>
+
+<p><a href="https://nodejs.org/dist/latest-v7.x/docs/api/">Node.js API</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[React Native 基础组件]]></title>
@@ -113,6 +460,12 @@ Image.resizeMode.repeat(原比例重复显示)
 <pre><code>//color: iOS是设置文字颜色，而Android是设置背景色.title 和 onPress两个属性是必须的。
 Button可以属性很少啊，style样式都没用...一般用TouchableOpacity或TouchableNativeFeedback嵌套Text来自定义按钮。
 </code></pre>
+
+<h4>ScrollView</h4>
+
+<h4>ListView</h4>
+
+<h4>TabBar</h4>
 ]]></content>
   </entry>
   
@@ -3431,158 +3784,6 @@ public void onSaveInstanceState(Bundle outState) {
 </code></pre>
 
 <p>在使用时还是要注意判断savedInstanceState是否为null，只有在为空时才add()。在不为空时就可以不用处理了，交由BaseFragment处理了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Android手势滑动返回]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/08/31/android-swipe/"/>
-    <updated>2016-08-31T15:16:10+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/08/31/android-swipe</id>
-    <content type="html"><![CDATA[<p>偶然间发现了一个Android自带的抽屉控件<a href="https://developer.android.com/training/implementing-navigation/nav-drawer.html">DrawerLayout</a>,就觉得应该可以用他来封装成手势返回的基础控件。思路就是先设置Activity的跳转动画是从右到左，并且前一个Activity不能动。然后设置DrawerLayout的menu从右边出来，然设置menu全屏，这个menu就相当于子Activity View的容器，默认打开menu,然后设置DrawerLayout容器透明，当DrawerLayout close的时候finish它所在的Activity！还要把状态栏设置成透明，不然DrawerLayout closed 再 finish Activity的时候会有视觉差！复杂的手势控制就交由自带的DrawerLayout处理啦，生命周期还是Activity的生命周期。怎么样，是不是机智如我！！😆</p>
-
-<p>遇到的问题：DrawerLayout的menu即时设置成match_parent也不能全屏！因为源码里设置了margin64dp! 那我们只好再设置回来：android:layout_marginLeft=&ldquo;-64dp"。</p>
-
-<pre><code> private static final int MIN_DRAWER_MARGIN = 64; // dp
-</code></pre>
-
-<p>BaseSwipeActivity</p>
-
-<pre><code>package com.suguiming.myandroid.base;
-import android.os.Bundle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-
-import com.suguiming.myandroid.R;
-
-public class BaseSwipeActivity extends AppCompatActivity {
-
-private DrawerLayout drawer;
-private LinearLayout containerLayout;
-
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-    setContentView(R.layout.activity_base_swipe);
-
-    containerLayout = (LinearLayout) findViewById(R.id.container_layout);
-
-    drawer = (DrawerLayout) findViewById(R.id.base_drawer_layout);
-    drawer.openDrawer(GravityCompat.END);
-    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-        @Override
-        public void onDrawerClosed(View drawerView) {
-            super.onDrawerClosed(drawerView);
-            finish();
-        }
-    };
-    drawer.setDrawerListener(toggle);
-}
-
-//子类不要用setContentView,用setMainView!!!!
-public void setMainView(int viewId) {
-    LayoutInflater inflater = LayoutInflater.from(this);
-    View tmpView = inflater.inflate(viewId, null);
-
-    if (tmpView instanceof LinearLayout) {
-        LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        tmpView.setLayoutParams(linearLayoutParams);
-    } else if (tmpView instanceof RelativeLayout) {
-        RelativeLayout.LayoutParams relativeLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        tmpView.setLayoutParams(relativeLayoutParams);
-    }
-    containerLayout.removeAllViews();
-    containerLayout.addView(tmpView);
-}
-
-}
-</code></pre>
-
-<p>对应的布局文件</p>
-
-<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@android:color/transparent"
-    tools:context="com.suguiming.myandroid.base.BaseSwipeActivity"&gt;
-
-&lt;android.support.v4.widget.DrawerLayout
-    android:id="@+id/base_drawer_layout"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/transparent"
-    tools:openDrawer="end"&gt;
-    &lt;LinearLayout
-        android:orientation="vertical"
-        android:background="@color/clear"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"&gt;
-    &lt;/LinearLayout&gt;
-
-    &lt;!---64dp是源码menu的margin,这里设置为65,不然会有一条黑线--&gt;
-    &lt;LinearLayout
-        android:id="@+id/container_layout"
-        android:orientation="vertical"
-        android:layout_gravity="end"
-        android:layout_marginLeft="-65dp"
-        android:background="@color/light_gray"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"&gt;
-    &lt;/LinearLayout&gt;
-&lt;/android.support.v4.widget.DrawerLayout&gt;
-&lt;/LinearLayout&gt;
-</code></pre>
-
-<p>push 的动画 style</p>
-
-<pre><code>&lt;!--手势返回theme--&gt;
-&lt;style name="BackSwipeTheme" parent="Theme.AppCompat.Light.NoActionBar"&gt;
-    &lt;item name="android:windowIsTranslucent"&gt;true&lt;/item&gt;
-    &lt;item name="android:windowBackground"&gt;@android:color/transparent&lt;/item&gt;
-    &lt;item name="android:windowNoTitle"&gt;true&lt;/item&gt;
-    &lt;item name="android:backgroundDimEnabled"&gt;false&lt;/item&gt;
-    &lt;item name="android:windowAnimationStyle"&gt;@style/ActivitySwipeBackAnimation&lt;/item&gt;
-&lt;/style&gt;
-&lt;style name="ActivitySwipeBackAnimation" parent="@android:style/Animation.Activity"&gt;
-    &lt;item name="android:activityOpenEnterAnimation"&gt;@anim/activity_swipe_in&lt;/item&gt;
-    &lt;item name="android:activityOpenExitAnimation"&gt;@anim/activity_swipe_out&lt;/item&gt;
-    &lt;item name="android:activityCloseEnterAnimation"&gt;@anim/activity_swipe_in&lt;/item&gt;
-    &lt;item name="android:activityCloseExitAnimation"&gt;@anim/activity_swipe_out&lt;/item&gt;
-&lt;/style&gt;
-</code></pre>
-
-<p>使用的话就是让Activity继承BaseSwipeActivity，然后设置Activity的Theme为BackSwipeTheme。</p>
-
-<pre><code>public class ActivitySwipeBack extends BaseSwipeActivity {
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    //要用setMainView，不要用setContentView
-    setMainView(R.layout.activity_activity_swipe_back);
-  }
-}
-
-&lt;activity android:name=".tab0.ActivitySwipeBack"
-            android:theme="@style/BackSwipeTheme"/&gt;
-</code></pre>
-
-<p>完整Demo请查看<a href="https://github.com/AndyFightting/MyAndroid">MyAndroid</a>中的"手势滑动返回"。</p>
-
-<p><img src="http://andyfightting.github.io/myimg/android/android_swipe.png" alt="imge" /></p>
 ]]></content>
   </entry>
   
