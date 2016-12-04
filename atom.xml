@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-03T16:08:10+08:00</updated>
+  <updated>2016-12-04T18:18:40+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -1532,7 +1532,7 @@ const styles = StyleSheet.create({
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[SpringMVC + Spring + Hibernate]]></title>
+    <title type="html"><![CDATA[SpringMVC + Hibernate]]></title>
     <link href="http://andyfightting.github.io/blog/2016/11/17/springmvc-hibernate-jian/"/>
     <updated>2016-11-17T19:34:43+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/11/17/springmvc-hibernate-jian</id>
