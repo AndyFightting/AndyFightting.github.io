@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-05T09:30:16+08:00</updated>
+  <updated>2016-12-05T14:29:36+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -462,6 +462,32 @@ Button可以属性很少啊，style样式都没用...一般用TouchableOpacity�
 </code></pre>
 
 <h4>ScrollView</h4>
+
+<p>ScrollView适合用来显示数量不多的滚动元素。放置在ScollView中的所有组件都会被渲染，哪怕有些组件因为内容太长被挤出了屏幕外。如果需要显示较长的滚动列表，应该使用ListView组件。代码在<code>/node_modules/react-native/Libraries/Components/ScrollView/ScrollView.js</code>。</p>
+
+<p>发现一个奇怪的地方，如果ScrollView的父View设置了flex=1的话，再设置ScrollView的height就没效果了，ScrollView还是会充满父View ！</p>
+
+<pre><code>//常用属性
+ref //暴露一个引用
+contentContainerStyle //内容容器样式，所以子控件都在内容容器里
+automaticallyAdjustContentInsets //iOS的顶部是否留有空间，一般都设false，不知道干啥要弄出个这属性。
+horizontal //true/false,水平排列还是垂直排列
+keyboardDismissMode //none,interactive,onDrag.滚动时是否隐藏键盘，none不，onDrag开始拖动就隐藏，interactive:iOS的键盘位置同步变化。
+keyboardShouldPersistTaps //true/false: 默认false:点击输入框外部会收起键盘。true:点击输入框外部不会自动收起键盘，scroll不会受到点击事件，但子控件可以收到。
+onContentSizeChange //scroll的content size 变化是回调该方法。参数是contentWidth, contentHeight。
+onScroll //滚动时实时调用，频率可以通过scrollEventThrottle属性设置。
+pagingEnabled //是否分页
+refreshControl //一个RefreshControl组件，用于下拉刷新。
+removeClippedSubviews //是否移除scroll屏幕外的子视图，可以提高scroll性能，默认true。
+scrollEnabled //是否能滚动，默认当然true。
+showsHorizontalScrollIndicator //是否显示水平滚动条。
+showsVerticalScrollIndicator //是否显示垂直滚动条
+alwaysBounceHorizontal,alwaysBounceVertical //当内容小于size时，是否还bounce.
+bounces //是否可以bounces，优先级高于上面的两个。
+centerContent //当内容小于size时，是否居中。
+contentInset = //inset
+contentOffset= //offset
+</code></pre>
 
 <h4>ListView</h4>
 
