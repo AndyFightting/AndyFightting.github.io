@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-04T18:18:40+08:00</updated>
+  <updated>2016-12-05T09:30:16+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -815,7 +815,7 @@ const styles = StyleSheet.create({
     <link href="http://andyfightting.github.io/blog/2016/11/30/react-native-life/"/>
     <updated>2016-11-30T11:08:59+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/11/30/react-native-life</id>
-    <content type="html"><![CDATA[<p>生命周期就是一个对象从开始生成到最后消亡所经历的状态，理解生命周期是开发的基础。ES5语法和ES6语法有所变化，在ES5语法中，有getDefaultPropTypes方法，这个方法在组件被创建时调用一次，它的返回值成为了this.props的初始值。而ES6语法中，属性的类型和默认值声明不像ES5语法那样在组件定义内部声明,而是在组件定义的外部声明，所以没有了getDefaultPropTypes方法.</p>
+    <content type="html"><![CDATA[<p>生命周期就是一个对象从开始生成到最后消亡所经历的状态，理解生命周期是开发的基础。<a href="http://bbs.reactnative.cn/topic/15/react-react-native-%E7%9A%84es5-es6%E5%86%99%E6%B3%95%E5%AF%B9%E7%85%A7%E8%A1%A8">ES5语法和ES6语法有所变化</a>。</p>
 
 <p><img src="http://andyfightting.github.io/myimg/java/life2.png" alt="" /></p>
 
