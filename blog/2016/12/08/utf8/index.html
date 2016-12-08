@@ -1,24 +1,101 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Other | 阿贵]]></title>
-  <link href="http://andyfightting.github.io/blog/categories/other/atom.xml" rel="self"/>
-  <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-08T20:06:25+08:00</updated>
-  <id>http://andyfightting.github.io/</id>
-  <author>
-    <name><![CDATA[guimingsu]]></name>
-    
-  </author>
-  <generator uri="http://octopress.org/">Octopress</generator>
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Unicode、UTF-8编码起源 - 阿贵</title>
+  <meta name="author" content="guimingsu">
 
   
-  <entry>
-    <title type="html"><![CDATA[Unicode、UTF-8编码起源]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/12/08/utf8/"/>
-    <updated>2016-12-08T15:39:55+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/12/08/utf8</id>
-    <content type="html"><![CDATA[<p>很久很久以前，有一群人，他们决定用8个可以开合的晶体管来组合成不同的状态，以表示世界上的万物。他们看到8个开关状态是好的，于是他们把这称为字节。再后来，他们又做了一些可以处理这些字节的机器，机器开动了，可以用字节来组合出很多状态，状态开始变来变去。他们看到这样是好的，于是它们就这机器称为计算机。</p>
+  <meta name="description" content="Unicode、UTF-8编码起源 Dec 8th, 2016 3:39 pm 很久很久以前，有一群人，他们决定用8个可以开合的晶体管来组合成不同的状态，以表示世界上的万物。他们看到8个开关状态是好的，于是他们把这称为字节。再后来，他们又做了一些可以处理这些字节的机器，机器开动了， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://andyfightting.github.io/blog/2016/12/08/utf8/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="阿贵" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">  -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+
+<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">阿贵</a></h1>
+  
+    <h2>All growth is a leap in the dark.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="andyfightting.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li> 
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Unicode、UTF-8编码起源</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-08T15:39:55+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:39 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>很久很久以前，有一群人，他们决定用8个可以开合的晶体管来组合成不同的状态，以表示世界上的万物。他们看到8个开关状态是好的，于是他们把这称为字节。再后来，他们又做了一些可以处理这些字节的机器，机器开动了，可以用字节来组合出很多状态，状态开始变来变去。他们看到这样是好的，于是它们就这机器称为计算机。</p>
 
 <p>开始计算机只在美国用。八位的字节一共可以组合出256(2的8次方)种不同的状态。 他们把其中的编号从0开始的32种状态分别规定了特殊的用途，一但终端、打印机遇上约定好的这些字节被传过来时，就要做一些约定的动作。遇上0×10(0x表示16进制), 终端就换行，遇上0×07, 终端就向人们嘟嘟叫，例好遇上0x1b, 打印机就打印反白的字，或者终端就用彩色显示字母。他们看到这样很好，于是就把这些0×20以下的字节状态称为控制码。他们又把所有的空 格、标点符号、数字、大小写字母分别用连续的字节状态表示，一直编到了第127号，这样计算机就可以用不同字节来存储英语的文字了。大家看到这样，都感觉 很好，于是大家都把这个方案叫做 ANSI 的Ascii编码（American Standard Code for Information Interchange，美国信息互换标准代码）。当时世界上所有的计算机都用同样的ASCII方案来保存英文文字。
 <img src="/myimg/other/asc1.jpg" alt="" /></p>
@@ -51,17 +128,25 @@
 
 <p>UTF-8最大的一个特点，就是它是一种变长的编码方式。它可以使用1~4个字节表示一个符号，根据不同的符号而变化字节长度，当字符在ASCII 码的范围时，就用一个字节表示，保留了ASCII字符一个字节的编码做为它的一部分，注意的是unicode一个中文字符占2个字节，而UTF-8一个中 文字符占3个字节。从unicode到uft-8并不是直接的对应，而是要过一些算法和规则来转换。</p>
 
-<p>讲到这里，我们再顺便说说一个很著名的奇怪现象：当你在 windows 的记事本里新建一个文件，输入"联通"两个字之后，保存，关闭，然后再次打开，你会发现这两个字已经消失了，代之的是几个乱码！呵呵，有人说这就是联通之所以拼不过移动的原因。其实这是因为GB2312编码与UTF-8编码产生了编码冲撞的原因。
-<code>
-    Unicode符号范围     |        UTF-8编码方式
-     (十六进制)         |           （二进制）
-—————————————————————–——————————————————————————————————
-0000 0000 0000 007F | 0xxxxxxx
-0000 0080 0000 07FF | 110xxxxx 10xxxxxx
-0000 0800 0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx
-0001 0000 0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-... ...
-</code></p>
+<p>讲到这里，我们再顺便说说一个很著名的奇怪现象：当你在 windows 的记事本里新建一个文件，输入"联通"两个字之后，保存，关闭，然后再次打开，你会发现这两个字已经消失了，代之的是几个乱码！呵呵，有人说这就是联通之所以拼不过移动的原因。其实这是因为GB2312编码与UTF-8编码产生了编码冲撞的原因。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Unicode符号范围     |        UTF-8编码方式
+</span><span class='line'> (十六进制)         |           （二进制）
+</span><span class='line'>—————————————————————–——————————————————————————————————
+</span><span class='line'>0000 0000 0000 007F | 0xxxxxxx
+</span><span class='line'>0000 0080 0000 07FF | 110xxxxx 10xxxxxx
+</span><span class='line'>0000 0800 0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx
+</span><span class='line'>0001 0000 0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+</span><span class='line'>... ...</span></code></pre></td></tr></table></div></figure>
+
 
 <p>例如"汉"字的Unicode编码是6C49。6C49在0800-FFFF之间，所以要用3字节模板：1110xxxx 10xxxxxx 10xxxxxx。将6C49写成二进制是：0110 1100 0100 1001，将这个比特流按三字节模板的分段方法分为0110110001001001，依次代替上面3字节模板<code>1110xxxx 10xxxxxx 10xxxxxx</code>中的x，得到：1110-0110 10-110001 10-001001，即E6 B1 89，这就是其UTF-8的编码。</p>
 
@@ -77,96 +162,141 @@ a8 1010 1000
 <p>注意到了吗？第一二个字节、第三四个字节的起始部分分别都是"110"和"10"，正好与UTF-8规则里的两字节模板是一致的，于是再次打开记事本时，记事本就误认为这是一个UTF-8编码的文件，让我们把第一个字节的110和第二个字节的10去掉，我们就得到了"00001 101010"，再把各位对齐，补上前导的0，就得到了"0000 0000 0110 1010"，不好意思，这是unicode的006A，也就是小写的字母"j"，而之后的两字节用UTF-8解码之后是0368，这个字符什么也不是。</p>
 
 <p>这就是只有"联通"两个字的文件没有办法在记事本里正常显示的原因。而如果你在"联通"之后多输入几个字，其他的字的编码不见得又恰好是110和10开始的字节，这样再次打开时，记事本就不会坚持这是一个UTF-8编码的文件，而会用ANSI的方式解读之，这时乱码又不出现了。</p>
-]]></content>
-  </entry>
+</div>
+
+
+      | <a href="#comments">Comments</a>
+
+
+  <footer>
+    <p class="meta">
+      
   
-  <entry>
-    <title type="html"><![CDATA[Octopress搭建个人博客]]></title>
-    <link href="http://andyfightting.github.io/blog/2015/11/14/jiaocheng/"/>
-    <updated>2015-11-14T11:21:39+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2015/11/14/jiaocheng</id>
-    <content type="html"><![CDATA[<p>本人的博客刚刚搭建好，并绑定了个人域名(<a href="http://guimingsu.com">guimingsu.com</a>)，现将该过程记录下来。</p>
 
-<p><a href="https://pages.github.com/">Github Pages</a>是Github提供的一个免费空间，相当于我们博客的免费托管服务器，我们写的博客就是放这上面的。它可以拥有一个独立的二级域名如xxx.github.io(如果有自己的个人域名，可以用自己的个人域名指向它)，允许开发者提交静态网页文件，用于介绍自己，或者自己的开源项目，可以看作是个人或项目主页。</p>
+<span class="byline author vcard">Posted by <span class="fn">guimingsu</span></span>
 
-<p><a href="http://octopress.org/">Octopress</a>“A blogging framework for hackers”，即像写代码似的写博客。一个博客网页生成框架，我们按照它要求的格式写博客内容，然后敲命令<code>rake generate</code>,<code>rake deploy</code>,就可以把网页放到Github服务器上，然后我们就可以看到了啊，它就是一个写博客的工具可以这样理解。</p>
-
-<p>个人域名，这个要自己买了，可以上<a href="http://wanwang.aliyun.com/">阿里云</a>上买，一年几十块，配置后面再讲。在注册阿里云的时候我用的QQ邮箱，就是收不到邮件，换成Gmail就收到了。不知道是我网络问题还是大公司间的任性撕逼，如果你也收不到邮件就换个邮箱注册吧。<!--more--></p>
-
-<ul>
-<li><p>在<a href="https://github.com">Github</a>上New repository, 名字为<code>yourNmae.github.io</code>确定提交，这里报错是因为我已经建好了。
-<img src="/myimg/other/creat_rep.png" alt="creat_rep" />
-之后会生成一个HTTPS连接如 <a href="https://github.com/yourName/yourName.github.io.git">https://github.com/yourName/yourName.github.io.git</a> ,这个连接在之后的Octopress绑定配置中要用。</p></li>
-<li><p><a href="http://octopress.org/docs/setup/">Octopress</a>这个步骤比较多一点, 我用的系统是 OS X10.10.5。Octopress要用到ruby环境，且ruby版本要大于等于<code>1.9.3</code>。可以用<code>ruby -v</code>命令看一下ruby版本，我的是版本是<code>2.0.0p643</code>, 没有的话可以看<a href="https://ruby-china.org/wiki/install_ruby_guide">这里</a>安装ruby环境。</p></li>
-</ul>
+      
 
 
-<p>环境装好后从网上下载Octopress框架到本地电脑上，这里我保存到octopress文件夹且放在桌面上</p>
-
-<p>下载： <code>git clone git://github.com/imathis/octopress.git /Users/suguiming/Desktop/octopress</code></p>
-
-<p>然后进入该文件夹：<code>cd  /Users/suguiming/Desktop/octopress</code></p>
-
-<p>然后：  <code>gem install bundler</code></p>
-
-<p>这里可能会报错，说缺少xxx依赖包，可以用<code>gem dependency</code>查看要依赖的包，然后把包都装上再敲上面的命令</p>
-
-<p>然后： <code>bundle install</code></p>
-
-<p>再然后：  <code>rake install</code></p>
-
-<p>这里Octopress就下载安装好了，之后要进行关联配置,把Octopress和Github关联起来，我们就可以把博客放到之前建的Github项目<code>yourNmae.github.io</code>里了。</p>
-
-<p>但关联前还有一个步骤就是SSH key处理。新建一个命令窗口<code>cd ~/.ssh</code>进入目录，<code>ls -a</code>查看内容，这时候一般没有<code>id_rsa</code>及<code>id_rsa.pub</code>这两个文件的，我们现在要创建这两个文件。<code>ssh-keygen -t rsa -C "Github登录账号邮箱@qq.com"</code>,然后按回车回车再回车就生成那两个文件了。然后把<code>id_rsa.pub</code>里的东西全选复制，在<a href="https://github.com/settings/ssh">这里</a>添加一个SSH key即可。</p>
-
-<p>回到octopress的命令窗口，输入命令<code>rake setup_github_pages</code> 此时要求输入Github项目<code>yourNmae.github.io</code>的地址，即前面得到的<code>https://github.com/yourName/yourName.github.io.git</code>,也可在Github中项目里的右下角的HTTPS链接复制过来然后</p>
-
-<pre><code>rake generate
-rake deploy
-git add .
-git commit -m 'say something'
-git push origin source
-</code></pre>
-
-<ul>
-<li>写博客，<code>rake new_post["file name"]</code>新建一个写博客的文件，它会在<code>/source/_posts</code>文件夹里生成,打开它在里面写博客内容就可以了。它是用markdown的方式写，可以在<a href="http://wowubuntu.com/markdown/">这里</a>和<a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">这里</a>查看markdown的使用规则，常用的就那几个，熟悉就可以了,大概长这样。推荐使用<a href="http://mouapp.com/">Mou</a>来编写markdown文件，<a href="https://maxiang.io/">马克飞象</a>这个在线编写工具也很好。
-  <img src="/myimg/other/write_blog.png" alt="write_blog" />
-  写好后保存，<code>rake generate</code>生成博客，<code>rake preview</code>预览博客，在地址栏输入<code>http://localhost:4000/</code>查看，退出预览<code>control+C</code></li>
-</ul>
 
 
-<p>然后提交，之后在地址栏输入<code>yourName.github.io</code>就可以查看了</p>
+<time class='entry-date' datetime='2016-12-08T15:39:55+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:39 pm</span></time>
+      
 
-<pre><code>rake deploy
-git add .
-git commit -m 'say something'
-git push origin source
-</code></pre>
-
-<ul>
-<li><p>域名绑定，在<code>yourName.github.io</code>项目里新建一个文件，文件名必须是大写的<code>CNAME</code>,内容是你购买的域名如我的域名<code>guimingsu.com</code>,前面不要加www或http,参考<a href="https://help.github.com/articles/adding-a-cname-file-to-your-repository/">这里</a>,然后<code>git pull</code>把刚才建的文件同步到本地。
-然后在域名购买的服务商那里设置，我用的是<a href="http://www.aliyun.com/">阿里云</a>。登录账号，在控制管理，域名解析中添加域名指向,把图中的<code>andyfightting.github.io</code>换成你自己的，其他的不变,这样域名就配置好了
-<img src="/myimg/other/yuming.png" alt="img" />
-参考<a href="https://help.github.com/articles/my-custom-domain-isn-t-working/">这里</a>
-<img src="/myimg/other/dns_error.png" alt="img" /></p></li>
-<li><p>其他个性化配置，如在浏览器显示的icon替换，在source文件夹里面有个文件叫favicon.png，做一个16*16图片替换进去提交，可能不会立即有反应。还有博客的评论系统是用的第三方<a href="https://disqus.com">disqus</a>。在该网站上注册一个账号，然后把账号名填写在<code>/octopress/_config.yml</code>文件中对应的地方，把false改成true。</p></li>
-</ul>
-
-
-<p><img src="/myimg/other/discus.png" alt="img" /></p>
-
-<p>由于访问国外disqus比较慢，我又把评论部分改用国内的<a href="http://duoshuo.com/">多说</a>了，使用方法都类似的，具体配置请看<a href="http://www.tuicool.com/articles/VbqYNjn">这里</a>,里面还说了性能优化可以跟着改改，提高网页的响应速度。<a href="/myimg/profile.pdf"></a></p>
-]]></content>
-  </entry>
+<span class="categories">
   
-  <entry>
-    <title type="html"><![CDATA[My Octopress]]></title>
-    <link href="http://andyfightting.github.io/blog/2015/11/13/my-octopress/"/>
-    <updated>2015-11-13T21:03:44+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2015/11/13/my-octopress</id>
-    <content type="html"><![CDATA[<p>Hello World !!
-<img src="/myimg/other/octopress.png" alt="img" /></p>
-]]></content>
-  </entry>
+    <a class='category' href='/blog/categories/other/'>other</a>
   
-</feed>
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  <!-- JiaThis Button -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/12/03/node-js/" title="Previous Post: Node.js">&laquo; Node.js</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-title="Octopress博客的个性化配置"></div>
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"tianweili"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+<!-- Duoshuo Comment END --></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/12/08/utf8/">Unicode、UTF-8编码起源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/03/node-js/">Node.js</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/02/react-base-view/">React Native 基础组件</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/01/react-navigator/">React Native Navigator</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/30/react-native-life/">React Native 组件生命周期</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
+<li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (3)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (9)</a></li>
+
+  </ul>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - guimingsu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

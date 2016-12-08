@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="偶然间发现了一个Android自带的抽屉控件DrawerLayout,就觉得应该可以用他来封装成手势返回的基础控件。思路就是先设置Activity的跳转动画是从右到左，并且前一个Activity不能动。然后设置DrawerLayout的menu从右边出来，然设置menu全屏， &hellip;">
+  <meta name="description" content="在 Android 3.0（API 11 级）中引入了Fragment，主要是为了给大屏幕上更加动态和灵活的 UI 设计提供支持。由于平板电脑的屏幕比手机屏幕大得多，因此可用于组合和交换 UI 组件的空间更大。利用Fragment实现此类设计时，无需管理对视图层次结构的复杂更改。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,156 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/09/01/fragment/">Android中的Fragment</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-01T11:38:27+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>11:38 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在 Android 3.0（API 11 级）中引入了Fragment，主要是为了给大屏幕上更加动态和灵活的 UI 设计提供支持。由于平板电脑的屏幕比手机屏幕大得多，因此可用于组合和交换 UI 组件的空间更大。利用Fragment实现此类设计时，无需管理对视图层次结构的复杂更改。它具有自己的生命周期，能接收自己的输入事件，并且可以在 Activity 运行时添加或删除Fragment，有点像可以在不同 Activity 中重复使用的"子 Activity"。 通过将 Activity 布局分成Fragment，可以在运行时修改 Activity 的外观，并在由 Activity 管理的返回栈中保留这些更改。Fragment必须始终嵌入在 Activity 中，其生命周期直接受宿主 Activity 生命周期的影响。当 Activity 暂停时，其中的所有Fragment也会暂停；当 Activity 被销毁时，所有Fragment也会被销毁。</p>
+
+<p>下面是Android官网上的<a href="https://developer.android.com/guide/components/activities.html">Activity</a>和<a href="https://developer.android.com/guide/components/fragments.html">Fragment</a>的生命周期图。</p>
+
+<p><img src="/myimg/android/activity_lifecycle.png" alt="imga" /> <img src="/myimg/android/fragment_lifecycle.png" alt="imga" /></p>
+
+<p>下面是网友整理的详细的<a href="https://github.com/xxv/android-lifecycle">周期图比较</a>。</p>
+
+<p><img src="/myimg/android/fragment.png" alt="image" /></p>
+
+<h4>用Fragment可能会遇到的问题</h4>
+
+<h5>getActivity()空指针</h5>
+
+<p>可能遇到过getActivity()返回null，或者平时运行完好的代码，在“内存重启”之后，调用getActivity()的地方却返回null，报了空指针异常。大多数情况下的原因：在调用了getActivity()时，当前的Fragment已经onDetach()了宿主Activity。比如在pop了Fragment之后，该Fragment的异步任务仍然在执行，并且在执行完成后调用了getActivity()方法，这样就会空指针。</p>
+
+<p>可以在Fragment基类里设置一个Activity mActivity的全局变量，在onAttach(Activity activity)里赋值，使用mActivity代替getActivity()，保证Fragment即使在onDetach后，仍持有Activity的引用。</p>
+
+<h5>Fragment重叠问题</h5>
+
+<p>如果add()了几个Fragment，然后使用show()、hide()方法控制，比如微信、QQ的底部tab等情景。如果你什么都不做的话，在“内存重启”后回，Tab的这几个Fragment界面会重叠。(手机横竖屏切换就可以模拟“内存重启”)。原因是FragmentManager帮我们管理Fragment，当发生“内存重启”，他会从栈底向栈顶的顺序恢复Fragment，但是因为没有保存Fragment的hidden属性，默认为false，所以所有Fragment都是以show的形式恢复，界面就重叠了。</p>
+
+<h5>解决方法一</h5>
+
+<p>不用add()的方式处理tab的Fragment，直接在Activity的布局文件中添加需要的Fragment,然后在Activity中通过getFragmentManager().findFragmentById()的方式得到Fragment，然后处理对应的hide,show。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;fragment
+</span><span class='line'>    android:id="@+id/fragment0"
+</span><span class='line'>    android:name="com.suguiming.myandroid.tab0.Fragment0"
+</span><span class='line'>    android:layout_above="@+id/tab_line"
+</span><span class='line'>    android:layout_width="match_parent"
+</span><span class='line'>    android:layout_height="match_parent"
+</span><span class='line'>    tools:layout="@layout/fragment_container"/&gt;
+</span><span class='line'>&lt;fragment
+</span><span class='line'>    android:id="@+id/fragment1"
+</span><span class='line'>    android:name="com.suguiming.myandroid.tab1.Fragment1"
+</span><span class='line'>    android:layout_above="@+id/tab_line"
+</span><span class='line'>    android:layout_width="match_parent"
+</span><span class='line'>    android:layout_height="match_parent"
+</span><span class='line'>    tools:layout="@layout/fragment_container"/&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>解决方法二</h5>
+
+<p>在用add()或者replace()时为Fragment绑定一个tag，一般用fragment的类名作为tag，然后在发生“内存重启”时，即savedInstanceState!=null 时，通过getFragmentManager().findFragmentByTag()找到对应的Fragment，然后hide、show 对应的Fragment。</p>
+
+<pre><code>protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity);
+
+TargetFragment targetFragment;
+HideFragment hideFragment;
+
+if (savedInstanceState != null) {  // “内存重启”时调用
+    targetFragment = getSupportFragmentManager().findFragmentByTag(TargetFragment.class.getName);
+    hideFragment = getSupportFragmentManager().findFragmentByTag(HideFragment.class.getName);
+    // 解决重叠问题
+    getFragmentManager().beginTransaction()
+            .show(targetFragment)
+            .hide(hideFragment)
+            .commit();
+}else{  // 正常时
+    targetFragment = TargetFragment.newInstance();
+    hideFragment = HideFragment.newInstance();
+
+    getFragmentManager().beginTransaction()
+            .add(R.id.container, targetFragment, targetFragment.getClass().getName())
+            .add(R.id,container,hideFragment,hideFragment.getClass().getName())
+            .hide(hideFragment)
+            .commit();
+}
+}
+</code></pre>
+
+<h5>解决方法三</h5>
+
+<p>由于造成重叠的原因是因为Fragment不会保存hide的状态，那我们可以在BaseFragment中手动保存然后处理啊！</p>
+
+<pre><code>private static final String FRAGMENT_IS_HIDDEN = "FRAGMENT_IS_HIDDEN";
+
+@Override
+public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    //解决重叠问题
+    if (savedInstanceState != null) {
+        boolean isHidden = savedInstanceState.getBoolean(FRAGMENT_IS_HIDDEN);
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        if (isHidden) {
+            ft.hide(this);
+        } else {
+            ft.show(this);
+        }
+        ft.commit();
+    }
+}
+
+@Override
+public void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putBoolean(FRAGMENT_IS_HIDDEN, isHidden());//保持fragment是否隐藏的状态
+}
+</code></pre>
+
+<p>在使用时还是要注意判断savedInstanceState是否为null，只有在为空时才add()。在不为空时就可以不用处理了，交由BaseFragment处理了。</p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/09/01/fragment/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -832,44 +982,6 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/22/thread/">iOS中的多线程</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-12-22T14:28:22+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>2:28 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>1.什么是进程</p>
-
-<p>进程是指在系统中正在运行的一个应用程序，每个进程之间是独立的，每个进程均运行在其专用且受保护的内存空间内。
-<img src="/myimg/ios/jincheng.png" alt="image" /></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/12/22/thread/">阅读全文</a>
-    </footer>
-  
-
-
-      | <a href="/blog/2015/12/22/thread/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -887,6 +999,10 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/12/08/utf8/">Unicode、UTF-8编码起源</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/12/03/node-js/">Node.js</a>
       </li>
     
@@ -902,10 +1018,6 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
         <a href="/blog/2016/11/30/react-native-life/">React Native 组件生命周期</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/11/30/css-flex-box/">Flexbox 布局</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -918,7 +1030,7 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (2)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (3)</a></li>
 <li class='category'><a href='/blog/categories/react/'>react (9)</a></li>
 
   </ul>
