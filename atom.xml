@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-08T20:06:25+08:00</updated>
+  <updated>2016-12-09T18:40:01+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,226 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Google Protocol Buffer]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/12/09/google-protocol-buffer/"/>
+    <updated>2016-12-09T09:54:35+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/12/09/google-protocol-buffer</id>
+    <content type="html"><![CDATA[<p><a href="https://developers.google.com/protocol-buffers/">Google Protocol Buffer</a>是一种轻便高效的结构化数据存储格式，它很适合用于网络传输、数据存储等领域的与语言无关、平台无关、可扩展的序列化结构数据格式。google 提供了多种语言的实现：java、c#、c++、go 和 python，每一种实现都包含了相应语言的编译器以及库文件。由于它是一种二进制的格式，比使用 XML、JSON 进行数据交换快许多也小许多。</p>
+
+<p>首先需要安装，在<a href="https://github.com/google/protobuf/releases">这里</a>选择一种语言下载，我下载的是<code>protobuf-java-3.0.0.zip</code>。</p>
+
+<pre><code>//安装步骤
+1.解压后 cd 进入文件夹
+2.终端输入 ./configure (如果不是管理员身份，需要输入：./configure --prefix=$INSTALL_DIR 后面表示你要把protobuf安装的路径，需要是绝对路径)
+3.输入 make 
+4.输入 make check 
+5.输入 make install 
+</code></pre>
+
+<p>每个过程时间都挺长的，然后输入<code>protoc -- version</code>验证是否安装成功！
+<img src="http://andyfightting.github.io/myimg/java/proto0.png" width="600" alt="" /></p>
+
+<p>下面就可以开始写例子了.新建一个<code>addressbook.proto</code>文件，输入：</p>
+
+<pre><code>syntax = "proto2";
+package tutorial;
+
+option java_package = "com.example.tutorial";
+option java_outer_classname = "AddressBookProtos";
+
+message Person {
+  required string name = 1;
+  required int32 id = 2;
+  optional string email = 3;
+
+  enum PhoneType {
+    MOBILE = 0;
+    HOME = 1;
+    WORK = 2;
+  }
+
+  message PhoneNumber {
+    required string number = 1;
+    optional PhoneType type = 2 [default = HOME];
+  }
+
+  repeated PhoneNumber phone = 4;
+}
+
+message AddressBook {
+  repeated Person person = 1;
+}
+</code></pre>
+
+<p>终端 cd 进入文件所在的目录，运行<code>protoc -I=./ --java_out=./ ./addressbook.proto</code>，就会在文件夹里生成一个<code>AddressBookProtos.java</code>的文件。把文件放到Eclipse里，然后添加<a href="http://mavensearch.io/repo/com.google.protobuf/protobuf-java/3.0.0">jar包</a>。</p>
+
+<p>然后创建一个用于写入的类：<code>AddPerson</code></p>
+
+<pre><code>package com.example.tutorial;
+
+import com.example.tutorial.AddressBookProtos.AddressBook;
+import com.example.tutorial.AddressBookProtos.Person;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.PrintStream;
+
+class AddPerson {
+  // This function fills in a Person message based on user input.
+  static Person PromptForAddress(BufferedReader stdin,
+                                 PrintStream stdout) throws IOException {
+    Person.Builder person = Person.newBuilder();
+
+    stdout.print("Enter person ID: ");
+    person.setId(Integer.valueOf(stdin.readLine()));
+
+    stdout.print("Enter name: ");
+    person.setName(stdin.readLine());
+
+    stdout.print("Enter email address (blank for none): ");
+    String email = stdin.readLine();
+    if (email.length() &gt; 0) {
+      person.setEmail(email);
+    }
+
+    while (true) {
+      stdout.print("Enter a phone number (or leave blank to finish): ");
+      String number = stdin.readLine();
+      if (number.length() == 0) {
+        break;
+      }
+
+      Person.PhoneNumber.Builder phoneNumber =
+        Person.PhoneNumber.newBuilder().setNumber(number);
+
+      stdout.print("Is this a mobile, home, or work phone? ");
+      String type = stdin.readLine();
+      if (type.equals("mobile")) {
+        phoneNumber.setType(Person.PhoneType.MOBILE);
+      } else if (type.equals("home")) {
+        phoneNumber.setType(Person.PhoneType.HOME);
+      } else if (type.equals("work")) {
+        phoneNumber.setType(Person.PhoneType.WORK);
+      } else {
+        stdout.println("Unknown phone type.  Using default.");
+      }
+
+      person.addPhone(phoneNumber);
+    }
+
+    return person.build();
+  }
+
+  //   Main function:  Reads the entire address book from a file,
+  //   adds one person based on user input, then writes it back out to the same file.
+  public static void main(String[] args) throws Exception {
+    if (args.length != 1) {
+      System.err.println("Usage:  AddPerson ADDRESS_BOOK_FILE");
+      System.exit(-1);
+    }
+
+    AddressBook.Builder addressBook = AddressBook.newBuilder();
+
+    // Read the existing address book.
+    try {
+      addressBook.mergeFrom(new FileInputStream(args[0]));
+    } catch (FileNotFoundException e) {
+      System.out.println(args[0] + ": File not found.  Creating a new file.");
+    }
+
+    // Add an address.
+    addressBook.addPerson(
+      PromptForAddress(new BufferedReader(new InputStreamReader(System.in)),
+                       System.out));
+
+    // Write the new address book back to disk.
+    FileOutputStream output = new FileOutputStream(args[0]);
+    addressBook.build().writeTo(output);
+    output.close();
+  }
+}
+</code></pre>
+
+<p>再创建一个用于读取的类：<code>ListPeople</code></p>
+
+<pre><code>package com.example.tutorial;
+
+import com.example.tutorial.AddressBookProtos.AddressBook;
+import com.example.tutorial.AddressBookProtos.Person;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+
+class ListPeople {
+  // Iterates though all people in the AddressBook and prints info about them.
+  static void Print(AddressBook addressBook) {
+    for (Person person: addressBook.getPersonList()) {
+      System.out.println("Person ID: " + person.getId());
+      System.out.println("  Name: " + person.getName());
+      if (person.hasEmail()) {
+        System.out.println("  E-mail address: " + person.getEmail());
+      }
+
+      for (Person.PhoneNumber phoneNumber : person.getPhoneList()) {
+        switch (phoneNumber.getType()) {
+          case MOBILE:
+            System.out.print("  Mobile phone #: ");
+            break;
+          case HOME:
+            System.out.print("  Home phone #: ");
+            break;
+          case WORK:
+            System.out.print("  Work phone #: ");
+            break;
+        }
+        System.out.println(phoneNumber.getNumber());
+      }
+    }
+  }
+
+  // Main function:  Reads the entire address book from a file and prints all
+  //   the information inside.
+  public static void main(String[] args) throws Exception {
+    if (args.length != 1) {
+      System.err.println("Usage:  ListPeople ADDRESS_BOOK_FILE");
+      System.exit(-1);
+    }
+
+    // Read the existing address book.
+    AddressBook addressBook =
+      AddressBook.parseFrom(new FileInputStream(args[0]));
+
+    Print(addressBook);
+  }
+} 
+</code></pre>
+
+<p>然后在项目文件夹里放一个用于保存数据的空文件：<code>addressbook.txt</code>,再设置<code>Run Configurations</code></p>
+
+<p><img src="http://andyfightting.github.io/myimg/java/pro0.png" alt="" /></p>
+
+<p>运行<code>AddPerson</code>文件，从控制台输入：</p>
+
+<p><img src="http://andyfightting.github.io/myimg/java/pro1.png" alt="" /></p>
+
+<p>再运行<code>ListPeople</code>就可读取输出了：</p>
+
+<p><img src="http://andyfightting.github.io/myimg/java/pro2.png" alt="" /></p>
+
+<p>再想打开查看<code>`addressbook.txt</code>文件已经查看不了了，应为它的编码不是Unicode也不utf-8等，而是前面安装的编译器的编码。它的优势就是小，不浪费字节，所以快，还安全。例子运行起来了，语法规则再慢慢看吧~</p>
+
+<p><a href="http://andyfightting.github.io/mysrc/java/ProtoBufferTest.zip">下载</a></p>
+
+<p><a href="https://developers.google.com/protocol-buffers/docs/javatutorial">Tutorial</a></p>
+
+<p><a href="http://www.surajnayak.com/2015/05/05/protocol-buffers-hour-1-generating-code-and-using-generated-class/">Blog</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Unicode、UTF-8编码起源]]></title>
@@ -49,7 +269,7 @@
 
 <p>unicode在很长一段时间内无法推广，直到互联网的出现，为解决unicode如何在网络上传输的问题，于是面向传输的众多 UTF（UCS Transfer Format）标准出现了，顾名思义，UTF-8就是每次8个位传输数据，而UTF-16就是每次16个位。UTF-8就是在互联网上使用最广的一种unicode的实现方式，这是为传输而设计的编码，并使编码无国界，这样就可以显示全世界上所有文化的字符了。</p>
 
-<p>UTF-8最大的一个特点，就是它是一种变长的编码方式。它可以使用1~4个字节表示一个符号，根据不同的符号而变化字节长度，当字符在ASCII 码的范围时，就用一个字节表示，保留了ASCII字符一个字节的编码做为它的一部分，注意的是unicode一个中文字符占2个字节，而UTF-8一个中 文字符占3个字节。从unicode到uft-8并不是直接的对应，而是要过一些算法和规则来转换。</p>
+<p>UTF-8(8-bit Unicode Transformation Format)最大的一个特点，就是它是一种变长的编码方式。它可以使用1~4个字节表示一个符号，根据不同的符号而变化字节长度，当字符在ASCII 码的范围时，就用一个字节表示，保留了ASCII字符一个字节的编码做为它的一部分，注意的是unicode一个中文字符占2个字节，而UTF-8一个中 文字符占3个字节。从unicode到uft-8并不是直接的对应，而是要过一些算法和规则来转换。</p>
 
 <p>讲到这里，我们再顺便说说一个很著名的奇怪现象：当你在 windows 的记事本里新建一个文件，输入"联通"两个字之后，保存，关闭，然后再次打开，你会发现这两个字已经消失了，代之的是几个乱码！呵呵，有人说这就是联通之所以拼不过移动的原因。其实这是因为GB2312编码与UTF-8编码产生了编码冲撞的原因。</p>
 
@@ -3689,75 +3909,6 @@ private static class SerialExecutor implements Executor {
 <h4>个人看法</h4>
 
 <p>觉得Android很喜欢造这种中型轮子啊！好像没什么必要再造个AsyncTask这样的轮子放在SDK里啊? 像AsyncTask这种任务不应该是开发者去完成的吗？还有比如NavigationView，真的有必要吗？这不是应该让开发者来自定义的View吗？反正我不是很理解，这可能也是Android为什么如此碎片化的原因之一吧！&mdash;- 喜欢造中型轮子！</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[反编译Android的APK]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/09/02/apk-decode/"/>
-    <updated>2016-09-02T09:55:10+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/09/02/apk-decode</id>
-    <content type="html"><![CDATA[<p>本人用的环境是Mac 10.11.5, 需要用到的工具有：<a href="https://ibotpeaches.github.io/Apktool/">apktool</a>, <a href="https://sourceforge.net/projects/dex2jar/">dex2jar</a>, <a href="http://jd.benow.ca/">JD-GUI</a>。</p>
-
-<p>下面用淘宝2.2.1版本和微信2.3版本为例子来反编译。为什么用这么老的版本？因为可能老版本没有做代码混淆，反编译后会更好看一点。可以用<a href="http://www.anzhi.com/">安智市场</a>来下载历史版本，推荐用安智市场的手机APP来下载，会看到所有的历史版本，而电脑网站只能看到最近的几个历史版本。
-<img src="http://andyfightting.github.io/myimg/android/az_taobao.png" alt="image" /></p>
-
-<h4>1.apktool</h4>
-
-<p>需要至少Java 7环境，通过<code>java -version</code>查看
-<img src="http://andyfightting.github.io/myimg/android/javaVersion.png" alt="image" /></p>
-
-<p>配置apktool
-<img src="http://andyfightting.github.io/myimg/android/apktool.png" alt="image" /></p>
-
-<p>输入apktool如下所示就成功了
-<img src="http://andyfightting.github.io/myimg/android/apktool_result.png" alt="imag" /></p>
-
-<p>用apktool工具处理后就可以查看xml文件了。在桌面建一个文件夹test, 把apk文件放进去，进入该文件夹，然后执行<code>apktool d apk名称.apk</code>。就会在test文件夹里出现一个<code>apk名称</code>的文件夹。里面的资源文件和xml文件就可以打开查看了。
-<img src="http://andyfightting.github.io/myimg/android/apktool1.png" alt="imag" />
-<img src="http://andyfightting.github.io/myimg/android/apktool2.png" alt="imag" />
-<img src="http://andyfightting.github.io/myimg/android/apktool3.png" alt="imag" /></p>
-
-<h4>2.dex2jar</h4>
-
-<p>dex2jar工具可以吧dex或者apk文件转成jar文件。dex2jar下载好后进入文件夹，执行<code>chmod a+x *.sh</code>命令启用.sh文件。</p>
-
-<h6>方式一</h6>
-
-<p>把apk文件的后缀名改为zip，然后解压得到classes.dex文件，把classes.dex文件放到dex2jar文件夹中，进入该文件夹，执行<code>sh d2j-dex2jar.sh classes.dex</code>命令，就会得到对应的jar文件。</p>
-
-<h6>方式二</h6>
-
-<p>直接把apk文件放入dex2jar文件夹中，执行<code>sh d2j-dex2jar.sh apk名称.apk</code>也会得到对应的jar文件。</p>
-
-<h4>3.JD-GUI</h4>
-
-<p>把JD-GUI下载下来，打开上面生成的jar文件就可查看了。
-<img src="http://andyfightting.github.io/myimg/android/taobao211.png" alt="image" /></p>
-
-<p>下面是微信2.3处理后的结果
-<img src="http://andyfightting.github.io/myimg/android/wx1.png" alt="image" />
-<img src="http://andyfightting.github.io/myimg/android/wx2.png" alt="image" />
-<img src="http://andyfightting.github.io/myimg/android/wx3.png" alt="image" />
-剩下的就看细心、耐心、和好奇心了&hellip;下面说说我是怎么查看QQ2.0的。</p>
-
-<h3>我的查看流程</h3>
-
-<p>找一个页面的特殊字符，如下面的"我的个人资料"
-<img src="http://andyfightting.github.io/myimg/android/find00.jpg" alt="image" /></p>
-
-<p>然后Finder搜索，找到strings.xml文件，在里面找到"我的个人资料"对应的key &ndash; &ldquo;info_info"。
-<img src="http://andyfightting.github.io/myimg/android/find0.png" alt="image" />
-<img src="http://andyfightting.github.io/myimg/android/find1.png" alt="image" /></p>
-
-<p>然后搜"info_info"，找到对应的布局文件"info_self.xml"
-<img src="http://andyfightting.github.io/myimg/android/find2.png" alt="image" /></p>
-
-<p>然后通过"info_self"布局文件名搜索，找到对应的smali文件
-<img src="http://andyfightting.github.io/myimg/android/find3.png" alt="image" /></p>
-
-<p>然后通过smali文件名"InfoActivity"在JD-GUI的Search功能搜索，不是Find!找到对应的Activity，这样想看的东西应该都能找到了。
-<img src="http://andyfightting.github.io/myimg/android/find4.png" alt="image" /></p>
 ]]></content>
   </entry>
   

@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Unicode、UTF-8编码起源 Dec 8th, 2016 3:39 pm 很久很久以前，有一群人，他们决定用8个可以开合的晶体管来组合成不同的状态，以表示世界上的万物。他们看到8个开关状态是好的，于是他们把这称为字节。再后来，他们又做了一些可以处理这些字节的机器，机器开动了， &hellip;">
+  <meta name="description" content="Google Protocol Buffer Dec 9th, 2016 9:54 am Google Protocol Buffer是一种轻便高效的结构化数据存储格式，它很适合用于网络传输、数据存储等领域的与语言无关、平台无关、可扩展的序列化结构数据格式。google 提供了多种语言的实现： &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,249 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/12/09/google-protocol-buffer/">Google Protocol Buffer</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-09T09:54:35+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:54 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://developers.google.com/protocol-buffers/">Google Protocol Buffer</a>是一种轻便高效的结构化数据存储格式，它很适合用于网络传输、数据存储等领域的与语言无关、平台无关、可扩展的序列化结构数据格式。google 提供了多种语言的实现：java、c#、c++、go 和 python，每一种实现都包含了相应语言的编译器以及库文件。由于它是一种二进制的格式，比使用 XML、JSON 进行数据交换快许多也小许多。</p>
+
+<p>首先需要安装，在<a href="https://github.com/google/protobuf/releases">这里</a>选择一种语言下载，我下载的是<code>protobuf-java-3.0.0.zip</code>。</p>
+
+<pre><code>//安装步骤
+1.解压后 cd 进入文件夹
+2.终端输入 ./configure (如果不是管理员身份，需要输入：./configure --prefix=$INSTALL_DIR 后面表示你要把protobuf安装的路径，需要是绝对路径)
+3.输入 make 
+4.输入 make check 
+5.输入 make install 
+</code></pre>
+
+<p>每个过程时间都挺长的，然后输入<code>protoc -- version</code>验证是否安装成功！
+<img src="/myimg/java/proto0.png" width="600" alt="" /></p>
+
+<p>下面就可以开始写例子了.新建一个<code>addressbook.proto</code>文件，输入：</p>
+
+<pre><code>syntax = "proto2";
+package tutorial;
+
+option java_package = "com.example.tutorial";
+option java_outer_classname = "AddressBookProtos";
+
+message Person {
+  required string name = 1;
+  required int32 id = 2;
+  optional string email = 3;
+
+  enum PhoneType {
+    MOBILE = 0;
+    HOME = 1;
+    WORK = 2;
+  }
+
+  message PhoneNumber {
+    required string number = 1;
+    optional PhoneType type = 2 [default = HOME];
+  }
+
+  repeated PhoneNumber phone = 4;
+}
+
+message AddressBook {
+  repeated Person person = 1;
+}
+</code></pre>
+
+<p>终端 cd 进入文件所在的目录，运行<code>protoc -I=./ --java_out=./ ./addressbook.proto</code>，就会在文件夹里生成一个<code>AddressBookProtos.java</code>的文件。把文件放到Eclipse里，然后添加<a href="http://mavensearch.io/repo/com.google.protobuf/protobuf-java/3.0.0">jar包</a>。</p>
+
+<p>然后创建一个用于写入的类：<code>AddPerson</code></p>
+
+<pre><code>package com.example.tutorial;
+
+import com.example.tutorial.AddressBookProtos.AddressBook;
+import com.example.tutorial.AddressBookProtos.Person;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.PrintStream;
+
+class AddPerson {
+  // This function fills in a Person message based on user input.
+  static Person PromptForAddress(BufferedReader stdin,
+                                 PrintStream stdout) throws IOException {
+    Person.Builder person = Person.newBuilder();
+
+    stdout.print("Enter person ID: ");
+    person.setId(Integer.valueOf(stdin.readLine()));
+
+    stdout.print("Enter name: ");
+    person.setName(stdin.readLine());
+
+    stdout.print("Enter email address (blank for none): ");
+    String email = stdin.readLine();
+    if (email.length() &gt; 0) {
+      person.setEmail(email);
+    }
+
+    while (true) {
+      stdout.print("Enter a phone number (or leave blank to finish): ");
+      String number = stdin.readLine();
+      if (number.length() == 0) {
+        break;
+      }
+
+      Person.PhoneNumber.Builder phoneNumber =
+        Person.PhoneNumber.newBuilder().setNumber(number);
+
+      stdout.print("Is this a mobile, home, or work phone? ");
+      String type = stdin.readLine();
+      if (type.equals("mobile")) {
+        phoneNumber.setType(Person.PhoneType.MOBILE);
+      } else if (type.equals("home")) {
+        phoneNumber.setType(Person.PhoneType.HOME);
+      } else if (type.equals("work")) {
+        phoneNumber.setType(Person.PhoneType.WORK);
+      } else {
+        stdout.println("Unknown phone type.  Using default.");
+      }
+
+      person.addPhone(phoneNumber);
+    }
+
+    return person.build();
+  }
+
+  //   Main function:  Reads the entire address book from a file,
+  //   adds one person based on user input, then writes it back out to the same file.
+  public static void main(String[] args) throws Exception {
+    if (args.length != 1) {
+      System.err.println("Usage:  AddPerson ADDRESS_BOOK_FILE");
+      System.exit(-1);
+    }
+
+    AddressBook.Builder addressBook = AddressBook.newBuilder();
+
+    // Read the existing address book.
+    try {
+      addressBook.mergeFrom(new FileInputStream(args[0]));
+    } catch (FileNotFoundException e) {
+      System.out.println(args[0] + ": File not found.  Creating a new file.");
+    }
+
+    // Add an address.
+    addressBook.addPerson(
+      PromptForAddress(new BufferedReader(new InputStreamReader(System.in)),
+                       System.out));
+
+    // Write the new address book back to disk.
+    FileOutputStream output = new FileOutputStream(args[0]);
+    addressBook.build().writeTo(output);
+    output.close();
+  }
+}
+</code></pre>
+
+<p>再创建一个用于读取的类：<code>ListPeople</code></p>
+
+<pre><code>package com.example.tutorial;
+
+import com.example.tutorial.AddressBookProtos.AddressBook;
+import com.example.tutorial.AddressBookProtos.Person;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+
+class ListPeople {
+  // Iterates though all people in the AddressBook and prints info about them.
+  static void Print(AddressBook addressBook) {
+    for (Person person: addressBook.getPersonList()) {
+      System.out.println("Person ID: " + person.getId());
+      System.out.println("  Name: " + person.getName());
+      if (person.hasEmail()) {
+        System.out.println("  E-mail address: " + person.getEmail());
+      }
+
+      for (Person.PhoneNumber phoneNumber : person.getPhoneList()) {
+        switch (phoneNumber.getType()) {
+          case MOBILE:
+            System.out.print("  Mobile phone #: ");
+            break;
+          case HOME:
+            System.out.print("  Home phone #: ");
+            break;
+          case WORK:
+            System.out.print("  Work phone #: ");
+            break;
+        }
+        System.out.println(phoneNumber.getNumber());
+      }
+    }
+  }
+
+  // Main function:  Reads the entire address book from a file and prints all
+  //   the information inside.
+  public static void main(String[] args) throws Exception {
+    if (args.length != 1) {
+      System.err.println("Usage:  ListPeople ADDRESS_BOOK_FILE");
+      System.exit(-1);
+    }
+
+    // Read the existing address book.
+    AddressBook addressBook =
+      AddressBook.parseFrom(new FileInputStream(args[0]));
+
+    Print(addressBook);
+  }
+} 
+</code></pre>
+
+<p>然后在项目文件夹里放一个用于保存数据的空文件：<code>addressbook.txt</code>,再设置<code>Run Configurations</code></p>
+
+<p><img src="/myimg/java/pro0.png" alt="" /></p>
+
+<p>运行<code>AddPerson</code>文件，从控制台输入：</p>
+
+<p><img src="/myimg/java/pro1.png" alt="" /></p>
+
+<p>再运行<code>ListPeople</code>就可读取输出了：</p>
+
+<p><img src="/myimg/java/pro2.png" alt="" /></p>
+
+<p>再想打开查看<code>`addressbook.txt</code>文件已经查看不了了，应为它的编码不是Unicode也不utf-8等，而是前面安装的编译器的编码。它的优势就是小，不浪费字节，所以快，还安全。例子运行起来了，语法规则再慢慢看吧~</p>
+
+<p><a href="/mysrc/java/ProtoBufferTest.zip">下载</a></p>
+
+<p><a href="https://developers.google.com/protocol-buffers/docs/javatutorial">Tutorial</a></p>
+
+<p><a href="http://www.surajnayak.com/2015/05/05/protocol-buffers-hour-1-generating-code-and-using-generated-class/">Blog</a></p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/12/09/google-protocol-buffer/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/12/08/utf8/">Unicode、UTF-8编码起源</a></h1>
     
     
@@ -129,7 +372,7 @@
 
 <p>unicode在很长一段时间内无法推广，直到互联网的出现，为解决unicode如何在网络上传输的问题，于是面向传输的众多 UTF（UCS Transfer Format）标准出现了，顾名思义，UTF-8就是每次8个位传输数据，而UTF-16就是每次16个位。UTF-8就是在互联网上使用最广的一种unicode的实现方式，这是为传输而设计的编码，并使编码无国界，这样就可以显示全世界上所有文化的字符了。</p>
 
-<p>UTF-8最大的一个特点，就是它是一种变长的编码方式。它可以使用1~4个字节表示一个符号，根据不同的符号而变化字节长度，当字符在ASCII 码的范围时，就用一个字节表示，保留了ASCII字符一个字节的编码做为它的一部分，注意的是unicode一个中文字符占2个字节，而UTF-8一个中 文字符占3个字节。从unicode到uft-8并不是直接的对应，而是要过一些算法和规则来转换。</p>
+<p>UTF-8(8-bit Unicode Transformation Format)最大的一个特点，就是它是一种变长的编码方式。它可以使用1~4个字节表示一个符号，根据不同的符号而变化字节长度，当字符在ASCII 码的范围时，就用一个字节表示，保留了ASCII字符一个字节的编码做为它的一部分，注意的是unicode一个中文字符占2个字节，而UTF-8一个中 文字符占3个字节。从unicode到uft-8并不是直接的对应，而是要过一些算法和规则来转换。</p>
 
 <p>讲到这里，我们再顺便说说一个很著名的奇怪现象：当你在 windows 的记事本里新建一个文件，输入"联通"两个字之后，保存，关闭，然后再次打开，你会发现这两个字已经消失了，代之的是几个乱码！呵呵，有人说这就是联通之所以拼不过移动的原因。其实这是因为GB2312编码与UTF-8编码产生了编码冲撞的原因。</p>
 
@@ -1740,154 +1983,6 @@ const styles = StyleSheet.create({
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/11/24/atom-edit/">Atom</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-11-24T14:31:17+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:31 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="https://atom.io/">Atom</a>是由GitHub开发的一款免费开源的编辑器，通过给它安装不同的插件包，就可以变成一款智能的IDE了。这里主要记录一下为了开发<a href="https://facebook.github.io/react-native/">React Native</a>所安装的插件包及基本使用。</p>
-
-<p><a href="https://nuclide.io/">Nuclide</a>是官方推荐的开发React Native的基于Atom的工具。Nuclide 安装好后进入设置，选中<code>Install Recommented Packages on Startup</code>选项，下次启动的时候就会安装Nuclide所建议安装的插件了。</p>
-
-<h4>插件</h4>
-
-<p><strong>atom-react-native-autocomplete :</strong>React Native自动提示。</p>
-
-<p><strong>atom-beautify :</strong> 文件排版格式化。ctrl-alt-b，可以进它的设置里选中 Beauty on Save 自动格式化。</p>
-
-<p><strong>atom-html-preview :</strong> html预览。 ctrl-shift-h
-<img src="/myimg/java/atom-html-preview.png" width="700" alt="" /></p>
-
-<p><strong>autocomplete-paths :</strong> 文件路径提示</p>
-
-<p><img src="/myimg/java/autocomplete-paths.png" width="500" alt="" /></p>
-
-<p><strong>color-picker :</strong>颜色选取器，点击色块即可弹出，或者右键选择 Color Picker.</p>
-
-<p><img src="/myimg/java/color-picker.png" width="500" alt="" /></p>
-
-<p><strong>docblockr :</strong> 快捷文档注释</p>
-
-<p><strong>emmet :</strong>web开发神器</p>
-
-<p><strong>file-icons :</strong>给文件加icon</p>
-
-<p><img src="/myimg/java/file-icons.png" width="200" alt="" /></p>
-
-<p><strong>highlight-selected :</strong>选中相同的字符串高亮
-<img src="/myimg/java/highlight-selected.png" width="500" alt="" /></p>
-
-<p><strong>js-hyperclick :</strong> js对象 cmd-点击 跳转</p>
-
-<p><strong>merge-conflicts :</strong>解决版本冲突</p>
-
-<p><strong>minimap :</strong>右边位置小地图
-<img src="/myimg/java/minimap.png" width="700" alt="" /></p>
-
-<p><strong>pigments :</strong> 显示颜色。 快捷面板里搜 Pigments: Show Palette 可以打开调色板🎨。</p>
-
-<p><img src="/myimg/java/pigment.png" width="400" alt="" /></p>
-
-<p><strong>pretty-json :</strong> Json 格式化。Packages->PrettyJson->Prettify</p>
-
-<p><strong>react-snippets :</strong> React代码块快捷输入
-<img src="/myimg/java/react-snippets.png" width="700" alt="" /></p>
-
-<p><strong>sort-lines :</strong>把列按字母排序。功能键 f5(电脑，设置，键盘里要开启功能选项) 或者 Edit->Lines->Sort</p>
-
-<p><strong>tool-bar :</strong>上面显示工具栏，ctrl-alt-t 开/关
-<img src="/myimg/java/tool-bar.png" width="500" alt="" /></p>
-
-<p>安装后的插件包不在Atom应用文件夹里，在 <code>/Users/用户名/.atom/packages/</code> 文件夹里。且 <code>.atom</code> 文件夹默认是隐藏的。在命令窗口输入显示文件夹命令。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>//显示隐藏文件
-</span><span class='line'>defaults write com.apple.finder AppleShowAllFiles -boolean true ; killall Finder
-</span><span class='line'>//隐藏文件
-</span><span class='line'>defaults write com.apple.finder AppleShowAllFiles -boolean false ; killall Finder</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/myimg/java/packages.png" width="300" alt="" /></p>
-
-<h4>包的默认值修改</h4>
-
-<p>可以直接点击<code>View Code</code>打开包的代码修改。也可以像上面先显示文件夹，找到对应的包，然后修改里面的默认配置。在Settings -> Open Config Folder 也可以打开所有插件包的配置。
-<img src="/myimg/java/package_change.png" width="700" alt="" /></p>
-
-<h4>快捷键</h4>
-
-<p>ctrl-space : 补全提示 (Mac要把设置->键盘->快捷键->Spotlight 里对应的快捷键取消掉! 不然电脑的优先级更高)</p>
-
-<p>ctrl-alt-b : atom-beautify插件 代码格式化，为什么JSX格式化后有点乱&hellip;</p>
-
-<p>cmd-shift-p : 打开快捷面板</p>
-
-<p>cmd-f : 文件里搜索</p>
-
-<p>cmd-shift-f : 项目里搜索</p>
-
-<p>cmd-alt-[ : 折叠代码</p>
-
-<p>cmd-alt-] : 展开代码</p>
-
-<p>cmd-alt-shift-{ : 折叠所有代码</p>
-
-<p>cmd-alt-shift-} : 展开所有代码</p>
-
-<p>ctrl-[ : 左移动</p>
-
-<p>ctrl-] : 右移动</p>
-
-<p>ctrl-g : 跳转到某行</p>
-
-<p>cmd-\ : 左边目录显示或隐藏</p>
-
-<p>cmd-shift-o : 打开文件夹</p>
-
-<p>cmd-b : 在打开的文件间切换</p>
-
-<p>cmd-delete : 删除光标左边的</p>
-
-<p>ctrl-shift-l : 删除一整行</p>
-
-<p>ctrl-shift-&ldquo;+&rdquo; : 增大字体</p>
-
-<p>ctrl-shift-&ldquo;-&rdquo; : 缩小字体</p>
-
-<p><a href="https://github.com/kompasim/atom-plugins">[92款插件推荐]</a></p>
-
-<p><a href="/myimg/channel_v3.json">channel_v3.json</a></p>
-
-<p><strong>嗯，还是WebStorm好用！！提示更智能也更多东西可以跳转查看，Atom没跳两下就跳不了了&hellip;</strong></p>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/11/24/atom-edit/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1901,6 +1996,10 @@ const styles = StyleSheet.create({
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/12/09/google-protocol-buffer/">Google Protocol Buffer</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/12/08/utf8/">Unicode、UTF-8编码起源</a>
@@ -1918,10 +2017,6 @@ const styles = StyleSheet.create({
         <a href="/blog/2016/12/01/react-navigator/">React Native Navigator</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/11/30/react-native-life/">React Native 组件生命周期</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -1934,7 +2029,7 @@ const styles = StyleSheet.create({
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (3)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (4)</a></li>
 <li class='category'><a href='/blog/categories/react/'>react (9)</a></li>
 
   </ul>

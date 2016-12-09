@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Struts + Spring + MyBatis Nov 18th, 2016 9:22 am 基本信息： Mac OS 10.11, eclipse neon, jdk1.8, tomcat7, struts2.5.5, spring4.3.4, mybatis3.4.1,mybatis- &hellip;">
+  <meta name="description" content="Atom Nov 24th, 2016 2:31 pm Atom是由GitHub开发的一款免费开源的编辑器，通过给它安装不同的插件包，就可以变成一款智能的IDE了。这里主要记录一下为了开发React Native所安装的插件包及基本使用。 Nuclide是官方推荐的开发React &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,154 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/24/atom-edit/">Atom</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-24T14:31:17+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:31 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://atom.io/">Atom</a>是由GitHub开发的一款免费开源的编辑器，通过给它安装不同的插件包，就可以变成一款智能的IDE了。这里主要记录一下为了开发<a href="https://facebook.github.io/react-native/">React Native</a>所安装的插件包及基本使用。</p>
+
+<p><a href="https://nuclide.io/">Nuclide</a>是官方推荐的开发React Native的基于Atom的工具。Nuclide 安装好后进入设置，选中<code>Install Recommented Packages on Startup</code>选项，下次启动的时候就会安装Nuclide所建议安装的插件了。</p>
+
+<h4>插件</h4>
+
+<p><strong>atom-react-native-autocomplete :</strong>React Native自动提示。</p>
+
+<p><strong>atom-beautify :</strong> 文件排版格式化。ctrl-alt-b，可以进它的设置里选中 Beauty on Save 自动格式化。</p>
+
+<p><strong>atom-html-preview :</strong> html预览。 ctrl-shift-h
+<img src="/myimg/java/atom-html-preview.png" width="700" alt="" /></p>
+
+<p><strong>autocomplete-paths :</strong> 文件路径提示</p>
+
+<p><img src="/myimg/java/autocomplete-paths.png" width="500" alt="" /></p>
+
+<p><strong>color-picker :</strong>颜色选取器，点击色块即可弹出，或者右键选择 Color Picker.</p>
+
+<p><img src="/myimg/java/color-picker.png" width="500" alt="" /></p>
+
+<p><strong>docblockr :</strong> 快捷文档注释</p>
+
+<p><strong>emmet :</strong>web开发神器</p>
+
+<p><strong>file-icons :</strong>给文件加icon</p>
+
+<p><img src="/myimg/java/file-icons.png" width="200" alt="" /></p>
+
+<p><strong>highlight-selected :</strong>选中相同的字符串高亮
+<img src="/myimg/java/highlight-selected.png" width="500" alt="" /></p>
+
+<p><strong>js-hyperclick :</strong> js对象 cmd-点击 跳转</p>
+
+<p><strong>merge-conflicts :</strong>解决版本冲突</p>
+
+<p><strong>minimap :</strong>右边位置小地图
+<img src="/myimg/java/minimap.png" width="700" alt="" /></p>
+
+<p><strong>pigments :</strong> 显示颜色。 快捷面板里搜 Pigments: Show Palette 可以打开调色板🎨。</p>
+
+<p><img src="/myimg/java/pigment.png" width="400" alt="" /></p>
+
+<p><strong>pretty-json :</strong> Json 格式化。Packages->PrettyJson->Prettify</p>
+
+<p><strong>react-snippets :</strong> React代码块快捷输入
+<img src="/myimg/java/react-snippets.png" width="700" alt="" /></p>
+
+<p><strong>sort-lines :</strong>把列按字母排序。功能键 f5(电脑，设置，键盘里要开启功能选项) 或者 Edit->Lines->Sort</p>
+
+<p><strong>tool-bar :</strong>上面显示工具栏，ctrl-alt-t 开/关
+<img src="/myimg/java/tool-bar.png" width="500" alt="" /></p>
+
+<p>安装后的插件包不在Atom应用文件夹里，在 <code>/Users/用户名/.atom/packages/</code> 文件夹里。且 <code>.atom</code> 文件夹默认是隐藏的。在命令窗口输入显示文件夹命令。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>//显示隐藏文件
+</span><span class='line'>defaults write com.apple.finder AppleShowAllFiles -boolean true ; killall Finder
+</span><span class='line'>//隐藏文件
+</span><span class='line'>defaults write com.apple.finder AppleShowAllFiles -boolean false ; killall Finder</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/myimg/java/packages.png" width="300" alt="" /></p>
+
+<h4>包的默认值修改</h4>
+
+<p>可以直接点击<code>View Code</code>打开包的代码修改。也可以像上面先显示文件夹，找到对应的包，然后修改里面的默认配置。在Settings -> Open Config Folder 也可以打开所有插件包的配置。
+<img src="/myimg/java/package_change.png" width="700" alt="" /></p>
+
+<h4>快捷键</h4>
+
+<p>ctrl-space : 补全提示 (Mac要把设置->键盘->快捷键->Spotlight 里对应的快捷键取消掉! 不然电脑的优先级更高)</p>
+
+<p>ctrl-alt-b : atom-beautify插件 代码格式化，为什么JSX格式化后有点乱&hellip;</p>
+
+<p>cmd-shift-p : 打开快捷面板</p>
+
+<p>cmd-f : 文件里搜索</p>
+
+<p>cmd-shift-f : 项目里搜索</p>
+
+<p>cmd-alt-[ : 折叠代码</p>
+
+<p>cmd-alt-] : 展开代码</p>
+
+<p>cmd-alt-shift-{ : 折叠所有代码</p>
+
+<p>cmd-alt-shift-} : 展开所有代码</p>
+
+<p>ctrl-[ : 左移动</p>
+
+<p>ctrl-] : 右移动</p>
+
+<p>ctrl-g : 跳转到某行</p>
+
+<p>cmd-\ : 左边目录显示或隐藏</p>
+
+<p>cmd-shift-o : 打开文件夹</p>
+
+<p>cmd-b : 在打开的文件间切换</p>
+
+<p>cmd-delete : 删除光标左边的</p>
+
+<p>ctrl-shift-l : 删除一整行</p>
+
+<p>ctrl-shift-&ldquo;+&rdquo; : 增大字体</p>
+
+<p>ctrl-shift-&ldquo;-&rdquo; : 缩小字体</p>
+
+<p><a href="https://github.com/kompasim/atom-plugins">[92款插件推荐]</a></p>
+
+<p><a href="/myimg/channel_v3.json">channel_v3.json</a></p>
+
+<p><strong>嗯，还是WebStorm好用！！提示更智能也更多东西可以跳转查看，Atom没跳两下就跳不了了&hellip;</strong></p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/11/24/atom-edit/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -2382,98 +2530,6 @@ private static class SerialExecutor implements Executor {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/09/02/apk-decode/">反编译Android的APK</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-09-02T09:55:10+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2016</span></span> <span class='time'>9:55 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本人用的环境是Mac 10.11.5, 需要用到的工具有：<a href="https://ibotpeaches.github.io/Apktool/">apktool</a>, <a href="https://sourceforge.net/projects/dex2jar/">dex2jar</a>, <a href="http://jd.benow.ca/">JD-GUI</a>。</p>
-
-<p>下面用淘宝2.2.1版本和微信2.3版本为例子来反编译。为什么用这么老的版本？因为可能老版本没有做代码混淆，反编译后会更好看一点。可以用<a href="http://www.anzhi.com/">安智市场</a>来下载历史版本，推荐用安智市场的手机APP来下载，会看到所有的历史版本，而电脑网站只能看到最近的几个历史版本。
-<img src="/myimg/android/az_taobao.png" alt="image" /></p>
-
-<h4>1.apktool</h4>
-
-<p>需要至少Java 7环境，通过<code>java -version</code>查看
-<img src="/myimg/android/javaVersion.png" alt="image" /></p>
-
-<p>配置apktool
-<img src="/myimg/android/apktool.png" alt="image" /></p>
-
-<p>输入apktool如下所示就成功了
-<img src="/myimg/android/apktool_result.png" alt="imag" /></p>
-
-<p>用apktool工具处理后就可以查看xml文件了。在桌面建一个文件夹test, 把apk文件放进去，进入该文件夹，然后执行<code>apktool d apk名称.apk</code>。就会在test文件夹里出现一个<code>apk名称</code>的文件夹。里面的资源文件和xml文件就可以打开查看了。
-<img src="/myimg/android/apktool1.png" alt="imag" />
-<img src="/myimg/android/apktool2.png" alt="imag" />
-<img src="/myimg/android/apktool3.png" alt="imag" /></p>
-
-<h4>2.dex2jar</h4>
-
-<p>dex2jar工具可以吧dex或者apk文件转成jar文件。dex2jar下载好后进入文件夹，执行<code>chmod a+x *.sh</code>命令启用.sh文件。</p>
-
-<h6>方式一</h6>
-
-<p>把apk文件的后缀名改为zip，然后解压得到classes.dex文件，把classes.dex文件放到dex2jar文件夹中，进入该文件夹，执行<code>sh d2j-dex2jar.sh classes.dex</code>命令，就会得到对应的jar文件。</p>
-
-<h6>方式二</h6>
-
-<p>直接把apk文件放入dex2jar文件夹中，执行<code>sh d2j-dex2jar.sh apk名称.apk</code>也会得到对应的jar文件。</p>
-
-<h4>3.JD-GUI</h4>
-
-<p>把JD-GUI下载下来，打开上面生成的jar文件就可查看了。
-<img src="/myimg/android/taobao211.png" alt="image" /></p>
-
-<p>下面是微信2.3处理后的结果
-<img src="/myimg/android/wx1.png" alt="image" />
-<img src="/myimg/android/wx2.png" alt="image" />
-<img src="/myimg/android/wx3.png" alt="image" />
-剩下的就看细心、耐心、和好奇心了&hellip;下面说说我是怎么查看QQ2.0的。</p>
-
-<h3>我的查看流程</h3>
-
-<p>找一个页面的特殊字符，如下面的"我的个人资料"
-<img src="/myimg/android/find00.jpg" alt="image" /></p>
-
-<p>然后Finder搜索，找到strings.xml文件，在里面找到"我的个人资料"对应的key &ndash; &ldquo;info_info"。
-<img src="/myimg/android/find0.png" alt="image" />
-<img src="/myimg/android/find1.png" alt="image" /></p>
-
-<p>然后搜"info_info"，找到对应的布局文件"info_self.xml"
-<img src="/myimg/android/find2.png" alt="image" /></p>
-
-<p>然后通过"info_self"布局文件名搜索，找到对应的smali文件
-<img src="/myimg/android/find3.png" alt="image" /></p>
-
-<p>然后通过smali文件名"InfoActivity"在JD-GUI的Search功能搜索，不是Find!找到对应的Activity，这样想看的东西应该都能找到了。
-<img src="/myimg/android/find4.png" alt="image" /></p>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/09/02/apk-decode/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -2491,6 +2547,10 @@ private static class SerialExecutor implements Executor {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/12/09/google-protocol-buffer/">Google Protocol Buffer</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/12/08/utf8/">Unicode、UTF-8编码起源</a>
       </li>
     
@@ -2506,10 +2566,6 @@ private static class SerialExecutor implements Executor {
         <a href="/blog/2016/12/01/react-navigator/">React Native Navigator</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/11/30/react-native-life/">React Native 组件生命周期</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -2522,7 +2578,7 @@ private static class SerialExecutor implements Executor {
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (3)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (4)</a></li>
 <li class='category'><a href='/blog/categories/react/'>react (9)</a></li>
 
   </ul>

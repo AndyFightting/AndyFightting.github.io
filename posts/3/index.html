@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="在 Android 3.0（API 11 级）中引入了Fragment，主要是为了给大屏幕上更加动态和灵活的 UI 设计提供支持。由于平板电脑的屏幕比手机屏幕大得多，因此可用于组合和交换 UI 组件的空间更大。利用Fragment实现此类设计时，无需管理对视图层次结构的复杂更改。 &hellip;">
+  <meta name="description" content="本人用的环境是Mac 10.11.5, 需要用到的工具有：apktool, dex2jar, JD-GUI。 下面用淘宝2.2.1版本和微信2.3版本为例子来反编译。为什么用这么老的版本？因为可能老版本没有做代码混淆，反编译后会更好看一点。可以用安智市场来下载历史版本， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,98 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/09/02/apk-decode/">反编译Android的APK</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-02T09:55:10+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2016</span></span> <span class='time'>9:55 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>本人用的环境是Mac 10.11.5, 需要用到的工具有：<a href="https://ibotpeaches.github.io/Apktool/">apktool</a>, <a href="https://sourceforge.net/projects/dex2jar/">dex2jar</a>, <a href="http://jd.benow.ca/">JD-GUI</a>。</p>
+
+<p>下面用淘宝2.2.1版本和微信2.3版本为例子来反编译。为什么用这么老的版本？因为可能老版本没有做代码混淆，反编译后会更好看一点。可以用<a href="http://www.anzhi.com/">安智市场</a>来下载历史版本，推荐用安智市场的手机APP来下载，会看到所有的历史版本，而电脑网站只能看到最近的几个历史版本。
+<img src="/myimg/android/az_taobao.png" alt="image" /></p>
+
+<h4>1.apktool</h4>
+
+<p>需要至少Java 7环境，通过<code>java -version</code>查看
+<img src="/myimg/android/javaVersion.png" alt="image" /></p>
+
+<p>配置apktool
+<img src="/myimg/android/apktool.png" alt="image" /></p>
+
+<p>输入apktool如下所示就成功了
+<img src="/myimg/android/apktool_result.png" alt="imag" /></p>
+
+<p>用apktool工具处理后就可以查看xml文件了。在桌面建一个文件夹test, 把apk文件放进去，进入该文件夹，然后执行<code>apktool d apk名称.apk</code>。就会在test文件夹里出现一个<code>apk名称</code>的文件夹。里面的资源文件和xml文件就可以打开查看了。
+<img src="/myimg/android/apktool1.png" alt="imag" />
+<img src="/myimg/android/apktool2.png" alt="imag" />
+<img src="/myimg/android/apktool3.png" alt="imag" /></p>
+
+<h4>2.dex2jar</h4>
+
+<p>dex2jar工具可以吧dex或者apk文件转成jar文件。dex2jar下载好后进入文件夹，执行<code>chmod a+x *.sh</code>命令启用.sh文件。</p>
+
+<h6>方式一</h6>
+
+<p>把apk文件的后缀名改为zip，然后解压得到classes.dex文件，把classes.dex文件放到dex2jar文件夹中，进入该文件夹，执行<code>sh d2j-dex2jar.sh classes.dex</code>命令，就会得到对应的jar文件。</p>
+
+<h6>方式二</h6>
+
+<p>直接把apk文件放入dex2jar文件夹中，执行<code>sh d2j-dex2jar.sh apk名称.apk</code>也会得到对应的jar文件。</p>
+
+<h4>3.JD-GUI</h4>
+
+<p>把JD-GUI下载下来，打开上面生成的jar文件就可查看了。
+<img src="/myimg/android/taobao211.png" alt="image" /></p>
+
+<p>下面是微信2.3处理后的结果
+<img src="/myimg/android/wx1.png" alt="image" />
+<img src="/myimg/android/wx2.png" alt="image" />
+<img src="/myimg/android/wx3.png" alt="image" />
+剩下的就看细心、耐心、和好奇心了&hellip;下面说说我是怎么查看QQ2.0的。</p>
+
+<h3>我的查看流程</h3>
+
+<p>找一个页面的特殊字符，如下面的"我的个人资料"
+<img src="/myimg/android/find00.jpg" alt="image" /></p>
+
+<p>然后Finder搜索，找到strings.xml文件，在里面找到"我的个人资料"对应的key &ndash; &ldquo;info_info"。
+<img src="/myimg/android/find0.png" alt="image" />
+<img src="/myimg/android/find1.png" alt="image" /></p>
+
+<p>然后搜"info_info"，找到对应的布局文件"info_self.xml"
+<img src="/myimg/android/find2.png" alt="image" /></p>
+
+<p>然后通过"info_self"布局文件名搜索，找到对应的smali文件
+<img src="/myimg/android/find3.png" alt="image" /></p>
+
+<p>然后通过smali文件名"InfoActivity"在JD-GUI的Search功能搜索，不是Find!找到对应的Activity，这样想看的东西应该都能找到了。
+<img src="/myimg/android/find4.png" alt="image" /></p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/09/02/apk-decode/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -945,43 +1037,6 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/25/ios-sqlite/">iOS中的SQLite</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-12-25T10:44:52+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:44 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img src="/myimg/ios/sqlite.png" alt="image" /></p>
-
-<p><a href="http://www.sqlite.org/">SQLite</a>是一个轻量级的关系型数据库，在iOS和Android手机中都有用到，C语言的面向过程的函数式编程。<a href="https://github.com/woooooojianjie/SQLitePersistentObject">SQLitePersistentObject</a>和<a href="https://github.com/ccgus/fmdb">FMDB</a>框架都是基于SQLite开发的。SQLitePersistentObject更像是个ORM框架，它是由Jeff LaMarche在2008年开发的，所以不是ARC的，要用的请加上<strong>-fno-objc-arc</strong>，且作者已经没有维护了，所以还是推荐使用更加广泛的FMDB。</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/12/25/ios-sqlite/">阅读全文</a>
-    </footer>
-  
-
-
-      | <a href="/blog/2015/12/25/ios-sqlite/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -999,6 +1054,10 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/12/09/google-protocol-buffer/">Google Protocol Buffer</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/12/08/utf8/">Unicode、UTF-8编码起源</a>
       </li>
     
@@ -1014,10 +1073,6 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
         <a href="/blog/2016/12/01/react-navigator/">React Native Navigator</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/11/30/react-native-life/">React Native 组件生命周期</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -1030,7 +1085,7 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (3)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (4)</a></li>
 <li class='category'><a href='/blog/categories/react/'>react (9)</a></li>
 
   </ul>
