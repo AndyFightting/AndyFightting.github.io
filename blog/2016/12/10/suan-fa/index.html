@@ -1,0 +1,467 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>排序算法 - 阿贵</title>
+  <meta name="author" content="guimingsu">
+
+  
+  <meta name="description" content="排序算法 Dec 10th, 2016 2:25 pm 1.冒泡排序 😆 比如要升序排序，原理是从第一位开始，把它依次和后面的每一位数字进行两两比较,如果低位的比高位的大就交换，然后用较大的数字继续和后面比较交换。这样一趟比较过去后,最大的数字被交换到了最后一位。然后再从头开始以此类推, &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://andyfightting.github.io/blog/2016/12/10/suan-fa/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="阿贵" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">  -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+
+<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">阿贵</a></h1>
+  
+    <h2>All growth is a leap in the dark.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="andyfightting.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li> 
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">排序算法</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-10T14:25:43+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:25 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h5>1.冒泡排序 😆</h5>
+
+<p>比如要升序排序，原理是从第一位开始，把它依次和后面的每一位数字进行两两比较,如果低位的比高位的大就交换，然后用较大的数字继续和后面比较交换。这样一趟比较过去后,最大的数字被交换到了最后一位。然后再从头开始以此类推,直到倒数第二位和最后一位比较交换完时结束。</p>
+
+<pre><code>void ascSort(int array[], int size){
+    int i, j, temp;
+    for (j = 0; j &lt; size - 1; j++) //比较的趟数
+        for (i = 0; i &lt; size - 1 - j; i++){ //每趟要比较的次数
+            if(array[i] &gt; array[i + 1]){
+                temp = array[i];
+                array[i] = array[i + 1];
+                array[i + 1] = temp;
+            }
+        }
+}
+</code></pre>
+
+<p>时间复杂度，一个算法花费的时间与算法中语句的执行次数成正比，算法中语句执行次数多，它花费时间就多。算法中基本操作重复执行的次数是问题规模n的某个函数，用T(n)表示，若有某个辅助函数f(n),使得当n趋近于无穷大时，T(n)/f(n)的极限值为不等于零的常数，则称f(n)是T(n)的同数量级函数。记作T(n)=O(f(n)),称O(f(n)) 为算法的渐进时间复杂度，简称时间复杂度。</p>
+
+<p>在冒泡排序中，最坏情况下 T(n) = n * (n - 1) / 2 = (n<sup>2</sup> - n) / 2。如果 n = 10000，那么 (n<sup>2</sup> - n) / 2 = (100000000 - 10000) / 2, 相对10<sup>8</sup>来说，10000可以忽略不计了。所以总计算次数约为 0.5 * n<sup>2</sup>。 忽略前面的倍数， 所以冒泡排序的时间复杂度是  O(n<sup>2</sup>) 。</p>
+
+<p>算法的稳定性是指，如果有两个相等的数 Ai = Aj， 在排序前 Ai 在 Aj 前面，排序后 Ai 还是在 Aj 前面，即两个相等的数不会交换位置。排序算法是否为稳定的是由具体算法决定的，不稳定的算法在某种条件下可以变为稳定的算法，而稳定的算法在某种条件下也可以变为不稳定的算法。</p>
+
+<p>例如，对于冒泡排序，原本是稳定的排序算法，如果将记录交换的条件改成A[i] >= A[i + 1]，则两个相等的记录就会交换位置，从而变成不稳定的排序算法。</p>
+
+<h5>2.鸡尾酒排序</h5>
+
+<p>鸡尾酒排序也叫来回排序，是冒泡排序的一种改进。此算法与冒泡排序的不同处在于从低到高然后从高到低，而冒泡排序则仅从低到高去比较序列里的每个元素，他可以得到比冒泡排序稍微好一点的效率。</p>
+
+<p>原理是先找到最小的数字，把他放到第一位，然后找到最大的数字放到最后一位。然后再找到第二小的数字放到第二位，再找到第二大的数字放到倒数第二位。以此类推，直到完成排序。</p>
+
+<pre><code>void ascSort(int array[], int size){
+    //初始化查询边界
+    int left = 0;
+    int right = size - 1;
+    int tmp;
+
+    while (left &lt; right) {
+        for (int i=left; i&lt;right; i++) { //最大值放右边
+            if (array[i] &gt; array[i+1]) {
+                tmp = array[i];
+                array[i] = array[i + 1];
+                array[i + 1] = tmp;
+            }
+        }
+        right--;
+
+        for (int i=right; i&gt;left; i--) {//最小值放左边
+            if (array[i-1] &gt; array[i]) {
+                tmp = array[i-1];
+                array[i-1] = array[i];
+                array[i] = tmp;
+            }
+        }
+        left++;
+    }
+}
+</code></pre>
+
+<h5>3.选择排序</h5>
+
+<p>每次从剩余序列中选出最小的数放在剩余序列的第一个位置。如从10个数中选出最小的和 array[0] 交换，那 array[0] 就是最小的了。再从剩下的 array[1] 到 array[9] 中选出最小的和 array[1] 交换，依次类推。</p>
+
+<pre><code>void ascSort(int array[], int size){
+    int i,j,k,t;
+    for (i=0; i&lt;size-1; i++) {
+        k=i;
+        for (j=i+1; j&lt;size; j++){//从剩余数组中找出最小数的位置放k里
+            if (array[j] &lt; array[k]){
+                 k = j;
+            }
+        }
+
+        t = array[k];
+        array[k] = array[i];
+        array[i] = t;
+    }
+}
+</code></pre>
+
+<p>时间复杂度也是  O(n<sup>2</sup>) 。</p>
+
+<h5>4.插入排序</h5>
+
+<p>插入排序是一种简单直观的排序算法。它的工作原理非常类似于我们抓扑克牌。对于未排序数据(右手抓到的牌)，在已排序序列(左手已经排好序的手牌)中从后向前扫描，找到相应位置并插入。
+<img src="/myimg/java/charu.png" width="300" alt="" /></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>从第一个元素开始，该元素可以认为已经被排序
+</span><span class='line'>取出下一个元素，在已经排序的元素序列中从后向前扫描
+</span><span class='line'>如果该元素（已排序）大于新元素，将该元素移到下一位置
+</span><span class='line'>重复步骤3，直到找到已排序的元素小于或者等于新元素的位置
+</span><span class='line'>将新元素插入到该位置后
+</span><span class='line'>重复步骤2~5</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>void ascSort(int array[], int size){
+    int j,tmp;
+    for (int i = 1; i &lt; size; i++) { //把array[0]当做已排序好的，从array[1]到array[size-1]是将要一个一个拿来插入的
+        tmp = array[i]; //要被插入的数
+        j = i - 1; //j是已经排好的数组的最后一位数的位置，第一次即为 index 0
+
+        while (j &gt;=0 &amp;&amp; array[j] &gt; tmp) {
+            array[j+1] = array[j]; //后移
+            j--;
+        }
+
+        array[j+1] = tmp;//直到遇到比要插入的数小，然后把要插入的数插到它右边
+    }
+}
+</code></pre>
+
+<h5>5.希尔排序</h5>
+
+<p>希尔排序，也叫递减增量排序，是插入排序的一种更高效的改进版本，因为插入排序每次只能将数据移动一位。而该方法实质上是一种分组插入方法，算法先将要排序的一组数按某个增量d分成若干组，每组中记录的下标相差d.对每组中全部元素进行排序，然后再用一个较小的增量对它进行，在每组中再进行排序。当增量减到1时，整个要排序的数被分成一组，排序完成。一般的初次取序列的一半为增量，以后每次减半，直到增量为1。
+<img src="/myimg/java/xier.jpg" width="400" alt="" /></p>
+
+<pre><code>void ascSort(int array[], int size){
+    int h = size/2; //初始增量为一半
+    int i,j,tmp;
+
+    while (h &gt;= 1) {
+        for (i = h; i &lt; size; i++) {
+            //下面是跨度为h的插入排序，
+            tmp = array[i];
+            j = i - h;
+            while (j &gt;= 0 &amp;&amp; array[j] &gt; tmp){
+                array[j + h] = array[j];
+                j = j - h;
+            }
+            array[j + h] = tmp;
+        }
+        h = h/2; //增量每次减半
+    }
+}
+</code></pre>
+
+<h5>6.堆排序</h5>
+
+<p>堆排序是指利用堆这种数据结构所设计的一种排序算法。堆是一个近似完全二叉树的结构,并同时满足堆的性质：父节点总是小于等于它的子节点。(父节点或大于等于子节点，这里就举例小于等于的)。当父结点总是小于或等于任何一个子节点时称为小根堆，反之为大根堆。</p>
+
+<p>可以用一维数组来表示堆，节点 i 的父节点是 (i – 1) / 2。 i 的左右子结点下标分别为2 * i + 1和2 * i + 2, 如第0个结点左右子结点下标分别为1和2。
+<img src="/myimg/java/dui.png" width="500" alt="" /></p>
+
+<pre><code>1.根据数组初始化一个大根堆
+2.把堆顶元素和堆尾元素交换
+3.把堆的尺寸减一，然后调整堆使剩下的堆继续满足大根堆
+4.重复2、3，直到堆的尺寸为1
+</code></pre>
+
+<p>如 int array[] = {16,7,3,20,17,8}; 可以看成一下的完全二叉树：
+<img src="/myimg/java/shu0.png" width="300" alt="" /></p>
+
+<p>然后从最后一个非叶子节点开始调整，比较自己和左节点，右节点谁最大，最大的调为父节点。经过 3-8，7-20-17，16-20-8，16-7-17 四次调整后最后就是一个大根堆了，每个父节点都比子节点大！</p>
+
+<p><img src="/myimg/java/shu1.png" width="500" alt="" /></p>
+
+<p>即每次调整都是从父节点、左孩子节点、右孩子节点三者中选择最大者跟父节点进行交换，交换之后可能造成被交换的孩子节点不满足堆的性质，因此每次交换之后要重新对被交换的孩子节点进行调整。初始化好大根堆后就可以进行排序了。</p>
+
+<p>第一轮，把20和最后的3交换，再调整后如下：</p>
+
+<p><img src="/myimg/java/shu2.png" width="400" alt="" /></p>
+
+<p>再把17和3交换，调整后如下：</p>
+
+<p><img src="/myimg/java/shu3.png" width="400" alt="" /></p>
+
+<p>再把16和3交换调整后如下：</p>
+
+<p><img src="/myimg/java/shu4.png" width="300" alt="" /></p>
+
+<p>然后8和3交换调整：</p>
+
+<p><img src="/myimg/java/shu5.png" width="300" alt="" /></p>
+
+<p>最后7和3交换，完成。</p>
+
+<p><img src="/myimg/java/shu6.png" width="250" alt="" /></p>
+
+<pre><code>int heapsize;
+void ascSort(int array[], int size){
+    buildHeap(array, size);
+    for (int i = size - 1; i &gt;= 1; i--){
+        exchange(array, 0, i);       // 将堆顶元素最大值与堆的最后一个元素互换
+        heapsize--;                  // 从堆中去掉最后一个元素
+        heapModify(array, 0);        // 从新的堆顶元素开始进行堆调整
+    }
+}
+
+void buildHeap(int array[], int size){
+    heapsize = size;
+    for (int i = heapsize/2 - 1; i &gt;= 0; i--){ // 对每一个非叶结点 不断的堆调整
+        heapModify(array, i);
+    }
+}
+
+void heapModify(int array[], int i){    // 堆调整函数,这里使用的是大根堆
+    int leftchild = 2 * i + 1;          // 左孩子索引
+    int rightchild = 2 * i + 2;         // 右孩子索引
+    int largest;                        // 选出当前结点与左右孩子之中的最大值
+
+    if (leftchild &lt; heapsize &amp;&amp; array[leftchild] &gt; array[i]){
+        largest = leftchild;
+    }else{
+        largest = i;
+    }
+
+    if (rightchild &lt; heapsize &amp;&amp; array[rightchild] &gt; array[largest]){
+        largest = rightchild;
+    }
+
+    if (largest != i){
+        exchange(array, i, largest);     // 把当前结点和它的最大直接子节点进行交换
+        heapModify(array, largest);      // 递归调用，继续从当前结点向下进行堆调整
+    }
+}
+
+void exchange(int array[], int i, int j){   // 交换array[i]和array[j]
+    int temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+}
+</code></pre>
+
+<h5>7.归并排序</h5>
+
+<h5>8.快速排序</h5>
+</div>
+
+
+      | <a href="#comments">Comments</a>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">guimingsu</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-12-10T14:25:43+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:25 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/other/'>other</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  <!-- JiaThis Button -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/12/09/google-protocol-buffer/" title="Previous Post: Google Protocol Buffer">&laquo; Google Protocol Buffer</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-title="Octopress博客的个性化配置"></div>
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"tianweili"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+<!-- Duoshuo Comment END --></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/12/10/suan-fa/">排序算法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/09/google-protocol-buffer/">Google Protocol Buffer</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/08/utf8/">Unicode、UTF-8编码起源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/03/node-js/">Node.js</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/02/react-base-view/">React Native 基础组件</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
+<li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (9)</a></li>
+
+  </ul>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - guimingsu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

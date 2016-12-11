@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="本人用的环境是Mac 10.11.5, 需要用到的工具有：apktool, dex2jar, JD-GUI。 下面用淘宝2.2.1版本和微信2.3版本为例子来反编译。为什么用这么老的版本？因为可能老版本没有做代码混淆，反编译后会更好看一点。可以用安智市场来下载历史版本， &hellip;">
+  <meta name="description" content="Android和iOS一样，对UI的操作只能放在主线程中进行，即UI线程。如果在UI线程中执行比较耗时的方法，就会造成界面卡顿假死无反应，所以应该把耗时操作放在非UI线程中处理，处理完成后再在UI线程中更新界面。 在没有AsyncTask类的时候，是通过在子线程处理，然后sendMessage( &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,502 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/09/07/asynctask/">Android中的AsyncTask</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-07T10:15:12+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:15 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Android和iOS一样，对UI的操作只能放在主线程中进行，即UI线程。如果在UI线程中执行比较耗时的方法，就会造成界面卡顿假死无反应，所以应该把耗时操作放在<code>非UI线程</code>中处理，处理完成后再在<code>UI线程</code>中更新界面。</p>
+
+<p>在没有AsyncTask类的时候，是通过在子线程处理，然后sendMessage(Message msg)给主线程中创建的Handler,然后在主线程中实现handleMessage(Message msg)处理相应信息。而这些工作AsyncTask帮我们做了，AsyncTask就是对Thread和Handler的封装。</p>
+
+<h4>AsyncTask使用</h4>
+
+<p>AsyncTask是一个抽象类，所以必须创建一个子类去继承它。在继承时我们可以为AsyncTask类指定三个参数类型,这三个类型会影响重写方法对应的参数类型。</p>
+
+<ol>
+<li>Params: 在execute()启动任务时需要传入的参数</li>
+<li>Progress: 后台任务执行过程中，需要实时反馈出来的信息，比如执行进度什么的</li>
+<li>Result: 后台任务执行完毕后，如果需要对结果进行返回，则返回该类型</li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>//on开通的方法都是在UI线程中执行的
+</span><span class='line'>class MyAsyncTask extends AsyncTask&lt;Void,Integer,Boolean&gt;{
+</span><span class='line'>    @Override
+</span><span class='line'>    protected void onPreExecute() {//在执行实际的后台的doInBackground方法前
+</span><span class='line'>        super.onPreExecute();
+</span><span class='line'>    }
+</span><span class='line'>    
+</span><span class='line'>    @Override
+</span><span class='line'>    protected Boolean doInBackground(Void... params) {//在onPreExecute 方法执行后马上执行，该方法运行在后台线程中
+</span><span class='line'>        for (int i = 0; i &lt;= 100; i++) {
+</span><span class='line'>            publishProgress(i);//调用onProgressUpdate
+</span><span class='line'>            try {
+</span><span class='line'>                Thread.sleep(1000);
+</span><span class='line'>            } catch (InterruptedException e) {
+</span><span class='line'>                e.printStackTrace();
+</span><span class='line'>            }
+</span><span class='line'>        }
+</span><span class='line'>        return true;//可以判断是否顺利执行完了啊
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    @Override
+</span><span class='line'>    protected void onProgressUpdate(Integer... values) {//这个函数在doInBackground调用publishProgress时被调用后
+</span><span class='line'>        super.onProgressUpdate(values);
+</span><span class='line'>        //比如实时更新进度条
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    @Override
+</span><span class='line'>    protected void onPostExecute(Boolean aBoolean) {
+</span><span class='line'>        super.onPostExecute(aBoolean);
+</span><span class='line'>        //后台顺利执行完后要干啥呢
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    @Override
+</span><span class='line'>    protected void onCancelled() {
+</span><span class='line'>        super.onCancelled();
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<ol>
+<li>Task的实例必须在UI 线程中创建</li>
+<li>execute方法必须在UI 线程中调用</li>
+<li>不要手动的调用onPreExecute(), onPostExecute(Result)，doInBackground(Params&hellip;)等方法</li>
+<li>该task只能被执行一次，否则多次调用时将会抛出异常</li>
+</ol>
+
+
+<h4>AsyncTask源码</h4>
+
+<p>AsyncTask有个handler内部类，用它来处理在主线程中实时更新和任务完成后的回调</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>private static InternalHandler sHandler;
+</span><span class='line'>
+</span><span class='line'>private static Handler getHandler() {
+</span><span class='line'>    synchronized (AsyncTask.class) {
+</span><span class='line'>        if (sHandler == null) {
+</span><span class='line'>            sHandler = new InternalHandler();
+</span><span class='line'>        }
+</span><span class='line'>        return sHandler;
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>private static class InternalHandler extends Handler {
+</span><span class='line'>    public InternalHandler() {
+</span><span class='line'>        super(Looper.getMainLooper());
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    @SuppressWarnings({"unchecked", "RawUseOfParameterizedType"})
+</span><span class='line'>    @Override
+</span><span class='line'>    public void handleMessage(Message msg) {
+</span><span class='line'>        AsyncTaskResult&lt;?&gt; result = (AsyncTaskResult&lt;?&gt;) msg.obj;
+</span><span class='line'>        switch (msg.what) {
+</span><span class='line'>            case MESSAGE_POST_RESULT:
+</span><span class='line'>                // There is only one result
+</span><span class='line'>                result.mTask.finish(result.mData[0]);
+</span><span class='line'>                break;
+</span><span class='line'>            case MESSAGE_POST_PROGRESS:
+</span><span class='line'>                result.mTask.onProgressUpdate(result.mData);
+</span><span class='line'>                break;
+</span><span class='line'>        }
+</span><span class='line'>    }
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当我们调用publishProgress方法时，就是得到handler单列然后发消息</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>   protected final void publishProgress(Progress... values) {
+</span><span class='line'>        if (!isCancelled()) {
+</span><span class='line'>            getHandler().obtainMessage(MESSAGE_POST_PROGRESS,
+</span><span class='line'>                    new AsyncTaskResult&lt;Progress&gt;(this, values)).sendToTarget();
+</span><span class='line'>        }
+</span><span class='line'>    }
+</span><span class='line'>    
+</span><span class='line'>   private static class AsyncTaskResult&lt;Data&gt; {
+</span><span class='line'>        final AsyncTask mTask;
+</span><span class='line'>        final Data[] mData;
+</span><span class='line'>
+</span><span class='line'>     AsyncTaskResult(AsyncTask task, Data... data) {
+</span><span class='line'>            mTask = task;
+</span><span class='line'>            mData = data;
+</span><span class='line'>        }
+</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当执行execute()方法时，会在后台任务doInBackground(mParams)开始执行前调用onPreExecute方法。从下面可以看出，当task已经在运行或者已经结束的时候不可以再调用execute()方法，否则会报错。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> public final AsyncTask&lt;Params, Progress, Result&gt; execute(Params... params) {
+</span><span class='line'>        return executeOnExecutor(sDefaultExecutor, params);
+</span><span class='line'>    }
+</span><span class='line'>    
+</span><span class='line'>  public final AsyncTask&lt;Params, Progress, Result&gt; executeOnExecutor(Executor exec,
+</span><span class='line'>            Params... params) {
+</span><span class='line'>        if (mStatus != Status.PENDING) {
+</span><span class='line'>            switch (mStatus) {
+</span><span class='line'>                case RUNNING:
+</span><span class='line'>                    throw new IllegalStateException("Cannot execute task:"
+</span><span class='line'>                            + " the task is already running.");
+</span><span class='line'>                case FINISHED:
+</span><span class='line'>                    throw new IllegalStateException("Cannot execute task:"
+</span><span class='line'>                            + " the task has already been executed "
+</span><span class='line'>                            + "(a task can be executed only once)");
+</span><span class='line'>            }
+</span><span class='line'>        }
+</span><span class='line'>
+</span><span class='line'>        mStatus = Status.RUNNING;
+</span><span class='line'>
+</span><span class='line'>        onPreExecute(); //后台任务开始前执行
+</span><span class='line'>
+</span><span class='line'>        mWorker.mParams = params;
+</span><span class='line'>        exec.execute(mFuture);
+</span><span class='line'>
+</span><span class='line'>        return this;
+</span><span class='line'>    }
+</span><span class='line'>    
+</span><span class='line'>     mWorker = new WorkerRunnable&lt;Params, Result&gt;() {
+</span><span class='line'>            public Result call() throws Exception {
+</span><span class='line'>                mTaskInvoked.set(true);
+</span><span class='line'>
+</span><span class='line'>                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+</span><span class='line'>                //noinspection unchecked
+</span><span class='line'>                Result result = doInBackground(mParams);   //这里开始执行后台任务！！！
+</span><span class='line'>                Binder.flushPendingCommands();
+</span><span class='line'>                return postResult(result);
+</span><span class='line'>            }
+</span><span class='line'>        };
+</span><span class='line'>
+</span><span class='line'>        mFuture = new FutureTask&lt;Result&gt;(mWorker) {
+</span><span class='line'>            @Override
+</span><span class='line'>            protected void done() {
+</span><span class='line'>                try {
+</span><span class='line'>                    postResultIfNotInvoked(get());    //后台任务执行完毕！！！
+</span><span class='line'>                } catch (InterruptedException e) {
+</span><span class='line'>                    android.util.Log.w(LOG_TAG, e);
+</span><span class='line'>                } catch (ExecutionException e) {
+</span><span class='line'>                    throw new RuntimeException("An error occurred while executing doInBackground()",
+</span><span class='line'>                            e.getCause());
+</span><span class='line'>                } catch (CancellationException e) {
+</span><span class='line'>                    postResultIfNotInvoked(null);
+</span><span class='line'>                }
+</span><span class='line'>            }
+</span><span class='line'>        };
+</span><span class='line'>    
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>后台任务执行完毕时，也是通过handler发消息，然后判断是不是取消状态来调用相应的方法</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> mFuture = new FutureTask&lt;Result&gt;(mWorker) {
+</span><span class='line'>            @Override
+</span><span class='line'>            protected void done() {
+</span><span class='line'>                try {
+</span><span class='line'>                    postResultIfNotInvoked(get());   //后台任务执行完毕！！！
+</span><span class='line'>                } catch (InterruptedException e) {
+</span><span class='line'>                    android.util.Log.w(LOG_TAG, e);
+</span><span class='line'>                } catch (ExecutionException e) {
+</span><span class='line'>                    throw new RuntimeException("An error occurred while executing doInBackground()",
+</span><span class='line'>                            e.getCause());
+</span><span class='line'>                } catch (CancellationException e) {
+</span><span class='line'>                    postResultIfNotInvoked(null);
+</span><span class='line'>                }
+</span><span class='line'>            }
+</span><span class='line'>        };
+</span><span class='line'>        
+</span><span class='line'>   private void postResultIfNotInvoked(Result result) {
+</span><span class='line'>        final boolean wasTaskInvoked = mTaskInvoked.get();
+</span><span class='line'>        if (!wasTaskInvoked) {
+</span><span class='line'>            postResult(result);
+</span><span class='line'>        }
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>   private Result postResult(Result result) {
+</span><span class='line'>        @SuppressWarnings("unchecked")
+</span><span class='line'>        Message message = getHandler().obtainMessage(MESSAGE_POST_RESULT,
+</span><span class='line'>                new AsyncTaskResult&lt;Result&gt;(this, result));
+</span><span class='line'>        message.sendToTarget();
+</span><span class='line'>        return result;
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'> private void finish(Result result) {
+</span><span class='line'>        if (isCancelled()) {
+</span><span class='line'>            onCancelled(result);
+</span><span class='line'>        } else {
+</span><span class='line'>            onPostExecute(result);
+</span><span class='line'>        }
+</span><span class='line'>        mStatus = Status.FINISHED;
+</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>从下面的代码可以看出，ThreadPoolExecutor是类变量，所以不管创建多少个AsyncTask子类的对象，他们都共用一个线程池。默认线程池可维护的线程数和最大数量，与可用的CUP处理器个数有关。线程池中超过corePoolSize数目的空闲线程最大存活时间1，单位SECONDS。如果线程池的线程数量小于CORE_POOL_SIZE，这个时候新添加一个异步任务则会新建一个线程；如果线程池的数量大于等于CORE_POOL_SIZE，这个时候新建一个异步任务这个任务会被放入缓存队列中等待执行。缓存队列大小为128，并且SerialExecutor是异步顺序执行任务的。</p>
+
+<pre><code>private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
+private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
+private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
+private static final int KEEP_ALIVE = 1;
+
+private static final BlockingQueue&lt;Runnable&gt; sPoolWorkQueue = new LinkedBlockingQueue&lt;Runnable&gt;(128);
+
+public static final Executor THREAD_POOL_EXECUTOR
+        = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE,
+                TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);
+
+
+private static class SerialExecutor implements Executor {
+    final ArrayDeque&lt;Runnable&gt; mTasks = new ArrayDeque&lt;Runnable&gt;();
+    Runnable mActive;
+
+    public synchronized void execute(final Runnable r) {
+        mTasks.offer(new Runnable() {
+            public void run() {
+                try {
+                    r.run();
+                } finally {
+                    scheduleNext();
+                }
+            }
+        });
+        if (mActive == null) {
+            scheduleNext();
+        }
+    }
+
+    protected synchronized void scheduleNext() {
+        if ((mActive = mTasks.poll()) != null) {
+            THREAD_POOL_EXECUTOR.execute(mActive);
+        }
+    }
+}
+</code></pre>
+
+<h4>问题</h4>
+
+<p>AsyncTask处理任务的时候，一般都是习惯在onPreExecute显示进度条，在数据处理完成之后的onPostExecute关闭进度条。但是当横竖屏切换或者内存重启导致Activity重新启动时，假设你还在onPostExecute写了一些其他逻辑，这个时候的AsyncTask已经与之前的Activity没有关联了，会导致onPostExecute无效问题。</p>
+
+<p>解决办法是在onPostExecute方法里用EventBus,Otto类库或者自己写通知，把结果发送给Activity去处理！！</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>@Override
+</span><span class='line'>    protected void onPostExecute(String result) {
+</span><span class='line'>        EventBus.getDefault().post(new AsyncTaskResultEvent(result));
+</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>个人看法</h4>
+
+<p>觉得Android很喜欢造这种中型轮子啊！好像没什么必要再造个AsyncTask这样的轮子放在SDK里啊? 像AsyncTask这种任务不应该是开发者去完成的吗？还有比如NavigationView，真的有必要吗？这不是应该让开发者来自定义的View吗？反正我不是很理解，这可能也是Android为什么如此碎片化的原因之一吧！&mdash;- 喜欢造中型轮子！</p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/09/07/asynctask/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -1000,43 +1496,6 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/26/core-text/">iOS中的CoreText</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-12-26T15:16:23+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>3:16 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>CoreText进行图文混排的核心思想是把需要摆放图片的位置用空字符替换原来的字符，并且实现CTRunDelegate，用于动态设置空字符的高度和宽度（代表图片的大小），并且对这些空字符设置一个属性名来区别于其他CTRun，之后进行图片渲染的时候就能通过该属性来区分哪些空字符是代表图片的占位符，哪些是普通的空字符。使用CoreText处理点击事件的关键是判断点击的位置是本文内容中的第几个字符，然后通过判断该字符是否在需要处理点击事件的字符串范围内。</p>
-
-<p><img src="/myimg/ios/text2.png" alt="image" /></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/12/26/core-text/">阅读全文</a>
-    </footer>
-  
-
-
-      | <a href="/blog/2015/12/26/core-text/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -1054,6 +1513,10 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/12/10/suan-fa/">排序算法</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/12/09/google-protocol-buffer/">Google Protocol Buffer</a>
       </li>
     
@@ -1069,10 +1532,6 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
         <a href="/blog/2016/12/02/react-base-view/">React Native 基础组件</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/12/01/react-navigator/">React Native Navigator</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -1085,7 +1544,7 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (4)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
 <li class='category'><a href='/blog/categories/react/'>react (9)</a></li>
 
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-09T18:40:01+08:00</updated>
+  <updated>2016-12-11T21:28:56+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -14,13 +14,253 @@
 
   
   <entry>
+    <title type="html"><![CDATA[排序算法]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/12/10/suan-fa/"/>
+    <updated>2016-12-10T14:25:43+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/12/10/suan-fa</id>
+    <content type="html"><![CDATA[<h5>1.冒泡排序 😆</h5>
+
+<p>比如要升序排序，原理是从第一位开始，把它依次和后面的每一位数字进行两两比较,如果低位的比高位的大就交换，然后用较大的数字继续和后面比较交换。这样一趟比较过去后,最大的数字被交换到了最后一位。然后再从头开始以此类推,直到倒数第二位和最后一位比较交换完时结束。</p>
+
+<pre><code>void ascSort(int array[], int size){
+    int i, j, temp;
+    for (j = 0; j &lt; size - 1; j++) //比较的趟数
+        for (i = 0; i &lt; size - 1 - j; i++){ //每趟要比较的次数
+            if(array[i] &gt; array[i + 1]){
+                temp = array[i];
+                array[i] = array[i + 1];
+                array[i + 1] = temp;
+            }
+        }
+}
+</code></pre>
+
+<p>时间复杂度，一个算法花费的时间与算法中语句的执行次数成正比，算法中语句执行次数多，它花费时间就多。算法中基本操作重复执行的次数是问题规模n的某个函数，用T(n)表示，若有某个辅助函数f(n),使得当n趋近于无穷大时，T(n)/f(n)的极限值为不等于零的常数，则称f(n)是T(n)的同数量级函数。记作T(n)=O(f(n)),称O(f(n)) 为算法的渐进时间复杂度，简称时间复杂度。</p>
+
+<p>在冒泡排序中，最坏情况下 T(n) = n * (n - 1) / 2 = (n<sup>2</sup> - n) / 2。如果 n = 10000，那么 (n<sup>2</sup> - n) / 2 = (100000000 - 10000) / 2, 相对10<sup>8</sup>来说，10000可以忽略不计了。所以总计算次数约为 0.5 * n<sup>2</sup>。 忽略前面的倍数， 所以冒泡排序的时间复杂度是  O(n<sup>2</sup>) 。</p>
+
+<p>算法的稳定性是指，如果有两个相等的数 Ai = Aj， 在排序前 Ai 在 Aj 前面，排序后 Ai 还是在 Aj 前面，即两个相等的数不会交换位置。排序算法是否为稳定的是由具体算法决定的，不稳定的算法在某种条件下可以变为稳定的算法，而稳定的算法在某种条件下也可以变为不稳定的算法。</p>
+
+<p>例如，对于冒泡排序，原本是稳定的排序算法，如果将记录交换的条件改成A[i] >= A[i + 1]，则两个相等的记录就会交换位置，从而变成不稳定的排序算法。</p>
+
+<h5>2.鸡尾酒排序</h5>
+
+<p>鸡尾酒排序也叫来回排序，是冒泡排序的一种改进。此算法与冒泡排序的不同处在于从低到高然后从高到低，而冒泡排序则仅从低到高去比较序列里的每个元素，他可以得到比冒泡排序稍微好一点的效率。</p>
+
+<p>原理是先找到最小的数字，把他放到第一位，然后找到最大的数字放到最后一位。然后再找到第二小的数字放到第二位，再找到第二大的数字放到倒数第二位。以此类推，直到完成排序。</p>
+
+<pre><code>void ascSort(int array[], int size){
+    //初始化查询边界
+    int left = 0;
+    int right = size - 1;
+    int tmp;
+
+    while (left &lt; right) {
+        for (int i=left; i&lt;right; i++) { //最大值放右边
+            if (array[i] &gt; array[i+1]) {
+                tmp = array[i];
+                array[i] = array[i + 1];
+                array[i + 1] = tmp;
+            }
+        }
+        right--;
+
+        for (int i=right; i&gt;left; i--) {//最小值放左边
+            if (array[i-1] &gt; array[i]) {
+                tmp = array[i-1];
+                array[i-1] = array[i];
+                array[i] = tmp;
+            }
+        }
+        left++;
+    }
+}
+</code></pre>
+
+<h5>3.选择排序</h5>
+
+<p>每次从剩余序列中选出最小的数放在剩余序列的第一个位置。如从10个数中选出最小的和 array[0] 交换，那 array[0] 就是最小的了。再从剩下的 array[1] 到 array[9] 中选出最小的和 array[1] 交换，依次类推。</p>
+
+<pre><code>void ascSort(int array[], int size){
+    int i,j,k,t;
+    for (i=0; i&lt;size-1; i++) {
+        k=i;
+        for (j=i+1; j&lt;size; j++){//从剩余数组中找出最小数的位置放k里
+            if (array[j] &lt; array[k]){
+                 k = j;
+            }
+        }
+
+        t = array[k];
+        array[k] = array[i];
+        array[i] = t;
+    }
+}
+</code></pre>
+
+<p>时间复杂度也是  O(n<sup>2</sup>) 。</p>
+
+<h5>4.插入排序</h5>
+
+<p>插入排序是一种简单直观的排序算法。它的工作原理非常类似于我们抓扑克牌。对于未排序数据(右手抓到的牌)，在已排序序列(左手已经排好序的手牌)中从后向前扫描，找到相应位置并插入。
+<img src="http://andyfightting.github.io/myimg/java/charu.png" width="300" alt="" /></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>从第一个元素开始，该元素可以认为已经被排序
+</span><span class='line'>取出下一个元素，在已经排序的元素序列中从后向前扫描
+</span><span class='line'>如果该元素（已排序）大于新元素，将该元素移到下一位置
+</span><span class='line'>重复步骤3，直到找到已排序的元素小于或者等于新元素的位置
+</span><span class='line'>将新元素插入到该位置后
+</span><span class='line'>重复步骤2~5</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>void ascSort(int array[], int size){
+    int j,tmp;
+    for (int i = 1; i &lt; size; i++) { //把array[0]当做已排序好的，从array[1]到array[size-1]是将要一个一个拿来插入的
+        tmp = array[i]; //要被插入的数
+        j = i - 1; //j是已经排好的数组的最后一位数的位置，第一次即为 index 0
+
+        while (j &gt;=0 &amp;&amp; array[j] &gt; tmp) {
+            array[j+1] = array[j]; //后移
+            j--;
+        }
+
+        array[j+1] = tmp;//直到遇到比要插入的数小，然后把要插入的数插到它右边
+    }
+}
+</code></pre>
+
+<h5>5.希尔排序</h5>
+
+<p>希尔排序，也叫递减增量排序，是插入排序的一种更高效的改进版本，因为插入排序每次只能将数据移动一位。而该方法实质上是一种分组插入方法，算法先将要排序的一组数按某个增量d分成若干组，每组中记录的下标相差d.对每组中全部元素进行排序，然后再用一个较小的增量对它进行，在每组中再进行排序。当增量减到1时，整个要排序的数被分成一组，排序完成。一般的初次取序列的一半为增量，以后每次减半，直到增量为1。
+<img src="http://andyfightting.github.io/myimg/java/xier.jpg" width="400" alt="" /></p>
+
+<pre><code>void ascSort(int array[], int size){
+    int h = size/2; //初始增量为一半
+    int i,j,tmp;
+
+    while (h &gt;= 1) {
+        for (i = h; i &lt; size; i++) {
+            //下面是跨度为h的插入排序，
+            tmp = array[i];
+            j = i - h;
+            while (j &gt;= 0 &amp;&amp; array[j] &gt; tmp){
+                array[j + h] = array[j];
+                j = j - h;
+            }
+            array[j + h] = tmp;
+        }
+        h = h/2; //增量每次减半
+    }
+}
+</code></pre>
+
+<h5>6.堆排序</h5>
+
+<p>堆排序是指利用堆这种数据结构所设计的一种排序算法。堆是一个近似完全二叉树的结构,并同时满足堆的性质：父节点总是小于等于它的子节点。(父节点或大于等于子节点，这里就举例小于等于的)。当父结点总是小于或等于任何一个子节点时称为小根堆，反之为大根堆。</p>
+
+<p>可以用一维数组来表示堆，节点 i 的父节点是 (i – 1) / 2。 i 的左右子结点下标分别为2 * i + 1和2 * i + 2, 如第0个结点左右子结点下标分别为1和2。
+<img src="http://andyfightting.github.io/myimg/java/dui.png" width="500" alt="" /></p>
+
+<pre><code>1.根据数组初始化一个大根堆
+2.把堆顶元素和堆尾元素交换
+3.把堆的尺寸减一，然后调整堆使剩下的堆继续满足大根堆
+4.重复2、3，直到堆的尺寸为1
+</code></pre>
+
+<p>如 int array[] = {16,7,3,20,17,8}; 可以看成一下的完全二叉树：
+<img src="http://andyfightting.github.io/myimg/java/shu0.png" width="300" alt="" /></p>
+
+<p>然后从最后一个非叶子节点开始调整，比较自己和左节点，右节点谁最大，最大的调为父节点。经过 3-8，7-20-17，16-20-8，16-7-17 四次调整后最后就是一个大根堆了，每个父节点都比子节点大！</p>
+
+<p><img src="http://andyfightting.github.io/myimg/java/shu1.png" width="500" alt="" /></p>
+
+<p>即每次调整都是从父节点、左孩子节点、右孩子节点三者中选择最大者跟父节点进行交换，交换之后可能造成被交换的孩子节点不满足堆的性质，因此每次交换之后要重新对被交换的孩子节点进行调整。初始化好大根堆后就可以进行排序了。</p>
+
+<p>第一轮，把20和最后的3交换，再调整后如下：</p>
+
+<p><img src="http://andyfightting.github.io/myimg/java/shu2.png" width="400" alt="" /></p>
+
+<p>再把17和3交换，调整后如下：</p>
+
+<p><img src="http://andyfightting.github.io/myimg/java/shu3.png" width="400" alt="" /></p>
+
+<p>再把16和3交换调整后如下：</p>
+
+<p><img src="http://andyfightting.github.io/myimg/java/shu4.png" width="300" alt="" /></p>
+
+<p>然后8和3交换调整：</p>
+
+<p><img src="http://andyfightting.github.io/myimg/java/shu5.png" width="300" alt="" /></p>
+
+<p>最后7和3交换，完成。</p>
+
+<p><img src="http://andyfightting.github.io/myimg/java/shu6.png" width="250" alt="" /></p>
+
+<pre><code>int heapsize;
+void ascSort(int array[], int size){
+    buildHeap(array, size);
+    for (int i = size - 1; i &gt;= 1; i--){
+        exchange(array, 0, i);       // 将堆顶元素最大值与堆的最后一个元素互换
+        heapsize--;                  // 从堆中去掉最后一个元素
+        heapModify(array, 0);        // 从新的堆顶元素开始进行堆调整
+    }
+}
+
+void buildHeap(int array[], int size){
+    heapsize = size;
+    for (int i = heapsize/2 - 1; i &gt;= 0; i--){ // 对每一个非叶结点 不断的堆调整
+        heapModify(array, i);
+    }
+}
+
+void heapModify(int array[], int i){    // 堆调整函数,这里使用的是大根堆
+    int leftchild = 2 * i + 1;          // 左孩子索引
+    int rightchild = 2 * i + 2;         // 右孩子索引
+    int largest;                        // 选出当前结点与左右孩子之中的最大值
+
+    if (leftchild &lt; heapsize &amp;&amp; array[leftchild] &gt; array[i]){
+        largest = leftchild;
+    }else{
+        largest = i;
+    }
+
+    if (rightchild &lt; heapsize &amp;&amp; array[rightchild] &gt; array[largest]){
+        largest = rightchild;
+    }
+
+    if (largest != i){
+        exchange(array, i, largest);     // 把当前结点和它的最大直接子节点进行交换
+        heapModify(array, largest);      // 递归调用，继续从当前结点向下进行堆调整
+    }
+}
+
+void exchange(int array[], int i, int j){   // 交换array[i]和array[j]
+    int temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+}
+</code></pre>
+
+<h5>7.归并排序</h5>
+
+<h5>8.快速排序</h5>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Google Protocol Buffer]]></title>
     <link href="http://andyfightting.github.io/blog/2016/12/09/google-protocol-buffer/"/>
     <updated>2016-12-09T09:54:35+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/12/09/google-protocol-buffer</id>
     <content type="html"><![CDATA[<p><a href="https://developers.google.com/protocol-buffers/">Google Protocol Buffer</a>是一种轻便高效的结构化数据存储格式，它很适合用于网络传输、数据存储等领域的与语言无关、平台无关、可扩展的序列化结构数据格式。google 提供了多种语言的实现：java、c#、c++、go 和 python，每一种实现都包含了相应语言的编译器以及库文件。由于它是一种二进制的格式，比使用 XML、JSON 进行数据交换快许多也小许多。</p>
 
-<p>首先需要安装，在<a href="https://github.com/google/protobuf/releases">这里</a>选择一种语言下载，我下载的是<code>protobuf-java-3.0.0.zip</code>。</p>
+<p>首先需要安装编译器，在<a href="https://github.com/google/protobuf/releases">这里</a>选择一种语言下载，我下载的是<code>protobuf-java-3.0.0.zip</code>。</p>
 
 <pre><code>//安装步骤
 1.解压后 cd 进入文件夹
@@ -3436,479 +3676,6 @@ public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
 
 }
 </code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Android中的AsyncTask]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/09/07/asynctask/"/>
-    <updated>2016-09-07T10:15:12+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/09/07/asynctask</id>
-    <content type="html"><![CDATA[<p>Android和iOS一样，对UI的操作只能放在主线程中进行，即UI线程。如果在UI线程中执行比较耗时的方法，就会造成界面卡顿假死无反应，所以应该把耗时操作放在<code>非UI线程</code>中处理，处理完成后再在<code>UI线程</code>中更新界面。</p>
-
-<p>在没有AsyncTask类的时候，是通过在子线程处理，然后sendMessage(Message msg)给主线程中创建的Handler,然后在主线程中实现handleMessage(Message msg)处理相应信息。而这些工作AsyncTask帮我们做了，AsyncTask就是对Thread和Handler的封装。</p>
-
-<h4>AsyncTask使用</h4>
-
-<p>AsyncTask是一个抽象类，所以必须创建一个子类去继承它。在继承时我们可以为AsyncTask类指定三个参数类型,这三个类型会影响重写方法对应的参数类型。</p>
-
-<ol>
-<li>Params: 在execute()启动任务时需要传入的参数</li>
-<li>Progress: 后台任务执行过程中，需要实时反馈出来的信息，比如执行进度什么的</li>
-<li>Result: 后台任务执行完毕后，如果需要对结果进行返回，则返回该类型</li>
-</ol>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>//on开通的方法都是在UI线程中执行的
-</span><span class='line'>class MyAsyncTask extends AsyncTask&lt;Void,Integer,Boolean&gt;{
-</span><span class='line'>    @Override
-</span><span class='line'>    protected void onPreExecute() {//在执行实际的后台的doInBackground方法前
-</span><span class='line'>        super.onPreExecute();
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>    @Override
-</span><span class='line'>    protected Boolean doInBackground(Void... params) {//在onPreExecute 方法执行后马上执行，该方法运行在后台线程中
-</span><span class='line'>        for (int i = 0; i &lt;= 100; i++) {
-</span><span class='line'>            publishProgress(i);//调用onProgressUpdate
-</span><span class='line'>            try {
-</span><span class='line'>                Thread.sleep(1000);
-</span><span class='line'>            } catch (InterruptedException e) {
-</span><span class='line'>                e.printStackTrace();
-</span><span class='line'>            }
-</span><span class='line'>        }
-</span><span class='line'>        return true;//可以判断是否顺利执行完了啊
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    @Override
-</span><span class='line'>    protected void onProgressUpdate(Integer... values) {//这个函数在doInBackground调用publishProgress时被调用后
-</span><span class='line'>        super.onProgressUpdate(values);
-</span><span class='line'>        //比如实时更新进度条
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    @Override
-</span><span class='line'>    protected void onPostExecute(Boolean aBoolean) {
-</span><span class='line'>        super.onPostExecute(aBoolean);
-</span><span class='line'>        //后台顺利执行完后要干啥呢
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    @Override
-</span><span class='line'>    protected void onCancelled() {
-</span><span class='line'>        super.onCancelled();
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<ol>
-<li>Task的实例必须在UI 线程中创建</li>
-<li>execute方法必须在UI 线程中调用</li>
-<li>不要手动的调用onPreExecute(), onPostExecute(Result)，doInBackground(Params&hellip;)等方法</li>
-<li>该task只能被执行一次，否则多次调用时将会抛出异常</li>
-</ol>
-
-
-<h4>AsyncTask源码</h4>
-
-<p>AsyncTask有个handler内部类，用它来处理在主线程中实时更新和任务完成后的回调</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>private static InternalHandler sHandler;
-</span><span class='line'>
-</span><span class='line'>private static Handler getHandler() {
-</span><span class='line'>    synchronized (AsyncTask.class) {
-</span><span class='line'>        if (sHandler == null) {
-</span><span class='line'>            sHandler = new InternalHandler();
-</span><span class='line'>        }
-</span><span class='line'>        return sHandler;
-</span><span class='line'>    }
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>private static class InternalHandler extends Handler {
-</span><span class='line'>    public InternalHandler() {
-</span><span class='line'>        super(Looper.getMainLooper());
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    @SuppressWarnings({"unchecked", "RawUseOfParameterizedType"})
-</span><span class='line'>    @Override
-</span><span class='line'>    public void handleMessage(Message msg) {
-</span><span class='line'>        AsyncTaskResult&lt;?&gt; result = (AsyncTaskResult&lt;?&gt;) msg.obj;
-</span><span class='line'>        switch (msg.what) {
-</span><span class='line'>            case MESSAGE_POST_RESULT:
-</span><span class='line'>                // There is only one result
-</span><span class='line'>                result.mTask.finish(result.mData[0]);
-</span><span class='line'>                break;
-</span><span class='line'>            case MESSAGE_POST_PROGRESS:
-</span><span class='line'>                result.mTask.onProgressUpdate(result.mData);
-</span><span class='line'>                break;
-</span><span class='line'>        }
-</span><span class='line'>    }
-</span><span class='line'>}
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当我们调用publishProgress方法时，就是得到handler单列然后发消息</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>   protected final void publishProgress(Progress... values) {
-</span><span class='line'>        if (!isCancelled()) {
-</span><span class='line'>            getHandler().obtainMessage(MESSAGE_POST_PROGRESS,
-</span><span class='line'>                    new AsyncTaskResult&lt;Progress&gt;(this, values)).sendToTarget();
-</span><span class='line'>        }
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>   private static class AsyncTaskResult&lt;Data&gt; {
-</span><span class='line'>        final AsyncTask mTask;
-</span><span class='line'>        final Data[] mData;
-</span><span class='line'>
-</span><span class='line'>     AsyncTaskResult(AsyncTask task, Data... data) {
-</span><span class='line'>            mTask = task;
-</span><span class='line'>            mData = data;
-</span><span class='line'>        }
-</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当执行execute()方法时，会在后台任务doInBackground(mParams)开始执行前调用onPreExecute方法。从下面可以看出，当task已经在运行或者已经结束的时候不可以再调用execute()方法，否则会报错。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> public final AsyncTask&lt;Params, Progress, Result&gt; execute(Params... params) {
-</span><span class='line'>        return executeOnExecutor(sDefaultExecutor, params);
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>  public final AsyncTask&lt;Params, Progress, Result&gt; executeOnExecutor(Executor exec,
-</span><span class='line'>            Params... params) {
-</span><span class='line'>        if (mStatus != Status.PENDING) {
-</span><span class='line'>            switch (mStatus) {
-</span><span class='line'>                case RUNNING:
-</span><span class='line'>                    throw new IllegalStateException("Cannot execute task:"
-</span><span class='line'>                            + " the task is already running.");
-</span><span class='line'>                case FINISHED:
-</span><span class='line'>                    throw new IllegalStateException("Cannot execute task:"
-</span><span class='line'>                            + " the task has already been executed "
-</span><span class='line'>                            + "(a task can be executed only once)");
-</span><span class='line'>            }
-</span><span class='line'>        }
-</span><span class='line'>
-</span><span class='line'>        mStatus = Status.RUNNING;
-</span><span class='line'>
-</span><span class='line'>        onPreExecute(); //后台任务开始前执行
-</span><span class='line'>
-</span><span class='line'>        mWorker.mParams = params;
-</span><span class='line'>        exec.execute(mFuture);
-</span><span class='line'>
-</span><span class='line'>        return this;
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>     mWorker = new WorkerRunnable&lt;Params, Result&gt;() {
-</span><span class='line'>            public Result call() throws Exception {
-</span><span class='line'>                mTaskInvoked.set(true);
-</span><span class='line'>
-</span><span class='line'>                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-</span><span class='line'>                //noinspection unchecked
-</span><span class='line'>                Result result = doInBackground(mParams);   //这里开始执行后台任务！！！
-</span><span class='line'>                Binder.flushPendingCommands();
-</span><span class='line'>                return postResult(result);
-</span><span class='line'>            }
-</span><span class='line'>        };
-</span><span class='line'>
-</span><span class='line'>        mFuture = new FutureTask&lt;Result&gt;(mWorker) {
-</span><span class='line'>            @Override
-</span><span class='line'>            protected void done() {
-</span><span class='line'>                try {
-</span><span class='line'>                    postResultIfNotInvoked(get());    //后台任务执行完毕！！！
-</span><span class='line'>                } catch (InterruptedException e) {
-</span><span class='line'>                    android.util.Log.w(LOG_TAG, e);
-</span><span class='line'>                } catch (ExecutionException e) {
-</span><span class='line'>                    throw new RuntimeException("An error occurred while executing doInBackground()",
-</span><span class='line'>                            e.getCause());
-</span><span class='line'>                } catch (CancellationException e) {
-</span><span class='line'>                    postResultIfNotInvoked(null);
-</span><span class='line'>                }
-</span><span class='line'>            }
-</span><span class='line'>        };
-</span><span class='line'>    
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>后台任务执行完毕时，也是通过handler发消息，然后判断是不是取消状态来调用相应的方法</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> mFuture = new FutureTask&lt;Result&gt;(mWorker) {
-</span><span class='line'>            @Override
-</span><span class='line'>            protected void done() {
-</span><span class='line'>                try {
-</span><span class='line'>                    postResultIfNotInvoked(get());   //后台任务执行完毕！！！
-</span><span class='line'>                } catch (InterruptedException e) {
-</span><span class='line'>                    android.util.Log.w(LOG_TAG, e);
-</span><span class='line'>                } catch (ExecutionException e) {
-</span><span class='line'>                    throw new RuntimeException("An error occurred while executing doInBackground()",
-</span><span class='line'>                            e.getCause());
-</span><span class='line'>                } catch (CancellationException e) {
-</span><span class='line'>                    postResultIfNotInvoked(null);
-</span><span class='line'>                }
-</span><span class='line'>            }
-</span><span class='line'>        };
-</span><span class='line'>        
-</span><span class='line'>   private void postResultIfNotInvoked(Result result) {
-</span><span class='line'>        final boolean wasTaskInvoked = mTaskInvoked.get();
-</span><span class='line'>        if (!wasTaskInvoked) {
-</span><span class='line'>            postResult(result);
-</span><span class='line'>        }
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>   private Result postResult(Result result) {
-</span><span class='line'>        @SuppressWarnings("unchecked")
-</span><span class='line'>        Message message = getHandler().obtainMessage(MESSAGE_POST_RESULT,
-</span><span class='line'>                new AsyncTaskResult&lt;Result&gt;(this, result));
-</span><span class='line'>        message.sendToTarget();
-</span><span class='line'>        return result;
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'> private void finish(Result result) {
-</span><span class='line'>        if (isCancelled()) {
-</span><span class='line'>            onCancelled(result);
-</span><span class='line'>        } else {
-</span><span class='line'>            onPostExecute(result);
-</span><span class='line'>        }
-</span><span class='line'>        mStatus = Status.FINISHED;
-</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
-
-
-<p>从下面的代码可以看出，ThreadPoolExecutor是类变量，所以不管创建多少个AsyncTask子类的对象，他们都共用一个线程池。默认线程池可维护的线程数和最大数量，与可用的CUP处理器个数有关。线程池中超过corePoolSize数目的空闲线程最大存活时间1，单位SECONDS。如果线程池的线程数量小于CORE_POOL_SIZE，这个时候新添加一个异步任务则会新建一个线程；如果线程池的数量大于等于CORE_POOL_SIZE，这个时候新建一个异步任务这个任务会被放入缓存队列中等待执行。缓存队列大小为128，并且SerialExecutor是异步顺序执行任务的。</p>
-
-<pre><code>private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
-private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
-private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
-private static final int KEEP_ALIVE = 1;
-
-private static final BlockingQueue&lt;Runnable&gt; sPoolWorkQueue = new LinkedBlockingQueue&lt;Runnable&gt;(128);
-
-public static final Executor THREAD_POOL_EXECUTOR
-        = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE,
-                TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);
-
-
-private static class SerialExecutor implements Executor {
-    final ArrayDeque&lt;Runnable&gt; mTasks = new ArrayDeque&lt;Runnable&gt;();
-    Runnable mActive;
-
-    public synchronized void execute(final Runnable r) {
-        mTasks.offer(new Runnable() {
-            public void run() {
-                try {
-                    r.run();
-                } finally {
-                    scheduleNext();
-                }
-            }
-        });
-        if (mActive == null) {
-            scheduleNext();
-        }
-    }
-
-    protected synchronized void scheduleNext() {
-        if ((mActive = mTasks.poll()) != null) {
-            THREAD_POOL_EXECUTOR.execute(mActive);
-        }
-    }
-}
-</code></pre>
-
-<h4>问题</h4>
-
-<p>AsyncTask处理任务的时候，一般都是习惯在onPreExecute显示进度条，在数据处理完成之后的onPostExecute关闭进度条。但是当横竖屏切换或者内存重启导致Activity重新启动时，假设你还在onPostExecute写了一些其他逻辑，这个时候的AsyncTask已经与之前的Activity没有关联了，会导致onPostExecute无效问题。</p>
-
-<p>解决办法是在onPostExecute方法里用EventBus,Otto类库或者自己写通知，把结果发送给Activity去处理！！</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>@Override
-</span><span class='line'>    protected void onPostExecute(String result) {
-</span><span class='line'>        EventBus.getDefault().post(new AsyncTaskResultEvent(result));
-</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>个人看法</h4>
-
-<p>觉得Android很喜欢造这种中型轮子啊！好像没什么必要再造个AsyncTask这样的轮子放在SDK里啊? 像AsyncTask这种任务不应该是开发者去完成的吗？还有比如NavigationView，真的有必要吗？这不是应该让开发者来自定义的View吗？反正我不是很理解，这可能也是Android为什么如此碎片化的原因之一吧！&mdash;- 喜欢造中型轮子！</p>
 ]]></content>
   </entry>
   

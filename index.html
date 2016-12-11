@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Google Protocol Buffer Dec 9th, 2016 9:54 am Google Protocol Buffer是一种轻便高效的结构化数据存储格式，它很适合用于网络传输、数据存储等领域的与语言无关、平台无关、可扩展的序列化结构数据格式。google 提供了多种语言的实现： &hellip;">
+  <meta name="description" content="排序算法 Dec 10th, 2016 2:25 pm 1.冒泡排序 😆 比如要升序排序，原理是从第一位开始，把它依次和后面的每一位数字进行两两比较,如果低位的比高位的大就交换，然后用较大的数字继续和后面比较交换。这样一趟比较过去后,最大的数字被交换到了最后一位。然后再从头开始以此类推, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,269 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/12/10/suan-fa/">排序算法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-10T14:25:43+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:25 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h5>1.冒泡排序 😆</h5>
+
+<p>比如要升序排序，原理是从第一位开始，把它依次和后面的每一位数字进行两两比较,如果低位的比高位的大就交换，然后用较大的数字继续和后面比较交换。这样一趟比较过去后,最大的数字被交换到了最后一位。然后再从头开始以此类推,直到倒数第二位和最后一位比较交换完时结束。</p>
+
+<pre><code>void ascSort(int array[], int size){
+    int i, j, temp;
+    for (j = 0; j &lt; size - 1; j++) //比较的趟数
+        for (i = 0; i &lt; size - 1 - j; i++){ //每趟要比较的次数
+            if(array[i] &gt; array[i + 1]){
+                temp = array[i];
+                array[i] = array[i + 1];
+                array[i + 1] = temp;
+            }
+        }
+}
+</code></pre>
+
+<p>时间复杂度，一个算法花费的时间与算法中语句的执行次数成正比，算法中语句执行次数多，它花费时间就多。算法中基本操作重复执行的次数是问题规模n的某个函数，用T(n)表示，若有某个辅助函数f(n),使得当n趋近于无穷大时，T(n)/f(n)的极限值为不等于零的常数，则称f(n)是T(n)的同数量级函数。记作T(n)=O(f(n)),称O(f(n)) 为算法的渐进时间复杂度，简称时间复杂度。</p>
+
+<p>在冒泡排序中，最坏情况下 T(n) = n * (n - 1) / 2 = (n<sup>2</sup> - n) / 2。如果 n = 10000，那么 (n<sup>2</sup> - n) / 2 = (100000000 - 10000) / 2, 相对10<sup>8</sup>来说，10000可以忽略不计了。所以总计算次数约为 0.5 * n<sup>2</sup>。 忽略前面的倍数， 所以冒泡排序的时间复杂度是  O(n<sup>2</sup>) 。</p>
+
+<p>算法的稳定性是指，如果有两个相等的数 Ai = Aj， 在排序前 Ai 在 Aj 前面，排序后 Ai 还是在 Aj 前面，即两个相等的数不会交换位置。排序算法是否为稳定的是由具体算法决定的，不稳定的算法在某种条件下可以变为稳定的算法，而稳定的算法在某种条件下也可以变为不稳定的算法。</p>
+
+<p>例如，对于冒泡排序，原本是稳定的排序算法，如果将记录交换的条件改成A[i] >= A[i + 1]，则两个相等的记录就会交换位置，从而变成不稳定的排序算法。</p>
+
+<h5>2.鸡尾酒排序</h5>
+
+<p>鸡尾酒排序也叫来回排序，是冒泡排序的一种改进。此算法与冒泡排序的不同处在于从低到高然后从高到低，而冒泡排序则仅从低到高去比较序列里的每个元素，他可以得到比冒泡排序稍微好一点的效率。</p>
+
+<p>原理是先找到最小的数字，把他放到第一位，然后找到最大的数字放到最后一位。然后再找到第二小的数字放到第二位，再找到第二大的数字放到倒数第二位。以此类推，直到完成排序。</p>
+
+<pre><code>void ascSort(int array[], int size){
+    //初始化查询边界
+    int left = 0;
+    int right = size - 1;
+    int tmp;
+
+    while (left &lt; right) {
+        for (int i=left; i&lt;right; i++) { //最大值放右边
+            if (array[i] &gt; array[i+1]) {
+                tmp = array[i];
+                array[i] = array[i + 1];
+                array[i + 1] = tmp;
+            }
+        }
+        right--;
+
+        for (int i=right; i&gt;left; i--) {//最小值放左边
+            if (array[i-1] &gt; array[i]) {
+                tmp = array[i-1];
+                array[i-1] = array[i];
+                array[i] = tmp;
+            }
+        }
+        left++;
+    }
+}
+</code></pre>
+
+<h5>3.选择排序</h5>
+
+<p>每次从剩余序列中选出最小的数放在剩余序列的第一个位置。如从10个数中选出最小的和 array[0] 交换，那 array[0] 就是最小的了。再从剩下的 array[1] 到 array[9] 中选出最小的和 array[1] 交换，依次类推。</p>
+
+<pre><code>void ascSort(int array[], int size){
+    int i,j,k,t;
+    for (i=0; i&lt;size-1; i++) {
+        k=i;
+        for (j=i+1; j&lt;size; j++){//从剩余数组中找出最小数的位置放k里
+            if (array[j] &lt; array[k]){
+                 k = j;
+            }
+        }
+
+        t = array[k];
+        array[k] = array[i];
+        array[i] = t;
+    }
+}
+</code></pre>
+
+<p>时间复杂度也是  O(n<sup>2</sup>) 。</p>
+
+<h5>4.插入排序</h5>
+
+<p>插入排序是一种简单直观的排序算法。它的工作原理非常类似于我们抓扑克牌。对于未排序数据(右手抓到的牌)，在已排序序列(左手已经排好序的手牌)中从后向前扫描，找到相应位置并插入。
+<img src="/myimg/java/charu.png" width="300" alt="" /></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>从第一个元素开始，该元素可以认为已经被排序
+</span><span class='line'>取出下一个元素，在已经排序的元素序列中从后向前扫描
+</span><span class='line'>如果该元素（已排序）大于新元素，将该元素移到下一位置
+</span><span class='line'>重复步骤3，直到找到已排序的元素小于或者等于新元素的位置
+</span><span class='line'>将新元素插入到该位置后
+</span><span class='line'>重复步骤2~5</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>void ascSort(int array[], int size){
+    int j,tmp;
+    for (int i = 1; i &lt; size; i++) { //把array[0]当做已排序好的，从array[1]到array[size-1]是将要一个一个拿来插入的
+        tmp = array[i]; //要被插入的数
+        j = i - 1; //j是已经排好的数组的最后一位数的位置，第一次即为 index 0
+
+        while (j &gt;=0 &amp;&amp; array[j] &gt; tmp) {
+            array[j+1] = array[j]; //后移
+            j--;
+        }
+
+        array[j+1] = tmp;//直到遇到比要插入的数小，然后把要插入的数插到它右边
+    }
+}
+</code></pre>
+
+<h5>5.希尔排序</h5>
+
+<p>希尔排序，也叫递减增量排序，是插入排序的一种更高效的改进版本，因为插入排序每次只能将数据移动一位。而该方法实质上是一种分组插入方法，算法先将要排序的一组数按某个增量d分成若干组，每组中记录的下标相差d.对每组中全部元素进行排序，然后再用一个较小的增量对它进行，在每组中再进行排序。当增量减到1时，整个要排序的数被分成一组，排序完成。一般的初次取序列的一半为增量，以后每次减半，直到增量为1。
+<img src="/myimg/java/xier.jpg" width="400" alt="" /></p>
+
+<pre><code>void ascSort(int array[], int size){
+    int h = size/2; //初始增量为一半
+    int i,j,tmp;
+
+    while (h &gt;= 1) {
+        for (i = h; i &lt; size; i++) {
+            //下面是跨度为h的插入排序，
+            tmp = array[i];
+            j = i - h;
+            while (j &gt;= 0 &amp;&amp; array[j] &gt; tmp){
+                array[j + h] = array[j];
+                j = j - h;
+            }
+            array[j + h] = tmp;
+        }
+        h = h/2; //增量每次减半
+    }
+}
+</code></pre>
+
+<h5>6.堆排序</h5>
+
+<p>堆排序是指利用堆这种数据结构所设计的一种排序算法。堆是一个近似完全二叉树的结构,并同时满足堆的性质：父节点总是小于等于它的子节点。(父节点或大于等于子节点，这里就举例小于等于的)。当父结点总是小于或等于任何一个子节点时称为小根堆，反之为大根堆。</p>
+
+<p>可以用一维数组来表示堆，节点 i 的父节点是 (i – 1) / 2。 i 的左右子结点下标分别为2 * i + 1和2 * i + 2, 如第0个结点左右子结点下标分别为1和2。
+<img src="/myimg/java/dui.png" width="500" alt="" /></p>
+
+<pre><code>1.根据数组初始化一个大根堆
+2.把堆顶元素和堆尾元素交换
+3.把堆的尺寸减一，然后调整堆使剩下的堆继续满足大根堆
+4.重复2、3，直到堆的尺寸为1
+</code></pre>
+
+<p>如 int array[] = {16,7,3,20,17,8}; 可以看成一下的完全二叉树：
+<img src="/myimg/java/shu0.png" width="300" alt="" /></p>
+
+<p>然后从最后一个非叶子节点开始调整，比较自己和左节点，右节点谁最大，最大的调为父节点。经过 3-8，7-20-17，16-20-8，16-7-17 四次调整后最后就是一个大根堆了，每个父节点都比子节点大！</p>
+
+<p><img src="/myimg/java/shu1.png" width="500" alt="" /></p>
+
+<p>即每次调整都是从父节点、左孩子节点、右孩子节点三者中选择最大者跟父节点进行交换，交换之后可能造成被交换的孩子节点不满足堆的性质，因此每次交换之后要重新对被交换的孩子节点进行调整。初始化好大根堆后就可以进行排序了。</p>
+
+<p>第一轮，把20和最后的3交换，再调整后如下：</p>
+
+<p><img src="/myimg/java/shu2.png" width="400" alt="" /></p>
+
+<p>再把17和3交换，调整后如下：</p>
+
+<p><img src="/myimg/java/shu3.png" width="400" alt="" /></p>
+
+<p>再把16和3交换调整后如下：</p>
+
+<p><img src="/myimg/java/shu4.png" width="300" alt="" /></p>
+
+<p>然后8和3交换调整：</p>
+
+<p><img src="/myimg/java/shu5.png" width="300" alt="" /></p>
+
+<p>最后7和3交换，完成。</p>
+
+<p><img src="/myimg/java/shu6.png" width="250" alt="" /></p>
+
+<pre><code>int heapsize;
+void ascSort(int array[], int size){
+    buildHeap(array, size);
+    for (int i = size - 1; i &gt;= 1; i--){
+        exchange(array, 0, i);       // 将堆顶元素最大值与堆的最后一个元素互换
+        heapsize--;                  // 从堆中去掉最后一个元素
+        heapModify(array, 0);        // 从新的堆顶元素开始进行堆调整
+    }
+}
+
+void buildHeap(int array[], int size){
+    heapsize = size;
+    for (int i = heapsize/2 - 1; i &gt;= 0; i--){ // 对每一个非叶结点 不断的堆调整
+        heapModify(array, i);
+    }
+}
+
+void heapModify(int array[], int i){    // 堆调整函数,这里使用的是大根堆
+    int leftchild = 2 * i + 1;          // 左孩子索引
+    int rightchild = 2 * i + 2;         // 右孩子索引
+    int largest;                        // 选出当前结点与左右孩子之中的最大值
+
+    if (leftchild &lt; heapsize &amp;&amp; array[leftchild] &gt; array[i]){
+        largest = leftchild;
+    }else{
+        largest = i;
+    }
+
+    if (rightchild &lt; heapsize &amp;&amp; array[rightchild] &gt; array[largest]){
+        largest = rightchild;
+    }
+
+    if (largest != i){
+        exchange(array, i, largest);     // 把当前结点和它的最大直接子节点进行交换
+        heapModify(array, largest);      // 递归调用，继续从当前结点向下进行堆调整
+    }
+}
+
+void exchange(int array[], int i, int j){   // 交换array[i]和array[j]
+    int temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+}
+</code></pre>
+
+<h5>7.归并排序</h5>
+
+<h5>8.快速排序</h5>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/12/10/suan-fa/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/12/09/google-protocol-buffer/">Google Protocol Buffer</a></h1>
     
     
@@ -100,7 +363,7 @@
 
   <div class="entry-content"><p><a href="https://developers.google.com/protocol-buffers/">Google Protocol Buffer</a>是一种轻便高效的结构化数据存储格式，它很适合用于网络传输、数据存储等领域的与语言无关、平台无关、可扩展的序列化结构数据格式。google 提供了多种语言的实现：java、c#、c++、go 和 python，每一种实现都包含了相应语言的编译器以及库文件。由于它是一种二进制的格式，比使用 XML、JSON 进行数据交换快许多也小许多。</p>
 
-<p>首先需要安装，在<a href="https://github.com/google/protobuf/releases">这里</a>选择一种语言下载，我下载的是<code>protobuf-java-3.0.0.zip</code>。</p>
+<p>首先需要安装编译器，在<a href="https://github.com/google/protobuf/releases">这里</a>选择一种语言下载，我下载的是<code>protobuf-java-3.0.0.zip</code>。</p>
 
 <pre><code>//安装步骤
 1.解压后 cd 进入文件夹
@@ -1735,254 +1998,6 @@ const styles = StyleSheet.create({
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/11/26/react-native-basic/">React Native 基础知识</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-11-26T11:16:25+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:16 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h4>React 的核心思想是：封装组件! React 应用都是构建在组件之上，各个组件维护自己的状态和 UI，当状态变更，自动重新渲染自身组件。组件的第一个字母必须大写,组件只能包含一个顶层标签。</h4>
-
-<h4>Declarative</h4>
-
-<p><a href="https://facebook.github.io/react/">React</a> 可以很好的创建交互式组件，设计不同状态下的组件，并且React可以根据组件的不同参数高效的刷新渲染。这样的组件可以让你的代码更加的可预测并且更方便调试。</p>
-
-<h4>Component-Based</h4>
-
-<p>基于组件，封装一个组件，让它们管理自己的状态，然后用它们去组成更加复杂的UI。由于组件的逻辑是写在JavaScript里的而不是模板里，这样你可以很轻松的让它穿梭于复杂的数据之间，并且在DOM外保持自己的状态。</p>
-
-<h4>Learn Once, Write Anywhere</h4>
-
-<p>我们不假定你现在的技术栈是怎样的，所以你可以不用重写已存在的代码来用React开放新的功能。React也可以在服务器端渲染，也可以用React Native创建强大的移动应用。</p>
-
-<h4>A Simple Component</h4>
-
-<p>React 组件调用 <code>render()</code> 方法来输入参数然后返回要显示的样子。这个例子用一个类似XML语言的我们称之为JSX，通过<code>this.props</code>输入数据传到组件内部可以被<code>render()</code>方法获取。使用React的话，JSX是可选的，不是必须要使用的。试着点击<code>Complied JS</code>去看看通过JSX编译器产生的原生的JavaScript 代码。</p>
-
-<h4>A Stateful Component</h4>
-
-<p>除了通过<code>this.props</code>来传入参数，组件可以通过<code>this.state</code>来维护自己内部状态的数据。当组件的状态数据改变时，渲染器就会重新调用<code>render()</code>方法来刷新。</p>
-
-<h4>An Application</h4>
-
-<p>使用<code>props</code>和<code>state</code>我们可以收集一个小型的代办事项申请。这个例子用<code>state</code>来跟踪当前列表和用户输入的数据。虽然事件处理程序似乎是呈现内联,他们会通过事件代理被收集和使用。</p>
-
-<h4>A Component Using External Plugins</h4>
-
-<p>React 是灵活的，并且提供了一个钩子来和库或框架进行链接。这个例子使用<code>remarkable</code>,一个外部的 Markdown 库，来实时转化文本内容。</p>
-
-<p>哎呀~ 自己翻译果然别扭&hellip;😞  React 是什么呢？React 是Facebook 封装的一组JS代码库：</p>
-
-<p><img src="/myimg/java/react.png" alt="" /></p>
-
-<p>按它规则可封装一个一个模块组件，这个模块组件有自己的状态，自己的逻辑等，它是一个独立的东西，然后把这样的组件一个一个组合起来。按照React 的规则可以混合着写JavaScript和HTML,这样的一个组件就是一个独立的模块化的View。添加组件属性，有一个地方需要注意，就是 class 属性需要写成 className ，for 属性需要写成 htmlFor ，这是因为 class 和 for 是 JavaScript 的保留字。</p>
-
-<p>React 还封装了一个自己的虚拟的DOM，通过这个Virtual DOM去更新真实的DOM，由这个Virtual DOM管理真实DOM的更新。因为如果大面积的操作 DOM，性能会是一个很大的问题，所以 React 实现了一个虚拟 DOM，组件 DOM 结构就是映射到这个虚拟 DOM 上，React 在这个虚拟 DOM 上实现了一个 <a href="http://www.ruanyifeng.com/blog/2012/08/how_to_read_diff.html">diff</a> 算法，当要更新组件的时候，会通过 diff 寻找到要变更的 DOM 节点，再把这个修改更新到浏览器实际的 DOM 节点上，所以实际上不是真的渲染整个 DOM 树。这个虚拟 DOM 是一个纯粹的 JS 数据结构，所以性能会比原生 DOM 快很多。要从组件获取真实 DOM 的节点，这时就要用到 <code>ref</code> 属性。给组件设置一个 <code>ref</code> 属性，然后用 <code>this.refs.[refName]</code> 就会返回这个真实的 DOM 节点对象。</p>
-
-<h4>Hello World</h4>
-
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-    &lt;script src="../build/react.js"&gt;&lt;/script&gt;
-    &lt;script src="../build/react-dom.js"&gt;&lt;/script&gt;
-    &lt;script src="../build/browser.min.js"&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;div id="example"&gt;&lt;/div&gt;
-
-    &lt;script type="text/babel"&gt;
-    var MyComponent = React.createClass({
-      render: function() {
-        return &lt;div&gt;Hello {this.props.name}&lt;/div&gt;;
-      }
-    });
-
-    ReactDOM.render(&lt;MyComponent name="World !" /&gt;,
-                    document.getElementById('example') );
-    &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-
-<p>上面的代码中用React的语法自定义了一个组件叫<code>MyComponent</code>,这个组件返回一个块区间，里面显示 Hello + 这个组件的<code>name</code>属性值。注意script 的type 要声明为<code>text/babel</code>。这样就可以在其他地方使用这个自定义的组件了。可以把 <code>props</code> 看作是组件的配置属性，在组件内部是不变的，只是在调用这个组件的时候传入不同的属性值来定制显示这个组件。当组件状态 <code>state</code> 有更改的时候，React 会自动调用组件的 <code>render()</code> 方法重新渲染整个组件的 UI。<code>this.props</code> 对象的属性与组件的属性一一对应，<code>this.props.children</code> 表示组件的所有子节点。需要注意， <code>this.props.children</code> 的值有三种可能：如果当前组件没有子节点，它就是 <code>undefined</code> ;如果有一个子节点，数据类型是 <code>object</code> ；如果有多个子节点，数据类型就是 <code>array</code> 。所以，处理 <code>this.props.children</code> 的时候要小心。上面的代码把 HTML 直接嵌入了 JS 代码里面了，这就是 React 提出的一种叫 JSX 的语法。把原来网页设计的代码分离，现在又融合了！</p>
-
-<p><img src="/myimg/java/react_hello.png" alt="" /></p>
-
-<p>Hello World 运行起来了！嗯~ 我已经成功了一半！😆</p>
-
-<h4>组件组合</h4>
-
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-    &lt;script src="../build/react.js"&gt;&lt;/script&gt;
-    &lt;script src="../build/react-dom.js"&gt;&lt;/script&gt;
-    &lt;script src="../build/browser.min.js"&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;div id="example"&gt;&lt;/div&gt;
-
-    &lt;script type="text/babel"&gt;
-
-    var Avatar = React.createClass({
-        render: function() {
-            return (
-                &lt;div&gt;
-                    &lt;ProfilePic username={this.props.username} /&gt;
-                    &lt;ProfileName username={this.props.username} /&gt;
-                &lt;/div&gt;
-            );
-        }
-       });
-
-    var ProfilePic = React.createClass({
-        render: function() {
-            return (
-                &lt;img src={'https://gss0.bdstatic.com/70cFsj3f_gcX8t7mm9GUKT-xh_/avatar/100/r6s1g6.gif'} /&gt;
-            );
-        }
-    });
-
-    var ProfileName = React.createClass({
-        render: function() {
-            return (
-              &lt;div&gt;
-                &lt;a href={'http://guimingsu.com'}&gt;
-                    {this.props.username}
-                &lt;/a&gt;
-              &lt;/div&gt;
-            );
-        }
-    });
-
-    ReactDOM.render(
-        &lt;Avatar username="hello world " /&gt;,
-        document.getElementById('example')
-      );
-
-    &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-
-<p>这里显示了一个Avatar 组件，这个Avatar 组件是由两个更小的组件ProfilePic和ProfileName组合而成的。父组件和子组件间可以通过<code>props</code>一层一层的传值。Remember: React is all about one-way data flow down the component hierarchy.</p>
-
-<p><img src="/myimg/java/react_hello0.png" alt="" /></p>
-
-<h4>状态变化</h4>
-
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-  &lt;head&gt;
-    &lt;script src="../build/react.js"&gt;&lt;/script&gt;
-    &lt;script src="../build/react-dom.js"&gt;&lt;/script&gt;
-    &lt;script src="../build/browser.min.js"&gt;&lt;/script&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-    &lt;div id="example"&gt;&lt;/div&gt;
-    &lt;script type="text/babel"&gt;
-
-     var LikeButton = React.createClass({
-      getInitialState: function() {
-        return {liked: false};
-      },
-
-      handleClick: function(event) {
-        this.setState({liked: !this.state.liked});
-      },
-
-      render: function() {
-        var text = this.state.liked ? 'like' : 'haven\'t liked';
-        return (
-          &lt;p onClick={this.handleClick}&gt;
-            You {text} this. Click to toggle.
-          &lt;/p&gt;
-        );
-      }
-    });
-
-    ReactDOM.render(
-      &lt;LikeButton /&gt;,
-      document.getElementById('example')
-    );
-
-    &lt;/script&gt;
-  &lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-
-<p>上面代码是一个 <code>LikeButton</code> 组件，它的 <code>getInitialState</code> 方法用于定义初始状态，也就是一个对象，这个对象可以通过 <code>this.state</code> 属性读取。当用户点击组件，导致状态变化，<code>this.setState</code> 方法就修改状态值，每次修改以后，自动调用 <code>this.render</code> 方法，再次渲染组件。
-由于 <code>this.props</code> 和 <code>this.state</code> 都用于描述组件的特性，可能会产生混淆。一个简单的区分方法是，<code>this.props</code> 表示那些一旦定义，就不再改变的特性，而 <code>this.state</code> 是会随着用户互动而产生变化的特性。即把要跟随某个参数实时变化的代码写在 <code>render: function() {};</code>里，然后在用户调用的方法里调用<code>this.setState({ });</code>方法来改变参数就可以了，因为他们触发<code>render</code>方法。这样就可以根据不同参数值自动显示不同内容。</p>
-
-<h4>生命周期</h4>
-
-<p>组件的生命周期分成三个状态：</p>
-
-<ol>
-<li>Mounting：已插入真实 DOM</li>
-<li>Updating：正在被重新渲染</li>
-<li>Unmounting：已移出真实 DOM</li>
-</ol>
-
-
-<p>React 为每个状态都提供了两种处理函数，<code>will</code> 函数在进入状态之前调用，<code>did</code> 函数在进入状态之后调用，三种状态共计五种处理函数。</p>
-
-<ol>
-<li>componentWillMount()</li>
-<li>componentDidMount()</li>
-<li>componentWillUpdate(object nextProps, object nextState)</li>
-<li>componentDidUpdate(object prevProps, object prevState)</li>
-<li>componentWillUnmount()</li>
-</ol>
-
-
-<p>此外，React 还提供两种特殊状态的处理函数:</p>
-
-<ol>
-<li>componentWillReceiveProps(object nextProps)：已加载组件收到新的参数时调用</li>
-<li>shouldComponentUpdate(object nextProps, object nextState)：组件判断是否重新渲染时调用</li>
-</ol>
-
-
-<p><img src="/myimg/java/react_life.png" alt="" /></p>
-
-<p>把这个<a href="https://facebook.github.io/react/docs/thinking-in-react.html">官方例子</a>看完就能收获不少了。主要在于思考，拿到设计图如何拆分模块，如何组建，如何选取放置状态参数，如何看懂别人写好的代码等。<a href="/mysrc/java/reactPriceDemo.zip">下载</a></p>
-
-<h5>链接</h5>
-
-<ol>
-<li><a href="http://www.cnblogs.com/sakurayeah/category/868210.html">React入门</a></li>
-<li><a href="https://babeljs.io/docs/learn-es2015/">ECMAScript 2015</a></li>
-<li><a href="http://es6.ruanyifeng.com/">ECMAScript 6入门</a></li>
-<li><a href="http://bbs.reactnative.cn/topic/15/react-react-native-%E7%9A%84es5-es6%E5%86%99%E6%B3%95%E5%AF%B9%E7%85%A7%E8%A1%A8">ES5和ES6的写法对照表</a></li>
-</ol>
-
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/11/26/react-native-basic/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1996,6 +2011,10 @@ const styles = StyleSheet.create({
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/12/10/suan-fa/">排序算法</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/12/09/google-protocol-buffer/">Google Protocol Buffer</a>
@@ -2013,10 +2032,6 @@ const styles = StyleSheet.create({
         <a href="/blog/2016/12/02/react-base-view/">React Native 基础组件</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/12/01/react-navigator/">React Native Navigator</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -2029,7 +2044,7 @@ const styles = StyleSheet.create({
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (4)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
 <li class='category'><a href='/blog/categories/react/'>react (9)</a></li>
 
   </ul>
