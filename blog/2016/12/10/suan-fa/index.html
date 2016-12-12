@@ -250,7 +250,7 @@
 4.重复2、3，直到堆的尺寸为1
 </code></pre>
 
-<p>如 int array[] = {16,7,3,20,17,8}; 可以看成一下的完全二叉树：
+<p>如 int array[] = {16,7,3,20,17,8}; 可以看成以下的完全二叉树：
 <img src="/myimg/java/shu0.png" width="300" alt="" /></p>
 
 <p>然后从最后一个非叶子节点开始调整，比较自己和左节点，右节点谁最大，最大的调为父节点。经过 3-8，7-20-17，16-20-8，16-7-17 四次调整后最后就是一个大根堆了，每个父节点都比子节点大！</p>
@@ -325,6 +325,86 @@ void exchange(int array[], int i, int j){   // 交换array[i]和array[j]
 </code></pre>
 
 <h5>7.归并排序</h5>
+
+<p>归并操作指的是将两个已经排序的序列合并成一个有序序列的操作，即只要从比较二个数列的第一个数，谁小就先取谁，取了后就在对应数列中删除这个数。然后再进行比较，如果有数列为空，那直接将另一个数列的数据依次取出即可。</p>
+
+<pre><code>void mergeArray(int arrayA[], int sizeA, int arrayB[], int sizeB, int resultArray[]){
+    int indexA =0;
+    int indexB =0;
+    int indexResult =0;
+
+    while (indexA &lt; sizeA &amp;&amp; indexB &lt; sizeB){
+        if (arrayA[indexA] &lt; arrayB[indexB]){
+            resultArray[indexResult] = arrayA[indexA];
+            indexResult++;
+            indexA++;
+        }else{
+            resultArray[indexResult] = arrayB[indexB];
+            indexResult++;
+            indexB++;
+        }
+    }
+
+    while (indexA &lt; sizeA){
+       resultArray[indexResult] = arrayA[indexA];
+        indexResult++;
+        indexA++;
+    }
+
+    while (indexB &lt; sizeB){
+       resultArray[indexResult] = arrayB[indexB];
+        indexResult++;
+        indexB++;
+    }
+}
+</code></pre>
+
+<p>归并的基本思路是将数组分成二组A，B，如果这二组组内的数据都是有序的，那么就可以很方便的将这二组数据进行排序。如何让这二组组内数据有序了？可以将A，B组各自再分成二组，依次类推。当分出来的小组只有一个数据时，可以认为这个小组组内已经达到了有序，然后再合并相邻的二个小组就可以了。
+<img src="/myimg/java/dg0.png" width="600" alt="" /></p>
+
+<pre><code>void ascSort(int array[], int size){
+    int *temp = malloc(size * sizeof(int));
+    recursionArray(array, temp, 0, size - 1);
+    free(temp);
+}
+
+void recursionArray(int array[], int temp[], int low, int high){
+    if (low &lt; high){
+        int middle = (low + high) / 2;
+        recursionArray(array, temp, low, middle);   //左边有序
+        recursionArray(array, temp, middle + 1, high); //右边有序
+        mergeArray(array, temp, low,middle,high);  //再把两个有序的合并
+    }
+}
+
+//将有二个有序数列 array[low...middle]和 array[middle...high]合并
+void mergeArray(int array[], int temp[], int low, int middle, int high){
+    int i = low;
+    int j = middle + 1;
+    int k = low;
+
+    while (i &lt;= middle &amp;&amp; j &lt;= high){
+        if (array[i] &lt;= array[j]){
+            temp[k++] = array[i++];
+        }
+        else{
+            temp[k++] = array[j++];
+        }
+    }
+
+    while (i &lt;= middle){
+        temp[k++] = array[i++];
+    }
+
+    while (j &lt;= high){
+        temp[k++] = array[j++];
+    }
+
+    for (int k = low; k &lt;= high; k++){
+        array[k] = temp[k];
+    }
+}
+</code></pre>
 
 <h5>8.快速排序</h5>
 </div>
