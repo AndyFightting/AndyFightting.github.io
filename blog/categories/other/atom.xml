@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Other | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/other/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-13T12:44:46+08:00</updated>
+  <updated>2016-12-13T14:46:53+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,15 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[加密算法]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/12/13/ras-se/"/>
+    <updated>2016-12-13T12:46:31+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/12/13/ras-se</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[排序算法]]></title>
@@ -718,16 +727,6 @@ git push origin source
 <p><img src="/myimg/other/discus.png" alt="img" /></p>
 
 <p>由于访问国外disqus比较慢，我又把评论部分改用国内的<a href="http://duoshuo.com/">多说</a>了，使用方法都类似的，具体配置请看<a href="http://www.tuicool.com/articles/VbqYNjn">这里</a>,里面还说了性能优化可以跟着改改，提高网页的响应速度。<a href="/myimg/profile.pdf"></a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[My Octopress]]></title>
-    <link href="http://andyfightting.github.io/blog/2015/11/13/my-octopress/"/>
-    <updated>2015-11-13T21:03:44+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2015/11/13/my-octopress</id>
-    <content type="html"><![CDATA[<p>Hello World !!
-<img src="/myimg/other/octopress.png" alt="img" /></p>
 ]]></content>
   </entry>
   

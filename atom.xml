@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-13T12:44:46+08:00</updated>
+  <updated>2016-12-13T14:46:53+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,15 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[加密算法]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/12/13/ras-se/"/>
+    <updated>2016-12-13T12:46:31+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/12/13/ras-se</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[排序算法]]></title>
@@ -1003,141 +1012,6 @@ setInterval() 方法会不停地调用函数，直到 clearInterval() 被调用�
 <p><strong>process :</strong>全局变量，即 global 对象的属性。便于我们更好的控制系统的交互,很多属性和方法。<code>process.stdout</code>,<code>process.exet()</code>&hellip;</p>
 
 <p><a href="https://nodejs.org/dist/latest-v7.x/docs/api/">Node.js API</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[React Native 基础组件]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/12/02/react-base-view/"/>
-    <updated>2016-12-02T09:12:24+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/12/02/react-base-view</id>
-    <content type="html"><![CDATA[<p>这里主要记录看 <a href="https://github.com/facebook/react-native">React Native 官方例子</a> 的基础组件过程中，记录一些比较特殊或需要注意的地方。
-<img src="http://andyfightting.github.io/myimg/react/view0.png" width="800" alt="" /></p>
-
-<h4>View</h4>
-
-<pre><code>//宽度自适应,需要在Text的父控件上设置alignSelf属性！
-必须把文字放在&lt;Text&gt;组件内。不能直接在&lt;View&gt;下放置一段文字。
-值为flex-start,center,flex-end都会自适应！而auto,stretch则不会！
-&lt;View style=&gt;
-    &lt;Text&gt;这里的文字会自适应宽度！&lt;/Text&gt;
-&lt;/View&gt;
-
-//背景色和圆角问题
-当设置了背景色又设置了圆角时，需要设置 overflow: 'hidden' ，否则四个角会有背景色！前提是这个View里有子组件，
-因为像css似的背景色会继承到子组件中！四个角显示的是子组件的背景色。
-所以不用overflow,把子组件背景色设置透明transparent也可以。 
-
-//overflow:(visible,hidden,scroll),设置子组件超出父组件的话该如何显示。
-visible:默认值。内容不会被修剪，会呈现在元素框之外。
-hidden:内容会被修剪，并且其余内容是不可见的。
-scroll:内容会被修剪，但是浏览器会显示滚动条以便查看其余的内容。
-
-//不透明opacity:(0~1),1不透明，0透明。
-
-//zIndex是从屏幕指向外的z轴。
-
-//一般用TouchableWithoutFeedback onPress 来接收点击事件。  
-</code></pre>
-
-<h4>Image</h4>
-
-<pre><code>//Image里也可以嵌套。也可以显示gif
-
-//capInsets {top, left, bottom, right} ,9-patch图片效果。
-
-//tintColor: 为所有非透明的像素指定一个颜色.(tint:染，给...着色)
-
-//resizeMode: 图片如何显示
-Image.resizeMode.cover(按比例充满),(默认值)
-Image.resizeMode.contain(按比例包含),
-Image.resizeMode.stretch(拉伸充满),
-Image.resizeMode.center(按比例居中),
-Image.resizeMode.repeat(原比例重复显示)
-
- //如果 source 或者 uri 属性值有http前缀的话，会自动下载图片。
-
-  //加载网络图片的一些回调方法，不论成功失败都会调用onLoadEnd
-  &lt;Image
-     style=/{/{width:300,height:100/}/} //把/去掉
-     defaultSource={require('./images/msg.png')}
-     onLoadStart={() =&gt; { console.log('Image:-----onLoadStart') }}
-     onProgress={() =&gt; { console.log('Image:-----onProgress')  }}
-     onLoad={() =&gt; { console.log('Image:-----onLoad')  }}//成功
-     onError={() =&gt; { console.log('Image:-----onError')  }}//失败
-     onLoadEnd={() =&gt; { console.log('Image:-----onLoadEnd')  }}//不论成功失败都会被调用
-     source=/{/{uri:'https:xxx.png'/}/} //把/都去掉
-    /&gt;
-</code></pre>
-
-<h4>图片加载成功</h4>
-
-<p><img src="http://andyfightting.github.io/myimg/react/images.png" width="400" alt="" /></p>
-
-<h4>图片加载失败</h4>
-
-<p><img src="http://andyfightting.github.io/myimg/react/imagee.png" width="400" alt="" /></p>
-
-<h4>Text</h4>
-
-<pre><code>//Text里也可以嵌套其他组件。嵌套的空间是span样式而不是div块。
-
-//文字居中除了要设置textAlign='center'，外还需设置lineHeight = height,因为textAlign只是水平对齐方式。
-
-//Text本身设置alignSelf为flex-start,center,flex-end也会宽度自适应。
-
-//fontStyle: (italic,normal,oblique).
-
-//textDecorationLine:(none,underline,line-through,underline line-through)
-
-//textDecorationStyle: (dashed,dotted,double,solid)
-
-//letterSpacing: 字符间距
-
-//Text有onPress，onLongPress.样式属性值可以通过state动态改变。
-
-//ellipsizeMode: (clip,head,middle,tail,wordWrapping) wordWrapping:三个点都不显示
-
-//adjustsFontSizeToFit: iOS的自动调整字体大小
-</code></pre>
-
-<h4>Button</h4>
-
-<pre><code>//color: iOS是设置文字颜色，而Android是设置背景色.title 和 onPress两个属性是必须的。
-Button可以属性很少啊，style样式都没用...一般用TouchableOpacity或TouchableNativeFeedback嵌套Text来自定义按钮。
-</code></pre>
-
-<h4>ScrollView</h4>
-
-<p>ScrollView适合用来显示数量不多的滚动元素。放置在ScollView中的所有组件都会被渲染，哪怕有些组件因为内容太长被挤出了屏幕外。如果需要显示较长的滚动列表，应该使用ListView组件。代码在<code>/node_modules/react-native/Libraries/Components/ScrollView/ScrollView.js</code>。</p>
-
-<p>发现一个奇怪的地方，如果ScrollView的父View设置了flex=1的话，再设置ScrollView的height就没效果了，ScrollView还是会充满父View ！</p>
-
-<pre><code>//常用属性
-ref //暴露一个引用
-contentContainerStyle //内容容器样式，所以子控件都在内容容器里
-automaticallyAdjustContentInsets //iOS的顶部是否留有空间，一般都设false，不知道干啥要弄出个这属性。
-horizontal //true/false,水平排列还是垂直排列
-keyboardDismissMode //none,interactive,onDrag.滚动时是否隐藏键盘，none不，onDrag开始拖动就隐藏，interactive:iOS的键盘位置同步变化。
-keyboardShouldPersistTaps //true/false: 默认false:点击输入框外部会收起键盘。true:点击输入框外部不会自动收起键盘，scroll不会受到点击事件，但子控件可以收到。
-onContentSizeChange //scroll的content size 变化是回调该方法。参数是contentWidth, contentHeight。
-onScroll //滚动时实时调用，频率可以通过scrollEventThrottle属性设置。
-pagingEnabled //是否分页
-refreshControl //一个RefreshControl组件，用于下拉刷新。
-removeClippedSubviews //是否移除scroll屏幕外的子视图，可以提高scroll性能，默认true。
-scrollEnabled //是否能滚动，默认当然true。
-showsHorizontalScrollIndicator //是否显示水平滚动条。
-showsVerticalScrollIndicator //是否显示垂直滚动条
-alwaysBounceHorizontal,alwaysBounceVertical //当内容小于size时，是否还bounce.
-bounces //是否可以bounces，优先级高于上面的两个。
-centerContent //当内容小于size时，是否居中。
-contentInset = //inset
-contentOffset= //offset
-</code></pre>
-
-<h4>ListView</h4>
-
-<h4>TabBar</h4>
 ]]></content>
   </entry>
   
