@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-12T12:30:38+08:00</updated>
+  <updated>2016-12-13T12:44:46+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -18,7 +18,7 @@
     <link href="http://andyfightting.github.io/blog/2016/12/10/suan-fa/"/>
     <updated>2016-12-10T14:25:43+08:00</updated>
     <id>http://andyfightting.github.io/blog/2016/12/10/suan-fa</id>
-    <content type="html"><![CDATA[<h5>1.冒泡排序 😆</h5>
+    <content type="html"><![CDATA[<h5>1.冒泡排序</h5>
 
 <p>比如要升序排序，原理是从第一位开始，把它依次和后面的每一位数字进行两两比较,如果低位的比高位的大就交换，然后用较大的数字继续和后面比较交换。这样一趟比较过去后,最大的数字被交换到了最后一位。然后再从头开始以此类推,直到倒数第二位和最后一位比较交换完时结束。</p>
 
@@ -330,6 +330,37 @@ void mergeArray(int array[], int temp[], int low, int middle, int high){
 </code></pre>
 
 <h5>8.快速排序</h5>
+
+<p>快速排序也是用分治法来实现的，即先分解分解再分解，然后逐个击破，最后挨个合并。其基本思想是：通过一趟排序将要排序的数据分割成独立的两部分，其中一部分的所有数据都比另外一部分的所有数据都要小，然后再按此方法对这两部分数据分别进行快速排序，整个排序过程可以递归进行，以此达到整个数据变成有序序列。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>先从数列中取出一个数作为基准数。
+</span><span class='line'>分区过程，将比这个数大的数全放到它的右边，小于或等于它的数全放到它的左边。
+</span><span class='line'>再对左右区间重复第二步，直到各区间只有一个数。</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>void ascSort(int array[], int left, int right){
+    if (left &lt; right){
+        int i = left, j = right, x = array[left];
+        while (i &lt; j){
+            while(i &lt; j &amp;&amp; array[j] &gt;= x) // 从右向左找第一个小于x的数
+                j--;
+            if(i &lt; j)
+                array[i++] = array[j];
+
+            while(i &lt; j &amp;&amp; array[i] &lt; x) // 从左向右找第一个大于等于x的数
+                i++;
+            if(i &lt; j)
+                array[j--] = array[i];
+        }
+        array[i] = x;
+        ascSort(array, left, i - 1); // 递归调用
+        ascSort(array, i + 1, right);
+    }
+}
+</code></pre>
 ]]></content>
   </entry>
   
