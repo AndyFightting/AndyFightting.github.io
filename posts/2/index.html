@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Atom Nov 24th, 2016 2:31 pm Atom是由GitHub开发的一款免费开源的编辑器，通过给它安装不同的插件包，就可以变成一款智能的IDE了。这里主要记录一下为了开发React Native所安装的插件包及基本使用。 Nuclide是官方推荐的开发React &hellip;">
+  <meta name="description" content="React Nov 26th, 2016 11:16 am React 的核心思想是：封装组件! React 应用都是构建在组件之上，各个组件维护自己的状态和 UI，当状态变更，自动重新渲染自身组件。组件的第一个字母必须大写,组件只能包含一个顶层标签。 Declarative React &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,254 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/26/react-native-basic/">React</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-26T11:16:25+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:16 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>React 的核心思想是：封装组件! React 应用都是构建在组件之上，各个组件维护自己的状态和 UI，当状态变更，自动重新渲染自身组件。组件的第一个字母必须大写,组件只能包含一个顶层标签。</h4>
+
+<h4>Declarative</h4>
+
+<p><a href="https://facebook.github.io/react/">React</a> 可以很好的创建交互式组件，设计不同状态下的组件，并且React可以根据组件的不同参数高效的刷新渲染。这样的组件可以让你的代码更加的可预测并且更方便调试。</p>
+
+<h4>Component-Based</h4>
+
+<p>基于组件，封装一个组件，让它们管理自己的状态，然后用它们去组成更加复杂的UI。由于组件的逻辑是写在JavaScript里的而不是模板里，这样你可以很轻松的让它穿梭于复杂的数据之间，并且在DOM外保持自己的状态。</p>
+
+<h4>Learn Once, Write Anywhere</h4>
+
+<p>我们不假定你现在的技术栈是怎样的，所以你可以不用重写已存在的代码来用React开放新的功能。React也可以在服务器端渲染，也可以用React Native创建强大的移动应用。</p>
+
+<h4>A Simple Component</h4>
+
+<p>React 组件调用 <code>render()</code> 方法来输入参数然后返回要显示的样子。这个例子用一个类似XML语言的我们称之为JSX，通过<code>this.props</code>输入数据传到组件内部可以被<code>render()</code>方法获取。使用React的话，JSX是可选的，不是必须要使用的。试着点击<code>Complied JS</code>去看看通过JSX编译器产生的原生的JavaScript 代码。</p>
+
+<h4>A Stateful Component</h4>
+
+<p>除了通过<code>this.props</code>来传入参数，组件可以通过<code>this.state</code>来维护自己内部状态的数据。当组件的状态数据改变时，渲染器就会重新调用<code>render()</code>方法来刷新。</p>
+
+<h4>An Application</h4>
+
+<p>使用<code>props</code>和<code>state</code>我们可以收集一个小型的代办事项申请。这个例子用<code>state</code>来跟踪当前列表和用户输入的数据。虽然事件处理程序似乎是呈现内联,他们会通过事件代理被收集和使用。</p>
+
+<h4>A Component Using External Plugins</h4>
+
+<p>React 是灵活的，并且提供了一个钩子来和库或框架进行链接。这个例子使用<code>remarkable</code>,一个外部的 Markdown 库，来实时转化文本内容。</p>
+
+<p>哎呀~ 自己翻译果然别扭&hellip;😞  React 是什么呢？React 是Facebook 封装的一组JS代码库：</p>
+
+<p><img src="/myimg/java/react.png" alt="" /></p>
+
+<p>按它规则可封装一个一个模块组件，这个模块组件有自己的状态，自己的逻辑等，它是一个独立的东西，然后把这样的组件一个一个组合起来。按照React 的规则可以混合着写JavaScript和HTML,这样的一个组件就是一个独立的模块化的View。添加组件属性，有一个地方需要注意，就是 class 属性需要写成 className ，for 属性需要写成 htmlFor ，这是因为 class 和 for 是 JavaScript 的保留字。</p>
+
+<p>React 还封装了一个自己的虚拟的DOM，通过这个Virtual DOM去更新真实的DOM，由这个Virtual DOM管理真实DOM的更新。因为如果大面积的操作 DOM，性能会是一个很大的问题，所以 React 实现了一个虚拟 DOM，组件 DOM 结构就是映射到这个虚拟 DOM 上，React 在这个虚拟 DOM 上实现了一个 <a href="http://www.ruanyifeng.com/blog/2012/08/how_to_read_diff.html">diff</a> 算法，当要更新组件的时候，会通过 diff 寻找到要变更的 DOM 节点，再把这个修改更新到浏览器实际的 DOM 节点上，所以实际上不是真的渲染整个 DOM 树。这个虚拟 DOM 是一个纯粹的 JS 数据结构，所以性能会比原生 DOM 快很多。要从组件获取真实 DOM 的节点，这时就要用到 <code>ref</code> 属性。给组件设置一个 <code>ref</code> 属性，然后用 <code>this.refs.[refName]</code> 就会返回这个真实的 DOM 节点对象。</p>
+
+<h4>Hello World</h4>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;script src="../build/react.js"&gt;&lt;/script&gt;
+    &lt;script src="../build/react-dom.js"&gt;&lt;/script&gt;
+    &lt;script src="../build/browser.min.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="example"&gt;&lt;/div&gt;
+
+    &lt;script type="text/babel"&gt;
+    var MyComponent = React.createClass({
+      render: function() {
+        return &lt;div&gt;Hello {this.props.name}&lt;/div&gt;;
+      }
+    });
+
+    ReactDOM.render(&lt;MyComponent name="World !" /&gt;,
+                    document.getElementById('example') );
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>上面的代码中用React的语法自定义了一个组件叫<code>MyComponent</code>,这个组件返回一个块区间，里面显示 Hello + 这个组件的<code>name</code>属性值。注意script 的type 要声明为<code>text/babel</code>。这样就可以在其他地方使用这个自定义的组件了。可以把 <code>props</code> 看作是组件的配置属性，在组件内部是不变的，只是在调用这个组件的时候传入不同的属性值来定制显示这个组件。当组件状态 <code>state</code> 有更改的时候，React 会自动调用组件的 <code>render()</code> 方法重新渲染整个组件的 UI。<code>this.props</code> 对象的属性与组件的属性一一对应，<code>this.props.children</code> 表示组件的所有子节点。需要注意， <code>this.props.children</code> 的值有三种可能：如果当前组件没有子节点，它就是 <code>undefined</code> ;如果有一个子节点，数据类型是 <code>object</code> ；如果有多个子节点，数据类型就是 <code>array</code> 。所以，处理 <code>this.props.children</code> 的时候要小心。上面的代码把 HTML 直接嵌入了 JS 代码里面了，这就是 React 提出的一种叫 JSX 的语法。把原来网页设计的代码分离，现在又融合了！</p>
+
+<p><img src="/myimg/java/react_hello.png" alt="" /></p>
+
+<p>Hello World 运行起来了！嗯~ 我已经成功了一半！😆</p>
+
+<h4>组件组合</h4>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;script src="../build/react.js"&gt;&lt;/script&gt;
+    &lt;script src="../build/react-dom.js"&gt;&lt;/script&gt;
+    &lt;script src="../build/browser.min.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="example"&gt;&lt;/div&gt;
+
+    &lt;script type="text/babel"&gt;
+
+    var Avatar = React.createClass({
+        render: function() {
+            return (
+                &lt;div&gt;
+                    &lt;ProfilePic username={this.props.username} /&gt;
+                    &lt;ProfileName username={this.props.username} /&gt;
+                &lt;/div&gt;
+            );
+        }
+       });
+
+    var ProfilePic = React.createClass({
+        render: function() {
+            return (
+                &lt;img src={'https://gss0.bdstatic.com/70cFsj3f_gcX8t7mm9GUKT-xh_/avatar/100/r6s1g6.gif'} /&gt;
+            );
+        }
+    });
+
+    var ProfileName = React.createClass({
+        render: function() {
+            return (
+              &lt;div&gt;
+                &lt;a href={'http://guimingsu.com'}&gt;
+                    {this.props.username}
+                &lt;/a&gt;
+              &lt;/div&gt;
+            );
+        }
+    });
+
+    ReactDOM.render(
+        &lt;Avatar username="hello world " /&gt;,
+        document.getElementById('example')
+      );
+
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>这里显示了一个Avatar 组件，这个Avatar 组件是由两个更小的组件ProfilePic和ProfileName组合而成的。父组件和子组件间可以通过<code>props</code>一层一层的传值。Remember: React is all about one-way data flow down the component hierarchy.</p>
+
+<p><img src="/myimg/java/react_hello0.png" alt="" /></p>
+
+<h4>状态变化</h4>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;script src="../build/react.js"&gt;&lt;/script&gt;
+    &lt;script src="../build/react-dom.js"&gt;&lt;/script&gt;
+    &lt;script src="../build/browser.min.js"&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id="example"&gt;&lt;/div&gt;
+    &lt;script type="text/babel"&gt;
+
+     var LikeButton = React.createClass({
+      getInitialState: function() {
+        return {liked: false};
+      },
+
+      handleClick: function(event) {
+        this.setState({liked: !this.state.liked});
+      },
+
+      render: function() {
+        var text = this.state.liked ? 'like' : 'haven\'t liked';
+        return (
+          &lt;p onClick={this.handleClick}&gt;
+            You {text} this. Click to toggle.
+          &lt;/p&gt;
+        );
+      }
+    });
+
+    ReactDOM.render(
+      &lt;LikeButton /&gt;,
+      document.getElementById('example')
+    );
+
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>上面代码是一个 <code>LikeButton</code> 组件，它的 <code>getInitialState</code> 方法用于定义初始状态，也就是一个对象，这个对象可以通过 <code>this.state</code> 属性读取。当用户点击组件，导致状态变化，<code>this.setState</code> 方法就修改状态值，每次修改以后，自动调用 <code>this.render</code> 方法，再次渲染组件。
+由于 <code>this.props</code> 和 <code>this.state</code> 都用于描述组件的特性，可能会产生混淆。一个简单的区分方法是，<code>this.props</code> 表示那些一旦定义，就不再改变的特性，而 <code>this.state</code> 是会随着用户互动而产生变化的特性。即把要跟随某个参数实时变化的代码写在 <code>render: function() {};</code>里，然后在用户调用的方法里调用<code>this.setState({ });</code>方法来改变参数就可以了，因为他们触发<code>render</code>方法。这样就可以根据不同参数值自动显示不同内容。</p>
+
+<h4>生命周期</h4>
+
+<p>组件的生命周期分成三个状态：</p>
+
+<ol>
+<li>Mounting：已插入真实 DOM</li>
+<li>Updating：正在被重新渲染</li>
+<li>Unmounting：已移出真实 DOM</li>
+</ol>
+
+
+<p>React 为每个状态都提供了两种处理函数，<code>will</code> 函数在进入状态之前调用，<code>did</code> 函数在进入状态之后调用，三种状态共计五种处理函数。</p>
+
+<ol>
+<li>componentWillMount()</li>
+<li>componentDidMount()</li>
+<li>componentWillUpdate(object nextProps, object nextState)</li>
+<li>componentDidUpdate(object prevProps, object prevState)</li>
+<li>componentWillUnmount()</li>
+</ol>
+
+
+<p>此外，React 还提供两种特殊状态的处理函数:</p>
+
+<ol>
+<li>componentWillReceiveProps(object nextProps)：已加载组件收到新的参数时调用</li>
+<li>shouldComponentUpdate(object nextProps, object nextState)：组件判断是否重新渲染时调用</li>
+</ol>
+
+
+<p><img src="/myimg/java/react_life.png" alt="" /></p>
+
+<p>把这个<a href="https://facebook.github.io/react/docs/thinking-in-react.html">官方例子</a>看完就能收获不少了。主要在于思考，拿到设计图如何拆分模块，如何组建，如何选取放置状态参数，如何看懂别人写好的代码等。<a href="/mysrc/java/reactPriceDemo.zip">下载</a></p>
+
+<h5>链接</h5>
+
+<ol>
+<li><a href="http://www.cnblogs.com/sakurayeah/category/868210.html">React入门</a></li>
+<li><a href="https://babeljs.io/docs/learn-es2015/">ECMAScript 2015</a></li>
+<li><a href="http://es6.ruanyifeng.com/">ECMAScript 6入门</a></li>
+<li><a href="http://bbs.reactnative.cn/topic/15/react-react-native-%E7%9A%84es5-es6%E5%86%99%E6%B3%95%E5%AF%B9%E7%85%A7%E8%A1%A8">ES5和ES6的写法对照表</a></li>
+</ol>
+
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/11/26/react-native-basic/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -2034,502 +2282,6 @@ public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/09/07/asynctask/">Android中的AsyncTask</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-09-07T10:15:12+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:15 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Android和iOS一样，对UI的操作只能放在主线程中进行，即UI线程。如果在UI线程中执行比较耗时的方法，就会造成界面卡顿假死无反应，所以应该把耗时操作放在<code>非UI线程</code>中处理，处理完成后再在<code>UI线程</code>中更新界面。</p>
-
-<p>在没有AsyncTask类的时候，是通过在子线程处理，然后sendMessage(Message msg)给主线程中创建的Handler,然后在主线程中实现handleMessage(Message msg)处理相应信息。而这些工作AsyncTask帮我们做了，AsyncTask就是对Thread和Handler的封装。</p>
-
-<h4>AsyncTask使用</h4>
-
-<p>AsyncTask是一个抽象类，所以必须创建一个子类去继承它。在继承时我们可以为AsyncTask类指定三个参数类型,这三个类型会影响重写方法对应的参数类型。</p>
-
-<ol>
-<li>Params: 在execute()启动任务时需要传入的参数</li>
-<li>Progress: 后台任务执行过程中，需要实时反馈出来的信息，比如执行进度什么的</li>
-<li>Result: 后台任务执行完毕后，如果需要对结果进行返回，则返回该类型</li>
-</ol>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>//on开通的方法都是在UI线程中执行的
-</span><span class='line'>class MyAsyncTask extends AsyncTask&lt;Void,Integer,Boolean&gt;{
-</span><span class='line'>    @Override
-</span><span class='line'>    protected void onPreExecute() {//在执行实际的后台的doInBackground方法前
-</span><span class='line'>        super.onPreExecute();
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>    @Override
-</span><span class='line'>    protected Boolean doInBackground(Void... params) {//在onPreExecute 方法执行后马上执行，该方法运行在后台线程中
-</span><span class='line'>        for (int i = 0; i &lt;= 100; i++) {
-</span><span class='line'>            publishProgress(i);//调用onProgressUpdate
-</span><span class='line'>            try {
-</span><span class='line'>                Thread.sleep(1000);
-</span><span class='line'>            } catch (InterruptedException e) {
-</span><span class='line'>                e.printStackTrace();
-</span><span class='line'>            }
-</span><span class='line'>        }
-</span><span class='line'>        return true;//可以判断是否顺利执行完了啊
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    @Override
-</span><span class='line'>    protected void onProgressUpdate(Integer... values) {//这个函数在doInBackground调用publishProgress时被调用后
-</span><span class='line'>        super.onProgressUpdate(values);
-</span><span class='line'>        //比如实时更新进度条
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    @Override
-</span><span class='line'>    protected void onPostExecute(Boolean aBoolean) {
-</span><span class='line'>        super.onPostExecute(aBoolean);
-</span><span class='line'>        //后台顺利执行完后要干啥呢
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    @Override
-</span><span class='line'>    protected void onCancelled() {
-</span><span class='line'>        super.onCancelled();
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<ol>
-<li>Task的实例必须在UI 线程中创建</li>
-<li>execute方法必须在UI 线程中调用</li>
-<li>不要手动的调用onPreExecute(), onPostExecute(Result)，doInBackground(Params&hellip;)等方法</li>
-<li>该task只能被执行一次，否则多次调用时将会抛出异常</li>
-</ol>
-
-
-<h4>AsyncTask源码</h4>
-
-<p>AsyncTask有个handler内部类，用它来处理在主线程中实时更新和任务完成后的回调</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>private static InternalHandler sHandler;
-</span><span class='line'>
-</span><span class='line'>private static Handler getHandler() {
-</span><span class='line'>    synchronized (AsyncTask.class) {
-</span><span class='line'>        if (sHandler == null) {
-</span><span class='line'>            sHandler = new InternalHandler();
-</span><span class='line'>        }
-</span><span class='line'>        return sHandler;
-</span><span class='line'>    }
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>private static class InternalHandler extends Handler {
-</span><span class='line'>    public InternalHandler() {
-</span><span class='line'>        super(Looper.getMainLooper());
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    @SuppressWarnings({"unchecked", "RawUseOfParameterizedType"})
-</span><span class='line'>    @Override
-</span><span class='line'>    public void handleMessage(Message msg) {
-</span><span class='line'>        AsyncTaskResult&lt;?&gt; result = (AsyncTaskResult&lt;?&gt;) msg.obj;
-</span><span class='line'>        switch (msg.what) {
-</span><span class='line'>            case MESSAGE_POST_RESULT:
-</span><span class='line'>                // There is only one result
-</span><span class='line'>                result.mTask.finish(result.mData[0]);
-</span><span class='line'>                break;
-</span><span class='line'>            case MESSAGE_POST_PROGRESS:
-</span><span class='line'>                result.mTask.onProgressUpdate(result.mData);
-</span><span class='line'>                break;
-</span><span class='line'>        }
-</span><span class='line'>    }
-</span><span class='line'>}
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当我们调用publishProgress方法时，就是得到handler单列然后发消息</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>   protected final void publishProgress(Progress... values) {
-</span><span class='line'>        if (!isCancelled()) {
-</span><span class='line'>            getHandler().obtainMessage(MESSAGE_POST_PROGRESS,
-</span><span class='line'>                    new AsyncTaskResult&lt;Progress&gt;(this, values)).sendToTarget();
-</span><span class='line'>        }
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>   private static class AsyncTaskResult&lt;Data&gt; {
-</span><span class='line'>        final AsyncTask mTask;
-</span><span class='line'>        final Data[] mData;
-</span><span class='line'>
-</span><span class='line'>     AsyncTaskResult(AsyncTask task, Data... data) {
-</span><span class='line'>            mTask = task;
-</span><span class='line'>            mData = data;
-</span><span class='line'>        }
-</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当执行execute()方法时，会在后台任务doInBackground(mParams)开始执行前调用onPreExecute方法。从下面可以看出，当task已经在运行或者已经结束的时候不可以再调用execute()方法，否则会报错。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> public final AsyncTask&lt;Params, Progress, Result&gt; execute(Params... params) {
-</span><span class='line'>        return executeOnExecutor(sDefaultExecutor, params);
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>  public final AsyncTask&lt;Params, Progress, Result&gt; executeOnExecutor(Executor exec,
-</span><span class='line'>            Params... params) {
-</span><span class='line'>        if (mStatus != Status.PENDING) {
-</span><span class='line'>            switch (mStatus) {
-</span><span class='line'>                case RUNNING:
-</span><span class='line'>                    throw new IllegalStateException("Cannot execute task:"
-</span><span class='line'>                            + " the task is already running.");
-</span><span class='line'>                case FINISHED:
-</span><span class='line'>                    throw new IllegalStateException("Cannot execute task:"
-</span><span class='line'>                            + " the task has already been executed "
-</span><span class='line'>                            + "(a task can be executed only once)");
-</span><span class='line'>            }
-</span><span class='line'>        }
-</span><span class='line'>
-</span><span class='line'>        mStatus = Status.RUNNING;
-</span><span class='line'>
-</span><span class='line'>        onPreExecute(); //后台任务开始前执行
-</span><span class='line'>
-</span><span class='line'>        mWorker.mParams = params;
-</span><span class='line'>        exec.execute(mFuture);
-</span><span class='line'>
-</span><span class='line'>        return this;
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>     mWorker = new WorkerRunnable&lt;Params, Result&gt;() {
-</span><span class='line'>            public Result call() throws Exception {
-</span><span class='line'>                mTaskInvoked.set(true);
-</span><span class='line'>
-</span><span class='line'>                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-</span><span class='line'>                //noinspection unchecked
-</span><span class='line'>                Result result = doInBackground(mParams);   //这里开始执行后台任务！！！
-</span><span class='line'>                Binder.flushPendingCommands();
-</span><span class='line'>                return postResult(result);
-</span><span class='line'>            }
-</span><span class='line'>        };
-</span><span class='line'>
-</span><span class='line'>        mFuture = new FutureTask&lt;Result&gt;(mWorker) {
-</span><span class='line'>            @Override
-</span><span class='line'>            protected void done() {
-</span><span class='line'>                try {
-</span><span class='line'>                    postResultIfNotInvoked(get());    //后台任务执行完毕！！！
-</span><span class='line'>                } catch (InterruptedException e) {
-</span><span class='line'>                    android.util.Log.w(LOG_TAG, e);
-</span><span class='line'>                } catch (ExecutionException e) {
-</span><span class='line'>                    throw new RuntimeException("An error occurred while executing doInBackground()",
-</span><span class='line'>                            e.getCause());
-</span><span class='line'>                } catch (CancellationException e) {
-</span><span class='line'>                    postResultIfNotInvoked(null);
-</span><span class='line'>                }
-</span><span class='line'>            }
-</span><span class='line'>        };
-</span><span class='line'>    
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>后台任务执行完毕时，也是通过handler发消息，然后判断是不是取消状态来调用相应的方法</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> mFuture = new FutureTask&lt;Result&gt;(mWorker) {
-</span><span class='line'>            @Override
-</span><span class='line'>            protected void done() {
-</span><span class='line'>                try {
-</span><span class='line'>                    postResultIfNotInvoked(get());   //后台任务执行完毕！！！
-</span><span class='line'>                } catch (InterruptedException e) {
-</span><span class='line'>                    android.util.Log.w(LOG_TAG, e);
-</span><span class='line'>                } catch (ExecutionException e) {
-</span><span class='line'>                    throw new RuntimeException("An error occurred while executing doInBackground()",
-</span><span class='line'>                            e.getCause());
-</span><span class='line'>                } catch (CancellationException e) {
-</span><span class='line'>                    postResultIfNotInvoked(null);
-</span><span class='line'>                }
-</span><span class='line'>            }
-</span><span class='line'>        };
-</span><span class='line'>        
-</span><span class='line'>   private void postResultIfNotInvoked(Result result) {
-</span><span class='line'>        final boolean wasTaskInvoked = mTaskInvoked.get();
-</span><span class='line'>        if (!wasTaskInvoked) {
-</span><span class='line'>            postResult(result);
-</span><span class='line'>        }
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>   private Result postResult(Result result) {
-</span><span class='line'>        @SuppressWarnings("unchecked")
-</span><span class='line'>        Message message = getHandler().obtainMessage(MESSAGE_POST_RESULT,
-</span><span class='line'>                new AsyncTaskResult&lt;Result&gt;(this, result));
-</span><span class='line'>        message.sendToTarget();
-</span><span class='line'>        return result;
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'> private void finish(Result result) {
-</span><span class='line'>        if (isCancelled()) {
-</span><span class='line'>            onCancelled(result);
-</span><span class='line'>        } else {
-</span><span class='line'>            onPostExecute(result);
-</span><span class='line'>        }
-</span><span class='line'>        mStatus = Status.FINISHED;
-</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
-
-
-<p>从下面的代码可以看出，ThreadPoolExecutor是类变量，所以不管创建多少个AsyncTask子类的对象，他们都共用一个线程池。默认线程池可维护的线程数和最大数量，与可用的CUP处理器个数有关。线程池中超过corePoolSize数目的空闲线程最大存活时间1，单位SECONDS。如果线程池的线程数量小于CORE_POOL_SIZE，这个时候新添加一个异步任务则会新建一个线程；如果线程池的数量大于等于CORE_POOL_SIZE，这个时候新建一个异步任务这个任务会被放入缓存队列中等待执行。缓存队列大小为128，并且SerialExecutor是异步顺序执行任务的。</p>
-
-<pre><code>private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
-private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
-private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
-private static final int KEEP_ALIVE = 1;
-
-private static final BlockingQueue&lt;Runnable&gt; sPoolWorkQueue = new LinkedBlockingQueue&lt;Runnable&gt;(128);
-
-public static final Executor THREAD_POOL_EXECUTOR
-        = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE,
-                TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);
-
-
-private static class SerialExecutor implements Executor {
-    final ArrayDeque&lt;Runnable&gt; mTasks = new ArrayDeque&lt;Runnable&gt;();
-    Runnable mActive;
-
-    public synchronized void execute(final Runnable r) {
-        mTasks.offer(new Runnable() {
-            public void run() {
-                try {
-                    r.run();
-                } finally {
-                    scheduleNext();
-                }
-            }
-        });
-        if (mActive == null) {
-            scheduleNext();
-        }
-    }
-
-    protected synchronized void scheduleNext() {
-        if ((mActive = mTasks.poll()) != null) {
-            THREAD_POOL_EXECUTOR.execute(mActive);
-        }
-    }
-}
-</code></pre>
-
-<h4>问题</h4>
-
-<p>AsyncTask处理任务的时候，一般都是习惯在onPreExecute显示进度条，在数据处理完成之后的onPostExecute关闭进度条。但是当横竖屏切换或者内存重启导致Activity重新启动时，假设你还在onPostExecute写了一些其他逻辑，这个时候的AsyncTask已经与之前的Activity没有关联了，会导致onPostExecute无效问题。</p>
-
-<p>解决办法是在onPostExecute方法里用EventBus,Otto类库或者自己写通知，把结果发送给Activity去处理！！</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>@Override
-</span><span class='line'>    protected void onPostExecute(String result) {
-</span><span class='line'>        EventBus.getDefault().post(new AsyncTaskResultEvent(result));
-</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>个人看法</h4>
-
-<p>觉得Android很喜欢造这种中型轮子啊！好像没什么必要再造个AsyncTask这样的轮子放在SDK里啊? 像AsyncTask这种任务不应该是开发者去完成的吗？还有比如NavigationView，真的有必要吗？这不是应该让开发者来自定义的View吗？反正我不是很理解，这可能也是Android为什么如此碎片化的原因之一吧！&mdash;- 喜欢造中型轮子！</p>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/09/07/asynctask/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -2547,6 +2299,10 @@ private static class SerialExecutor implements Executor {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/12/19/vue/">Vue</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/12/10/suan-fa/">排序算法</a>
       </li>
     
@@ -2559,11 +2315,7 @@ private static class SerialExecutor implements Executor {
       </li>
     
       <li class="post">
-        <a href="/blog/2016/12/03/node-js/">Node.js</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/12/01/react-navigator/">React Native Navigator</a>
+        <a href="/blog/2016/12/03/node-js/">Node</a>
       </li>
     
   </ul>
@@ -2578,7 +2330,7 @@ private static class SerialExecutor implements Executor {
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (6)</a></li>
 <li class='category'><a href='/blog/categories/react/'>react (8)</a></li>
 
   </ul>

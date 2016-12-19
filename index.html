@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="排序算法 Dec 10th, 2016 2:25 pm 1.冒泡排序 比如要升序排序，原理是从第一位开始，把它依次和后面的每一位数字进行两两比较,如果低位的比高位的大就交换，然后用较大的数字继续和后面比较交换。这样一趟比较过去后,最大的数字被交换到了最后一位。然后再从头开始以此类推, &hellip;">
+  <meta name="description" content="Vue Dec 19th, 2016 11:58 am Vue Vue是一个JavaScript MVVM库，它是以数据驱动和组件化的思想构建的。相比于Angular，Vue提供了更加简洁、更易于理解的API，使得我们能够快速地上手并使用Vue。因为Vue是数据驱动的，所以无需手动操作DOM。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,320 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/12/19/vue/">Vue</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-19T11:58:13+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:58 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>Vue</h4>
+
+<p><a href="https://cn.vuejs.org/">Vue</a>是一个JavaScript MVVM库，它是以<strong>数据驱动和组件化</strong>的思想构建的。相比于Angular，Vue提供了更加简洁、更易于理解的API，使得我们能够快速地上手并使用Vue。因为Vue是数据驱动的，所以无需手动操作DOM。它通过一些特殊的HTML语法，将DOM和数据绑定起来。一旦创建了绑定，DOM将和数据保持同步，每当变更了数据，DOM也会相应地更新。当然了，在使用Vue的同时时，也可以结合其他库一起使用，比如jQuery。
+<img src="/myimg/js/vue.png" alt="" /></p>
+
+<p>ViewModel是Vue的核心，它是一个Vue实例。Vue实例是作用于某一个HTML元素上的，这个元素可以是HTML的body元素，也可以是指定了id的某个元素。当创建了ViewModel后，数据就已经双向绑定好了。如上图所示：可以将上图中的DOM Listeners和Data Bindings看作两个工具，它们是实现双向绑定的关键。</p>
+
+<ol>
+<li>从View侧看，ViewModel中的DOM Listeners工具会帮我们监测页面上DOM元素的变化，如果有变化，则更改Model中的数据。</li>
+<li>从Model侧看，当我们更新Model中的数据时，Data Bindings工具会帮我们更新页面中的DOM元素。</li>
+</ol>
+
+
+<p>Vue也像Angular似的，是通过扩展元素的属性来处理的，扩展的属性被称为<code>指令</code>，如 v-model, v-if, v-else, v-bind ,v-show 等。</p>
+
+<p><img src="/myimg/js/vue1.png" alt="" />
+组件系统是 Vue.js 另一个重要概念，就像上图所示，把一个个 <code>Vue</code> 组件组合起来就可以了，各个组件都是一个独立的个体，就像搭积木一样。</p>
+
+<p><strong>v-model ：</strong> 可以绑定表单元素如imput,select,textarea的值.下面将input元素的值和message绑定。1：当文本框的值改变时，<code>/{/{ message /}/}</code>会自动更新，2：当message的值改变时，文本框的值也会被更新, 这就叫数据双向绑定。(忽略/,因为MarkDown转化不了所以加的)</p>
+
+<pre><code>&lt;div id="app"&gt;
+    &lt;p&gt;/{/{ message /}/}&lt;/p&gt;
+    &lt;input type="text" v-model="message"/&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p><strong>v-if ：</strong> 是条件渲染指令，它根据表达式的真假来删除和插入元素。如<code>&lt;h1 v-if="age &gt;= 25"&gt;Age = &lt;/h1&gt;</code>,当age&lt;25时，整个h1元素都不显示，而且就html就没有该节点，不像<code>v-show</code>是有该节点，然后设置节点 display = none。</p>
+
+<p><strong>v-show :</strong> 也是条件渲染指令，和v-if指令不同的是，使用v-show指令的元素始终会被渲染到HTML，它只是简单地为元素设置CSS的style属性是不是style=&ldquo;display:none"。</p>
+
+<p><strong>v-else :</strong>v-else元素必须立即跟在v-if或v-show元素的后面，否则它不能被识别。</p>
+
+<pre><code>&lt;div id="app"&gt;
+    &lt;h1 v-if="age &gt;= 25"&gt;Age: &lt;/h1&gt;
+    &lt;h1 v-else&gt;age不大于25&lt;/h1&gt;
+
+    &lt;h1 v-show="age &gt;= 25"&gt;Age: &lt;/h1&gt;
+    &lt;h1 v-else&gt;age不大于25&lt;/h1&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>上面代码中如果age大于25，后面的v-else都不会渲染到HTML。</p>
+
+<p><strong>v-for :</strong> 基于一个数组渲染一个列表，它和JavaScript的遍历语法相似.可以用 <code>in</code>代替。</p>
+
+<pre><code>&lt;tr v-for="person in personArray"&gt;
+  &lt;td&gt;/{/{ person.name}}&lt;/td&gt; &lt;td&gt;/{/{ person.age}}&lt;/td&gt;
+&lt;/tr&gt;
+</code></pre>
+
+<p><strong>v-bind :</strong>可以在其名称后面带一个参数，中间放一个冒号隔开，这个参数通常是元素的属性值设置，如 <code>&lt;h1 v-bind="class:age&gt;=25?'old':'young'"&gt;class 属性值设置&lt;/h1&gt;</code>,当age大于25，class=old,否则class=young。</p>
+
+<p><strong>v-on :</strong>用于绑定DOM事件，如<code>&lt;h1 v-on:click="showAlert"&gt;点击&lt;/h1&gt;</code>，再在methods里实现对应方法名的方法。</p>
+
+<pre><code>methods: {
+ showAlert: function() {
+     alert("点击啦！！")
+  }
+}
+</code></pre>
+
+<p>v-bind指令可以缩写为一个冒号 <code>:</code>，v-on指令可以缩写为<code>@</code>符号。</p>
+
+<p><code>v-bind:class="xxx"</code> &ndash;> <code>:class="xxx"</code>,  <code>v-on:click="showAlert"</code> &ndash;> <code>@click="greet"&gt;</code></p>
+
+<p>下面是自定义一个组件叫my-component.像React似的，也是通过<code>props</code>来传参数值。v-bind 意思是给属性绑定值，下面是给item 属性绑定 data, 而 item 这个属性名字是在 <code>props: ['item'],</code> 这里定义的，data 是前面 v-for 从dataArray 里取出来的。</p>
+
+<pre><code>&lt;div id="app"&gt;
+    &lt;ol&gt;
+        &lt;my-component v-for="data in dataArray" v-bind:item="data" /&gt;
+    &lt;/ol&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+    Vue.component('my-component', {
+        props: ['item'],
+        template: '&lt;li&gt;&lt;/li&gt;'
+    })
+    var app = new Vue({
+        el: '#app',
+        data: {
+            dataArray: [
+                {text: 'hello'},
+                {text: 'world'},
+            ]
+        }
+    })
+&lt;/script&gt;
+</code></pre>
+
+<p>Vue 的生命周期函数有 init,created,ready,mounted,updated,destroyed等。
+<img src="/myimg/js/lifecycle.png" width="400" alt="" /></p>
+
+<p><strong>v-once :</strong> 使用这个指令的话值只会插入一次，之后数据再改变就不会更新了，这会影响到该节点上所有的数据绑定。</p>
+
+<p>双大括号会将数据解释为纯文本，而非 HTML 。为了输出真正的 HTML ，你需要使用 v-html 指令。</p>
+
+<p>像Angular一样，也有过滤器，或自定义过滤器： message | capitalize 。过滤器函数总接受表达式的值作为第一个参数。</p>
+
+<pre><code>filters: {
+    capitalize: function (value) {
+      if (!value) return ''
+      value = value.toString()
+      return value.charAt(0).toUpperCase() + value.slice(1)
+    }
+  }
+</code></pre>
+
+<p>在 <code>computed</code> 添加计算型属性：下面是一个计算型属性myMsg, 通过获取data中的msg属性来处理，然后返回处理结果。通过<code>methods</code>里定义方法也能达到相同的效果，但<strong>计算属性是基于它的依赖缓存。计算属性只有在它的相关依赖发生改变时才会重新取值。这就意味着只要 msg 没有发生改变，多次访问 myMsg 计算属性会立即返回之前的计算结果，而不必再次执行函数。而 method 调用总会执行函数。</strong></p>
+
+<pre><code> computed: {
+    myMsg: function () {
+      return this.msg.split('').reverse().join('')
+    }
+  }
+</code></pre>
+
+<p>还有 <code>watch</code> 它用于观察 Vue 实例上的数据变动。下面是观察msg,如果msg变动就会执行方法给myMsg赋值。方法是异步操作。</p>
+
+<pre><code>watch: {
+    msg: function (val) {
+      this.myMsg = val + 'hello'
+    },
+  }
+</code></pre>
+
+<p>计算属性默认只有 getter ，不过在需要时你也可以提供一个 setter ：</p>
+
+<pre><code>computed: {
+  myMsg: {
+    get: function () {
+      return "xxx"
+    },
+    set: function (newValue) {
+      //do something
+    }
+  }
+}
+</code></pre>
+
+<p><strong>v-bind</strong>增强版 1.<code>&lt;div v-bind:class="{ active: isActive }"&gt;&lt;/div&gt;</code>,如果isActive为true,calss = active.</p>
+
+<p>2.<code>&lt;div v-bind:class="classObject"&gt;&lt;/div&gt;</code> 直接绑定一个对象。当在一个<strong>定制</strong>的组件上用到 class 属性的时候，这些类将被添加到<strong>根元素</strong>上面，这个元素上已经存在的类不会被覆盖。</p>
+
+<pre><code>data: {
+  classObject: {
+    active: true,
+    'text-danger': false
+  }
+}
+</code></pre>
+
+<p>对象语法，v-bind:style 的对象语法十分直观——看着非常像 CSS ，其实它是一个 JavaScript 对象。 CSS 属性名可以用驼峰式（camelCase）或短横分隔命名（kebab-case）：</p>
+
+<pre><code>//1.
+&lt;div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }"&gt;&lt;/div&gt;
+data: {
+  activeColor: 'red',
+  fontSize: 30
+}
+
+//2.
+&lt;div v-bind:style="styleObject"&gt;&lt;/div&gt;
+data: {
+  styleObject: {
+    color: 'red',
+    fontSize: '13px'
+  }
+}
+</code></pre>
+
+<p>Vue 会复用已有元素而不是从头开始渲染。可通过设置key 值来唯一区分，就不会复用了。这个类似 Vue 1.x 的 track-by=&ldquo;$index&rdquo; 。</p>
+
+<p>下面的数组方法也会触发刷新,而filter(), concat(), slice() 。这些不会改变原始数组，但总是返回一个新数组。</p>
+
+<pre><code>push()
+pop()
+shift()
+unshift()
+splice()
+sort()
+reverse()
+</code></pre>
+
+<p>事件修饰符：</p>
+
+<pre><code>.once
+.stop
+.prevent
+.capture
+.self
+.once
+.ctrl
+.alt
+.shift
+.meta
+</code></pre>
+
+<p>按键别名：可以通过全局 config.keyCodes 对象自定义按键修饰符别名。(Vue.config.keyCodes.f1 = 112)</p>
+
+<pre><code>.enter
+.tab
+.delete (捕获 “删除” 和 “退格” 键)
+.esc
+.space
+.up
+.down
+.left
+.right
+</code></pre>
+
+<p>由于 JavaScript 的限制， Vue 不能检测以下变动的数组：当你利用索引直接设置一个项时，例如：vm.items[indexOfItem] = newValue当你修改数组的长度时，例如： vm.items.length = newLength为了避免第一种情况，以下两种方式将达到像 vm.items[indexOfItem] = newValue 的效果， 同时也将触发状态更新：</p>
+
+<pre><code>1.Vue.set(example1.items, indexOfItem, newValue)
+2.example1.items.splice(indexOfItem, 1, newValue)
+</code></pre>
+
+<p>避免第二种情况，使用 splice：<code>example1.items.splice(newLength)</code></p>
+
+<pre><code>//自定义全局组件
+Vue.component('my-component', {
+
+})
+//自定义局部组件
+var Child = {
+  template: '&lt;div&gt;A custom component!&lt;/div&gt;'
+}
+new Vue({
+  components: {
+    // &lt;my-component&gt; 将只在父模板可用
+    'my-component': Child
+  }
+})
+</code></pre>
+
+<p>父组件通过 props 向下传递数据给子组件，子组件通过 events 给父组件发送消息。prop 是父组件用来传递数据的一个自定义属性。子组件需要显式地用 props 选项声明 “prop”。prop的名字形式会从 camelCase 转为 kebab-case。（myMessage &ndash;> my-message）</p>
+
+<p>prop 是单向绑定的：当父组件的属性变化时，将传导给子组件，但是不会反过来。每次父组件更新时，子组件的所有 prop 都会更新为最新值。这意味着你不应该在子组件内部改变 prop 。如果你这么做了，Vue 会在控制台给出警告。</p>
+
+<p>改变 prop 可通过两种方法曲线救国：就像React props也不应该修改，而是修改state里的属性一样。</p>
+
+<pre><code>1.prop 作为初始值传入，子组件之后只是将它的初始值作为本地数据的初始值使用；
+2.prop 作为需要被转变的原始值传入。
+</code></pre>
+
+<p>像React一样，props也可以指定类型：String，Number，Boolean，Function，Object，Array。type 也可以是一个自定义构造器，使用 instanceof 检测。</p>
+
+<pre><code> props: {
+    // 基础类型检测 （`null` 意思是任何类型都可以）
+    propA: Number,
+    // 多种类型
+    propB: [String, Number],
+    // 必传且是字符串
+    propC: {
+      type: String,
+      required: true
+    },
+    // 数字，有默认值
+    propD: {
+      type: Number,
+      default: 100
+    },
+    // 数组／对象的默认值应当由一个工厂函数返回
+    propE: {
+      type: Object,
+      default: function () {
+        return { message: 'hello' }
+      }
+    },
+    // 自定义验证函数
+    propF: {
+      validator: function (value) {
+        return value &gt; 10
+      }
+    }
+  }
+</code></pre>
+
+<p>父组件是使用 props 传递数据给子组件，但如果子组件要把数据传递回去，应该怎样做？那就是自定义事件！</p>
+
+<pre><code>使用 $on(eventName) 监听事件
+使用 $emit(eventName) 触发事件
+</code></pre>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/12/19/vue/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -797,7 +1111,7 @@ a8 1010 1000
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2016/12/03/node-js/">Node.js</a></h1>
+      <h1 class="entry-title"><a href="/blog/2016/12/03/node-js/">Node</a></h1>
     
     
       <p class="meta">
@@ -1951,254 +2265,6 @@ const styles = StyleSheet.create({
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/11/26/react-native-basic/">React Native 基础知识</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-11-26T11:16:25+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:16 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h4>React 的核心思想是：封装组件! React 应用都是构建在组件之上，各个组件维护自己的状态和 UI，当状态变更，自动重新渲染自身组件。组件的第一个字母必须大写,组件只能包含一个顶层标签。</h4>
-
-<h4>Declarative</h4>
-
-<p><a href="https://facebook.github.io/react/">React</a> 可以很好的创建交互式组件，设计不同状态下的组件，并且React可以根据组件的不同参数高效的刷新渲染。这样的组件可以让你的代码更加的可预测并且更方便调试。</p>
-
-<h4>Component-Based</h4>
-
-<p>基于组件，封装一个组件，让它们管理自己的状态，然后用它们去组成更加复杂的UI。由于组件的逻辑是写在JavaScript里的而不是模板里，这样你可以很轻松的让它穿梭于复杂的数据之间，并且在DOM外保持自己的状态。</p>
-
-<h4>Learn Once, Write Anywhere</h4>
-
-<p>我们不假定你现在的技术栈是怎样的，所以你可以不用重写已存在的代码来用React开放新的功能。React也可以在服务器端渲染，也可以用React Native创建强大的移动应用。</p>
-
-<h4>A Simple Component</h4>
-
-<p>React 组件调用 <code>render()</code> 方法来输入参数然后返回要显示的样子。这个例子用一个类似XML语言的我们称之为JSX，通过<code>this.props</code>输入数据传到组件内部可以被<code>render()</code>方法获取。使用React的话，JSX是可选的，不是必须要使用的。试着点击<code>Complied JS</code>去看看通过JSX编译器产生的原生的JavaScript 代码。</p>
-
-<h4>A Stateful Component</h4>
-
-<p>除了通过<code>this.props</code>来传入参数，组件可以通过<code>this.state</code>来维护自己内部状态的数据。当组件的状态数据改变时，渲染器就会重新调用<code>render()</code>方法来刷新。</p>
-
-<h4>An Application</h4>
-
-<p>使用<code>props</code>和<code>state</code>我们可以收集一个小型的代办事项申请。这个例子用<code>state</code>来跟踪当前列表和用户输入的数据。虽然事件处理程序似乎是呈现内联,他们会通过事件代理被收集和使用。</p>
-
-<h4>A Component Using External Plugins</h4>
-
-<p>React 是灵活的，并且提供了一个钩子来和库或框架进行链接。这个例子使用<code>remarkable</code>,一个外部的 Markdown 库，来实时转化文本内容。</p>
-
-<p>哎呀~ 自己翻译果然别扭&hellip;😞  React 是什么呢？React 是Facebook 封装的一组JS代码库：</p>
-
-<p><img src="/myimg/java/react.png" alt="" /></p>
-
-<p>按它规则可封装一个一个模块组件，这个模块组件有自己的状态，自己的逻辑等，它是一个独立的东西，然后把这样的组件一个一个组合起来。按照React 的规则可以混合着写JavaScript和HTML,这样的一个组件就是一个独立的模块化的View。添加组件属性，有一个地方需要注意，就是 class 属性需要写成 className ，for 属性需要写成 htmlFor ，这是因为 class 和 for 是 JavaScript 的保留字。</p>
-
-<p>React 还封装了一个自己的虚拟的DOM，通过这个Virtual DOM去更新真实的DOM，由这个Virtual DOM管理真实DOM的更新。因为如果大面积的操作 DOM，性能会是一个很大的问题，所以 React 实现了一个虚拟 DOM，组件 DOM 结构就是映射到这个虚拟 DOM 上，React 在这个虚拟 DOM 上实现了一个 <a href="http://www.ruanyifeng.com/blog/2012/08/how_to_read_diff.html">diff</a> 算法，当要更新组件的时候，会通过 diff 寻找到要变更的 DOM 节点，再把这个修改更新到浏览器实际的 DOM 节点上，所以实际上不是真的渲染整个 DOM 树。这个虚拟 DOM 是一个纯粹的 JS 数据结构，所以性能会比原生 DOM 快很多。要从组件获取真实 DOM 的节点，这时就要用到 <code>ref</code> 属性。给组件设置一个 <code>ref</code> 属性，然后用 <code>this.refs.[refName]</code> 就会返回这个真实的 DOM 节点对象。</p>
-
-<h4>Hello World</h4>
-
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-    &lt;script src="../build/react.js"&gt;&lt;/script&gt;
-    &lt;script src="../build/react-dom.js"&gt;&lt;/script&gt;
-    &lt;script src="../build/browser.min.js"&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;div id="example"&gt;&lt;/div&gt;
-
-    &lt;script type="text/babel"&gt;
-    var MyComponent = React.createClass({
-      render: function() {
-        return &lt;div&gt;Hello {this.props.name}&lt;/div&gt;;
-      }
-    });
-
-    ReactDOM.render(&lt;MyComponent name="World !" /&gt;,
-                    document.getElementById('example') );
-    &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-
-<p>上面的代码中用React的语法自定义了一个组件叫<code>MyComponent</code>,这个组件返回一个块区间，里面显示 Hello + 这个组件的<code>name</code>属性值。注意script 的type 要声明为<code>text/babel</code>。这样就可以在其他地方使用这个自定义的组件了。可以把 <code>props</code> 看作是组件的配置属性，在组件内部是不变的，只是在调用这个组件的时候传入不同的属性值来定制显示这个组件。当组件状态 <code>state</code> 有更改的时候，React 会自动调用组件的 <code>render()</code> 方法重新渲染整个组件的 UI。<code>this.props</code> 对象的属性与组件的属性一一对应，<code>this.props.children</code> 表示组件的所有子节点。需要注意， <code>this.props.children</code> 的值有三种可能：如果当前组件没有子节点，它就是 <code>undefined</code> ;如果有一个子节点，数据类型是 <code>object</code> ；如果有多个子节点，数据类型就是 <code>array</code> 。所以，处理 <code>this.props.children</code> 的时候要小心。上面的代码把 HTML 直接嵌入了 JS 代码里面了，这就是 React 提出的一种叫 JSX 的语法。把原来网页设计的代码分离，现在又融合了！</p>
-
-<p><img src="/myimg/java/react_hello.png" alt="" /></p>
-
-<p>Hello World 运行起来了！嗯~ 我已经成功了一半！😆</p>
-
-<h4>组件组合</h4>
-
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-    &lt;script src="../build/react.js"&gt;&lt;/script&gt;
-    &lt;script src="../build/react-dom.js"&gt;&lt;/script&gt;
-    &lt;script src="../build/browser.min.js"&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;div id="example"&gt;&lt;/div&gt;
-
-    &lt;script type="text/babel"&gt;
-
-    var Avatar = React.createClass({
-        render: function() {
-            return (
-                &lt;div&gt;
-                    &lt;ProfilePic username={this.props.username} /&gt;
-                    &lt;ProfileName username={this.props.username} /&gt;
-                &lt;/div&gt;
-            );
-        }
-       });
-
-    var ProfilePic = React.createClass({
-        render: function() {
-            return (
-                &lt;img src={'https://gss0.bdstatic.com/70cFsj3f_gcX8t7mm9GUKT-xh_/avatar/100/r6s1g6.gif'} /&gt;
-            );
-        }
-    });
-
-    var ProfileName = React.createClass({
-        render: function() {
-            return (
-              &lt;div&gt;
-                &lt;a href={'http://guimingsu.com'}&gt;
-                    {this.props.username}
-                &lt;/a&gt;
-              &lt;/div&gt;
-            );
-        }
-    });
-
-    ReactDOM.render(
-        &lt;Avatar username="hello world " /&gt;,
-        document.getElementById('example')
-      );
-
-    &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-
-<p>这里显示了一个Avatar 组件，这个Avatar 组件是由两个更小的组件ProfilePic和ProfileName组合而成的。父组件和子组件间可以通过<code>props</code>一层一层的传值。Remember: React is all about one-way data flow down the component hierarchy.</p>
-
-<p><img src="/myimg/java/react_hello0.png" alt="" /></p>
-
-<h4>状态变化</h4>
-
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-  &lt;head&gt;
-    &lt;script src="../build/react.js"&gt;&lt;/script&gt;
-    &lt;script src="../build/react-dom.js"&gt;&lt;/script&gt;
-    &lt;script src="../build/browser.min.js"&gt;&lt;/script&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-    &lt;div id="example"&gt;&lt;/div&gt;
-    &lt;script type="text/babel"&gt;
-
-     var LikeButton = React.createClass({
-      getInitialState: function() {
-        return {liked: false};
-      },
-
-      handleClick: function(event) {
-        this.setState({liked: !this.state.liked});
-      },
-
-      render: function() {
-        var text = this.state.liked ? 'like' : 'haven\'t liked';
-        return (
-          &lt;p onClick={this.handleClick}&gt;
-            You {text} this. Click to toggle.
-          &lt;/p&gt;
-        );
-      }
-    });
-
-    ReactDOM.render(
-      &lt;LikeButton /&gt;,
-      document.getElementById('example')
-    );
-
-    &lt;/script&gt;
-  &lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-
-<p>上面代码是一个 <code>LikeButton</code> 组件，它的 <code>getInitialState</code> 方法用于定义初始状态，也就是一个对象，这个对象可以通过 <code>this.state</code> 属性读取。当用户点击组件，导致状态变化，<code>this.setState</code> 方法就修改状态值，每次修改以后，自动调用 <code>this.render</code> 方法，再次渲染组件。
-由于 <code>this.props</code> 和 <code>this.state</code> 都用于描述组件的特性，可能会产生混淆。一个简单的区分方法是，<code>this.props</code> 表示那些一旦定义，就不再改变的特性，而 <code>this.state</code> 是会随着用户互动而产生变化的特性。即把要跟随某个参数实时变化的代码写在 <code>render: function() {};</code>里，然后在用户调用的方法里调用<code>this.setState({ });</code>方法来改变参数就可以了，因为他们触发<code>render</code>方法。这样就可以根据不同参数值自动显示不同内容。</p>
-
-<h4>生命周期</h4>
-
-<p>组件的生命周期分成三个状态：</p>
-
-<ol>
-<li>Mounting：已插入真实 DOM</li>
-<li>Updating：正在被重新渲染</li>
-<li>Unmounting：已移出真实 DOM</li>
-</ol>
-
-
-<p>React 为每个状态都提供了两种处理函数，<code>will</code> 函数在进入状态之前调用，<code>did</code> 函数在进入状态之后调用，三种状态共计五种处理函数。</p>
-
-<ol>
-<li>componentWillMount()</li>
-<li>componentDidMount()</li>
-<li>componentWillUpdate(object nextProps, object nextState)</li>
-<li>componentDidUpdate(object prevProps, object prevState)</li>
-<li>componentWillUnmount()</li>
-</ol>
-
-
-<p>此外，React 还提供两种特殊状态的处理函数:</p>
-
-<ol>
-<li>componentWillReceiveProps(object nextProps)：已加载组件收到新的参数时调用</li>
-<li>shouldComponentUpdate(object nextProps, object nextState)：组件判断是否重新渲染时调用</li>
-</ol>
-
-
-<p><img src="/myimg/java/react_life.png" alt="" /></p>
-
-<p>把这个<a href="https://facebook.github.io/react/docs/thinking-in-react.html">官方例子</a>看完就能收获不少了。主要在于思考，拿到设计图如何拆分模块，如何组建，如何选取放置状态参数，如何看懂别人写好的代码等。<a href="/mysrc/java/reactPriceDemo.zip">下载</a></p>
-
-<h5>链接</h5>
-
-<ol>
-<li><a href="http://www.cnblogs.com/sakurayeah/category/868210.html">React入门</a></li>
-<li><a href="https://babeljs.io/docs/learn-es2015/">ECMAScript 2015</a></li>
-<li><a href="http://es6.ruanyifeng.com/">ECMAScript 6入门</a></li>
-<li><a href="http://bbs.reactnative.cn/topic/15/react-react-native-%E7%9A%84es5-es6%E5%86%99%E6%B3%95%E5%AF%B9%E7%85%A7%E8%A1%A8">ES5和ES6的写法对照表</a></li>
-</ol>
-
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/11/26/react-native-basic/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -2214,6 +2280,10 @@ const styles = StyleSheet.create({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/12/19/vue/">Vue</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/12/10/suan-fa/">排序算法</a>
       </li>
     
@@ -2226,11 +2296,7 @@ const styles = StyleSheet.create({
       </li>
     
       <li class="post">
-        <a href="/blog/2016/12/03/node-js/">Node.js</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/12/01/react-navigator/">React Native Navigator</a>
+        <a href="/blog/2016/12/03/node-js/">Node</a>
       </li>
     
   </ul>
@@ -2245,7 +2311,7 @@ const styles = StyleSheet.create({
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (6)</a></li>
 <li class='category'><a href='/blog/categories/react/'>react (8)</a></li>
 
   </ul>
