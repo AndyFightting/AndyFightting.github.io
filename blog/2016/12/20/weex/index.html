@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Weex - 阿贵</title>
+  <meta name="author" content="guimingsu">
+
+  
+  <meta name="description" content="Weex Dec 20th, 2016 10:14 pm Weex 代码由 template、style、script 三个部分构成。template 里只能有一个根节点，只能是 div, scroller, list 三者之中的一个。 style 样式不要用驼峰写法，用小写横杆分离。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://andyfightting.github.io/blog/2016/12/20/weex/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="阿贵" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">  -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+
+<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">阿贵</a></h1>
+  
+    <h2>All growth is a leap in the dark.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="andyfightting.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li> 
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Weex</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-20T22:14:37+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:14 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Weex 代码由 template、style、script 三个部分构成。template 里只能有一个根节点，只能是 div, scroller, list 三者之中的一个。</p>
+
+<p>style 样式不要用驼峰写法，用小写横杆分离。数据绑定写法和Vue一样，用两个大括号包着，且template和script里的数据是双向绑定的。双括号里的数据绑定也可以有简单的表达式，如果要复杂计算，用Vue那样的计算型属性。</p>
+
+<pre><code>&lt;script&gt;
+  module.exports = {
+    data: {
+      firstName: 'John',
+      lastName: 'Smith'
+    },
+    computed: {
+      fullName: function() {
+        return this.firstName + ' ' + this.lastName
+      }
+    },
+    methods: {
+      changeName: function() {
+        this.firstName = 'Terry'
+      }
+    }
+  }
+&lt;/script&gt;
+</code></pre>
+
+<p>属性也可以getter setter, 就不再说和Vue一样了，weex就是基于Vue 的。</p>
+
+<pre><code>computed: {
+      fullName: {
+        get: function() {
+          return this.firstName + ' ' + this.lastName
+        },
+
+        set: function(v) {
+          var s = v.split(' ')
+          this.firstName = s[0]
+          this.lastName = s[1]
+        }
+      }
+    },
+    methods: {
+      changeName: function() {
+        this.fullName = 'Terry King'
+      }
+    }
+  }
+</code></pre>
+
+<p>内嵌 style 样式的值 或者 class 的值等其他属性值也可以 用双大括号动态绑定。class 可以有多个名称，用空格分开。<strong>style 的选取器只支持类选取器！其他如id选取，组合选取器啥的都没有！class name 可以有多个！</strong></p>
+
+<p>onXXX 开头的就是用于绑定事件的特性，特性名中 on 之后的部分就是事件的类型，特性的值就是处理该事件的函数名。函数名外不需要添加语法中的大括号。onclick=&ldquo;toggle"。</p>
+
+<p>可以使用一个特殊的参数 $event，代表事件描述对象，即默认事件处理函数的第一个参数。onclick=&ldquo;update($event, 1, 2)"，onclick="foo&rdquo; 和 onclick=&ldquo;foo($event)&rdquo; 是等价的。</p>
+
+<p>每当一次事件被触发的时候，都会产生一个事件描述对象，该对象会默认作为第一个参数传递给事件处理函数，或以 $event 形参的方式出现在内联事件处理函数中。</p>
+
+<p>每个事件描述对象至少包含以下几个特性：</p>
+
+<pre><code>type (string): 事件名称, 如: click
+target (Element): 目标元素
+timestamp (number): 事件触发时的时间戳数字
+</code></pre>
+
+<p>if, repeat：双括号可以省略。 if=&ldquo;/{/{shown/}/}&rdquo; ,repeat=&ldquo;(k,v) in list&rdquo;.if=&ldquo;condition&rdquo; 和 if=&ldquo;/{/{condition/}/}&rdquo; 都是可以的，两者等价使用。if 不能用在 template 的根组件上，否则将无法被 Weex 正常的识别和处理。</p>
+
+<p>repeat 默认有个index 索引。</p>
+
+<p>当修改 repeat 中的数组时，在写法上会受到一定的限制，具体如下：</p>
+
+<pre><code>直接通过“角标”修改数组的某个项目 (如 this.items[0] = ...) 是不会触发视图自动更新的。
+我们在数组的原型上提供了一个额外的方法：this.items.$set(index, item) 来完成相同的事情。
+// 和 `this.items[0] = ...` 作用相同，但会自动触发视图更新
+this.items.$set(0, { childMsg: 'Changed!'})
+
+直接通过修改 length 来改变数组长度 (如 this.items.length = 0) 也是不会触发视图自动更新的。
+我们推荐您直接赋值一个新的空数组把旧的替换掉。
+
+// 和 `this.items.length = 0` 作用相同，但会自动触发视图更新
+this.items = []
+</code></pre>
+
+<p>默认的 track-by 的值就是数组的索引值。track-by=&ldquo;xxx&rdquo;</p>
+
+<p>static 特性可以一次性把数据设置到模板相应的位置上，但是今后不会随着数据的变化而更新。这样可以减少无谓的数据绑定，有效控制和优化长列表、纯静态页面在运行时的开销。不过也要小心使用不要导致原本需要更新的视图没有触发更新。《div static》</p>
+
+<p>weex 把屏幕都看作是750px，会更具具体设备适配。</p>
+
+<p>子元素样式不会继承父亲的，这和css会继承不一样！！</p>
+
+<pre><code>以一整棵树的方式一次性添加到视图中 (append="tree")，还是
+每个子组件都产生一次单独的添加到视图的指令 (append="node")
+默认情况下，除了 cell 组件的默认渲染过程是 tree 模式，其它组件都默认按照 node 模式进行渲染。
+</code></pre>
+
+<p>在同目录下创建和被封装组件同名的 we 文件之外，在 script 中通过 require 其它目录的 we 文件定义同名组件，在主文件下新增 element name=&ldquo;xxx&rdquo; 标签，name 特性的值为新创建的组件名，其 element 内部的内容是定义该组件的代码。组件各自的 style 是相互独立的，不会担心不同组件中相同的 class name 相互干扰。不论通过父组件把数据传递进来还是在当前组件内部对数据发起修改，只有在组件的 data 选项中明确写明的字段才会被正常的监听。如果自定义组件在父组件中有 id 特性，则可以在父组件上下文中通过 this.$vm(id) 接口来访问该自定义组件的上下文，也可以通过 this.$el(id) 来找到其背后真实的原生组件。</p>
+
+<pre><code> methods: {
+      back2Top: function () {
+        var el = this.$el('goto-top')
+        dom.scrollToElement(el, { offset: 10 })
+      }
+    }
+</code></pre>
+
+<p>this.$vm(id) 方法可以访问自定义子组件的上下文,当前上下文中的 this._parent (将改为 this.$parent)可以获取其父级上下文。</p>
+
+<pre><code> methods: {
+      update: function (e) {
+        this.$vm('sub').setTitle('Updated')
+      }
+    }
+</code></pre>
+
+<p>从子组件向父组件通信，首先父组件要监听特定类型的自定义事件，而子组件可以使用 this.<em>parent 找到父组件，然后再调用 this.</em>parent.$emit(type, detail) 方法，即可实现自下而上的通信。
+this.$on(name, handler) 用于监听name 函数，this.$emit(name, detail) 用于触发name函数，通过event.detail传参数，是个json对象。</p>
+
+<pre><code>//子组件中想触发父组件的 notify 方法。
+methods: {
+        test: function () {
+          this._parent.$emit('notify', {a: 1})
+        }
+      }
+ //父组件中监听 notify 是否被触发，      
+ created: function () {
+      this.$on('notify', function(event) {
+        this.eventType = event.type
+        this.eventDetail = JSON.stringify(event.detail)
+      })
+    }
+</code></pre>
+
+<p>从父组件向子组件通信，首先子组件要监听特定类型的自定义事件，而父组件可以使用 this.$vm(id) 找到子组件，然后再调用 this.$vm(id).$emit(type, detail) 方法，即可实现自上而下的通信。</p>
+</div>
+
+
+      | <a href="#comments">Comments</a>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">guimingsu</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-12-20T22:14:37+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:14 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/javascript/'>javascript</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  <!-- JiaThis Button -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/12/20/angular/" title="Previous Post: Angular">&laquo; Angular</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-title="Octopress博客的个性化配置"></div>
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"tianweili"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+<!-- Duoshuo Comment END --></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/12/20/weex/">Weex</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/20/angular/">Angular</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/19/vue/">Vue</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/10/suan-fa/">排序算法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/09/google-protocol-buffer/">Google Protocol Buffer</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
+<li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
+<li class='category'><a href='/blog/categories/javascript/'>javascript (4)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (7)</a></li>
+
+  </ul>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - guimingsu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

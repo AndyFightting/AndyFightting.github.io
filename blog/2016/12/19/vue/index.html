@@ -375,9 +375,58 @@ new Vue({
 
 <p>父组件是使用 props 传递数据给子组件，但如果子组件要把数据传递回去，应该怎样做？那就是自定义事件！</p>
 
-<pre><code>使用 $on(eventName) 监听事件
-使用 $emit(eventName) 触发事件
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>使用 $on(eventName) 监听事件
+</span><span class='line'>使用 $emit(eventName) 触发事件</span></code></pre></td></tr></table></div></figure>
+
+
+<p>自定义组件模板：</p>
+
+<pre><code>&lt;body&gt;
+    &lt;div id="app"&gt;
+        &lt;my-component v-bind:my-name="name" v-bind:my-age="age"&gt;&lt;/my-component&gt;
+    &lt;/div&gt;
+
+    &lt;template id="myComponent"&gt;
+        &lt;table&gt;
+            &lt;tr&gt;
+                &lt;th colspan="2"&gt;
+                    子组件数据
+                &lt;/th&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+                &lt;td&gt;my name&lt;/td&gt;
+                &lt;td&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+                &lt;td&gt;my age&lt;/td&gt;
+                &lt;td&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/table&gt;
+    &lt;/template&gt;
+&lt;/body&gt;
+
+&lt;script&gt;
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            name: 'andy',
+            age: 18
+        },
+        components: {
+            'my-component': {
+                template: '#myComponent',
+                props: ['myName', 'myAge']
+            }
+        }
+    })
+&lt;/script&gt;
 </code></pre>
+
+<p>v-bind:my-name.sync=&ldquo;name&rdquo; 这是用在子组件属性中 .sync 意思是子组件的数据会影响父组件，默认是不会的的。</p>
+
+<p>.once 用子子组件属性中，表示只绑定一次父组件的数据。</p>
 </div>
 
 
@@ -401,7 +450,7 @@ new Vue({
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/other/'>other</a>
+    <a class='category' href='/blog/categories/javascript/'>javascript</a>
   
 </span>
 
@@ -421,6 +470,8 @@ new Vue({
       
         <a class="basic-alignment left" href="/blog/2016/12/10/suan-fa/" title="Previous Post: 排序算法">&laquo; 排序算法</a>
       
+      
+        <a class="basic-alignment right" href="/blog/2016/12/20/angular/" title="Next Post: Angular">Angular &raquo;</a>
       
     </p>
   </footer>
@@ -454,6 +505,14 @@ new Vue({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/12/20/weex/">Weex</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/20/angular/">Angular</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/12/19/vue/">Vue</a>
       </li>
     
@@ -463,14 +522,6 @@ new Vue({
     
       <li class="post">
         <a href="/blog/2016/12/09/google-protocol-buffer/">Google Protocol Buffer</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/12/08/utf8/">Unicode、UTF-8编码起源</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/12/03/node-js/">Node</a>
       </li>
     
   </ul>
@@ -485,8 +536,9 @@ new Vue({
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (6)</a></li>
-<li class='category'><a href='/blog/categories/react/'>react (8)</a></li>
+<li class='category'><a href='/blog/categories/javascript/'>javascript (4)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (7)</a></li>
 
   </ul>
 </section>

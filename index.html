@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Vue Dec 19th, 2016 11:58 am Vue Vue是一个JavaScript MVVM库，它是以数据驱动和组件化的思想构建的。相比于Angular，Vue提供了更加简洁、更易于理解的API，使得我们能够快速地上手并使用Vue。因为Vue是数据驱动的，所以无需手动操作DOM。 &hellip;">
+  <meta name="description" content="Weex Dec 20th, 2016 10:14 pm Weex 代码由 template、style、script 三个部分构成。template 里只能有一个根节点，只能是 div, scroller, list 三者之中的一个。 style 样式不要用驼峰写法，用小写横杆分离。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,200 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/12/20/weex/">Weex</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-20T22:14:37+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:14 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Weex 代码由 template、style、script 三个部分构成。template 里只能有一个根节点，只能是 div, scroller, list 三者之中的一个。</p>
+
+<p>style 样式不要用驼峰写法，用小写横杆分离。数据绑定写法和Vue一样，用两个大括号包着，且template和script里的数据是双向绑定的。双括号里的数据绑定也可以有简单的表达式，如果要复杂计算，用Vue那样的计算型属性。</p>
+
+<pre><code>&lt;script&gt;
+  module.exports = {
+    data: {
+      firstName: 'John',
+      lastName: 'Smith'
+    },
+    computed: {
+      fullName: function() {
+        return this.firstName + ' ' + this.lastName
+      }
+    },
+    methods: {
+      changeName: function() {
+        this.firstName = 'Terry'
+      }
+    }
+  }
+&lt;/script&gt;
+</code></pre>
+
+<p>属性也可以getter setter, 就不再说和Vue一样了，weex就是基于Vue 的。</p>
+
+<pre><code>computed: {
+      fullName: {
+        get: function() {
+          return this.firstName + ' ' + this.lastName
+        },
+
+        set: function(v) {
+          var s = v.split(' ')
+          this.firstName = s[0]
+          this.lastName = s[1]
+        }
+      }
+    },
+    methods: {
+      changeName: function() {
+        this.fullName = 'Terry King'
+      }
+    }
+  }
+</code></pre>
+
+<p>内嵌 style 样式的值 或者 class 的值等其他属性值也可以 用双大括号动态绑定。class 可以有多个名称，用空格分开。<strong>style 的选取器只支持类选取器！其他如id选取，组合选取器啥的都没有！class name 可以有多个！</strong></p>
+
+<p>onXXX 开头的就是用于绑定事件的特性，特性名中 on 之后的部分就是事件的类型，特性的值就是处理该事件的函数名。函数名外不需要添加语法中的大括号。onclick=&ldquo;toggle"。</p>
+
+<p>可以使用一个特殊的参数 $event，代表事件描述对象，即默认事件处理函数的第一个参数。onclick=&ldquo;update($event, 1, 2)"，onclick="foo&rdquo; 和 onclick=&ldquo;foo($event)&rdquo; 是等价的。</p>
+
+<p>每当一次事件被触发的时候，都会产生一个事件描述对象，该对象会默认作为第一个参数传递给事件处理函数，或以 $event 形参的方式出现在内联事件处理函数中。</p>
+
+<p>每个事件描述对象至少包含以下几个特性：</p>
+
+<pre><code>type (string): 事件名称, 如: click
+target (Element): 目标元素
+timestamp (number): 事件触发时的时间戳数字
+</code></pre>
+
+<p>if, repeat：双括号可以省略。 if=&ldquo;/{/{shown/}/}&rdquo; ,repeat=&ldquo;(k,v) in list&rdquo;.if=&ldquo;condition&rdquo; 和 if=&ldquo;/{/{condition/}/}&rdquo; 都是可以的，两者等价使用。if 不能用在 template 的根组件上，否则将无法被 Weex 正常的识别和处理。</p>
+
+<p>repeat 默认有个index 索引。</p>
+
+<p>当修改 repeat 中的数组时，在写法上会受到一定的限制，具体如下：</p>
+
+<pre><code>直接通过“角标”修改数组的某个项目 (如 this.items[0] = ...) 是不会触发视图自动更新的。
+我们在数组的原型上提供了一个额外的方法：this.items.$set(index, item) 来完成相同的事情。
+// 和 `this.items[0] = ...` 作用相同，但会自动触发视图更新
+this.items.$set(0, { childMsg: 'Changed!'})
+
+直接通过修改 length 来改变数组长度 (如 this.items.length = 0) 也是不会触发视图自动更新的。
+我们推荐您直接赋值一个新的空数组把旧的替换掉。
+
+// 和 `this.items.length = 0` 作用相同，但会自动触发视图更新
+this.items = []
+</code></pre>
+
+<p>默认的 track-by 的值就是数组的索引值。track-by=&ldquo;xxx&rdquo;</p>
+
+<p>static 特性可以一次性把数据设置到模板相应的位置上，但是今后不会随着数据的变化而更新。这样可以减少无谓的数据绑定，有效控制和优化长列表、纯静态页面在运行时的开销。不过也要小心使用不要导致原本需要更新的视图没有触发更新。《div static》</p>
+
+<p>weex 把屏幕都看作是750px，会更具具体设备适配。</p>
+
+<p>子元素样式不会继承父亲的，这和css会继承不一样！！</p>
+
+<pre><code>以一整棵树的方式一次性添加到视图中 (append="tree")，还是
+每个子组件都产生一次单独的添加到视图的指令 (append="node")
+默认情况下，除了 cell 组件的默认渲染过程是 tree 模式，其它组件都默认按照 node 模式进行渲染。
+</code></pre>
+
+<p>在同目录下创建和被封装组件同名的 we 文件之外，在 script 中通过 require 其它目录的 we 文件定义同名组件，在主文件下新增 element name=&ldquo;xxx&rdquo; 标签，name 特性的值为新创建的组件名，其 element 内部的内容是定义该组件的代码。组件各自的 style 是相互独立的，不会担心不同组件中相同的 class name 相互干扰。不论通过父组件把数据传递进来还是在当前组件内部对数据发起修改，只有在组件的 data 选项中明确写明的字段才会被正常的监听。如果自定义组件在父组件中有 id 特性，则可以在父组件上下文中通过 this.$vm(id) 接口来访问该自定义组件的上下文，也可以通过 this.$el(id) 来找到其背后真实的原生组件。</p>
+
+<pre><code> methods: {
+      back2Top: function () {
+        var el = this.$el('goto-top')
+        dom.scrollToElement(el, { offset: 10 })
+      }
+    }
+</code></pre>
+
+<p>this.$vm(id) 方法可以访问自定义子组件的上下文,当前上下文中的 this._parent (将改为 this.$parent)可以获取其父级上下文。</p>
+
+<pre><code> methods: {
+      update: function (e) {
+        this.$vm('sub').setTitle('Updated')
+      }
+    }
+</code></pre>
+
+<p>从子组件向父组件通信，首先父组件要监听特定类型的自定义事件，而子组件可以使用 this.<em>parent 找到父组件，然后再调用 this.</em>parent.$emit(type, detail) 方法，即可实现自下而上的通信。
+this.$on(name, handler) 用于监听name 函数，this.$emit(name, detail) 用于触发name函数，通过event.detail传参数，是个json对象。</p>
+
+<pre><code>//子组件中想触发父组件的 notify 方法。
+methods: {
+        test: function () {
+          this._parent.$emit('notify', {a: 1})
+        }
+      }
+ //父组件中监听 notify 是否被触发，      
+ created: function () {
+      this.$on('notify', function(event) {
+        this.eventType = event.type
+        this.eventDetail = JSON.stringify(event.detail)
+      })
+    }
+</code></pre>
+
+<p>从父组件向子组件通信，首先子组件要监听特定类型的自定义事件，而父组件可以使用 this.$vm(id) 找到子组件，然后再调用 this.$vm(id).$emit(type, detail) 方法，即可实现自上而下的通信。</p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/12/20/weex/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/12/20/angular/">Angular</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-20T17:35:42+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>5:35 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/12/20/angular/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -378,9 +572,58 @@ new Vue({
 
 <p>父组件是使用 props 传递数据给子组件，但如果子组件要把数据传递回去，应该怎样做？那就是自定义事件！</p>
 
-<pre><code>使用 $on(eventName) 监听事件
-使用 $emit(eventName) 触发事件
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>使用 $on(eventName) 监听事件
+</span><span class='line'>使用 $emit(eventName) 触发事件</span></code></pre></td></tr></table></div></figure>
+
+
+<p>自定义组件模板：</p>
+
+<pre><code>&lt;body&gt;
+    &lt;div id="app"&gt;
+        &lt;my-component v-bind:my-name="name" v-bind:my-age="age"&gt;&lt;/my-component&gt;
+    &lt;/div&gt;
+
+    &lt;template id="myComponent"&gt;
+        &lt;table&gt;
+            &lt;tr&gt;
+                &lt;th colspan="2"&gt;
+                    子组件数据
+                &lt;/th&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+                &lt;td&gt;my name&lt;/td&gt;
+                &lt;td&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+                &lt;td&gt;my age&lt;/td&gt;
+                &lt;td&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/table&gt;
+    &lt;/template&gt;
+&lt;/body&gt;
+
+&lt;script&gt;
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            name: 'andy',
+            age: 18
+        },
+        components: {
+            'my-component': {
+                template: '#myComponent',
+                props: ['myName', 'myAge']
+            }
+        }
+    })
+&lt;/script&gt;
 </code></pre>
+
+<p>v-bind:my-name.sync=&ldquo;name&rdquo; 这是用在子组件属性中 .sync 意思是子组件的数据会影响父组件，默认是不会的的。</p>
+
+<p>.once 用子子组件属性中，表示只绑定一次父组件的数据。</p>
 </div>
   
   
@@ -1995,276 +2238,6 @@ const styles = StyleSheet.create({
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/11/29/rn-style/">React Native 样式属性</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-11-29T22:27:51+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:27 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>React Native 采用CSS样式来布局，也会有继承和覆盖作用。只要在样式表中书写一个不存在的样式，就会报错，提示该样式不存在，然后提供所有可用的样式：
-<img src="/myimg/java/style.png" alt="" /></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>//边框
-</span><span class='line'>borderBottomWidth 
-</span><span class='line'>borderLeftWidth 
-</span><span class='line'>borderRightWidth 
-</span><span class='line'>borderTopWidth 
-</span><span class='line'>borderWidth </span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>//边框颜色
-</span><span class='line'>borderBottomColor
-</span><span class='line'>borderLeftColor
-</span><span class='line'>borderRightColor
-</span><span class='line'>borderTopColor
-</span><span class='line'>borderColor</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>//外边距
-</span><span class='line'>marginTop
-</span><span class='line'>marginBottom
-</span><span class='line'>marginLeft
-</span><span class='line'>marginRight
-</span><span class='line'>marginVertical //相当于marginTop 和 marginBottom
-</span><span class='line'>marginHorizontal //相当于 marginLeft 和 marginRight
-</span><span class='line'>margin</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>//内边距  
-</span><span class='line'>paddingTop  
-</span><span class='line'>paddingBottom
-</span><span class='line'>paddingLeft  
-</span><span class='line'>paddingRight  
-</span><span class='line'>paddingVertical //相当于 paddingTop 和 paddingBottom
-</span><span class='line'>paddingHorizontal  //相当于 paddingLeft 和 paddingRight
-</span><span class='line'>padding </span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>//边框圆角
-</span><span class='line'>borderTopLeftRadius
-</span><span class='line'>borderTopRightRadius
-</span><span class='line'>borderBottomLeftRadius
-</span><span class='line'>borderBottomRightRadius
-</span><span class='line'>borderRadius</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>//flex 布局
-</span><span class='line'>flex number 
-</span><span class='line'>flexDirection enum('row', 'column') 
-</span><span class='line'>flexWrap enum('wrap', 'nowrap') 
-</span><span class='line'>alignItems enum('flex-start', 'flex-end', 'center', 'stretch') 
-</span><span class='line'>alignSelf enum('auto', 'flex-start', 'flex-end', 'center', 'stretch') 
-</span><span class='line'>justifyContent enum('flex-start', 'flex-end', 'center', 'space-between', 'space-around') 
-</span><span class='line'>position属性值为absolute和relative，当使用绝对布局时，定位根据屏幕来进行。</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>//字体相关属性
-</span><span class='line'>color 字体颜色
-</span><span class='line'>fontFamily 字体族
-</span><span class='line'>fontSize 字体大小
-</span><span class='line'>fontStyle 字体样式，正常，倾斜等，值为enum('normal', 'italic')
-</span><span class='line'>fontWeight 字体粗细，值为enum("normal", 'bold', '100', '200', '300', '400', '500', '600', '700', '800', '900')
-</span><span class='line'>letterSpacing 字符间隔
-</span><span class='line'>lineHeight 行高
-</span><span class='line'>textAlign 字体对齐方式，值为enum("auto", 'left', 'right', 'center', 'justify')
-</span><span class='line'>textDecorationLine 上划线，下划线，删除线，无修饰，值为enum("none", 'underline', 'line-through', 'underline line-through')
-</span><span class='line'>textDecorationStyle 修饰的线的类型 enum("solid", 'double', 'dotted', 'dashed')
-</span><span class='line'>textDecorationColor 修饰的线的颜色
-</span><span class='line'>writingDirection enum("auto", 'ltr', 'rtl') 书写方向，从左往右写还是从右往左写</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>//图片相关属性
-</span><span class='line'>resizeMode enum('cover', 'contain', 'stretch')
-</span><span class='line'>overflow enum('visible', 'hidden') 超出部分是否显示，hidden为隐藏
-</span><span class='line'>tintColor 着色，rgb字符串类型
-</span><span class='line'>opacity 透明度
-</span><span class='line'>scaleX:水平方向缩放
-</span><span class='line'>scaleY:垂直方向缩放
-</span><span class='line'>rotation:旋转
-</span><span class='line'>translateX:水平方向平移
-</span><span class='line'>translateY:水平方向平移
-</span><span class='line'>//阴影,默认透明的，要设置shadowOpacity大于0才有效果
-</span><span class='line'>shadowColor
-</span><span class='line'>shadowOffset
-</span><span class='line'>shadowOpacity
-</span><span class='line'>shadowRadius</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/11/29/rn-style/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/11/28/react-native-run-bug/">React Native 问题汇总</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-11-28T18:46:09+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>6:46 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Android 设备:小米 red note MUI 8.0, iOS 设备:iPhone 6Plus 8.3</p>
-
-<h5>1.运行不起来</h5>
-
-<p>按照<a href="https://facebook.github.io/react-native/docs/getting-started.html#content">官网</a>的步骤一步一步下来运行报：</p>
-
-<pre><code>com.android.builder.testing.api.DeviceException: com.android.ddmlib.InstallException: Failed to establish session
-</code></pre>
-
-<p><a href="https://github.com/facebook/react-native/issues/6499">这里</a>说小米系列的手机都这样，我们平时用Android Studio调试运行不是会弹出个弹出框问是否安装吗？这是用USB链接的，所以没问题，但是用命令就掉动不起来那弹出框&hellip;
-<img src="/myimg/java/react_error_xm0.png" alt="" /></p>
-
-<p>解决办法如下，关键是第4步，关闭小米的优化
-<img src="/myimg/java/react_error_xm1.png" alt="" /></p>
-
-<h5>2.运行不起来</h5>
-
-<p>报错：</p>
-
-<pre><code>com.android.builder.testing.api.DeviceException: com.android.ddmlib.InstallException: Unable to upload some APKs
-</code></pre>
-
-<p>解决：把 /项目/android/build.gradle 文件里的 <code>classpath 'com.android.tools.build:gradle:1.3.1'</code> 改成 <code>classpath 'com.android.tools.build:gradle:1.2.3'</code>就可以了&hellip;.why? yeah,why?</p>
-
-<h5>3.白屏</h5>
-
-<p>运行起来了，等啊等，怎么还是白屏？不是有东西的吗？摇啊摇不是有弹出框的吗？弹出框呢？？</p>
-
-<p>解决：进系统设置，应用管理，找到这个应用，点击应用详情里的权限管理，开启显示悬浮框。刷新一下再摇一摇就有弹出框了。</p>
-
-<h5>4.Could not connect to development server</h5>
-
-<p>摇啊摇弹出框后，点击最后的 <code>Dev Settings</code> ，然后设置 <code>Debug server host &amp; port for device</code> 为<code>本机IP:8081</code>后返回刷新出现如下错误:</p>
-
-<p><img src="/myimg/java/react_error2.png" alt="" /></p>
-
-<p>解决：命令行进入项目文件夹，运行如下命令：</p>
-
-<pre><code>react-native start &gt; /dev/null 2&gt;&amp;1 &amp; curl "http://localhost:8081/index.android.bundle?platform=android" -o "android/app/src/main/assets/index.android.bundle"
-</code></pre>
-
-<p>如果提示没有 assets 文件夹，则先手动建一个再运行。之后就能真机运行起来了：</p>
-
-<p><img src="/myimg/java/react_android.png" alt="" /></p>
-
-<h5>iOS模拟器Cmd+R不刷新，Cmd+D也没弹出框</h5>
-
-<p>解决：要开启模拟器的键盘链接。模拟器菜单<code>Hardware</code>-><code>Keyboard</code> 选中 <code>Connect Hardware Keyboard</code></p>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/11/28/react-native-run-bug/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -2280,6 +2253,14 @@ const styles = StyleSheet.create({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/12/20/weex/">Weex</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/20/angular/">Angular</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/12/19/vue/">Vue</a>
       </li>
     
@@ -2289,14 +2270,6 @@ const styles = StyleSheet.create({
     
       <li class="post">
         <a href="/blog/2016/12/09/google-protocol-buffer/">Google Protocol Buffer</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/12/08/utf8/">Unicode、UTF-8编码起源</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/12/03/node-js/">Node</a>
       </li>
     
   </ul>
@@ -2311,8 +2284,9 @@ const styles = StyleSheet.create({
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (6)</a></li>
-<li class='category'><a href='/blog/categories/react/'>react (8)</a></li>
+<li class='category'><a href='/blog/categories/javascript/'>javascript (4)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (7)</a></li>
 
   </ul>
 </section>

@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Android和iOS一样，对UI的操作只能放在主线程中进行，即UI线程。如果在UI线程中执行比较耗时的方法，就会造成界面卡顿假死无反应，所以应该把耗时操作放在非UI线程中处理，处理完成后再在UI线程中更新界面。 在没有AsyncTask类的时候，是通过在子线程处理，然后sendMessage( &hellip;">
+  <meta name="description" content="iOS Not Found for Architecture Arm64 Sep 12th, 2016 10:00 am 接手维护一个项目，更新一下出现了下面这问题👇 好像不常见的问题，谷歌一下 Stack Overflow 说是Architectures设置问题&hellip; 说是Other &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,509 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/09/12/link-bug/">iOS Not Found for Architecture Arm64</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-12T10:00:18+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>接手维护一个项目，更新一下出现了下面这问题👇
+<img src="/myimg/ios/arm64.png" alt="image" /></p>
+
+<p>好像不常见的问题，谷歌一下</p>
+
+<p><a href="http://stackoverflow.com/questions/19213782/undefined-symbols-for-architecture-arm64">Stack Overflow</a>
+<img src="/myimg/ios/stackoverflow.png" alt="image" /></p>
+
+<p>说是Architectures设置问题&hellip; 说是Other Linker Flags问题&hellip;说是Target Membership问题&hellip; 改了好像都没用啊，问题还是一动不动的出现在那里&hellip;
+<img src="/myimg/ios/targetMap.png" alt="image" /></p>
+
+<p>继续找找找&hellip;用对应的类文件全局搜一下&hellip;诶~ 好像那里不对啊&hellip;路径怎么这样子??怎么和别的不一样~~ 喜出望外，好像知道原因了，果然项目文件夹里看不到该文件，Add Files to &ldquo;XXX"添加文件!
+<img src="/myimg/ios/errorLoad.png" alt="image" /></p>
+
+<p>还是不行&hellip;把对应的.h .m文件拖到桌面上，再重新添加到项目里，解决了！！为什么一开始不怀疑是文件索引问题呢？ 因为项目编译没报 XXX.h not found &hellip;以为文件都好好的呢，以为是项目的配置问题&hellip; 所以一开始找问题的方向就跑偏了！其实这问题之前也遇到过，一般是第三方的XXX.a文件出现这问题，只是这次脑袋没长记性&hellip;这问题一般是多人开发项目用SVN更来更去导致的<code>project.pbxproj</code>里对应的文件索引没了。好了，再遇到这问题就不要跑偏了，把对应的文件重新添加就可以了！！</p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/09/12/link-bug/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/09/08/okhttp-retrofit/">OkHttp and Retrofit</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-08T14:57:19+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:57 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://square.github.io/okhttp/">OkHttp</a>和<a href="http://square.github.io/retrofit/">Retrofit</a>都是<a href="http://square.github.io/">Square</a>公司开源出来的网络请求框架。Retrofit是对OkHttp的封装，使其可以用注解的方式调用。</p>
+
+<h4>OkHttp</h4>
+
+<pre><code>//-----okhttp 网络请求 工具类-----
+
+//异步请求结果放在主线程回调。
+private static final Handler mainHandler = new Handler(Looper.getMainLooper()); 
+
+private static final OkHttpClient client = new OkHttpClient.Builder()
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .writeTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(10, TimeUnit.SECONDS)
+        .build();
+
+public static void getRequest(String url, final OkHttpListener listener) {
+    Request request = new Request.Builder()
+            .header("token", getUserToken())
+            .header("client", "Android")
+            .header("versionCode", getVersionCode())
+            .header("versionName", getVersionName())
+            .url(url)
+            .build();
+    beginRequest(request, listener);
+}
+
+//这样就不会有中文乱码问题
+public static void postRequest(String url, final Map&lt;String, String&gt; params, final OkHttpListener listener) {
+    StringBuilder stringBuilder = new StringBuilder("");
+    if (params != null) {
+        Set&lt;String&gt; keys = params.keySet();
+        for (String key : keys) {
+            String value = params.get(key);
+            stringBuilder.append(key + "=" + value + "&amp;");
+        }
+    }
+
+    MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded;charset=utf-8");
+    RequestBody body = RequestBody.create(mediaType, stringBuilder.toString());
+
+    Request request = new Request.Builder()
+            .header("token", getUserToken())
+            .header("client", "Android")
+            .header("versionCode", getVersionCode())
+            .header("versionName", getVersionName())
+            .url(url)
+            .post(body)
+            .build();
+
+    beginRequest(request, listener);
+}
+
+//可添加图片文件
+public static void postMutibleRequest(String url, final Map&lt;String, Object&gt; params, final OkHttpListener listener) {
+    MultipartBody.Builder multipleBuilder = new MultipartBody.Builder();
+    multipleBuilder.setType(MultipartBody.FORM);
+
+    if (params != null) {
+        Set&lt;String&gt; keys = params.keySet();
+        for (String key : keys) {
+            Object obj = params.get(key);
+
+            if (obj instanceof File) {
+                File tmpFile = (File) obj;
+                multipleBuilder.addFormDataPart(key, tmpFile.getName(), MultipartBody.create(MediaType.parse("image/jpg"), tmpFile));
+            } else {
+                multipleBuilder.addPart(Headers.of("Content-Disposition", "form-data; name=\"" + key + "\""), RequestBody.create(null, (String) obj));
+            }
+        }
+    }
+
+    RequestBody multipleBody = multipleBuilder.build();
+    Request request = new Request.Builder()
+            .header("token", getUserToken())
+            .header("client", "Android")
+            .header("versionCode", getVersionCode())
+            .header("versionName", getVersionName())
+            .url(url)
+            .post(multipleBody)
+            .build();
+
+    beginRequest(request, listener);
+}
+
+//保存网络图片到相册,返回本地存储路径
+public static void downloadImageToSysPhoto(String imageUrl, final OkHttpListener listener) {
+    Request request = new Request.Builder().url(imageUrl).build();
+    Call call = client.newCall(request);
+    call.enqueue(new Callback() {
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            try {
+                //系统相册路径
+                final String localPath = "/storage/emulated/0/DCIM/Camera/" + CommonUtil.getUniqueString(10) + ".jpg";
+
+                InputStream is = response.body().byteStream();
+                FileOutputStream fos = new FileOutputStream(localPath);
+                byte[] buffer = new byte[1024];
+
+                int len;
+                while ((len = is.read(buffer)) != -1) {
+                    fos.write(buffer, 0, len);
+                }
+                is.close();
+                fos.close();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.success(localPath);
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.fail(0, "");
+                        }
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (listener != null) {
+                        listener.fail(0, "");
+                    }
+                }
+            });
+        }
+    });
+}
+
+private static void beginRequest(Request request, final OkHttpListener listener) {
+    Call call = client.newCall(request);
+
+    call.enqueue(new Callback() {//enqueue是异步请求
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            final String responseString = response.body().string();
+            final int code = response.code();
+
+            if (response.isSuccessful()) {
+                CommonUtil.logJson(responseString);
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.success(responseString);
+                        }
+                    }
+                });
+            } else {
+                //请求失败：    400  ---------   {"code":100004,"msg":"手机号已注册"}
+                CommonUtil.logString("请求失败：" + code + "---------" + responseString);
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.fail(code, responseString);
+                        }
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+            e.printStackTrace();
+            CommonUtil.logString("请求错误");
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (listener != null) {
+                        listener.fail(0, "请求失败");
+                    }
+                }
+            });
+        }
+    });
+}
+
+public static String getFailedMsg(String response) {
+    try {
+        JSONObject jsonObject = new JSONObject(response);
+        return jsonObject.getString("msg");
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "请求失败";
+}
+
+public static String getUserToken() {
+    UserModel userModel = UserModel.getUser();
+    if (userModel != null) {
+        return userModel.getToken();
+    }
+    return "";
+}
+
+public static String getVersionCode() {
+    try {
+        PackageInfo pi = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
+        return pi.versionCode + "";
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "";
+}
+
+public static String getVersionName() {
+    try {
+        PackageInfo pi = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
+        return pi.versionName;
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "";
+}
+
+//下载apk安装包，HUD是自定义的等待进度条
+private static int apkProgress;
+public static void downloadAPK(final Context context, String apkUrl) {
+    HUD.show(context, "下载中...");
+    HUD.setCancelable(false);
+
+    Request request = new Request.Builder().url(apkUrl).build();
+    Call call = client.newCall(request);
+    call.enqueue(new Callback() {
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            try {
+                FileUtil.createDir();//创建  ~/paiqi/ 文件夹
+                final String apkLocalPath = FileUtil.DIR_PATH + "paiqi.apk";
+
+                InputStream is = response.body().byteStream();
+                FileOutputStream fos = new FileOutputStream(apkLocalPath);
+                int readNum;
+                byte[] buffer = new byte[1024];
+
+                int progressCount = 0;
+                long totalLength = response.body().contentLength();
+
+                while ((readNum = is.read(buffer)) != -1) {
+                    progressCount += readNum;
+                    apkProgress = (int) (((float) progressCount / totalLength) * 100);
+
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            HUD.setMessage("下载中 " + apkProgress + "%");
+                        }
+                    });
+
+                    fos.write(buffer, 0, readNum);
+                }
+                is.close();
+                fos.close();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        HUD.dismiss();
+                        installAPK(context, apkLocalPath);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        HUD.dismiss();
+                        CommonUtil.showToast("下载失败");
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    HUD.dismiss();
+                    CommonUtil.showToast("下载失败");
+                }
+            });
+        }
+    });
+}
+
+//安装apk
+private static void installAPK(Context context, String apkPath) {
+    File apkFile = new File(apkPath);
+    if (!apkFile.exists()) {
+        CommonUtil.showToast("安装失败");
+        return;
+    }
+    Intent intent = new Intent(Intent.ACTION_VIEW);
+    intent.setDataAndType(Uri.parse("file://" + apkFile.toString()), "application/vnd.android.package-archive");
+    context.startActivity(intent);
+} 
+
+//请求回调接口定义
+public interface OkHttpListener {
+   void success(String response);
+   void fail(int code,String response);
+}
+</code></pre>
+
+<p>要注意的是enqueue方法是异步请求，所以要把结果回调放在主线程中进行。</p>
+
+<pre><code> mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (listener != null) {
+                                listener.success(responseString);
+                            }
+                        }
+                    });
+</code></pre>
+
+<p>之前看过一个同事的网络库封装，把网络回调接口放在BaseActivity里，然后在子Activity里重写回调方法！这样导致的结果就是，Fragment里的请求都要通过Activity来重写方法，然后再转发给Fragment&hellip;简直想骂街啊有木有！下面这样调用是不是很简单呢~!</p>
+
+<pre><code>//get异步请求,回调都已放在主线程中
+ OkHttpHelper.getRequest(ulr, new OkHttpListener() {
+        @Override
+        public void success(String response) {
+
+        }
+
+        @Override
+        public void fail() {
+
+        }
+    });
+
+   //post异步请求，回调都已放在主线程中，也可以用于提交File
+    Map&lt;String, Object&gt; paramter = new HashMap&lt;&gt;();
+    paramter.put("name", "阿贵");
+    paramter.put("file", new File("filePath"));//提交图片文件
+
+    OkHttpHelper.postRequest(url, paramter, new OkHttpListener() {
+        @Override
+        public void success(String response) {
+
+        }
+
+        @Override
+        public void fail() {
+
+        }
+    });
+</code></pre>
+
+<p>还有很多人喜欢把网络请求和结果解析写在一起，比如通过请求结果直接得到对应的Bean。这样导致的结果就是网球请求结果类型不统一，返回各种Bean。个人不太喜欢这样，可以对结果解析进行简单封装一下，这样网络返回的结果也会统一，数据解析也就一行代码。</p>
+
+<pre><code>//使用: getBean(json, User.class);
+public static &lt;T&gt; T getBean(String json, Class&lt;T&gt; clazz) {
+    T bean = null;
+    try {
+        Gson gson = new Gson();
+        bean = gson.fromJson(json, clazz);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return bean;
+}
+
+   //使用：getBeanList(json, User[].class);
+    public static &lt;T&gt; List&lt;T&gt; getBeanList(String json, Class&lt;T[]&gt; type) {
+        try{
+            T[] list = new Gson().fromJson(json, type);
+            return Arrays.asList(list);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+</code></pre>
+
+<h4>Retrofit</h4>
+
+<p><a href="http://square.github.io/retrofit/">Retrofit官网</a>上的例子中返回结果是Bean，但又没说添加了GsonConverterFactory，所以会报 Could not locate ResponseBody converter for XXBean 错误！所以要引入GsonConverterFactory转化库<code>compile 'com.squareup.retrofit2:converter-gson:2.0.2'</code>, 然后在Retrofit初始化的时候添加该库！官网后面说了 By default, Retrofit can only deserialize HTTP bodies into OkHttp&rsquo;s ResponseBody type and it can only accept its RequestBody type for @Body. 默认只会返回ResponseBody！并且只有ResponseBody才可以使用@Body注解！我个人还是不喜欢直接在这里得到Bean, 我还是喜欢先通过得到response.body().string()，然后再转化成Bean，各司其职。注意是<code>response.body().string()</code>，不是<code>response.body().toString()</code>!!</p>
+
+<pre><code>    Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.github.com/")
+                .addConverterFactory(GsonConverterFactory.create()) //添加Bean转化库
+                .build();
+
+    ServiceInterface service = retrofit.create(ServiceInterface.class);
+
+    Call&lt;TestBean&gt; requestCall = service.getUserInfo();
+
+    requestCall.enqueue(new Callback&lt;TestBean&gt;() {
+        @Override
+        public void onResponse(Call&lt;TestBean&gt; call, Response&lt;TestBean&gt; response) {
+
+                TestBean b = response.body();
+        }
+
+        @Override
+        public void onFailure(Call&lt;TestBean&gt; call, Throwable t) {
+
+        }
+    });
+
+ public interface ServiceInterface {
+    @GET("users/andyfightting")
+    Call&lt;TestBean&gt; getUserInfo();
+
+    //这里继续添加其他接口
+
+}
+</code></pre>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/09/08/okhttp-retrofit/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -1306,196 +1809,6 @@ layer.position=CGPointMake(size.width/2, size.height/2);
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/08/04/block/">iOS中的block</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-08-04T16:21:41+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:21 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>block就是一个代码块，闭包，会捕获上下文的匿名函数，它可以作为参数或者返回值进行传递。在objc中，根据对象的定义，凡是首地址是*isa的结构体指针，都可以认为是对象(id)，所以block实际上就算是对象，但它的内存管理又和NSObject有点不一样。</p>
-
-<h4>声明:</h4>
-
-<pre><code>*变量：returnType (^blockName)(parameterTypes) = ^returnType(parameters) {...};
-
-*属性：@property (nonatomic, copy) returnType (^blockName)(parameterTypes);
-
-*方法：-(void)someMethod:(returnType (^nullability)(parameterTypes))blockName;
-
-*回调：[object  method:^returnType (parameters) {...}];
-
-*定义：typedef returnType (^TypeName)(parameterTypes); --&gt; TypeName blockName = ^returnType(parameters) {...};
-</code></pre>
-
-<p>block中的isa指向的是该block的Class,主要有三种类型：</p>
-
-<pre><code>_NSConcreteGlobalBlock 全局的静态 block，不会访问任何外部变量。
-_NSConcreteStackBlock 保存在栈中的 block，当函数返回时会被销毁。
-_NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被销毁。
-</code></pre>
-
-<p>当block第一次被创建时，它是存在于该函数的栈上的，其Class是固定的NSConcreteStackBlock。其捕获的变量是会赋值到结构体的成员上，所以当block初始化完成后，捕获到的变量不能更改。当函数返回时，函数的栈被销毁，这个block的内存也会被清除。所以在函数结束后仍然需要这个block时，就必须用Block_copy()方法将它拷贝到堆上，类型变为NSConcreteMallocBlock，向它发送retain，增加block的引用计数。</p>
-
-<p>默认block捕获到的局部变量，都是赋值给block的结构体的，相当于const不可改。为了让block能访问并修改外面的局部变量，需要加上__block修饰词。</p>
-
-<pre><code>void test(){
- __block int i = 3;
-  void(^myBlock)(void) = ^{
-     i = 5;//局部变量没有__block修饰的话不可修改
-  };
- myBlock();
-}
-</code></pre>
-
-<h4>捕获规则：</h4>
-
-<pre><code>1.静态存储区的变量,例如全局变量、方法中的static变量:
-  引用，可修改。
-
-2.block接受的参数传值:
-  可修改，和一般函数的参数相同。
-
-3.栈变量(局部变量):
-  常量，不可修改，block会对id类型的变量产生强引用。
-
-4.栈变量(有__block前缀的局部变量):
-  引用，可以修改。如果是id类型则不会被block retain、如果该类型是C类型变量，该值会被挪动到堆中。
-</code></pre>
-
-<p>在ARC中，block被赋值传递的时候会自动拷贝到堆上，堆上的对象就有可能被释放掉，所以要用copy强引用着,以免野指针crash。</p>
-
-<h4>循环引用:</h4>
-
-<p>当block被copy到堆之后，该block对它捕获的对象产生强引用，所以有时需要避免block copy后产生的循环引用。</p>
-
-<p>如self引用了block，block又捕获了self，这样就会有循环引用,因此，需要用weak来声明self。</p>
-
-<pre><code>- (void)test {
-    ViewController * __weak weakSelf = self;
-    self.block = ^{
-        [weakSelf doSomething]; //用弱引用,打破循环引用
-    }
-}
-</code></pre>
-
-<p>如果捕获到的是对象的成员变量对象，也会间接造成对self的循环引用，同样也要避免。</p>
-
-<pre><code>- (void)test {
-    id tempPropertyObj = _propertyObj; //用临时变量,避免了循环引用
-    self.block = ^{
-        [tempPropertyObj doSomething];
-    }
-}
-</code></pre>
-
-<h4>问题</h4>
-
-<pre><code>[UIView animateWithDuration:0.5 animations:^{
-        [self doSomething];
-    }];
-</code></pre>
-
-<p>上面例子并不会造成循环引用，因为block强引用了self,而self并没有强引用block。如果像下面就会循环引用：self &ndash;> _observer &ndash;> block &ndash;> self 这也是一个循环引用。</p>
-
-<pre><code>//_observer 是self的实例变量
-    _observer = [[NSNotificationCenter defaultCenter] addObserverForName:@"test"
-                                                                  object:nil
-                                                                   queue:[NSOperationQueue mainQueue]
-                                                              usingBlock:^(NSNotification * _Nonnull note) {
-                                                                  [self doSomething];
-                                                              }];
-</code></pre>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/08/04/block/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/08/01/runtime/">iOS中的Runloop与Runtime</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-08-01T10:20:14+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>10:20 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html">Runloop</a></h3>
-
-<p>Runloop与线程息息相关，它是线程的基础架构部分，每个线程都有自己的runloop对象，可以用[NSRunLoop currentRunLoop]来得到它。主线程中的runloop是启动运行状态，而自己创建的线程中的runloop默认是没有启动的，需要的话要手动去启动。Runloop是一个事件处理循环，用来不停的监听输入事件或者定时事件，并将其分配到对应的目标上进行处理。它可以使线程在有工作的时候工作，没有工作的时候休眠。</p>
-
-<p>Runloop同时也负责autorelease pool的创建和释放，每当一个运行循环结束的时候，它都会释放autorelease pool，同时pool中的所有自动释放类型变量都会被释放掉。NSRunloop不是线程安全的，而CFRunLoopRef是线程安全的。RunLoop要指定在特定Mode下Run：</p>
-
-<p>*NSDefaultRunLoopMode：处理大多数的操作，一般情况下用这个。</p>
-
-<p>*NSRunLoopCommonModes：For Cocoa applications, this set includes the default, modal, and event tracking modes by default. Core Foundation includes just the default mode initially.</p>
-
-<p>而且通过scheduleInRunLoop的方式启动的请求，虽然是在主线程中执行！但也会有异步的效果！SDWebImageDownloader 中的 NSURLConnection 就是这样启动请求的！！</p>
-
-<pre><code>- (void)start{
-    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:15];
-    self.connection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
-    [connection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-    [connection start];
-    if (connection){
-        self.imageData = [NSMutableData data];
-    }else{
-        if ([delegate respondsToSelector:@selector(imageDownloader:didFailWithError:)]){
-            [delegate performSelector:@selector(imageDownloader:didFailWithError:) withObject:self withObject:nil];
-        }
-    }
-}
-</code></pre>
-
-<p>NSURLConnection在代理方法中打印出的线程：
-<img src="/myimg/ios/sdrunloop.png" alt="iamge" /></p>
-
-<p>runloop监听用户输入事件和定时事件
-<img src="/myimg/ios/runloop.png" alt="image" /></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2016/08/01/runtime/">阅读全文</a>
-    </footer>
-  
-
-
-      | <a href="/blog/2016/08/01/runtime/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -1513,6 +1826,14 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/12/20/weex/">Weex</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/20/angular/">Angular</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/12/19/vue/">Vue</a>
       </li>
     
@@ -1522,14 +1843,6 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
     
       <li class="post">
         <a href="/blog/2016/12/09/google-protocol-buffer/">Google Protocol Buffer</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/12/08/utf8/">Unicode、UTF-8编码起源</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/12/03/node-js/">Node</a>
       </li>
     
   </ul>
@@ -1544,8 +1857,9 @@ _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
-<li class='category'><a href='/blog/categories/other/'>other (6)</a></li>
-<li class='category'><a href='/blog/categories/react/'>react (8)</a></li>
+<li class='category'><a href='/blog/categories/javascript/'>javascript (4)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (7)</a></li>
 
   </ul>
 </section>

@@ -1,0 +1,839 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Javascript | 阿贵]]></title>
+  <link href="http://andyfightting.github.io/blog/categories/javascript/atom.xml" rel="self"/>
+  <link href="http://andyfightting.github.io/"/>
+  <updated>2016-12-21T15:10:04+08:00</updated>
+  <id>http://andyfightting.github.io/</id>
+  <author>
+    <name><![CDATA[guimingsu]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Weex]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/12/20/weex/"/>
+    <updated>2016-12-20T22:14:37+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/12/20/weex</id>
+    <content type="html"><![CDATA[<p>Weex 代码由 template、style、script 三个部分构成。template 里只能有一个根节点，只能是 div, scroller, list 三者之中的一个。</p>
+
+<p>style 样式不要用驼峰写法，用小写横杆分离。数据绑定写法和Vue一样，用两个大括号包着，且template和script里的数据是双向绑定的。双括号里的数据绑定也可以有简单的表达式，如果要复杂计算，用Vue那样的计算型属性。</p>
+
+<pre><code>&lt;script&gt;
+  module.exports = {
+    data: {
+      firstName: 'John',
+      lastName: 'Smith'
+    },
+    computed: {
+      fullName: function() {
+        return this.firstName + ' ' + this.lastName
+      }
+    },
+    methods: {
+      changeName: function() {
+        this.firstName = 'Terry'
+      }
+    }
+  }
+&lt;/script&gt;
+</code></pre>
+
+<p>属性也可以getter setter, 就不再说和Vue一样了，weex就是基于Vue 的。</p>
+
+<pre><code>computed: {
+      fullName: {
+        get: function() {
+          return this.firstName + ' ' + this.lastName
+        },
+
+        set: function(v) {
+          var s = v.split(' ')
+          this.firstName = s[0]
+          this.lastName = s[1]
+        }
+      }
+    },
+    methods: {
+      changeName: function() {
+        this.fullName = 'Terry King'
+      }
+    }
+  }
+</code></pre>
+
+<p>内嵌 style 样式的值 或者 class 的值等其他属性值也可以 用双大括号动态绑定。class 可以有多个名称，用空格分开。<strong>style 的选取器只支持类选取器！其他如id选取，组合选取器啥的都没有！class name 可以有多个！</strong></p>
+
+<p>onXXX 开头的就是用于绑定事件的特性，特性名中 on 之后的部分就是事件的类型，特性的值就是处理该事件的函数名。函数名外不需要添加语法中的大括号。onclick=&ldquo;toggle"。</p>
+
+<p>可以使用一个特殊的参数 $event，代表事件描述对象，即默认事件处理函数的第一个参数。onclick=&ldquo;update($event, 1, 2)"，onclick="foo&rdquo; 和 onclick=&ldquo;foo($event)&rdquo; 是等价的。</p>
+
+<p>每当一次事件被触发的时候，都会产生一个事件描述对象，该对象会默认作为第一个参数传递给事件处理函数，或以 $event 形参的方式出现在内联事件处理函数中。</p>
+
+<p>每个事件描述对象至少包含以下几个特性：</p>
+
+<pre><code>type (string): 事件名称, 如: click
+target (Element): 目标元素
+timestamp (number): 事件触发时的时间戳数字
+</code></pre>
+
+<p>if, repeat：双括号可以省略。 if=&ldquo;/{/{shown/}/}&rdquo; ,repeat=&ldquo;(k,v) in list&rdquo;.if=&ldquo;condition&rdquo; 和 if=&ldquo;/{/{condition/}/}&rdquo; 都是可以的，两者等价使用。if 不能用在 template 的根组件上，否则将无法被 Weex 正常的识别和处理。</p>
+
+<p>repeat 默认有个index 索引。</p>
+
+<p>当修改 repeat 中的数组时，在写法上会受到一定的限制，具体如下：</p>
+
+<pre><code>直接通过“角标”修改数组的某个项目 (如 this.items[0] = ...) 是不会触发视图自动更新的。
+我们在数组的原型上提供了一个额外的方法：this.items.$set(index, item) 来完成相同的事情。
+// 和 `this.items[0] = ...` 作用相同，但会自动触发视图更新
+this.items.$set(0, { childMsg: 'Changed!'})
+
+直接通过修改 length 来改变数组长度 (如 this.items.length = 0) 也是不会触发视图自动更新的。
+我们推荐您直接赋值一个新的空数组把旧的替换掉。
+
+// 和 `this.items.length = 0` 作用相同，但会自动触发视图更新
+this.items = []
+</code></pre>
+
+<p>默认的 track-by 的值就是数组的索引值。track-by=&ldquo;xxx&rdquo;</p>
+
+<p>static 特性可以一次性把数据设置到模板相应的位置上，但是今后不会随着数据的变化而更新。这样可以减少无谓的数据绑定，有效控制和优化长列表、纯静态页面在运行时的开销。不过也要小心使用不要导致原本需要更新的视图没有触发更新。《div static》</p>
+
+<p>weex 把屏幕都看作是750px，会更具具体设备适配。</p>
+
+<p>子元素样式不会继承父亲的，这和css会继承不一样！！</p>
+
+<pre><code>以一整棵树的方式一次性添加到视图中 (append="tree")，还是
+每个子组件都产生一次单独的添加到视图的指令 (append="node")
+默认情况下，除了 cell 组件的默认渲染过程是 tree 模式，其它组件都默认按照 node 模式进行渲染。
+</code></pre>
+
+<p>在同目录下创建和被封装组件同名的 we 文件之外，在 script 中通过 require 其它目录的 we 文件定义同名组件，在主文件下新增 element name=&ldquo;xxx&rdquo; 标签，name 特性的值为新创建的组件名，其 element 内部的内容是定义该组件的代码。组件各自的 style 是相互独立的，不会担心不同组件中相同的 class name 相互干扰。不论通过父组件把数据传递进来还是在当前组件内部对数据发起修改，只有在组件的 data 选项中明确写明的字段才会被正常的监听。如果自定义组件在父组件中有 id 特性，则可以在父组件上下文中通过 this.$vm(id) 接口来访问该自定义组件的上下文，也可以通过 this.$el(id) 来找到其背后真实的原生组件。</p>
+
+<pre><code> methods: {
+      back2Top: function () {
+        var el = this.$el('goto-top')
+        dom.scrollToElement(el, { offset: 10 })
+      }
+    }
+</code></pre>
+
+<p>this.$vm(id) 方法可以访问自定义子组件的上下文,当前上下文中的 this._parent (将改为 this.$parent)可以获取其父级上下文。</p>
+
+<pre><code> methods: {
+      update: function (e) {
+        this.$vm('sub').setTitle('Updated')
+      }
+    }
+</code></pre>
+
+<p>从子组件向父组件通信，首先父组件要监听特定类型的自定义事件，而子组件可以使用 this.<em>parent 找到父组件，然后再调用 this.</em>parent.$emit(type, detail) 方法，即可实现自下而上的通信。
+this.$on(name, handler) 用于监听name 函数，this.$emit(name, detail) 用于触发name函数，通过event.detail传参数，是个json对象。</p>
+
+<pre><code>//子组件中想触发父组件的 notify 方法。
+methods: {
+        test: function () {
+          this._parent.$emit('notify', {a: 1})
+        }
+      }
+ //父组件中监听 notify 是否被触发，      
+ created: function () {
+      this.$on('notify', function(event) {
+        this.eventType = event.type
+        this.eventDetail = JSON.stringify(event.detail)
+      })
+    }
+</code></pre>
+
+<p>从父组件向子组件通信，首先子组件要监听特定类型的自定义事件，而父组件可以使用 this.$vm(id) 找到子组件，然后再调用 this.$vm(id).$emit(type, detail) 方法，即可实现自上而下的通信。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Angular]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/12/20/angular/"/>
+    <updated>2016-12-20T17:35:42+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/12/20/angular</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Vue]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/12/19/vue/"/>
+    <updated>2016-12-19T11:58:13+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/12/19/vue</id>
+    <content type="html"><![CDATA[<h4>Vue</h4>
+
+<p><a href="https://cn.vuejs.org/">Vue</a>是一个JavaScript MVVM库，它是以<strong>数据驱动和组件化</strong>的思想构建的。相比于Angular，Vue提供了更加简洁、更易于理解的API，使得我们能够快速地上手并使用Vue。因为Vue是数据驱动的，所以无需手动操作DOM。它通过一些特殊的HTML语法，将DOM和数据绑定起来。一旦创建了绑定，DOM将和数据保持同步，每当变更了数据，DOM也会相应地更新。当然了，在使用Vue的同时时，也可以结合其他库一起使用，比如jQuery。
+<img src="/myimg/js/vue.png" alt="" /></p>
+
+<p>ViewModel是Vue的核心，它是一个Vue实例。Vue实例是作用于某一个HTML元素上的，这个元素可以是HTML的body元素，也可以是指定了id的某个元素。当创建了ViewModel后，数据就已经双向绑定好了。如上图所示：可以将上图中的DOM Listeners和Data Bindings看作两个工具，它们是实现双向绑定的关键。</p>
+
+<ol>
+<li>从View侧看，ViewModel中的DOM Listeners工具会帮我们监测页面上DOM元素的变化，如果有变化，则更改Model中的数据。</li>
+<li>从Model侧看，当我们更新Model中的数据时，Data Bindings工具会帮我们更新页面中的DOM元素。</li>
+</ol>
+
+
+<p>Vue也像Angular似的，是通过扩展元素的属性来处理的，扩展的属性被称为<code>指令</code>，如 v-model, v-if, v-else, v-bind ,v-show 等。</p>
+
+<p><img src="/myimg/js/vue1.png" alt="" />
+组件系统是 Vue.js 另一个重要概念，就像上图所示，把一个个 <code>Vue</code> 组件组合起来就可以了，各个组件都是一个独立的个体，就像搭积木一样。</p>
+
+<p><strong>v-model ：</strong> 可以绑定表单元素如imput,select,textarea的值.下面将input元素的值和message绑定。1：当文本框的值改变时，<code>/{/{ message /}/}</code>会自动更新，2：当message的值改变时，文本框的值也会被更新, 这就叫数据双向绑定。(忽略/,因为MarkDown转化不了所以加的)</p>
+
+<pre><code>&lt;div id="app"&gt;
+    &lt;p&gt;/{/{ message /}/}&lt;/p&gt;
+    &lt;input type="text" v-model="message"/&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p><strong>v-if ：</strong> 是条件渲染指令，它根据表达式的真假来删除和插入元素。如<code>&lt;h1 v-if="age &gt;= 25"&gt;Age = &lt;/h1&gt;</code>,当age&lt;25时，整个h1元素都不显示，而且就html就没有该节点，不像<code>v-show</code>是有该节点，然后设置节点 display = none。</p>
+
+<p><strong>v-show :</strong> 也是条件渲染指令，和v-if指令不同的是，使用v-show指令的元素始终会被渲染到HTML，它只是简单地为元素设置CSS的style属性是不是style=&ldquo;display:none"。</p>
+
+<p><strong>v-else :</strong>v-else元素必须立即跟在v-if或v-show元素的后面，否则它不能被识别。</p>
+
+<pre><code>&lt;div id="app"&gt;
+    &lt;h1 v-if="age &gt;= 25"&gt;Age: &lt;/h1&gt;
+    &lt;h1 v-else&gt;age不大于25&lt;/h1&gt;
+
+    &lt;h1 v-show="age &gt;= 25"&gt;Age: &lt;/h1&gt;
+    &lt;h1 v-else&gt;age不大于25&lt;/h1&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>上面代码中如果age大于25，后面的v-else都不会渲染到HTML。</p>
+
+<p><strong>v-for :</strong> 基于一个数组渲染一个列表，它和JavaScript的遍历语法相似.可以用 <code>in</code>代替。</p>
+
+<pre><code>&lt;tr v-for="person in personArray"&gt;
+  &lt;td&gt;/{/{ person.name}}&lt;/td&gt; &lt;td&gt;/{/{ person.age}}&lt;/td&gt;
+&lt;/tr&gt;
+</code></pre>
+
+<p><strong>v-bind :</strong>可以在其名称后面带一个参数，中间放一个冒号隔开，这个参数通常是元素的属性值设置，如 <code>&lt;h1 v-bind="class:age&gt;=25?'old':'young'"&gt;class 属性值设置&lt;/h1&gt;</code>,当age大于25，class=old,否则class=young。</p>
+
+<p><strong>v-on :</strong>用于绑定DOM事件，如<code>&lt;h1 v-on:click="showAlert"&gt;点击&lt;/h1&gt;</code>，再在methods里实现对应方法名的方法。</p>
+
+<pre><code>methods: {
+ showAlert: function() {
+     alert("点击啦！！")
+  }
+}
+</code></pre>
+
+<p>v-bind指令可以缩写为一个冒号 <code>:</code>，v-on指令可以缩写为<code>@</code>符号。</p>
+
+<p><code>v-bind:class="xxx"</code> &ndash;> <code>:class="xxx"</code>,  <code>v-on:click="showAlert"</code> &ndash;> <code>@click="greet"&gt;</code></p>
+
+<p>下面是自定义一个组件叫my-component.像React似的，也是通过<code>props</code>来传参数值。v-bind 意思是给属性绑定值，下面是给item 属性绑定 data, 而 item 这个属性名字是在 <code>props: ['item'],</code> 这里定义的，data 是前面 v-for 从dataArray 里取出来的。</p>
+
+<pre><code>&lt;div id="app"&gt;
+    &lt;ol&gt;
+        &lt;my-component v-for="data in dataArray" v-bind:item="data" /&gt;
+    &lt;/ol&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+    Vue.component('my-component', {
+        props: ['item'],
+        template: '&lt;li&gt;&lt;/li&gt;'
+    })
+    var app = new Vue({
+        el: '#app',
+        data: {
+            dataArray: [
+                {text: 'hello'},
+                {text: 'world'},
+            ]
+        }
+    })
+&lt;/script&gt;
+</code></pre>
+
+<p>Vue 的生命周期函数有 init,created,ready,mounted,updated,destroyed等。
+<img src="/myimg/js/lifecycle.png" width="400" alt="" /></p>
+
+<p><strong>v-once :</strong> 使用这个指令的话值只会插入一次，之后数据再改变就不会更新了，这会影响到该节点上所有的数据绑定。</p>
+
+<p>双大括号会将数据解释为纯文本，而非 HTML 。为了输出真正的 HTML ，你需要使用 v-html 指令。</p>
+
+<p>像Angular一样，也有过滤器，或自定义过滤器： message | capitalize 。过滤器函数总接受表达式的值作为第一个参数。</p>
+
+<pre><code>filters: {
+    capitalize: function (value) {
+      if (!value) return ''
+      value = value.toString()
+      return value.charAt(0).toUpperCase() + value.slice(1)
+    }
+  }
+</code></pre>
+
+<p>在 <code>computed</code> 添加计算型属性：下面是一个计算型属性myMsg, 通过获取data中的msg属性来处理，然后返回处理结果。通过<code>methods</code>里定义方法也能达到相同的效果，但<strong>计算属性是基于它的依赖缓存。计算属性只有在它的相关依赖发生改变时才会重新取值。这就意味着只要 msg 没有发生改变，多次访问 myMsg 计算属性会立即返回之前的计算结果，而不必再次执行函数。而 method 调用总会执行函数。</strong></p>
+
+<pre><code> computed: {
+    myMsg: function () {
+      return this.msg.split('').reverse().join('')
+    }
+  }
+</code></pre>
+
+<p>还有 <code>watch</code> 它用于观察 Vue 实例上的数据变动。下面是观察msg,如果msg变动就会执行方法给myMsg赋值。方法是异步操作。</p>
+
+<pre><code>watch: {
+    msg: function (val) {
+      this.myMsg = val + 'hello'
+    },
+  }
+</code></pre>
+
+<p>计算属性默认只有 getter ，不过在需要时你也可以提供一个 setter ：</p>
+
+<pre><code>computed: {
+  myMsg: {
+    get: function () {
+      return "xxx"
+    },
+    set: function (newValue) {
+      //do something
+    }
+  }
+}
+</code></pre>
+
+<p><strong>v-bind</strong>增强版 1.<code>&lt;div v-bind:class="{ active: isActive }"&gt;&lt;/div&gt;</code>,如果isActive为true,calss = active.</p>
+
+<p>2.<code>&lt;div v-bind:class="classObject"&gt;&lt;/div&gt;</code> 直接绑定一个对象。当在一个<strong>定制</strong>的组件上用到 class 属性的时候，这些类将被添加到<strong>根元素</strong>上面，这个元素上已经存在的类不会被覆盖。</p>
+
+<pre><code>data: {
+  classObject: {
+    active: true,
+    'text-danger': false
+  }
+}
+</code></pre>
+
+<p>对象语法，v-bind:style 的对象语法十分直观——看着非常像 CSS ，其实它是一个 JavaScript 对象。 CSS 属性名可以用驼峰式（camelCase）或短横分隔命名（kebab-case）：</p>
+
+<pre><code>//1.
+&lt;div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }"&gt;&lt;/div&gt;
+data: {
+  activeColor: 'red',
+  fontSize: 30
+}
+
+//2.
+&lt;div v-bind:style="styleObject"&gt;&lt;/div&gt;
+data: {
+  styleObject: {
+    color: 'red',
+    fontSize: '13px'
+  }
+}
+</code></pre>
+
+<p>Vue 会复用已有元素而不是从头开始渲染。可通过设置key 值来唯一区分，就不会复用了。这个类似 Vue 1.x 的 track-by=&ldquo;$index&rdquo; 。</p>
+
+<p>下面的数组方法也会触发刷新,而filter(), concat(), slice() 。这些不会改变原始数组，但总是返回一个新数组。</p>
+
+<pre><code>push()
+pop()
+shift()
+unshift()
+splice()
+sort()
+reverse()
+</code></pre>
+
+<p>事件修饰符：</p>
+
+<pre><code>.once
+.stop
+.prevent
+.capture
+.self
+.once
+.ctrl
+.alt
+.shift
+.meta
+</code></pre>
+
+<p>按键别名：可以通过全局 config.keyCodes 对象自定义按键修饰符别名。(Vue.config.keyCodes.f1 = 112)</p>
+
+<pre><code>.enter
+.tab
+.delete (捕获 “删除” 和 “退格” 键)
+.esc
+.space
+.up
+.down
+.left
+.right
+</code></pre>
+
+<p>由于 JavaScript 的限制， Vue 不能检测以下变动的数组：当你利用索引直接设置一个项时，例如：vm.items[indexOfItem] = newValue当你修改数组的长度时，例如： vm.items.length = newLength为了避免第一种情况，以下两种方式将达到像 vm.items[indexOfItem] = newValue 的效果， 同时也将触发状态更新：</p>
+
+<pre><code>1.Vue.set(example1.items, indexOfItem, newValue)
+2.example1.items.splice(indexOfItem, 1, newValue)
+</code></pre>
+
+<p>避免第二种情况，使用 splice：<code>example1.items.splice(newLength)</code></p>
+
+<pre><code>//自定义全局组件
+Vue.component('my-component', {
+
+})
+//自定义局部组件
+var Child = {
+  template: '&lt;div&gt;A custom component!&lt;/div&gt;'
+}
+new Vue({
+  components: {
+    // &lt;my-component&gt; 将只在父模板可用
+    'my-component': Child
+  }
+})
+</code></pre>
+
+<p>父组件通过 props 向下传递数据给子组件，子组件通过 events 给父组件发送消息。prop 是父组件用来传递数据的一个自定义属性。子组件需要显式地用 props 选项声明 “prop”。prop的名字形式会从 camelCase 转为 kebab-case。（myMessage &ndash;> my-message）</p>
+
+<p>prop 是单向绑定的：当父组件的属性变化时，将传导给子组件，但是不会反过来。每次父组件更新时，子组件的所有 prop 都会更新为最新值。这意味着你不应该在子组件内部改变 prop 。如果你这么做了，Vue 会在控制台给出警告。</p>
+
+<p>改变 prop 可通过两种方法曲线救国：就像React props也不应该修改，而是修改state里的属性一样。</p>
+
+<pre><code>1.prop 作为初始值传入，子组件之后只是将它的初始值作为本地数据的初始值使用；
+2.prop 作为需要被转变的原始值传入。
+</code></pre>
+
+<p>像React一样，props也可以指定类型：String，Number，Boolean，Function，Object，Array。type 也可以是一个自定义构造器，使用 instanceof 检测。</p>
+
+<pre><code> props: {
+    // 基础类型检测 （`null` 意思是任何类型都可以）
+    propA: Number,
+    // 多种类型
+    propB: [String, Number],
+    // 必传且是字符串
+    propC: {
+      type: String,
+      required: true
+    },
+    // 数字，有默认值
+    propD: {
+      type: Number,
+      default: 100
+    },
+    // 数组／对象的默认值应当由一个工厂函数返回
+    propE: {
+      type: Object,
+      default: function () {
+        return { message: 'hello' }
+      }
+    },
+    // 自定义验证函数
+    propF: {
+      validator: function (value) {
+        return value &gt; 10
+      }
+    }
+  }
+</code></pre>
+
+<p>父组件是使用 props 传递数据给子组件，但如果子组件要把数据传递回去，应该怎样做？那就是自定义事件！
+<code>
+使用 $on(eventName) 监听事件
+使用 $emit(eventName) 触发事件
+</code>
+自定义组件模板：</p>
+
+<pre><code>&lt;body&gt;
+    &lt;div id="app"&gt;
+        &lt;my-component v-bind:my-name="name" v-bind:my-age="age"&gt;&lt;/my-component&gt;
+    &lt;/div&gt;
+
+    &lt;template id="myComponent"&gt;
+        &lt;table&gt;
+            &lt;tr&gt;
+                &lt;th colspan="2"&gt;
+                    子组件数据
+                &lt;/th&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+                &lt;td&gt;my name&lt;/td&gt;
+                &lt;td&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+                &lt;td&gt;my age&lt;/td&gt;
+                &lt;td&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/table&gt;
+    &lt;/template&gt;
+&lt;/body&gt;
+
+&lt;script&gt;
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            name: 'andy',
+            age: 18
+        },
+        components: {
+            'my-component': {
+                template: '#myComponent',
+                props: ['myName', 'myAge']
+            }
+        }
+    })
+&lt;/script&gt;
+</code></pre>
+
+<p>v-bind:my-name.sync=&ldquo;name&rdquo; 这是用在子组件属性中 .sync 意思是子组件的数据会影响父组件，默认是不会的的。</p>
+
+<p>.once 用子子组件属性中，表示只绑定一次父组件的数据。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Node]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/12/03/node-js/"/>
+    <updated>2016-12-03T10:24:36+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/12/03/node-js</id>
+    <content type="html"><![CDATA[<p>Node.js 是运行在服务端的 JavaScript。Node.js 应用是由几部分组成的：</p>
+
+<pre><code>1. 引入 require 模块：可以使用 require 指令来载入 Node.js 模块。
+2. 创建服务器：服务器可以监听客户端的请求
+3. 接收请求与响应请求: 可以使用浏览器或客户端发送 HTTP 请求，服务器接收请求后返回响应数据。
+</code></pre>
+
+<h4>Hello World</h4>
+
+<p>创建一个test.js文件，里面输入如下内容。终端进入文件所在文件夹，执行<code>node test.js</code>,浏览器地址栏输入<code>http://127.0.0.1:8888/</code>就可以看到Hello World了。</p>
+
+<pre><code>//引用http模块
+var http = require('http');
+http.createServer(function (request, response) {
+    // 发送 HTTP 头部 
+    // HTTP 状态值: 200 : OK
+    // 内容类型: text/plain
+    response.writeHead(200, {'Content-Type': 'text/plain'});
+    // 发送响应数据 "Hello World"
+    response.end('Hello World！\n');
+}).listen(8888);
+</code></pre>
+
+<p><img src="/myimg/react/nodeHello.png" width="400" alt="" /></p>
+
+<h4>NPM</h4>
+
+<p>npm 是js包管理工具，像 CocoaPods 似的可以下载被人编写的第三方包，也可以把自己写的包上传的npm服务器。</p>
+
+<p><code>npm install 包名</code> 本地安装,将安装包放在 ./node_modules 下，如果没有 node_modules 文件夹，会在当前执行 npm 命令的目录下生成 node_modules 文件夹。然后就可以通过require(包名) 来引入本地安装的包。</p>
+
+<p><code>npm install 包名字 -g</code> 全局安装，将安装包放在 /usr/local 下或者 node 的安装目录。</p>
+
+<p><code>npm uninstall 包名</code> 卸载包</p>
+
+<p><code>npm update 包名</code> 更新包</p>
+
+<p><code>npm search 包名</code> 搜索包</p>
+
+<h4>package.json</h4>
+
+<p>package.json 用于表示需要安装的包的属性，如名字，版本，依赖等。package.json 文件是必不可少的。可通过<code>npm init</code>创建该文件。</p>
+
+<pre><code>//Package.json 属性说明
+name - 包名。
+version - 包的版本号。
+description - 包的描述。
+homepage - 包的官网 url 。
+author - 包的作者姓名。
+contributors - 包的其他贡献者姓名。
+dependencies - 依赖包列表。如果依赖包没有安装，npm 会自动将依赖包安装在 node_module 目录下。
+repository - 包代码存放的地方的类型，可以是 git 或 svn，git 可在 Github 上。
+main - main 字段是一个模块ID，它是一个指向你程序的主要项目。就是说，如果你包的名字叫 express，然后用户安装它，然后require("express")。
+keywords - 关键字
+</code></pre>
+
+<h4>回调函数</h4>
+
+<p>Node.js 异步编程的直接体现就是回调。Node 使用了大量的回调函数，Node 所有 API 都支持回调函数。</p>
+
+<pre><code>//顺序执行
+var fs = require("fs");
+var data = fs.readFileSync('input.txt');
+console.log(data.toString());
+console.log("程序执行结束!");
+
+//异步回调
+var fs = require("fs");
+fs.readFile('input.txt', function (err, data) {
+    if (err) return console.error(err);
+    console.log(data.toString());
+});
+console.log("程序执行结束!");
+</code></pre>
+
+<h4>事件驱动</h4>
+
+<p>Node.js 每一个 API 都是异步的，并作为一个独立线程运行，使用异步函数调用并处理并发。基本上所有的事件机制都是用观察者模式实现。当web server接收到请求，就把它关闭然后进行处理，然后去服务下一个web请求。
+当这个请求完成，它被放回处理队列，当到达队列开头，这个结果被返回给用户。</p>
+
+<p><img src="/myimg/react/reactevent.png" width="400" alt="" /></p>
+
+<p>在 Node 应用程序中，执行异步操作将回调函数作为最后一个参数， 回调函数里接收错误的对象作为回调函数的第一个参数。</p>
+
+<pre><code>//回调函数是readFile的最后一个参数，err是回调函数的第一个参数
+var fs = require("fs");
+fs.readFile('input.txt', function (err, data) {
+   if (err){
+      console.log(err.stack);
+      return;
+   }
+   console.log(data.toString());
+});
+console.log("程序执行完毕");
+</code></pre>
+
+<p>Node.js 所有的异步 I/O 操作在完成时都会发送一个事件到事件队列。许多对象都会分发事件，如一个net.Server对象会在每次有新连接时分发一个事件， 一个fs.readStream对象会在文件被打开的时候发出一个事件。 所有这些产生事件的对象都是基于 events.EventEmitter 的实例。</p>
+
+<p>events 模块只提供了一个对象： events.EventEmitter(事件分发器)。EventEmitter 的核心就是事件触发与事件监听器功能的封装。
+可以通过require(&ldquo;events&rdquo;);来访问该模块。EventEmitter 对象如果在实例化时发生错误，会触发 &lsquo;error&rsquo; 事件。当添加新的监听器时，'newListener' 事件会触发，当监听器被移除时，'removeListener' 事件被触发。EventEmitter 的每个事件由一个事件名和若干个参数组成，事件名是一个字符串。对于每个事件，EventEmitter 支持 若干个事件监听器。当事件触发时，注册到这个事件的事件监听器被依次调用，事件参数作为回调函数参数传递。</p>
+
+<pre><code>var events = require('events'); 
+var emitter = new events.EventEmitter(); 
+emitter.on('someEvent', function(arg1, arg2) { 
+    console.log('listener1', arg1, arg2); 
+}); 
+emitter.on('someEvent', function(arg1, arg2) { 
+    console.log('listener2', arg1, arg2); 
+}); 
+emitter.emit('someEvent', 'arg1 参数', 'arg2 参数'); 
+
+//打印出
+//listener1 arg1 参数 arg2 参数
+//listener2 arg1 参数 arg2 参数
+</code></pre>
+
+<h4>EventEmitter 方法</h4>
+
+<pre><code>addListener(eventName, listenerFun): 为指定事件添加一个监听器到监听器数组的尾部。
+on(eventName, listenerFun):为指定事件注册一个监听器，接受一个字符串 eventName 和一个回调函数。
+once(eventName, listenerFun): 为指定事件注册一个单次监听器，即 监听器最多只会触发一次，触发后立刻解除该监听器。
+removeListener(eventName, listenerFun):移除指定事件的某个监听器，监听器 必须是该事件已经注册过的监听器。
+removeAllListeners([eventName]):移除所有事件的所有监听器， 如果指定事件，则移除指定事件的所有监听器。
+setMaxListeners(n)：默认情况下， EventEmitters 如果你添加的监听器超过 10 个就会输出警告信息。 setMaxListeners 函数用于提高监听器的默认限制的数量。
+listeners(eventName)：返回指定事件的监听器数组。
+emit(eventName, [arg1], [arg2], [...]):按参数的顺序执行每个监听器，如果事件有注册监听返回 true，否则返回 false。
+listenerCount(emitter, eventName):类方法，返回指定事件的监听器数量。
+</code></pre>
+
+<p>实例：</p>
+
+<pre><code>var events = require('events');
+var eventEmitter = new events.EventEmitter();
+
+// 监听器1   
+var listener1 = function listener1() {
+   console.log('监听器 listener1 执行。');
+}
+
+// 监听器2       
+var listener2 = function listener2() {
+  console.log('监听器 listener2 执行。');
+}
+
+// 绑定 connection 事件，处理函数为 listener1 
+eventEmitter.addListener('connection', listener1);
+
+// 绑定 connection 事件，处理函数为 listener2
+eventEmitter.on('connection', listener2);
+
+var eventListeners = require('events').EventEmitter.listenerCount(eventEmitter,'connection');
+console.log(eventListeners + " 个监听器监听连接事件。");
+
+// 处理 connection 事件 
+eventEmitter.emit('connection');
+
+// 移除监绑定的 listener1 函数
+eventEmitter.removeListener('connection', listener1);
+console.log("listener1 不再受监听。");
+
+// 触发连接事件
+eventEmitter.emit('connection');
+
+eventListeners = require('events').EventEmitter.listenerCount(eventEmitter,'connection');
+console.log(eventListeners + " 个监听器监听连接事件。");
+
+console.log("程序执行完毕。");
+
+//打印结果
+//2 个监听器监听连接事件。
+//监听器 listener1 执行。
+//监听器 listener2 执行。
+//listener1 不再受监听。
+//监听器 listener2 执行。
+//1 个监听器监听连接事件。
+//程序执行完毕
+</code></pre>
+
+<h5>error 事件</h5>
+
+<p>EventEmitter 定义了一个特殊的事件<code>error</code>，它包含了错误的语义，在遇到异常的时候通常会触发 error 事件。
+当 error 被触发时，如果没有对应的监听器就会把它当作异常，退出程序并输出错误信息。
+所以要为会触发 error 事件的对象设置监听器，避免遇到错误后整个程序崩溃。</p>
+
+<p>大多数时候不会直接使用 EventEmitter，而是在对象中继承它。包括 fs、net、 http 在内的，
+只要是支持事件响应的核心模块都是 EventEmitter 的子类。</p>
+
+<h4>Buffer 类</h4>
+
+<p>JavaScript 语言自身只有字符串数据类型，没有二进制数据类型。但在处理文件流时，必须使用到二进制数据。
+所以在 Node.js中，定义了一个 Buffer 类，该类用来创建一个专门存放二进制数据的缓存区。可以让 Node.js 处理二进制数据，
+每当需要在 Node.js 中处理I/O操作中移动的数据时，就有可能使用 Buffer 库。原始数据存储在 Buffer 类的实例中。
+一个 Buffer 类似于一个整数数组，utf-8 是默认的编码方式。</p>
+
+<pre><code>//写数据
+buf.write(string, offset, length, encoding)；
+string - 写入缓冲区的字符串。
+offset - 缓冲区开始写入的索引值，默认为 0 。
+length - 写入的字节数，默认为 buffer.length。
+encoding - 使用的编码。默认为 'utf8' 。
+返回实际写入的大小。如果 buffer 空间不足， 则只会写入部分字符串。
+
+//读数据
+buf.toString(encoding, start, end)；
+encoding - 使用的编码。默认为 'utf8' 。
+start - 指定开始读取的索引位置，默认为 0。
+end - 结束位置，默认为缓冲区的末尾。
+返回值是用指定的编码返回字符串。
+</code></pre>
+
+<h5>常用方法</h5>
+
+<pre><code>new Buffer(size)：配一个新的 size 大小单位为8位字节的 buffer。
+new Buffer(buffer)：拷贝参数 buffer 的数据到 Buffer 实例。
+new Buffer(str, encoding)分配一个新的 buffer ，其中包含着传入的 str 字符串。 encoding 编码方式默认为 'utf8'。
+buf.length: 返回这个 buffer 的 bytes 数。注意这未必是 buffer 里面内容的大小。length 是 buffer 对象所分配的内存数，它不会随着这个 buffer 对象内容的改变而改变。
+buf.write(string[, offset[, length]][, encoding]):写入数据。
+buf.toJSON()：将 Buffer 实例转换为 JSON 对象。
+buf.equals(otherBuffer)：比较两个缓冲区是否相等。
+buf.compare(otherBuffer):比较两个 Buffer 对象，返回一个数字，表示 buf 在 otherBuffer 之前，之后或相同。
+buf.copy(targetBuffer[, targetStart[, sourceStart[, sourceEnd]]]):buffer 拷贝，源和目标可以相同。 
+targetStart 目标开始偏移和 sourceStart 源开始偏移默认都是 0。 sourceEnd 源结束位置偏移默认是源的长度 buffer.length 。
+</code></pre>
+
+<h4>Stream 流</h4>
+
+<p>Stream 是一个抽象接口，Node 中有很多对象实现了这个接口。例如，对http 服务器发起请求的request 对象就是一个 Stream，还有stdout（标准输出）。
+<strong>所有的 Stream 对象都是 EventEmitter 的实例</strong></p>
+
+<pre><code>Stream 有四种流类型：
+1. Readable - 可读操作。
+2. Writable - 可写操作。
+3. Duplex - 可读可写操作.
+4. Transform - 操作被写入数据，然后读出结果。
+
+所有的 Stream 对象都是 EventEmitter 的实例。常用的事件有：
+data - 当有数据可读时触发。
+end - 没有更多的数据可读时触发。
+error - 在接收和写入过程中发生错误时触发。
+finish - 所有数据已被写入到底层系统时触发。
+</code></pre>
+
+<p>读取文件例子：</p>
+
+<pre><code>var fs = require("fs");
+var data = '';
+
+// 创建可读流
+var readerStream = fs.createReadStream('input.txt');
+
+// 设置编码为 utf8。
+readerStream.setEncoding('UTF8');
+
+// 处理流事件 --&gt; data, end, and error
+readerStream.on('data', function(chunk) {
+   data += chunk;
+});
+
+readerStream.on('end',function(){
+   console.log(data);
+});
+
+readerStream.on('error', function(err){
+   console.log(err.stack);
+});
+
+console.log("程序执行完毕");
+</code></pre>
+
+<h4>模块系统</h4>
+
+<p>模块是Node.js 应用程序的基本组成部分，文件和模块是一一对应的。一个 Node.js 文件就是一个模块，这个文件可能是JavaScript、JSON 或者编译过的C/C++ 扩展等。
+Node.js 提供了<code>exports</code> 和 <code>require</code> 两个对象，其中 exports 是模块公开的接口，require 用于从外部获取一个模块的接口，即所获取模块的 exports 对象。</p>
+
+<p>require方法中的文件查找策略：</p>
+
+<p><img src="/myimg/react/require.png" width="400" alt="" /></p>
+
+<h4>函数</h4>
+
+<p>在JavaScript中，一个函数可以作为另一个函数的参数。可以先定义一个函数变量，然后传递，也可以在传递参数的地方直接定义函数(不要名字的函数，匿名函数)。</p>
+
+<pre><code>function say(word) {
+  console.log(word);
+}
+
+function execute(someFunction, value) {
+  someFunction(value);
+}
+
+execute(say, "Hello");
+
+//也可以直接传递匿名函数
+
+function execute(someFunction, value) {
+  someFunction(value);
+}
+
+execute(function(word){ console.log(word) }, "Hello");
+</code></pre>
+
+<h4>全局对象</h4>
+
+<p>JavaScript 中有一个特殊的对象，称为全局对象，它及其所有属性都可以在程序的任何地方访问，即全局变量。
+在浏览器 JavaScript 中，通常 window 是全局对象， 而 Node.js 中的全局对象是 global，所有全局变量（除了 global 本身以外）都是 global 对象的属性。
+在 Node.js 可以直接访问到 global 对象的属性，而不需要在应用中包含它。<strong>注意： 永远使用 var 定义变量以避免引入全局变量，因为全局变量会污染命名空间，提高代码的耦合风险。</strong></p>
+
+<pre><code>满足以下条 件的变量是全局变量：
+1.在最外层定义的变量；
+2.全局对象的属性；
+3.隐式定义的变量（未定义直接赋值的变量）。
+</code></pre>
+
+<p><strong>__filename ：</strong>表示当前正在执行的文件名,输出文件的绝对路径。</p>
+
+<p><strong>__dirname ：</strong>表示当前正在执行的文件目录。</p>
+
+<p><strong>setTimeout(cb, ms) :</strong> 全局函数,在指定的毫秒(ms)数后执行指定函数(cb)。只执行一次指定函数。返回一个代表定时器的句柄值。</p>
+
+<p><strong>clearTimeout(t) :</strong> 全局函数,用于停止一个之前通过 setTimeout() 创建的定时器。 参数 t 是通过 setTimeout() 函数创建的定时器。</p>
+
+<p><strong>setInterval(cb, ms) :</strong>setInterval(cb, ms) 全局函数在指定的毫秒(ms)数后执行指定函数(cb)。
+返回一个代表定时器的句柄值。可以使用 clearInterval(t) 函数来清除定时器。
+setInterval() 方法会不停地调用函数，直到 clearInterval() 被调用或窗口被关闭。</p>
+
+<p><strong>console :</strong> 全局对象，常用方法有<code>console.log()</code>,<code>console.info()</code>,<code>console.warn()</code>,<code>console.error()</code></p>
+
+<p><strong>process :</strong>全局变量，即 global 对象的属性。便于我们更好的控制系统的交互,很多属性和方法。<code>process.stdout</code>,<code>process.exet()</code>&hellip;</p>
+
+<p><a href="https://nodejs.org/dist/latest-v7.x/docs/api/">Node.js API</a></p>
+]]></content>
+  </entry>
+  
+</feed>
