@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Javascript | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-21T15:10:04+08:00</updated>
+  <updated>2017-01-02T19:08:36+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -121,6 +121,8 @@ this.items = []
     }
 </code></pre>
 
+<p>data、methods、computed 中的字段是不能相互重复的，因为它们都会通过组件实例的 this 访问到。</p>
+
 <p>this.$vm(id) 方法可以访问自定义子组件的上下文,当前上下文中的 this._parent (将改为 this.$parent)可以获取其父级上下文。</p>
 
 <pre><code> methods: {
@@ -149,6 +151,103 @@ methods: {
 </code></pre>
 
 <p>从父组件向子组件通信，首先子组件要监听特定类型的自定义事件，而父组件可以使用 this.$vm(id) 找到子组件，然后再调用 this.$vm(id).$emit(type, detail) 方法，即可实现自上而下的通信。</p>
+
+<h4>开发技巧</h4>
+
+<p>官方<code>weex inint xxx</code> 建的项目有点乱，扫一扫等一堆没必要的代码给新手增加复杂度。还是新建一个OC项目，pod 导入Weex:</p>
+
+<pre><code>source 'https://github.com/CocoaPods/Specs.git'
+
+target 'MyWeex_iOS' do
+platform :ios, '7.0'
+pod 'WeexSDK', '~&gt; 0.8.0'
+end
+</code></pre>
+
+<p>然后真正需要的代码很少的，不需要扫一扫才能看了!</p>
+
+<pre><code>@interface AppDelegate ()
+@end
+
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.window.backgroundColor = [UIColor whiteColor];
+
+    [WXSDKEngine initSDKEnviroment];
+
+    self.window.rootViewController = [[ViewController alloc] init];
+    [self.window makeKeyAndVisible];
+
+    return YES;
+}
+
+@end
+</code></pre>
+
+<p>然后开启它的监听，<code>weex index.we  -o . --watch</code>，这样每次修改就会自动编译weex文件了，然后Xcode再运行就可以了！把LOCAL_HOST改成本地IP地址就可在真机上运行了。</p>
+
+<pre><code>#import "ViewController.h"
+#define LOCAL_HOST @"127.0.0.1"
+#define INDEX_URL [NSString stringWithFormat:@"http://%@:8081/weex_tmp/h5_render/index.js",LOCAL_HOST]
+
+
+@interface ViewController ()
+
+@end
+
+@implementation ViewController
+@synthesize instance,weexView;
+
+
+- (void)viewDidLoad{
+    [super viewDidLoad];
+    self.view.backgroundColor = [UIColor redColor];
+
+    [self renderView];
+}
+
+
+- (void)dealloc{
+    [instance destroyInstance];
+}
+
+- (void)renderView{
+    CGFloat width = self.view.frame.size.width;
+    CGFloat height = self.view.frame.size.height;
+
+    [instance destroyInstance];
+    instance = [[WXSDKInstance alloc] init];
+    instance.viewController = self;
+    instance.frame = CGRectMake(0, 0, width,height);
+
+    __weak typeof(self) weakSelf = self;
+    instance.onCreate = ^(UIView *view) {
+        [weakSelf.weexView removeFromSuperview];
+        weakSelf.weexView = view;
+        [weakSelf.view addSubview:weakSelf.weexView];
+    };
+
+    instance.onFailed = ^(NSError *error) {
+       NSLog(@"%@", @"Render Failed...");
+    };
+
+    instance.renderFinish = ^(UIView *view) {
+         NSLog(@"%@", @"Render Finish...");
+
+    };
+
+    instance.updateFinish = ^(UIView *view) {
+        NSLog(@"%@", @"Update Finish...");
+    };
+
+    [instance renderWithURL:[NSURL URLWithString:INDEX_URL] options:nil data:nil];
+}
+@end
+</code></pre>
+
+<p><strong>$dispatch 只能是子组件向父组件通信， $broadcast 只能是父组件向子组件通信，反过来都不行！</strong></p>
 ]]></content>
   </entry>
   

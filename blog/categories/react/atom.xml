@@ -4,7 +4,7 @@
   <title><![CDATA[Category: React | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/react/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2016-12-21T15:10:04+08:00</updated>
+  <updated>2017-01-02T19:08:36+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,155 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[React Native 和 iOS 互相调用]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/12/22/react-ios/"/>
+    <updated>2016-12-22T09:19:38+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/12/22/react-ios</id>
+    <content type="html"><![CDATA[<p>这里记录如何在iOS项目中集成React Native ，和他们之间互相传参，互相调用。</p>
+
+<p>初学者可能都是按照RN官网来学习的，通过 <code>react-native init xxx</code> 来创建一个新项目，iOS和Android都放在一起了，对于新手来说有点乱，其实他们就是共用了配置文件和依赖库。但通过单独在iOS中集成RN更能清楚的知道需要的是哪些东西。</p>
+
+<p>CocoaPods，如果pod版本是 0.39.0 请更新版本，依次用如下命令，我更新到了1.2.0：</p>
+
+<pre><code>gem install cocoapods --pre
+pod repo update --verbose
+</code></pre>
+
+<p>1.用Xcode新建一个OC项目叫MyRN_iOS，在项目文件夹里新建一个文件夹叫ReactComponent(名字随意)，在这文件夹里新建 <code>package.json</code> 文件里放：</p>
+
+<pre><code>{
+  "name": "MyRN_iOS",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start"
+  },
+  "dependencies": {
+    "react": "15.4.1",
+    "react-native": "0.39.2"
+  }
+}
+</code></pre>
+
+<p>2.进入<code>package.json</code>所在文件夹即ReactComponent，执行命令<code>npm install</code>安装依赖包。</p>
+
+<p>3.进入ReactComponent里创建index.ios.js文件(位置和命名随意都可以 xxx.js，只不过我放这里，后面配置的时候会用它的具体路径)，里面放过hello world：</p>
+
+<pre><code>import React, { Component } from 'react';
+import {
+  AppRegistry,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native';
+
+class NativeRNApp extends Component {
+  render() {
+    return (
+        &lt;View style={styles.container}&gt;
+            &lt;Text style={styles.welcome}&gt;
+               hello world
+            &lt;/Text&gt;
+        &lt;/View&gt;
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+});
+
+//  项目名必须对应!! 
+AppRegistry.registerComponent('MyRN_iOS', () =&gt; NativeRNApp);
+</code></pre>
+
+<p>4.这里就是pod 操作了。进入项目文件夹，新建 <code>vim Podfile</code> 文件：（不知道为啥要8.0才可以，不然提示版本不够，稍后再看这问题），然后 <code>pod install</code> 安装。</p>
+
+<pre><code>target 'MyRN_iOS' do
+platform :ios, ‘8.0’
+
+pod 'React', :path =&gt; ‘./ReactComponent/node_modules/react-native', :subspecs =&gt; [
+ 'Core',
+  'ART',
+  'RCTActionSheet',
+  'RCTAdSupport',
+  'RCTGeolocation',
+  'RCTImage',
+  'RCTNetwork',
+  'RCTPushNotification',
+  'RCTSettings',
+  'RCTText',
+  'RCTVibration',
+  'RCTWebSocket',
+  'RCTLinkingIOS',
+]
+
+end
+</code></pre>
+
+<p>6.OC里加载RN文件</p>
+
+<pre><code>- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    NSString * strUrl = @"http://localhost:8081/index.ios.bundle?platform=ios&amp;dev=true";
+    NSURL * jsCodeLocation = [NSURL URLWithString:strUrl];
+
+    RCTRootView * rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
+                                                         moduleName:@"MyRN_iOS"
+                                                  initialProperties:nil
+                                                      launchOptions:nil];
+    self.view = rootView;
+}
+</code></pre>
+
+<p>7.还要允许OC进行 http 通信..
+<img src="/myimg/js/fuck.png" width="700" alt="" /></p>
+
+<p>8.Xcode打开项目然后Run,发现红屏报 can not connect server 。进入 <code>package.json</code>所在文件夹即ReactComponent, 执行 <code>npm start</code>,再运行Xcode就可以了。</p>
+
+<p>用 WebStorm 或者 Sublime Text 打开上面新建项目是创建的文件夹 ReactComponent ,编辑里面的 js 文件，然后再Xcode运行。(是这样处理吧，还是我打开的方式不对…😂)</p>
+
+<h4>OC向RN传参</h4>
+
+<p>RN 可以看成就是MVC中的V, 它是通过 <code>RCTRootView</code> 包装了一下，而 RCTRootView 就是继承于 UIView 的！在初始化 RCTRootView的时候， initialProperties 这里传入一个字典，然后就可以在js的 props 中根据字典的key获取值了。</p>
+
+<pre><code>//--OC中传字典
+    NSDictionary* dic = @{
+        @"name":@"andy",
+        @"age":@"18",
+    };
+    RCTRootView * rootView = [[RCTRootView alloc] initWithBundleURL:jsLocation
+                                                         moduleName:@"MyRN_iOS"
+                                                  initialProperties:dic
+                                                      launchOptions:nil];
+ //JS中通过props读取传来的字典
+  render() {
+        return (
+            &lt;View style={styles.container}&gt;
+                &lt;Text style={styles.welcome}&gt;
+                    {this.props.name} --- {this.props.age}
+                &lt;/Text&gt;
+            &lt;/View&gt;
+        );
+    }
+</code></pre>
+
+<h5>坑！本来单纯的在RN中调用点击事件是很简单的，前提是ViewController 中 self.view =rCTRootView; 。但是当用 [self.view addSubview:rCTRootView]; 时，即时在 RN 代码中设置 width,height 了，点击是没效果的！要在OC代码中设置 rCTRootView 的 frame 后才有效果！</h5>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[React Native Navigator]]></title>
@@ -513,62 +662,6 @@ shadowOffset
 shadowOpacity
 shadowRadius
 </code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[React Native 问题汇总]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/11/28/react-native-run-bug/"/>
-    <updated>2016-11-28T18:46:09+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/11/28/react-native-run-bug</id>
-    <content type="html"><![CDATA[<p>Android 设备:小米 red note MUI 8.0, iOS 设备:iPhone 6Plus 8.3</p>
-
-<h5>1.运行不起来</h5>
-
-<p>按照<a href="https://facebook.github.io/react-native/docs/getting-started.html#content">官网</a>的步骤一步一步下来运行报：</p>
-
-<pre><code>com.android.builder.testing.api.DeviceException: com.android.ddmlib.InstallException: Failed to establish session
-</code></pre>
-
-<p><a href="https://github.com/facebook/react-native/issues/6499">这里</a>说小米系列的手机都这样，我们平时用Android Studio调试运行不是会弹出个弹出框问是否安装吗？这是用USB链接的，所以没问题，但是用命令就掉动不起来那弹出框&hellip;
-<img src="/myimg/java/react_error_xm0.png" alt="" /></p>
-
-<p>解决办法如下，关键是第4步，关闭小米的优化
-<img src="/myimg/java/react_error_xm1.png" alt="" /></p>
-
-<h5>2.运行不起来</h5>
-
-<p>报错：</p>
-
-<pre><code>com.android.builder.testing.api.DeviceException: com.android.ddmlib.InstallException: Unable to upload some APKs
-</code></pre>
-
-<p>解决：把 /项目/android/build.gradle 文件里的 <code>classpath 'com.android.tools.build:gradle:1.3.1'</code> 改成 <code>classpath 'com.android.tools.build:gradle:1.2.3'</code>就可以了&hellip;.why? yeah,why?</p>
-
-<h5>3.白屏</h5>
-
-<p>运行起来了，等啊等，怎么还是白屏？不是有东西的吗？摇啊摇不是有弹出框的吗？弹出框呢？？</p>
-
-<p>解决：进系统设置，应用管理，找到这个应用，点击应用详情里的权限管理，开启显示悬浮框。刷新一下再摇一摇就有弹出框了。</p>
-
-<h5>4.Could not connect to development server</h5>
-
-<p>摇啊摇弹出框后，点击最后的 <code>Dev Settings</code> ，然后设置 <code>Debug server host &amp; port for device</code> 为<code>本机IP:8081</code>后返回刷新出现如下错误:</p>
-
-<p><img src="/myimg/java/react_error2.png" alt="" /></p>
-
-<p>解决：命令行进入项目文件夹，运行如下命令：</p>
-
-<pre><code>react-native start &gt; /dev/null 2&gt;&amp;1 &amp; curl "http://localhost:8081/index.android.bundle?platform=android" -o "android/app/src/main/assets/index.android.bundle"
-</code></pre>
-
-<p>如果提示没有 assets 文件夹，则先手动建一个再运行。之后就能真机运行起来了：</p>
-
-<p><img src="/myimg/java/react_android.png" alt="" /></p>
-
-<h5>iOS模拟器Cmd+R不刷新，Cmd+D也没弹出框</h5>
-
-<p>解决：要开启模拟器的键盘链接。模拟器菜单<code>Hardware</code>-><code>Keyboard</code> 选中 <code>Connect Hardware Keyboard</code></p>
 ]]></content>
   </entry>
   

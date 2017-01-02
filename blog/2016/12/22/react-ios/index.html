@@ -1,0 +1,377 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>React Native 和 iOS 互相调用 - 阿贵</title>
+  <meta name="author" content="guimingsu">
+
+  
+  <meta name="description" content="React Native 和 iOS 互相调用 Dec 22nd, 2016 9:19 am 这里记录如何在iOS项目中集成React Native ，和他们之间互相传参，互相调用。 初学者可能都是按照RN官网来学习的，通过 react-native init xxx 来创建一个新项目， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://andyfightting.github.io/blog/2016/12/22/react-ios/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="阿贵" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">  -->
+<!--<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+
+<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">阿贵</a></h1>
+  
+    <h2>All growth is a leap in the dark.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="andyfightting.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li> 
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">React Native 和 iOS 互相调用</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-22T09:19:38+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2016</span></span> <span class='time'>9:19 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>这里记录如何在iOS项目中集成React Native ，和他们之间互相传参，互相调用。</p>
+
+<p>初学者可能都是按照RN官网来学习的，通过 <code>react-native init xxx</code> 来创建一个新项目，iOS和Android都放在一起了，对于新手来说有点乱，其实他们就是共用了配置文件和依赖库。但通过单独在iOS中集成RN更能清楚的知道需要的是哪些东西。</p>
+
+<p>CocoaPods，如果pod版本是 0.39.0 请更新版本，依次用如下命令，我更新到了1.2.0：</p>
+
+<pre><code>gem install cocoapods --pre
+pod repo update --verbose
+</code></pre>
+
+<p>1.用Xcode新建一个OC项目叫MyRN_iOS，在项目文件夹里新建一个文件夹叫ReactComponent(名字随意)，在这文件夹里新建 <code>package.json</code> 文件里放：</p>
+
+<pre><code>{
+  "name": "MyRN_iOS",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start"
+  },
+  "dependencies": {
+    "react": "15.4.1",
+    "react-native": "0.39.2"
+  }
+}
+</code></pre>
+
+<p>2.进入<code>package.json</code>所在文件夹即ReactComponent，执行命令<code>npm install</code>安装依赖包。</p>
+
+<p>3.进入ReactComponent里创建index.ios.js文件(位置和命名随意都可以 xxx.js，只不过我放这里，后面配置的时候会用它的具体路径)，里面放过hello world：</p>
+
+<pre><code>import React, { Component } from 'react';
+import {
+  AppRegistry,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native';
+
+class NativeRNApp extends Component {
+  render() {
+    return (
+        &lt;View style={styles.container}&gt;
+            &lt;Text style={styles.welcome}&gt;
+               hello world
+            &lt;/Text&gt;
+        &lt;/View&gt;
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+});
+
+//  项目名必须对应!! 
+AppRegistry.registerComponent('MyRN_iOS', () =&gt; NativeRNApp);
+</code></pre>
+
+<p>4.这里就是pod 操作了。进入项目文件夹，新建 <code>vim Podfile</code> 文件：（不知道为啥要8.0才可以，不然提示版本不够，稍后再看这问题），然后 <code>pod install</code> 安装。</p>
+
+<pre><code>target 'MyRN_iOS' do
+platform :ios, ‘8.0’
+
+pod 'React', :path =&gt; ‘./ReactComponent/node_modules/react-native', :subspecs =&gt; [
+ 'Core',
+  'ART',
+  'RCTActionSheet',
+  'RCTAdSupport',
+  'RCTGeolocation',
+  'RCTImage',
+  'RCTNetwork',
+  'RCTPushNotification',
+  'RCTSettings',
+  'RCTText',
+  'RCTVibration',
+  'RCTWebSocket',
+  'RCTLinkingIOS',
+]
+
+end
+</code></pre>
+
+<p>6.OC里加载RN文件</p>
+
+<pre><code>- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    NSString * strUrl = @"http://localhost:8081/index.ios.bundle?platform=ios&amp;dev=true";
+    NSURL * jsCodeLocation = [NSURL URLWithString:strUrl];
+
+    RCTRootView * rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
+                                                         moduleName:@"MyRN_iOS"
+                                                  initialProperties:nil
+                                                      launchOptions:nil];
+    self.view = rootView;
+}
+</code></pre>
+
+<p>7.还要允许OC进行 http 通信..
+<img src="/myimg/js/fuck.png" width="700" alt="" /></p>
+
+<p>8.Xcode打开项目然后Run,发现红屏报 can not connect server 。进入 <code>package.json</code>所在文件夹即ReactComponent, 执行 <code>npm start</code>,再运行Xcode就可以了。</p>
+
+<p>用 WebStorm 或者 Sublime Text 打开上面新建项目是创建的文件夹 ReactComponent ,编辑里面的 js 文件，然后再Xcode运行。(是这样处理吧，还是我打开的方式不对…😂)</p>
+
+<h4>OC向RN传参</h4>
+
+<p>RN 可以看成就是MVC中的V, 它是通过 <code>RCTRootView</code> 包装了一下，而 RCTRootView 就是继承于 UIView 的！在初始化 RCTRootView的时候， initialProperties 这里传入一个字典，然后就可以在js的 props 中根据字典的key获取值了。</p>
+
+<pre><code>//--OC中传字典
+    NSDictionary* dic = @{
+        @"name":@"andy",
+        @"age":@"18",
+    };
+    RCTRootView * rootView = [[RCTRootView alloc] initWithBundleURL:jsLocation
+                                                         moduleName:@"MyRN_iOS"
+                                                  initialProperties:dic
+                                                      launchOptions:nil];
+ //JS中通过props读取传来的字典
+  render() {
+        return (
+            &lt;View style={styles.container}&gt;
+                &lt;Text style={styles.welcome}&gt;
+                    {this.props.name} --- {this.props.age}
+                &lt;/Text&gt;
+            &lt;/View&gt;
+        );
+    }
+</code></pre>
+
+<h5>坑！本来单纯的在RN中调用点击事件是很简单的，前提是ViewController 中 self.view =rCTRootView; 。但是当用 [self.view addSubview:rCTRootView]; 时，即时在 RN 代码中设置 width,height 了，点击是没效果的！要在OC代码中设置 rCTRootView 的 frame 后才有效果！</h5>
+</div>
+
+
+      | <a href="#comments">Comments</a>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">guimingsu</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-12-22T09:19:38+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2016</span></span> <span class='time'>9:19 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/react/'>react</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  <!-- JiaThis Button -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/12/20/weex/" title="Previous Post: Weex">&laquo; Weex</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-title="Octopress博客的个性化配置"></div>
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"tianweili"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+<!-- Duoshuo Comment END --></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/12/22/react-ios/">React Native 和 iOS 互相调用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/20/weex/">Weex</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/20/angular/">Angular</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/19/vue/">Vue</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/10/suan-fa/">排序算法</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
+<li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
+<li class='category'><a href='/blog/categories/javascript/'>javascript (4)</a></li>
+<li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (8)</a></li>
+
+  </ul>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - guimingsu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
