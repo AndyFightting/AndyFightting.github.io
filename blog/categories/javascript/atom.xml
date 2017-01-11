@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Javascript | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2017-01-02T19:08:36+08:00</updated>
+  <updated>2017-01-11T19:04:51+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -452,9 +452,9 @@ reverse()
 <p>事件修饰符：</p>
 
 <pre><code>.once
-.stop
-.prevent
-.capture
+.stop //阻止事件冒泡
+.prevent //取消事件默认处理
+.capture //开启事件捕获
 .self
 .once
 .ctrl
@@ -589,11 +589,230 @@ new Vue({
         }
     })
 &lt;/script&gt;
+
+-------------------------------
+&lt;script type="text/x-template" id="myCom"&gt;
+  &lt;div&gt;
+    &lt;p&gt;hello&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/script&gt;
+
+Vue.component('my-com', {
+  template: '#myCom',
+})
 </code></pre>
 
 <p>v-bind:my-name.sync=&ldquo;name&rdquo; 这是用在子组件属性中 .sync 意思是子组件的数据会影响父组件，默认是不会的的。</p>
 
 <p>.once 用子子组件属性中，表示只绑定一次父组件的数据。</p>
+
+<p>熟悉值不能用双括号绑定值，只能用 v-bind 绑定。在 v-bind 用于 class 和 style 属性时， 表达式的结果类型除了字符串之外，还可以是对象或数组。</p>
+
+<p>计算型属性与方法的区别是： 计算型属性会有缓存依赖，不是每次都会执行，只有值变了才执行。而方法是每次都执行。</p>
+
+<p>Vue 会复用控件，用key属性来区分不同控件。v-bind:key = &ldquo;$index&rdquo; 相当于Vue 1.x 的 track-by=&ldquo;$index&rdquo; 。</p>
+
+<p>注意 v-show 不支持 <template> 语法。 template 用 v-if . 主要 show 与 if 的区别，show 都有node，只是设置 display 属性。</p>
+
+<p>v-for 迭代对象的话是迭代对象的值。 自定义组件使用v-for 值也不会自动传到组件里去，而要v-bind:item=&ldquo;item"，然后组件里用props: [&lsquo;item&rsquo;] 接收。
+不自动注入 item 到组件里的原因是，因为这使得组件会紧密耦合到 v-for 如何运作。在一些情况下，明确数据的来源可以使组件可重用。</p>
+
+<p>方法调用的时候可以用特殊变量 $event 把事件传入方法里。</p>
+
+<p>v-model 指令在表单控件元素上创建双向数据绑定。它会根据<code>控件类型</code>自动选取正确的方法来更新元素。input,textarea,select，单选框，复选框。</p>
+
+<p>对于限制性元素，可以用 is  来代替。如：</p>
+
+<pre><code>&lt;table&gt;
+  &lt;tr is="my-row"&gt;&lt;/tr&gt;
+&lt;/table&gt;
+</code></pre>
+
+<p>is 还可以用来动态绑定组件：</p>
+
+<pre><code>&lt;component v-bind:is="currentView"&gt;&lt;/component&gt;
+
+var vm = new Vue({
+  el: '#example',
+  data: {
+    currentView: 'archive'
+  },
+  components: {
+    home: { 
+        template: '&lt;p&gt; home ------ &lt;/&gt;'
+    },
+    posts: { 
+         template: '&lt;p&gt; posts ------&lt;/&gt;'
+     },
+    archive: { 
+         template: '&lt;p&gt; archive ------&lt;/&gt;'
+    }
+  }
+})
+</code></pre>
+
+<p>自定义组件里 data 必须是函数：</p>
+
+<pre><code> data: function () {
+    return {
+       key: value,
+       key: value,
+       key: value,
+    }
+  }
+</code></pre>
+
+<p>父子组件的关系可以总结为 props down, events up 。父组件通过 props 向下传递数据给子组件，子组件通过 events 给父组件发送消息。
+不能并且不应该在子组件的模板内直接引用父组件的数据。可以使用 props 把数据传给子组件。</p>
+
+<p>注意在 JavaScript 中对象和数组是引用类型，指向同一个内存空间，如果 prop 是一个对象或数组，在子组件内部改变它会影响父组件的状态。</p>
+
+<h3>基本使用</h3>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;script src="./vue.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;div id="app"&gt;
+  &lt;ol v-once&gt;
+    &lt;todo-item v-for="item in groceryList" v-bind:todo="item"&gt;&lt;/todo-item&gt;
+  &lt;/ol&gt;
+
+&lt;template v-if="seen"&gt;
+    &lt;p  v-on:click = "helloTap"&gt;  &lt;/p&gt;
+&lt;/template&gt;
+&lt;p v-else&gt; show else&lt;/p&gt;
+
+&lt;my-com msg = "my component" v-on:increment = "increments"&gt;&lt;/my-com&gt;
+&lt;my-com2 msg = "my component2"&gt;&lt;/my-com2&gt;
+
+&lt;/div&gt;
+&lt;/body&gt;
+
+&lt;script&gt;
+var bus = new Vue();
+
+Vue.component('todoItem', {
+  props: ['todo'],
+  template: '&lt;li&gt;&lt;/li&gt;',
+
+   filters: {
+    capitalize: function (value) {
+      if (!value) return ''
+      value = value.toString()
+      return value.charAt(0).toUpperCase() + value.slice(1)
+    }
+  }
+
+})
+
+var vm = new Vue({
+  el: '#app',
+
+  data: {
+    groceryList: [
+      { text: 'aegetables' },
+      { text: 'cheese' },
+      { text: 'Whatever else humans are supposed to eat' }
+    ],
+     msg: "hello",
+     seen: true
+  },
+
+  computed:{
+    rMsg: function () {
+      return this.msg.split('').reverse().join('')
+    }
+  },
+
+  methods:{
+    helloTap: function(){
+        alert("hello");
+    },
+     increments: function(){
+        alert("helloss");
+    }
+  },
+
+  components:{
+    'my-com':{
+      props: ['msg'],
+
+data: function () {
+  return {
+    innerData: 'innerData  hello',
+  }
+},
+
+  methods: {
+    increment: function () {
+      this.$emit('increment')
+    }
+  },
+
+       template: '&lt;div&gt;&lt;p&gt;&lt;/p&gt;  &lt;p&gt;&lt;/p&gt;&lt;/div&gt;',
+    },
+
+    'my-com2':{
+      props: ['msg'],
+       template: '&lt;p&gt;&lt;/p&gt;',
+    },
+
+  },
+
+ filters: {
+    capitalize: function (value) {
+      if (!value) return ''
+      value = value.toString()
+      return value.charAt(0).toUpperCase() + value.slice(1)
+    }
+  },
+
+   beforeCreate:function(){
+    console.log("----------beforeCreate");
+  },
+  created:function(){
+    console.log("----------created");
+  },
+   beforeMount:function(){
+    console.log("----------beforeMount");
+  },
+   mounted:function(){
+    console.log("----------mounted");
+  },
+   beforeUpdate:function(){
+    console.log("----------beforeUpdate");
+   },
+  updated:function(){
+    console.log("----------updated");
+  },
+  beforeDestroy:function(){
+    console.log("----------destroyed");
+  },
+  destroyed:function(){
+    console.log("----------destroyed");
+  },
+
+  watch:{
+    groceryList: function(newValue){
+     console.log("--------------groceryList变了1");
+    }
+  }
+
+})
+
+vm.$watch('groceryList', function (newVal, oldVal) {
+   console.log("--------------groceryList变了2");
+})
+
+&lt;/script&gt;
+
+&lt;/html&gt;
+</code></pre>
 ]]></content>
   </entry>
   

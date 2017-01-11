@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="本人的博客刚刚搭建好，并绑定了个人域名(guimingsu.com)，现将该过程记录下来。 Github Pages是Github提供的一个免费空间，相当于我们博客的免费托管服务器，我们写的博客就是放这上面的。它可以拥有一个独立的二级域名如xxx.github.io(如果有自己的个人域名， &hellip;">
+  <meta name="description" content="* Activity启动模式 在AndroidMainfest.xml里的activity里设置android:launchMode = “xxx” standard: 默认模式，每次都会创建一个新的放在栈顶，即使栈里已经有了 singleTop: 已经在栈顶了就不创建，否则还是会创建， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,57 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/21/androidBase0/">Android 基础知识</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-21T09:26:15+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>9:26 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>* Activity启动模式</h3>
+
+<p>在AndroidMainfest.xml里的activity里设置android:launchMode = “xxx”</p>
+
+<p><strong>standard:</strong> 默认模式，每次都会创建一个新的放在栈顶，即使栈里已经有了</p>
+
+<p><strong>singleTop:</strong> 已经在<strong>栈顶</strong>了就不创建，否则还是会创建，即使栈里已经有了</p>
+
+<p><strong>singleTask:</strong> 在活动栈中有了就不创建，直接推到栈顶，<strong>在它之前的全部会被挤出栈</strong>，若活动栈中没有就创建</p>
+
+<p><strong>singleInstance:</strong> 会创建一个<strong>新的活动栈</strong>把自己放进去</p>
+
+<h3>* 随时随地退出程序</h3>
+
+<p>在任何页面都可以被踢下线的实现技巧</p>
+
+<p>创建一个收集Activity的管理类，在BaseActivity的<code>onCreate()</code>方法中添加<code>ActivityManager.addActivity(this)</code>,在<code>onDestroy</code>方法中添加<code>ActivityManager.removeActivity(this)</code>。然后在任何要强退的地方调用<code>ActivityManager.finishAllActivity()</code>。</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/11/21/androidBase0/">阅读全文</a>
+    </footer>
+  
+
+
+      | <a href="/blog/2015/11/21/androidBase0/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -166,6 +217,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2017/01/03/flux-redux/">Flux 和 Redux</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/12/22/react-ios/">React Native 和 iOS 互相调用</a>
       </li>
     
@@ -179,10 +234,6 @@
     
       <li class="post">
         <a href="/blog/2016/12/19/vue/">Vue</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/12/10/suan-fa/">排序算法</a>
       </li>
     
   </ul>
@@ -199,7 +250,7 @@
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
 <li class='category'><a href='/blog/categories/javascript/'>javascript (4)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
-<li class='category'><a href='/blog/categories/react/'>react (8)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (9)</a></li>
 
   </ul>
 </section>

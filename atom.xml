@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2017-01-02T19:08:36+08:00</updated>
+  <updated>2017-01-11T19:04:51+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,19 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Flux 和 Redux]]></title>
+    <link href="http://andyfightting.github.io/blog/2017/01/03/flux-redux/"/>
+    <updated>2017-01-03T14:39:10+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2017/01/03/flux-redux</id>
+    <content type="html"><![CDATA[<h4>Flux</h4>
+
+<p><a href="http://blog.andrewray.me/flux-for-stupid-people/">Flux是什么？</a>Flux不是js库，它是代码的组织规范，一种结构. 通过使用这种规范让代码更有结构，更便于维护。主要是在数据流这一块，比如用户点击按钮，然后处理数据，最后更新页面。具体如何处理这个流程？怎么让这流程规范有结构？这就是Flux关注的 &ndash; data flux structure。</p>
+
+<p>这只是为了让代码规范有结构，并不是一定要用的，也不是和React绑定相关的，不用React也可以用Flux。下面以在React中使用Flux为例. 不使用Flux结构时，React组件点击按钮处理数据刷新页面是这样的：直接修改state里的数据，然后会自动刷新组件，也就是直接面对面的操作state。而Flux结构不是直接面对面的操作state, 是绕了个弯来处理的。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[React Native 和 iOS 互相调用]]></title>
@@ -601,9 +614,9 @@ reverse()
 <p>事件修饰符：</p>
 
 <pre><code>.once
-.stop
-.prevent
-.capture
+.stop //阻止事件冒泡
+.prevent //取消事件默认处理
+.capture //开启事件捕获
 .self
 .once
 .ctrl
@@ -741,11 +754,230 @@ new Vue({
         }
     })
 &lt;/script&gt;
+
+-------------------------------
+&lt;script type="text/x-template" id="myCom"&gt;
+  &lt;div&gt;
+    &lt;p&gt;hello&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/script&gt;
+
+Vue.component('my-com', {
+  template: '#myCom',
+})
 </code></pre>
 
 <p>v-bind:my-name.sync=&ldquo;name&rdquo; 这是用在子组件属性中 .sync 意思是子组件的数据会影响父组件，默认是不会的的。</p>
 
 <p>.once 用子子组件属性中，表示只绑定一次父组件的数据。</p>
+
+<p>熟悉值不能用双括号绑定值，只能用 v-bind 绑定。在 v-bind 用于 class 和 style 属性时， 表达式的结果类型除了字符串之外，还可以是对象或数组。</p>
+
+<p>计算型属性与方法的区别是： 计算型属性会有缓存依赖，不是每次都会执行，只有值变了才执行。而方法是每次都执行。</p>
+
+<p>Vue 会复用控件，用key属性来区分不同控件。v-bind:key = &ldquo;$index&rdquo; 相当于Vue 1.x 的 track-by=&ldquo;$index&rdquo; 。</p>
+
+<p>注意 v-show 不支持 <template> 语法。 template 用 v-if . 主要 show 与 if 的区别，show 都有node，只是设置 display 属性。</p>
+
+<p>v-for 迭代对象的话是迭代对象的值。 自定义组件使用v-for 值也不会自动传到组件里去，而要v-bind:item=&ldquo;item"，然后组件里用props: [&lsquo;item&rsquo;] 接收。
+不自动注入 item 到组件里的原因是，因为这使得组件会紧密耦合到 v-for 如何运作。在一些情况下，明确数据的来源可以使组件可重用。</p>
+
+<p>方法调用的时候可以用特殊变量 $event 把事件传入方法里。</p>
+
+<p>v-model 指令在表单控件元素上创建双向数据绑定。它会根据<code>控件类型</code>自动选取正确的方法来更新元素。input,textarea,select，单选框，复选框。</p>
+
+<p>对于限制性元素，可以用 is  来代替。如：</p>
+
+<pre><code>&lt;table&gt;
+  &lt;tr is="my-row"&gt;&lt;/tr&gt;
+&lt;/table&gt;
+</code></pre>
+
+<p>is 还可以用来动态绑定组件：</p>
+
+<pre><code>&lt;component v-bind:is="currentView"&gt;&lt;/component&gt;
+
+var vm = new Vue({
+  el: '#example',
+  data: {
+    currentView: 'archive'
+  },
+  components: {
+    home: { 
+        template: '&lt;p&gt; home ------ &lt;/&gt;'
+    },
+    posts: { 
+         template: '&lt;p&gt; posts ------&lt;/&gt;'
+     },
+    archive: { 
+         template: '&lt;p&gt; archive ------&lt;/&gt;'
+    }
+  }
+})
+</code></pre>
+
+<p>自定义组件里 data 必须是函数：</p>
+
+<pre><code> data: function () {
+    return {
+       key: value,
+       key: value,
+       key: value,
+    }
+  }
+</code></pre>
+
+<p>父子组件的关系可以总结为 props down, events up 。父组件通过 props 向下传递数据给子组件，子组件通过 events 给父组件发送消息。
+不能并且不应该在子组件的模板内直接引用父组件的数据。可以使用 props 把数据传给子组件。</p>
+
+<p>注意在 JavaScript 中对象和数组是引用类型，指向同一个内存空间，如果 prop 是一个对象或数组，在子组件内部改变它会影响父组件的状态。</p>
+
+<h3>基本使用</h3>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;script src="./vue.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;div id="app"&gt;
+  &lt;ol v-once&gt;
+    &lt;todo-item v-for="item in groceryList" v-bind:todo="item"&gt;&lt;/todo-item&gt;
+  &lt;/ol&gt;
+
+&lt;template v-if="seen"&gt;
+    &lt;p  v-on:click = "helloTap"&gt;  &lt;/p&gt;
+&lt;/template&gt;
+&lt;p v-else&gt; show else&lt;/p&gt;
+
+&lt;my-com msg = "my component" v-on:increment = "increments"&gt;&lt;/my-com&gt;
+&lt;my-com2 msg = "my component2"&gt;&lt;/my-com2&gt;
+
+&lt;/div&gt;
+&lt;/body&gt;
+
+&lt;script&gt;
+var bus = new Vue();
+
+Vue.component('todoItem', {
+  props: ['todo'],
+  template: '&lt;li&gt;&lt;/li&gt;',
+
+   filters: {
+    capitalize: function (value) {
+      if (!value) return ''
+      value = value.toString()
+      return value.charAt(0).toUpperCase() + value.slice(1)
+    }
+  }
+
+})
+
+var vm = new Vue({
+  el: '#app',
+
+  data: {
+    groceryList: [
+      { text: 'aegetables' },
+      { text: 'cheese' },
+      { text: 'Whatever else humans are supposed to eat' }
+    ],
+     msg: "hello",
+     seen: true
+  },
+
+  computed:{
+    rMsg: function () {
+      return this.msg.split('').reverse().join('')
+    }
+  },
+
+  methods:{
+    helloTap: function(){
+        alert("hello");
+    },
+     increments: function(){
+        alert("helloss");
+    }
+  },
+
+  components:{
+    'my-com':{
+      props: ['msg'],
+
+data: function () {
+  return {
+    innerData: 'innerData  hello',
+  }
+},
+
+  methods: {
+    increment: function () {
+      this.$emit('increment')
+    }
+  },
+
+       template: '&lt;div&gt;&lt;p&gt;&lt;/p&gt;  &lt;p&gt;&lt;/p&gt;&lt;/div&gt;',
+    },
+
+    'my-com2':{
+      props: ['msg'],
+       template: '&lt;p&gt;&lt;/p&gt;',
+    },
+
+  },
+
+ filters: {
+    capitalize: function (value) {
+      if (!value) return ''
+      value = value.toString()
+      return value.charAt(0).toUpperCase() + value.slice(1)
+    }
+  },
+
+   beforeCreate:function(){
+    console.log("----------beforeCreate");
+  },
+  created:function(){
+    console.log("----------created");
+  },
+   beforeMount:function(){
+    console.log("----------beforeMount");
+  },
+   mounted:function(){
+    console.log("----------mounted");
+  },
+   beforeUpdate:function(){
+    console.log("----------beforeUpdate");
+   },
+  updated:function(){
+    console.log("----------updated");
+  },
+  beforeDestroy:function(){
+    console.log("----------destroyed");
+  },
+  destroyed:function(){
+    console.log("----------destroyed");
+  },
+
+  watch:{
+    groceryList: function(newValue){
+     console.log("--------------groceryList变了1");
+    }
+  }
+
+})
+
+vm.$watch('groceryList', function (newVal, oldVal) {
+   console.log("--------------groceryList变了2");
+})
+
+&lt;/script&gt;
+
+&lt;/html&gt;
+</code></pre>
 ]]></content>
   </entry>
   
@@ -3289,304 +3521,6 @@ public class Application {
 </code></pre>
 
 <p>xml默认都是注入一个单例对象的，即bean的属性 scope = &ldquo;singleton&rdquo; 为默认值。如果要每次都注入一个新对象，则设置bean的属性 scope = &ldquo;prototype"。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MyBatis 的使用]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/11/14/mybatis/"/>
-    <updated>2016-11-14T19:26:25+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/11/14/mybatis</id>
-    <content type="html"><![CDATA[<p>Mybatis是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以对配置和原生Map使用简单的 XML 或注解，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录。</p>
-
-<p>需要两个包：<a href="https://github.com/mybatis/mybatis-3/releases">MyBatis包</a>和<a href="https://www.mysql.com/products/connector/">JDBC Driver for MySQL</a></p>
-
-<p>无论是用过的mybatis和hibernate他们的共同点：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>1.从配置文件(通常是XML配置文件中)得到sessionfactory
-</span><span class='line'>2.由sessionfactory产生session
-</span><span class='line'>3.在session中完成对数据的增删改查和事务提交等
-</span><span class='line'>4.在用完之后关闭session 
-</span><span class='line'>5.在java 对象和数据库之间有mapping的配置文件，也通常是xml文件</span></code></pre></td></tr></table></div></figure>
-
-
-<p>主要XML配置文件中包含了对 MyBatis 系统的核心设置，包含获取数据库连接实例的数据源和决定事务范围和控制方式的事务管理器。通过加载该文件获取SqlSessionFactory。</p>
-
-<pre><code>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
-&lt;!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-config.dtd"&gt;
-&lt;configuration&gt;
-    &lt;!--对象别名定义 --&gt;
-    &lt;typeAliases&gt;
-        &lt;typeAlias alias="User" type="com.sgm.java.User" /&gt;
-    &lt;/typeAliases&gt;
-
-&lt;!--数据库连接 --&gt;
-&lt;environments default="development"&gt;
-    &lt;environment id="development"&gt;
-        &lt;transactionManager type="JDBC" /&gt;
-        &lt;dataSource type="POOLED"&gt;
-            &lt;property name="driver" value="com.mysql.jdbc.Driver" /&gt;
-            &lt;property name="url" value="jdbc:mysql://localhost:8889/java_db" /&gt;
-            &lt;property name="username" value="root" /&gt;
-            &lt;property name="password" value="root" /&gt;
-        &lt;/dataSource&gt;
-    &lt;/environment&gt;
-&lt;/environments&gt;
-
-&lt;!--数据库操作映射文件 --&gt;
-&lt;mappers&gt;
-    &lt;mapper resource="com/sgm/mybatis/User.xml" /&gt;
-&lt;/mappers&gt;
-&lt;/configuration&gt;
-</code></pre>
-
-<p>数据库操作映射文件</p>
-
-<pre><code>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
-&lt;!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd"&gt;
-
-&lt;!--namespace很重要，绑定对应的接口文件！--&gt;
-&lt;mapper namespace="com.sgm.java.UserDao"&gt;
-
-&lt;resultMap type="User" id="resultListUser"&gt;
-    &lt;result column="name" property="name" /&gt;
-    &lt;result column="age" property="age" /&gt;
-&lt;/resultMap&gt;
-
-&lt;!--id名字要和UserDao里的方法名一样  --&gt;
-&lt;insert id="addUser" parameterType="User" useGeneratedKeys="true" keyProperty="id"&gt;
-    insert into user(name, age) values(#{name}, #{age});
-&lt;/insert&gt;
-
-&lt;delete id="deleteUserById" parameterType="int"&gt;
-    delete from user where id = #{id};
-&lt;/delete&gt;
-
-&lt;update id="updateUser" parameterType="User" &gt;
-     update user set name = #{name}, age = #{age} where id = #{id};
-&lt;/update&gt;
-
-&lt;select id="getAllUsers" resultMap="resultListUser"&gt;
-    select * from user ;
-&lt;/select&gt;
-
-&lt;select id="selectUserById" parameterType="int" resultType="User"&gt;
-   select * from user where id = #{id};
-&lt;/select&gt;
-&lt;/mapper&gt;
-</code></pre>
-
-<p>定义数据库操作接口，方法要和对应的映射文件里的id名称一样！</p>
-
-<pre><code>public interface UserDao {
-    //  方法名要和User.xml配置文件里的id名称一样
-    public void addUser(User user);
-
-    public void deleteUserById(int id);
-
-    public void updateUser(User user);
-
-    public List&lt;User&gt; getAllUsers();
-
-    public User selectUserById(int id);
-}
-</code></pre>
-
-<p>操作的Java对象</p>
-
-<pre><code>public class User {
-        public int id;
-        public String name;
-        public int age;
-
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-}
-</code></pre>
-
-<p>测试</p>
-
-<pre><code>public class Main {
-    private static Reader reader;
-    private static SqlSessionFactory sqlSessionFactory;
-
-static {
-    try {
-        reader = Resources.getResourceAsReader("MyBatisConfig.xml");
-        sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-}
-
-public static void main(String[] args) {
-    SqlSession session = sqlSessionFactory.openSession();
-    UserDao userDao = session.getMapper(UserDao.class);
-
-    try {
-//          // 增
-//          User newUser = new User();
-//          newUser.setName("andy");
-//          newUser.setAge(20);
-//          userDao.addUser(newUser);
-//          session.commit();//必须提交
-//          System.out.println("reult------： 新增的userId " + newUser.getId());    
-//          //删
-//          userDao.deleteUserById(1);
-//          session.commit();//必须提交
-
-//          //改
-//          User updateUser = new User();
-//          updateUser.setId(4);
-//          updateUser.setName("andy");
-//          updateUser.setAge(20);
-//          userDao.updateUser(updateUser);
-//          session.commit();//必须提交
-
-//          //列表
-//          List&lt;User&gt; userList = userDao.getAllUsers();
-//          for(User user : userList){
-//              System.out.println("reult------：  " + user.getName());            
-//          }
-            //查单个
-//          User user = userDao.selectUserById(4);
-//          System.out.println("reult------：  " + user.getName());
-        } finally {
-            session.close();//必须关闭
-        }
-    }
-}
-</code></pre>
-
-<h3>传参方式</h3>
-
-<h5>1.用下标获取</h5>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>//Dao层接口定义
-</span><span class='line'>public User selectUser(String name,String password);
-</span><span class='line'>//对应的映射方法,用下标获取
-</span><span class='line'>&lt;select id="selectUser" resultMap="userList"&gt;
-</span><span class='line'>    select  *  from user where name = #{0} and password=#{1}
-</span><span class='line'>&lt;/select&gt;
-</span><span class='line'>//定义userList
-</span><span class='line'>&lt;resultMap type="User" id="userList"&gt;
-</span><span class='line'>  &lt;result column="id" property="id" /&gt;
-</span><span class='line'>  &lt;result column="name" property="name" /&gt;
-</span><span class='line'>  &lt;result column="password" property="password" /&gt;
-</span><span class='line'>&lt;/resultMap&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>2.传自定义对象</h5>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public void updateUser(User user);
-</span><span class='line'>&lt;update id="updateUser" parameterType="User"&gt;
-</span><span class='line'>  update user set name = #{name}, password = #{password} where id = #{id};
-</span><span class='line'>&lt;/update&gt;
-</span><span class='line'>//定义User别名
-</span><span class='line'>&lt;typeAliases&gt;
-</span><span class='line'>  &lt;typeAlias alias="User" type="com.sgm.bean.User" /&gt;
-</span><span class='line'>&lt;/typeAliases&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>3.用注解的方式</h5>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public User selectUser(@Param("name")String name,@Param("password")String password);
-</span><span class='line'>&lt;select id="selectUser" resultType="User"&gt;
-</span><span class='line'>  select * from user where name = #{name} and password = #{password};
-</span><span class='line'>&lt;/select&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>动态SQL语句</h4>
-
-<pre><code>&lt;select id="selectSameAddressUser" parameterType="User" resultType="userList"&gt;
-    select * from user 
-        &lt;if test="name != null"&gt;
-            title = #{name}
-        &lt;/if&gt;
-        &lt;if test="address != null"&gt;
-            and address = #{address}
-        &lt;/if&gt;
-&lt;/select&gt;
-</code></pre>
-
-<h3>注意!</h3>
-
-<h5>SqlSessionFactoryBuilder</h5>
-
-<p>这个类可以被实例化、使用和丢弃，一旦创建了 SqlSessionFactory，就不再需要它了。因此 SqlSessionFactoryBuilder 实例的最佳范围是方法范围,也就是局部方法变量。可以重用 SqlSessionFactoryBuilder 来创建多个 SqlSessionFactory 实例，但是最好还是不要让其一直存在以保证所有的 XML 解析资源开放给更重要的事情。</p>
-
-<h5>SqlSessionFactory</h5>
-
-<p>SqlSessionFactory 一旦被创建就应该在应用的运行期间一直存在，没有任何理由对它进行清除或重建。使用 SqlSessionFactory 的最佳实践是在应用运行期间不要重复创建多次。因此 SqlSessionFactory 的最佳范围是应用范围。可以使用单例模式或者静态单例模式。</p>
-
-<h5>SqlSession</h5>
-
-<p>每个线程都应该有它自己的 SqlSession 实例。SqlSession 的实例不是线程安全的，因此是不能被共享的，所以它的最佳的范围是请求或方法范围。不能将 SqlSession 实例的引用放在一个类的静态域，甚至一个类的实例变量也不行。每次操作应该打开一个 SqlSession，处理数据，处理完后就关闭它。关闭操作很重要，应该把这个关闭操作放到 finally 块中以确保每次都能执行关闭。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>SqlSession session = sqlSessionFactory.openSession();
-</span><span class='line'>try {
-</span><span class='line'>  // do work
-</span><span class='line'>} finally {
-</span><span class='line'>  session.close();
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-
 ]]></content>
   </entry>
   
