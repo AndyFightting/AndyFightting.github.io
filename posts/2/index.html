@@ -9,10 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="React Native 组件生命周期 Nov 30th, 2016 11:08 am 生命周期就是一个对象从开始生成到最后消亡所经历的状态，理解生命周期是开发的基础。ES5语法和ES6语法有所变化。 可以把组件生命周期大致分为三个阶段： 1
-2
-3
-第一阶段：是组件第一次绘制阶段， &hellip;">
+  <meta name="description" content="Flexbox 布局 Nov 30th, 2016 8:56 am 弹性盒子布局由弹性容器和弹性子item组成。容器默认存在两根轴：水平的主轴和垂直的交叉轴。主轴的开始位置叫做main start，结束位置叫做main end；交叉轴的开始位置叫做cross start，结束位置叫做cross &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,80 +76,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/11/30/react-native-life/">React Native 组件生命周期</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-11-30T11:08:59+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:08 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>生命周期就是一个对象从开始生成到最后消亡所经历的状态，理解生命周期是开发的基础。<a href="http://bbs.reactnative.cn/topic/15/react-react-native-%E7%9A%84es5-es6%E5%86%99%E6%B3%95%E5%AF%B9%E7%85%A7%E8%A1%A8">ES5语法和ES6语法有所变化</a>。</p>
-
-<p><img src="/myimg/java/life2.png" alt="" /></p>
-
-<h4>可以把组件生命周期大致分为三个阶段：</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>第一阶段：是组件第一次绘制阶段，如图中的上面虚线框内，在这里完成了组件的加载和初始化；
-</span><span class='line'>第二阶段：是组件在运行和交互阶段，如图中左下角虚线框，这个阶段组件可以处理用户交互接收事件更新界面；
-</span><span class='line'>第三阶段：是组件卸载消亡的阶段，如图中右下角的虚线框中，这里做一些组件的清理工作。</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>constructor(props) :</strong>这个方法会在组件创建的时候调用一次。 这个方法中可以通过this.state初始化状态参数，ES5是通过getInitialState()方法初始化的。</p>
-
-<p><strong>getDefaultProps() :</strong>在组件类创建的时候调用一次，然后返回值被缓存下来。全局调用一次，所有实例共享。</p>
-
-<p><strong>getInitialState() :</strong>在组件挂载之前调用一次。返回值将会作为 this.state 的初始值。</p>
-
-<p><strong>componentWillMount() :</strong>在组件创建并初始化了状态之后，在第一次 render() 之前。可以在这里做一些初始化操作。这个函数在整个生命周期中只被调用一次。</p>
-
-<p><strong>render() :</strong>这个方法是必须的，对视图进行渲染，也可以返回 null 或者 false 来表明不需要渲染任何东西.</p>
-
-<p><strong>componentDidMount() :</strong>在组件第一次绘制之后，会调用该方法通知组件已经加载完成。这个方法调用的时候，其虚拟 DOM 已经构建完成，可以在这个函数里获取其中的元素或者子组件。框架是先调用子组件的该方法，然后再调用父组件的。可以在这里发起网络请求等。</p>
-
-<p><strong>componentWillReceiveProps(nextProps) :</strong> 父组件改变子组件的属性的时候会调用该方法,初次渲染时不会调用该方法。参数nextProps是即将被设置的属性，旧的属性还是可以通过 this.props 来获取。</p>
-
-<p><strong>shouldComponentUpdate(nextProps,nextState) :</strong>当组件接收到新的属性或状态改变的话会调用该方法。参数 nextProps 和上面的方法一样。nextState 表示组件即将更新的状态值。这个方法的返回值决定是否需要更新组件，默认返回true。可以重载这个函数来决定组件是否需要更新。</p>
-
-<p><strong>componentWillUpdate(nextProps,nextState) :</strong>如果组件状态改变，并且上面的方法返回为true，就会开始准更新组件。这里可以做一些在更新组件之前要做的事情。<strong>在这个方法里面不能再调用 this.setState 来修改状态</strong>。这个方法调用之后，就会把 nextProps 和 nextState 分别设置到 this.props 和 this.state 中。紧接着就会调用 render() 来更新组件了。</p>
-
-<p><strong>componentDidUpdate(prevProps,prevState) :</strong>在调用了 render() 更新组件同步到 DOM 中之后立刻调用该方法。因为到这里已经完成了属性和状态的更新了，此方法的参数变成了 prevProps 和 prevState。</p>
-
-<p><strong>componentWillUnmount() :</strong>当组件从 DOM 中移除的时候就会调用该方法。可以这个方法中做一些资源清理工作。</p>
-
-<p><a href="http://bbs.reactnative.cn/topic/15/react-react-native-%E7%9A%84es5-es6%E5%86%99%E6%B3%95%E5%AF%B9%E7%85%A7%E8%A1%A8">ES5 ES6写法对照表</a></p>
-
-<p><a href="http://blog.kdchang.cc/2016/04/04/react-react-native-es5-es6-cheat-sheet/">ES5 ES6区别</a></p>
-
-<p><a href="https://babeljs.io/blog/2015/06/07/react-on-es6-plus">React on ES6</a></p>
-
-<p><a href="http://egorsmirnov.me/2015/06/14/react-and-es6-part2.html">React and ES6</a></p>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/11/30/react-native-life/#comments">Comments</a>
-
-
-    </article>
   
   
     <article>
@@ -1519,6 +1442,327 @@ public class Application {
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/14/mybatis/">MyBatis 的使用</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-14T19:26:25+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:26 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Mybatis是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以对配置和原生Map使用简单的 XML 或注解，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录。</p>
+
+<p>需要两个包：<a href="https://github.com/mybatis/mybatis-3/releases">MyBatis包</a>和<a href="https://www.mysql.com/products/connector/">JDBC Driver for MySQL</a></p>
+
+<p>无论是用过的mybatis和hibernate他们的共同点：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>1.从配置文件(通常是XML配置文件中)得到sessionfactory
+</span><span class='line'>2.由sessionfactory产生session
+</span><span class='line'>3.在session中完成对数据的增删改查和事务提交等
+</span><span class='line'>4.在用完之后关闭session 
+</span><span class='line'>5.在java 对象和数据库之间有mapping的配置文件，也通常是xml文件</span></code></pre></td></tr></table></div></figure>
+
+
+<p>主要XML配置文件中包含了对 MyBatis 系统的核心设置，包含获取数据库连接实例的数据源和决定事务范围和控制方式的事务管理器。通过加载该文件获取SqlSessionFactory。</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd"&gt;
+&lt;configuration&gt;
+    &lt;!--对象别名定义 --&gt;
+    &lt;typeAliases&gt;
+        &lt;typeAlias alias="User" type="com.sgm.java.User" /&gt;
+    &lt;/typeAliases&gt;
+
+&lt;!--数据库连接 --&gt;
+&lt;environments default="development"&gt;
+    &lt;environment id="development"&gt;
+        &lt;transactionManager type="JDBC" /&gt;
+        &lt;dataSource type="POOLED"&gt;
+            &lt;property name="driver" value="com.mysql.jdbc.Driver" /&gt;
+            &lt;property name="url" value="jdbc:mysql://localhost:8889/java_db" /&gt;
+            &lt;property name="username" value="root" /&gt;
+            &lt;property name="password" value="root" /&gt;
+        &lt;/dataSource&gt;
+    &lt;/environment&gt;
+&lt;/environments&gt;
+
+&lt;!--数据库操作映射文件 --&gt;
+&lt;mappers&gt;
+    &lt;mapper resource="com/sgm/mybatis/User.xml" /&gt;
+&lt;/mappers&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<p>数据库操作映射文件</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd"&gt;
+
+&lt;!--namespace很重要，绑定对应的接口文件！--&gt;
+&lt;mapper namespace="com.sgm.java.UserDao"&gt;
+
+&lt;resultMap type="User" id="resultListUser"&gt;
+    &lt;result column="name" property="name" /&gt;
+    &lt;result column="age" property="age" /&gt;
+&lt;/resultMap&gt;
+
+&lt;!--id名字要和UserDao里的方法名一样  --&gt;
+&lt;insert id="addUser" parameterType="User" useGeneratedKeys="true" keyProperty="id"&gt;
+    insert into user(name, age) values(#{name}, #{age});
+&lt;/insert&gt;
+
+&lt;delete id="deleteUserById" parameterType="int"&gt;
+    delete from user where id = #{id};
+&lt;/delete&gt;
+
+&lt;update id="updateUser" parameterType="User" &gt;
+     update user set name = #{name}, age = #{age} where id = #{id};
+&lt;/update&gt;
+
+&lt;select id="getAllUsers" resultMap="resultListUser"&gt;
+    select * from user ;
+&lt;/select&gt;
+
+&lt;select id="selectUserById" parameterType="int" resultType="User"&gt;
+   select * from user where id = #{id};
+&lt;/select&gt;
+&lt;/mapper&gt;
+</code></pre>
+
+<p>定义数据库操作接口，方法要和对应的映射文件里的id名称一样！</p>
+
+<pre><code>public interface UserDao {
+    //  方法名要和User.xml配置文件里的id名称一样
+    public void addUser(User user);
+
+    public void deleteUserById(int id);
+
+    public void updateUser(User user);
+
+    public List&lt;User&gt; getAllUsers();
+
+    public User selectUserById(int id);
+}
+</code></pre>
+
+<p>操作的Java对象</p>
+
+<pre><code>public class User {
+        public int id;
+        public String name;
+        public int age;
+
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+}
+</code></pre>
+
+<p>测试</p>
+
+<pre><code>public class Main {
+    private static Reader reader;
+    private static SqlSessionFactory sqlSessionFactory;
+
+static {
+    try {
+        reader = Resources.getResourceAsReader("MyBatisConfig.xml");
+        sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+public static void main(String[] args) {
+    SqlSession session = sqlSessionFactory.openSession();
+    UserDao userDao = session.getMapper(UserDao.class);
+
+    try {
+//          // 增
+//          User newUser = new User();
+//          newUser.setName("andy");
+//          newUser.setAge(20);
+//          userDao.addUser(newUser);
+//          session.commit();//必须提交
+//          System.out.println("reult------： 新增的userId " + newUser.getId());    
+//          //删
+//          userDao.deleteUserById(1);
+//          session.commit();//必须提交
+
+//          //改
+//          User updateUser = new User();
+//          updateUser.setId(4);
+//          updateUser.setName("andy");
+//          updateUser.setAge(20);
+//          userDao.updateUser(updateUser);
+//          session.commit();//必须提交
+
+//          //列表
+//          List&lt;User&gt; userList = userDao.getAllUsers();
+//          for(User user : userList){
+//              System.out.println("reult------：  " + user.getName());            
+//          }
+            //查单个
+//          User user = userDao.selectUserById(4);
+//          System.out.println("reult------：  " + user.getName());
+        } finally {
+            session.close();//必须关闭
+        }
+    }
+}
+</code></pre>
+
+<h3>传参方式</h3>
+
+<h5>1.用下标获取</h5>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>//Dao层接口定义
+</span><span class='line'>public User selectUser(String name,String password);
+</span><span class='line'>//对应的映射方法,用下标获取
+</span><span class='line'>&lt;select id="selectUser" resultMap="userList"&gt;
+</span><span class='line'>    select  *  from user where name = #{0} and password=#{1}
+</span><span class='line'>&lt;/select&gt;
+</span><span class='line'>//定义userList
+</span><span class='line'>&lt;resultMap type="User" id="userList"&gt;
+</span><span class='line'>  &lt;result column="id" property="id" /&gt;
+</span><span class='line'>  &lt;result column="name" property="name" /&gt;
+</span><span class='line'>  &lt;result column="password" property="password" /&gt;
+</span><span class='line'>&lt;/resultMap&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>2.传自定义对象</h5>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public void updateUser(User user);
+</span><span class='line'>&lt;update id="updateUser" parameterType="User"&gt;
+</span><span class='line'>  update user set name = #{name}, password = #{password} where id = #{id};
+</span><span class='line'>&lt;/update&gt;
+</span><span class='line'>//定义User别名
+</span><span class='line'>&lt;typeAliases&gt;
+</span><span class='line'>  &lt;typeAlias alias="User" type="com.sgm.bean.User" /&gt;
+</span><span class='line'>&lt;/typeAliases&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>3.用注解的方式</h5>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public User selectUser(@Param("name")String name,@Param("password")String password);
+</span><span class='line'>&lt;select id="selectUser" resultType="User"&gt;
+</span><span class='line'>  select * from user where name = #{name} and password = #{password};
+</span><span class='line'>&lt;/select&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>动态SQL语句</h4>
+
+<pre><code>&lt;select id="selectSameAddressUser" parameterType="User" resultType="userList"&gt;
+    select * from user 
+        &lt;if test="name != null"&gt;
+            title = #{name}
+        &lt;/if&gt;
+        &lt;if test="address != null"&gt;
+            and address = #{address}
+        &lt;/if&gt;
+&lt;/select&gt;
+</code></pre>
+
+<h3>注意!</h3>
+
+<h5>SqlSessionFactoryBuilder</h5>
+
+<p>这个类可以被实例化、使用和丢弃，一旦创建了 SqlSessionFactory，就不再需要它了。因此 SqlSessionFactoryBuilder 实例的最佳范围是方法范围,也就是局部方法变量。可以重用 SqlSessionFactoryBuilder 来创建多个 SqlSessionFactory 实例，但是最好还是不要让其一直存在以保证所有的 XML 解析资源开放给更重要的事情。</p>
+
+<h5>SqlSessionFactory</h5>
+
+<p>SqlSessionFactory 一旦被创建就应该在应用的运行期间一直存在，没有任何理由对它进行清除或重建。使用 SqlSessionFactory 的最佳实践是在应用运行期间不要重复创建多次。因此 SqlSessionFactory 的最佳范围是应用范围。可以使用单例模式或者静态单例模式。</p>
+
+<h5>SqlSession</h5>
+
+<p>每个线程都应该有它自己的 SqlSession 实例。SqlSession 的实例不是线程安全的，因此是不能被共享的，所以它的最佳的范围是请求或方法范围。不能将 SqlSession 实例的引用放在一个类的静态域，甚至一个类的实例变量也不行。每次操作应该打开一个 SqlSession，处理数据，处理完后就关闭它。关闭操作很重要，应该把这个关闭操作放到 finally 块中以确保每次都能执行关闭。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>SqlSession session = sqlSessionFactory.openSession();
+</span><span class='line'>try {
+</span><span class='line'>  // do work
+</span><span class='line'>} finally {
+</span><span class='line'>  session.close();
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/11/14/mybatis/#comments">Comments</a>
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -1536,10 +1780,6 @@ public class Application {
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2017/01/03/flux-redux/">Flux 和 Redux</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2016/12/22/react-ios/">React Native 和 iOS 互相调用</a>
       </li>
     
@@ -1553,6 +1793,10 @@ public class Application {
     
       <li class="post">
         <a href="/blog/2016/12/19/vue/">Vue</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/10/suan-fa/">排序算法</a>
       </li>
     
   </ul>
@@ -1569,7 +1813,7 @@ public class Application {
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
 <li class='category'><a href='/blog/categories/javascript/'>javascript (4)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
-<li class='category'><a href='/blog/categories/react/'>react (9)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (8)</a></li>
 
   </ul>
 </section>

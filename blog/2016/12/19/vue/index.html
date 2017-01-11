@@ -445,7 +445,7 @@ Vue.component('my-com', {
 
 <p>Vue 会复用控件，用key属性来区分不同控件。v-bind:key = &ldquo;$index&rdquo; 相当于Vue 1.x 的 track-by=&ldquo;$index&rdquo; 。</p>
 
-<p>注意 v-show 不支持 <template> 语法。 template 用 v-if . 主要 show 与 if 的区别，show 都有node，只是设置 display 属性。</p>
+<p>注意 v-show 不支持 template 语法。 template 用 v-if . 主要 show 与 if 的区别，show 都有node，只是设置 display 属性。</p>
 
 <p>v-for 迭代对象的话是迭代对象的值。 自定义组件使用v-for 值也不会自动传到组件里去，而要v-bind:item=&ldquo;item"，然后组件里用props: [&lsquo;item&rsquo;] 接收。
 不自动注入 item 到组件里的原因是，因为这使得组件会紧密耦合到 v-for 如何运作。在一些情况下，明确数据的来源可以使组件可重用。</p>
@@ -724,10 +724,6 @@ vm.$watch('groceryList', function (newVal, oldVal) {
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2017/01/03/flux-redux/">Flux 和 Redux</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2016/12/22/react-ios/">React Native 和 iOS 互相调用</a>
       </li>
     
@@ -741,6 +737,10 @@ vm.$watch('groceryList', function (newVal, oldVal) {
     
       <li class="post">
         <a href="/blog/2016/12/19/vue/">Vue</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/10/suan-fa/">排序算法</a>
       </li>
     
   </ul>
@@ -757,7 +757,7 @@ vm.$watch('groceryList', function (newVal, oldVal) {
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
 <li class='category'><a href='/blog/categories/javascript/'>javascript (4)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
-<li class='category'><a href='/blog/categories/react/'>react (9)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (8)</a></li>
 
   </ul>
 </section>

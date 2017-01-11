@@ -4,7 +4,7 @@
   <title><![CDATA[Category: React | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/react/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2017-01-11T19:04:51+08:00</updated>
+  <updated>2017-01-11T19:11:47+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,19 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Flux 和 Redux]]></title>
-    <link href="http://andyfightting.github.io/blog/2017/01/03/flux-redux/"/>
-    <updated>2017-01-03T14:39:10+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2017/01/03/flux-redux</id>
-    <content type="html"><![CDATA[<h4>Flux</h4>
-
-<p><a href="http://blog.andrewray.me/flux-for-stupid-people/">Flux是什么？</a>Flux不是js库，它是代码的组织规范，一种结构. 通过使用这种规范让代码更有结构，更便于维护。主要是在数据流这一块，比如用户点击按钮，然后处理数据，最后更新页面。具体如何处理这个流程？怎么让这流程规范有结构？这就是Flux关注的 &ndash; data flux structure。</p>
-
-<p>这只是为了让代码规范有结构，并不是一定要用的，也不是和React绑定相关的，不用React也可以用Flux。下面以在React中使用Flux为例. 不使用Flux结构时，React组件点击按钮处理数据刷新页面是这样的：直接修改state里的数据，然后会自动刷新组件，也就是直接面对面的操作state。而Flux结构不是直接面对面的操作state, 是绕了个弯来处理的。</p>
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[React Native 和 iOS 互相调用]]></title>
@@ -579,6 +566,102 @@ align-self :设置item自身在交叉轴上的对齐方式。可覆盖align-item
 <p><code>alignItems</code>: 决定其子元素沿着交叉轴的排列方式。有flex-start、center、flex-end以及stretch。<strong>注意：要使stretch选项生效的话，子元素在次轴方向上不能固定尺寸。</strong></p>
 
 <p><a href="http://www.ruanyifeng.com/blog/2015/07/flex-examples.html">Fexbox布局实例</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[React Native 样式属性]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/11/29/rn-style/"/>
+    <updated>2016-11-29T22:27:51+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/11/29/rn-style</id>
+    <content type="html"><![CDATA[<p>React Native 采用CSS样式来布局，也会有继承和覆盖作用。只要在样式表中书写一个不存在的样式，就会报错，提示该样式不存在，然后提供所有可用的样式：
+<img src="/myimg/java/style.png" alt="" /></p>
+
+<pre><code>//边框
+borderBottomWidth 
+borderLeftWidth 
+borderRightWidth 
+borderTopWidth 
+borderWidth 
+</code></pre>
+
+<pre><code>//边框颜色
+borderBottomColor
+borderLeftColor
+borderRightColor
+borderTopColor
+borderColor
+</code></pre>
+
+<pre><code>//外边距
+marginTop
+marginBottom
+marginLeft
+marginRight
+marginVertical //相当于marginTop 和 marginBottom
+marginHorizontal //相当于 marginLeft 和 marginRight
+margin
+</code></pre>
+
+<pre><code>//内边距  
+paddingTop  
+paddingBottom
+paddingLeft  
+paddingRight  
+paddingVertical //相当于 paddingTop 和 paddingBottom
+paddingHorizontal  //相当于 paddingLeft 和 paddingRight
+padding 
+</code></pre>
+
+<pre><code>//边框圆角
+borderTopLeftRadius
+borderTopRightRadius
+borderBottomLeftRadius
+borderBottomRightRadius
+borderRadius
+</code></pre>
+
+<pre><code>//flex 布局
+flex number 
+flexDirection enum('row', 'column') 
+flexWrap enum('wrap', 'nowrap') 
+alignItems enum('flex-start', 'flex-end', 'center', 'stretch') 
+alignSelf enum('auto', 'flex-start', 'flex-end', 'center', 'stretch') 
+justifyContent enum('flex-start', 'flex-end', 'center', 'space-between', 'space-around') 
+position属性值为absolute和relative，当使用绝对布局时，定位根据屏幕来进行。
+</code></pre>
+
+<pre><code>//字体相关属性
+color 字体颜色
+fontFamily 字体族
+fontSize 字体大小
+fontStyle 字体样式，正常，倾斜等，值为enum('normal', 'italic')
+fontWeight 字体粗细，值为enum("normal", 'bold', '100', '200', '300', '400', '500', '600', '700', '800', '900')
+letterSpacing 字符间隔
+lineHeight 行高
+textAlign 字体对齐方式，值为enum("auto", 'left', 'right', 'center', 'justify')
+textDecorationLine 上划线，下划线，删除线，无修饰，值为enum("none", 'underline', 'line-through', 'underline line-through')
+textDecorationStyle 修饰的线的类型 enum("solid", 'double', 'dotted', 'dashed')
+textDecorationColor 修饰的线的颜色
+writingDirection enum("auto", 'ltr', 'rtl') 书写方向，从左往右写还是从右往左写
+</code></pre>
+
+<pre><code>//图片相关属性
+resizeMode enum('cover', 'contain', 'stretch')
+overflow enum('visible', 'hidden') 超出部分是否显示，hidden为隐藏
+tintColor 着色，rgb字符串类型
+opacity 透明度
+scaleX:水平方向缩放
+scaleY:垂直方向缩放
+rotation:旋转
+translateX:水平方向平移
+translateY:水平方向平移
+//阴影,默认透明的，要设置shadowOpacity大于0才有效果
+shadowColor
+shadowOffset
+shadowOpacity
+shadowRadius
+</code></pre>
 ]]></content>
   </entry>
   

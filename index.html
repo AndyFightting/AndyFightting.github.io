@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Flux 和 Redux Jan 3rd, 2017 2:39 pm Flux Flux是什么？Flux不是js库，它是代码的组织规范，一种结构. 通过使用这种规范让代码更有结构，更便于维护。主要是在数据流这一块，比如用户点击按钮，然后处理数据，最后更新页面。具体如何处理这个流程？ &hellip;">
+  <meta name="description" content="React Native 和 iOS 互相调用 Dec 22nd, 2016 9:19 am 这里记录如何在iOS项目中集成React Native ，和他们之间互相传参，互相调用。 初学者可能都是按照RN官网来学习的，通过 react-native init xxx 来创建一个新项目， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,42 +76,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/03/flux-redux/">Flux 和 Redux</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-03T14:39:10+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2017</span></span> <span class='time'>2:39 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h4>Flux</h4>
-
-<p><a href="http://blog.andrewray.me/flux-for-stupid-people/">Flux是什么？</a>Flux不是js库，它是代码的组织规范，一种结构. 通过使用这种规范让代码更有结构，更便于维护。主要是在数据流这一块，比如用户点击按钮，然后处理数据，最后更新页面。具体如何处理这个流程？怎么让这流程规范有结构？这就是Flux关注的 &ndash; data flux structure。</p>
-
-<p>这只是为了让代码规范有结构，并不是一定要用的，也不是和React绑定相关的，不用React也可以用Flux。下面以在React中使用Flux为例. 不使用Flux结构时，React组件点击按钮处理数据刷新页面是这样的：直接修改state里的数据，然后会自动刷新组件，也就是直接面对面的操作state。而Flux结构不是直接面对面的操作state, 是绕了个弯来处理的。</p>
-</div>
-  
-  
-
-
-      | <a href="/blog/2017/01/03/flux-redux/#comments">Comments</a>
-
-
-    </article>
   
   
     <article>
@@ -949,7 +913,7 @@ Vue.component('my-com', {
 
 <p>Vue 会复用控件，用key属性来区分不同控件。v-bind:key = &ldquo;$index&rdquo; 相当于Vue 1.x 的 track-by=&ldquo;$index&rdquo; 。</p>
 
-<p>注意 v-show 不支持 <template> 语法。 template 用 v-if . 主要 show 与 if 的区别，show 都有node，只是设置 display 属性。</p>
+<p>注意 v-show 不支持 template 语法。 template 用 v-if . 主要 show 与 if 的区别，show 都有node，只是设置 display 属性。</p>
 
 <p>v-for 迭代对象的话是迭代对象的值。 自定义组件使用v-for 值也不会自动传到组件里去，而要v-bind:item=&ldquo;item"，然后组件里用props: [&lsquo;item&rsquo;] 接收。
 不自动注入 item 到组件里的原因是，因为这使得组件会紧密耦合到 v-for 如何运作。在一些情况下，明确数据的来源可以使组件可重用。</p>
@@ -2609,6 +2573,80 @@ const styles = StyleSheet.create({
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/30/react-native-life/">React Native 组件生命周期</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-30T11:08:59+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:08 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>生命周期就是一个对象从开始生成到最后消亡所经历的状态，理解生命周期是开发的基础。<a href="http://bbs.reactnative.cn/topic/15/react-react-native-%E7%9A%84es5-es6%E5%86%99%E6%B3%95%E5%AF%B9%E7%85%A7%E8%A1%A8">ES5语法和ES6语法有所变化</a>。</p>
+
+<p><img src="/myimg/java/life2.png" alt="" /></p>
+
+<h4>可以把组件生命周期大致分为三个阶段：</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>第一阶段：是组件第一次绘制阶段，如图中的上面虚线框内，在这里完成了组件的加载和初始化；
+</span><span class='line'>第二阶段：是组件在运行和交互阶段，如图中左下角虚线框，这个阶段组件可以处理用户交互接收事件更新界面；
+</span><span class='line'>第三阶段：是组件卸载消亡的阶段，如图中右下角的虚线框中，这里做一些组件的清理工作。</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>constructor(props) :</strong>这个方法会在组件创建的时候调用一次。 这个方法中可以通过this.state初始化状态参数，ES5是通过getInitialState()方法初始化的。</p>
+
+<p><strong>getDefaultProps() :</strong>在组件类创建的时候调用一次，然后返回值被缓存下来。全局调用一次，所有实例共享。</p>
+
+<p><strong>getInitialState() :</strong>在组件挂载之前调用一次。返回值将会作为 this.state 的初始值。</p>
+
+<p><strong>componentWillMount() :</strong>在组件创建并初始化了状态之后，在第一次 render() 之前。可以在这里做一些初始化操作。这个函数在整个生命周期中只被调用一次。</p>
+
+<p><strong>render() :</strong>这个方法是必须的，对视图进行渲染，也可以返回 null 或者 false 来表明不需要渲染任何东西.</p>
+
+<p><strong>componentDidMount() :</strong>在组件第一次绘制之后，会调用该方法通知组件已经加载完成。这个方法调用的时候，其虚拟 DOM 已经构建完成，可以在这个函数里获取其中的元素或者子组件。框架是先调用子组件的该方法，然后再调用父组件的。可以在这里发起网络请求等。</p>
+
+<p><strong>componentWillReceiveProps(nextProps) :</strong> 父组件改变子组件的属性的时候会调用该方法,初次渲染时不会调用该方法。参数nextProps是即将被设置的属性，旧的属性还是可以通过 this.props 来获取。</p>
+
+<p><strong>shouldComponentUpdate(nextProps,nextState) :</strong>当组件接收到新的属性或状态改变的话会调用该方法。参数 nextProps 和上面的方法一样。nextState 表示组件即将更新的状态值。这个方法的返回值决定是否需要更新组件，默认返回true。可以重载这个函数来决定组件是否需要更新。</p>
+
+<p><strong>componentWillUpdate(nextProps,nextState) :</strong>如果组件状态改变，并且上面的方法返回为true，就会开始准更新组件。这里可以做一些在更新组件之前要做的事情。<strong>在这个方法里面不能再调用 this.setState 来修改状态</strong>。这个方法调用之后，就会把 nextProps 和 nextState 分别设置到 this.props 和 this.state 中。紧接着就会调用 render() 来更新组件了。</p>
+
+<p><strong>componentDidUpdate(prevProps,prevState) :</strong>在调用了 render() 更新组件同步到 DOM 中之后立刻调用该方法。因为到这里已经完成了属性和状态的更新了，此方法的参数变成了 prevProps 和 prevState。</p>
+
+<p><strong>componentWillUnmount() :</strong>当组件从 DOM 中移除的时候就会调用该方法。可以这个方法中做一些资源清理工作。</p>
+
+<p><a href="http://bbs.reactnative.cn/topic/15/react-react-native-%E7%9A%84es5-es6%E5%86%99%E6%B3%95%E5%AF%B9%E7%85%A7%E8%A1%A8">ES5 ES6写法对照表</a></p>
+
+<p><a href="http://blog.kdchang.cc/2016/04/04/react-react-native-es5-es6-cheat-sheet/">ES5 ES6区别</a></p>
+
+<p><a href="https://babeljs.io/blog/2015/06/07/react-on-es6-plus">React on ES6</a></p>
+
+<p><a href="http://egorsmirnov.me/2015/06/14/react-and-es6-part2.html">React and ES6</a></p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/11/30/react-native-life/#comments">Comments</a>
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -2622,10 +2660,6 @@ const styles = StyleSheet.create({
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2017/01/03/flux-redux/">Flux 和 Redux</a>
-      </li>
     
       <li class="post">
         <a href="/blog/2016/12/22/react-ios/">React Native 和 iOS 互相调用</a>
@@ -2643,6 +2677,10 @@ const styles = StyleSheet.create({
         <a href="/blog/2016/12/19/vue/">Vue</a>
       </li>
     
+      <li class="post">
+        <a href="/blog/2016/12/10/suan-fa/">排序算法</a>
+      </li>
+    
   </ul>
 </section>
 
@@ -2657,7 +2695,7 @@ const styles = StyleSheet.create({
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
 <li class='category'><a href='/blog/categories/javascript/'>javascript (4)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
-<li class='category'><a href='/blog/categories/react/'>react (9)</a></li>
+<li class='category'><a href='/blog/categories/react/'>react (8)</a></li>
 
   </ul>
 </section>

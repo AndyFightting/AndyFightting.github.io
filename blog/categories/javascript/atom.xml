@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Javascript | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2017-01-11T19:04:51+08:00</updated>
+  <updated>2017-01-11T19:11:47+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -612,7 +612,7 @@ Vue.component('my-com', {
 
 <p>Vue 会复用控件，用key属性来区分不同控件。v-bind:key = &ldquo;$index&rdquo; 相当于Vue 1.x 的 track-by=&ldquo;$index&rdquo; 。</p>
 
-<p>注意 v-show 不支持 <template> 语法。 template 用 v-if . 主要 show 与 if 的区别，show 都有node，只是设置 display 属性。</p>
+<p>注意 v-show 不支持 template 语法。 template 用 v-if . 主要 show 与 if 的区别，show 都有node，只是设置 display 属性。</p>
 
 <p>v-for 迭代对象的话是迭代对象的值。 自定义组件使用v-for 值也不会自动传到组件里去，而要v-bind:item=&ldquo;item"，然后组件里用props: [&lsquo;item&rsquo;] 接收。
 不自动注入 item 到组件里的原因是，因为这使得组件会紧密耦合到 v-for 如何运作。在一些情况下，明确数据的来源可以使组件可重用。</p>
