@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Javascript | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2017-01-11T19:11:47+08:00</updated>
+  <updated>2017-01-16T21:30:52+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -12,6 +12,234 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ECMAScript 6]]></title>
+    <link href="http://andyfightting.github.io/blog/2017/01/16/es6/"/>
+    <updated>2017-01-16T13:14:56+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2017/01/16/es6</id>
+    <content type="html"><![CDATA[<h3>Generator 函数</h3>
+
+<p>执行该函数时只是返回一个内部调用栈的指针，然后手动执行 <code>next()</code> 方法进行一次栈里的 <code>yield</code> 表达式。next 方法每次返回一个对象<code>{value: undefined, done: false}</code>
+value 的值就是 yield 表达式的值，done 是最有一个yield是否都执行完了。每次调用 next 方法都是在上一次执行的 yield 后再执行下一次的 yield,也就是相当于Generator函数可以暂停，然后继续。next 方法还可以传入一个参数到函数内部，它会替换上一次 yield 的返回值(注意区分不是next方法的放回值，next方法始终是返回一个对象)。也就是说可以用 next方法动态的向函数里传参数，函数的执行时分段的，可以暂停，可以继续。Generator 函数还可以用 for of 进行遍历执行。</p>
+
+<p><strong># 动态传参：</strong> Generator 函数的暂停执行的效果，意味着可以把异步操作写在 yield 语句里面，等到调用 next 方法时再往后执行。这实际上等同于不需要写回调函数了，因为异步操作的后续操作可以放在 yield 语句下面，反正要等到调用next 方法时再执行。所以，Generator 函数的一个重要实际意义就是用来处理异步操作，改写回调函数。</p>
+
+<pre><code>      //next 传参
+      function* myGenerator() {
+          let a = yield 'hello';        //执行test.next('A')后： a = undefined,暂停在此处，等待下一次的next再继续
+          let b = yield 'world' + a;    //执行test.next('B')后： a = 'B', b = undefined,暂停在此处，等待下一次的next再继续
+          let c = yield 'generator' + b;//执行test.next('C')后： a = 'B', b = 'C', c = undefined ,暂停在此处，等待下一次的next再继续
+          return '结束' + c;             //执行test.next('D')后： a = 'B', b = 'C', c = 'D'
+        }
+
+        let test = myGenerator();
+
+        test.next('A');  //反回对象： {value: "hello", done: false} ,第一次的next传参是无效的，没意义的！
+        test.next('B');  //反回对象： {value: "worldB", done: false}
+        test.next('C');  //反回对象： {value: "generatorC", done: false}
+        test.next('D');  //反回对象： {value: "结束D", done: true}
+</code></pre>
+
+<p><strong># for of  遍历:</strong> 注意，一旦 next 方法的返回对象的done属性为 true，for&hellip;of 循环就会中止，且不包含该返回对象，所以上面代码的 return 语句返回的 4，不包括在 for&hellip;of 循环之中。</p>
+
+<pre><code class="">        function *foo() {
+          yield 1;
+          yield 2;
+          yield 3;
+          return 4;
+        }
+        for (let v of foo()) {
+          console.log(v);
+        }
+        // 1 2 3 
+</code></pre>
+
+<p><strong># 捕获外部错误：</strong> Generator 函数还有一个特点，它可以在函数体外抛出错误，然后在函数体内捕获。也可以函数体内抛错，外部捕获。 注意下面 throw 的不同！！</p>
+
+<pre><code>   var g = function* () {
+      while (true) {
+        try {
+          console.log('aaa');
+          yield console.log('bbb');
+          console.log('ccc');
+        } catch (error) {
+          console.log('内部捕获', error);
+        }
+      }
+    };
+
+    var i = g();
+    i.next();
+    try {
+      i.throw('a'); //这是迭代器的 throw 方法
+    } catch (error) {
+      console.log('外部捕获', error);
+    }
+  //aaa
+  //bbb
+  //内部捕获 a
+  //aaa   //为何这里还会执行 ？？
+  //bbb
+</code></pre>
+
+<p><strong># 异步操作：</strong>  可以像下面那样就不用函数回调了！只是在异步操作成功后调用next就可以。注意，makeAjaxCall 函数中的 next 方法，必须加上 response 参数，因为 yield 语句构成的表达式，本身是没有值的，总是等于 undefined。</p>
+
+<pre><code>   function* main() {
+      var result = yield request("http://some.url");
+      var resp = JSON.parse(result);
+        console.log(resp.value);
+    }
+
+    function request(url) {
+      makeAjaxCall(url, function(response){
+        it.next(response);
+      });
+    }
+
+    var it = main();
+    it.next();
+</code></pre>
+
+<h3>Promise 对象</h3>
+
+<p>Promise 对象是用来处理异步操作流程的，避免了层层嵌套的回调函数。</p>
+
+<pre><code>  const step0 = function () {
+      return new Promise(function(resolve, reject) {
+          setTimeout(()=&gt;{
+            console.log('step 0 处理');
+              resolve(); //表示异步处理成功
+          },2000);
+      });
+    };
+
+    const step1 = function () {
+      return new Promise(function(resolve, reject) {
+        setTimeout(()=&gt;{
+          console.log('step 1 处理');
+          resolve(); //表示异步处理成功
+        },2000);
+      });
+    };
+
+    function allSuccess() {
+        console.log('全部成功了');
+    }
+
+    function failed() {
+      console.log('失败了');
+    }
+
+    step0().then(step1).then(allSuccess,failed);
+</code></pre>
+
+<p>Promise.all方法用于将多个Promise实例，包装成一个新的Promise实例。</p>
+
+<pre><code>var p = Promise.all([p1,p2,p3]);
+</code></pre>
+
+<p>p的状态由p1、p2、p3决定，分成两种情况。</p>
+
+<ol>
+<li>只有p1、p2、p3的状态都变成resolve，p的状态才会变成resolve，此时p1、p2、p3的返回值组成一个数组，传递给p的回调函数。</li>
+<li>只要p1、p2、p3之中有一个被reject，p的状态就变成reject，此时第一个被reject的实例的返回值，会传递给p的回调函数。</li>
+</ol>
+
+
+<p><strong>注意：</strong>区别一下几种情况：</p>
+
+<pre><code>// 写法一
+doSomething().then(function () {
+  return doSomethingElse();
+}).then(finalHandler);
+
+// 写法二
+doSomething().then(function () {
+  doSomethingElse();
+}).then(finalHandler);
+
+// 写法三
+doSomething().then(doSomethingElse()).then(finalHandler);
+
+// 写法四
+doSomething().then(doSomethingElse).then(finalHandler);
+</code></pre>
+
+<p>写法一finalHandler的参数，是doSomethingElse返回的结果，下面最后会打印出hello.</p>
+
+<pre><code>const doSomething = function () {
+      return new Promise(function(resolve, reject) {
+        console.log('step 0 处理');
+        resolve();
+      });
+    };
+
+    const doSomethingElse = function () {
+       new Promise(function(resolve, reject) {
+        console.log('step 1 处理');
+        resolve();
+      });
+
+       return 'hello'
+    };
+
+    function finalHandler(msg) {
+        console.log(msg);
+    }
+
+    doSomething().then(function () {
+      return doSomethingElse();
+    }).then(finalHandler);
+</code></pre>
+
+<p>写法二的finalHandler回调函数的参数是undefined。写法三的finalHandler回调函数的参数，是doSomethingElse函数返回的回调函数的运行结果。主要是写法三和写法四的区别，三的话doSomethingElse是马上执行，finalHandler拿不到它的返回结果！而四可以拿到它的返回结果。</p>
+
+<pre><code>//三的打印
+step 0
+setp 1
+undefined
+
+//四的打印结果
+step 0
+setp 1
+hello
+</code></pre>
+
+<h4>块级别的 let,const, 不会变量提升，会有暂时性死区。let可变，const常量只能初始化赋值一次。const的指向不能修改，但对象的属性可以修改。注意for循环中用var做临时变量时，循环结束后该临时变量还在！用let就不会。</h4>
+
+<pre><code>var a = [];
+for (var i = 0; i &lt; 10; i++) {
+  a[i] = function () {
+    console.log(i);
+  };
+}
+a[0](); // 10 ，全部都是 10   
+</code></pre>
+
+<h4>for of遍历，可遍历对象的[key,value],遍历set,map, for in 不行。基于Iterator接口遍历。</h4>
+
+<h4>默认参数，&hellip;不定个数参数，&hellip;对象展开, 不定参数只能放最后，</h4>
+
+<h4>Set,Map,WeakSet,WeakMap</h4>
+
+<h4>对象增强,直接写变量和方法作为对应的属性</h4>
+
+<h4>字符窜模板插值 ${}</h4>
+
+<h4>解构，匹配赋值，var {name:n, age:a} = getUser(); //n=getUser().name, a=getUser().age</h4>
+
+<h4>Symbol，解决属性名冲突问题，始终唯一  Symbol(&lsquo;a&rsquo;) != Symbol(&lsquo;a&rsquo;)</h4>
+
+<h4>Proxy，代理拦截 var p = new Proxy(target, handler); 然后操作 p 就会被handler代理拦截。</h4>
+
+<h4>Reflect 反射</h4>
+
+<h4>语法糖，用 => 定义方法， class 类, 像java似的写代码，</h4>
+
+<h4>字符编码问题，之前都是基于 UTF-16 两个字节的编码，length 和 charAt()都是基于这样来读取的。然而 ES6 加强了对 Unicode 的支持，并且扩展了字符串对象。对于那些需要四个字节存储的字符，再用之前的length ， charAt() 来操作就无法正确读取，所以得用新的方法新的方式来统一处理。codePointAt可以正确提取给定位置字符串的对应 Unicode 码.</h4>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Weex]]></title>
@@ -248,15 +476,6 @@ end
 </code></pre>
 
 <p><strong>$dispatch 只能是子组件向父组件通信， $broadcast 只能是父组件向子组件通信，反过来都不行！</strong></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Angular]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/12/20/angular/"/>
-    <updated>2016-12-20T17:35:42+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/12/20/angular</id>
-    <content type="html"><![CDATA[
 ]]></content>
   </entry>
   
@@ -599,7 +818,7 @@ new Vue({
 
 Vue.component('my-com', {
   template: '#myCom',
-})
+})                          
 </code></pre>
 
 <p>v-bind:my-name.sync=&ldquo;name&rdquo; 这是用在子组件属性中 .sync 意思是子组件的数据会影响父组件，默认是不会的的。</p>

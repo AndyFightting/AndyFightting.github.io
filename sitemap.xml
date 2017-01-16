@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://andyfightting.github.io/blog/2017/01/16/es6/</loc>
+    <lastmod>2017-01-16T13:14:56+08:00</lastmod>
+  </url>
+  <url>
     <loc>http://andyfightting.github.io/blog/2016/12/22/react-ios/</loc>
     <lastmod>2016-12-22T09:19:38+08:00</lastmod>
   </url>
   <url>
     <loc>http://andyfightting.github.io/blog/2016/12/20/weex/</loc>
     <lastmod>2016-12-20T22:14:37+08:00</lastmod>
-  </url>
-  <url>
-    <loc>http://andyfightting.github.io/blog/2016/12/20/angular/</loc>
-    <lastmod>2016-12-20T17:35:42+08:00</lastmod>
   </url>
   <url>
     <loc>http://andyfightting.github.io/blog/2016/12/19/vue/</loc>
@@ -194,5 +194,17 @@
   </url>
   <url>
     <loc>http://andyfightting.github.io/blog/categories/javascript/</loc>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/posts/2/</loc>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/posts/3/</loc>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/posts/4/</loc>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/posts/5/</loc>
   </url>
 </urlset>
