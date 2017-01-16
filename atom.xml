@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2017-01-16T21:30:52+08:00</updated>
+  <updated>2017-01-16T23:32:17+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -157,6 +157,10 @@ value 的值就是 yield 表达式的值，done 是最有一个yield是否都执
 </ol>
 
 
+<p>Promise.race方法同样是将多个Promise实例，包装成一个新的Promise实例。与all方法不同的是只要p1、p2、p3之中有一个实例率先改变状态，p的状态就跟着改变。那个率先改变的Promise实例的返回值，就传递给p的返回值。</p>
+
+<p><strong>Catch:</strong>跟传统的try/catch代码块不同的是，如果没有使用catch方法指定错误处理的回调函数，Promise对象抛出的错误不会传递到外层代码，即不会有任何反应。</p>
+
 <p><strong>注意：</strong>区别一下几种情况：</p>
 
 <pre><code>// 写法一
@@ -216,6 +220,43 @@ setp 1
 hello
 </code></pre>
 
+<h3>Async 函数</h3>
+
+<p>async函数与Promise、Generator函数一样，是用来取代回调函数、解决异步操作的一种方法。它本质上是Generator函数的语法糖。</p>
+
+<pre><code>  var a = function (){
+      return new Promise(function (resolve, reject){
+             setTimeout(()=&gt;{
+               console.log('处理 a');
+                 resolve();
+             },1000);
+      });
+    };
+
+    var b = function (){
+      return new Promise(function (resolve, reject){
+        setTimeout(()=&gt;{
+          console.log('处理 b');
+          resolve();
+        },1000);
+      });
+    };
+
+    var gen =async function(){
+       await a();
+       await b();
+      console.log('结束');
+    };
+
+     gen();
+</code></pre>
+
+<ol>
+<li>内置执行器。Generator函数的执行必须靠执行器，而async函数自带执行器。也就是说，async函数的执行，与普通函数一模一样，只要一行。</li>
+<li>更好的语义。async和await，比起星号和yield，语义更清楚了。async表示函数里有异步操作，await表示紧跟在后面的表达式需要等待结果。</li>
+</ol>
+
+
 <h4>块级别的 let,const, 不会变量提升，会有暂时性死区。let可变，const常量只能初始化赋值一次。const的指向不能修改，但对象的属性可以修改。注意for循环中用var做临时变量时，循环结束后该临时变量还在！用let就不会。</h4>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -248,13 +289,11 @@ hello
 
 <h4>Symbol，解决属性名冲突问题，始终唯一  Symbol(&lsquo;a&rsquo;) != Symbol(&lsquo;a&rsquo;)</h4>
 
-<h4>Proxy，代理拦截 var p = new Proxy(target, handler); 然后操作 p 就会被handler代理拦截。</h4>
-
-<h4>Reflect 反射</h4>
+<h4>Proxy，代理拦截 var p = new Proxy(target, handler); 操作 p 就会被handler代理拦截。</h4>
 
 <h4>语法糖，用 => 定义方法， class 类, 像java似的写代码，</h4>
 
-<h4>字符编码问题，之前都是基于 UTF-16 两个字节的编码，length 和 charAt()都是基于这样来读取的。然而 ES6 加强了对 Unicode 的支持，并且扩展了字符串对象。对于那些需要四个字节存储的字符，再用之前的length ， charAt() 来操作就无法正确读取，所以得用新的方法新的方式来统一处理。codePointAt可以正确提取给定位置字符串的对应 Unicode 码.</h4>
+<h4>字符编码，之前都是基于 UTF-16 两个字节的编码，length 和 charAt()都是基于这样来读取的。然而 ES6 加强了对 Unicode 的支持，并且扩展了字符串对象。对于那些需要四个字节存储的字符，再用之前的length ， charAt() 来操作就无法正确读取，所以得用新的方法新的方式来统一处理。codePointAt可以正确提取给定位置字符串的对应 Unicode 码.</h4>
 ]]></content>
   </entry>
   
