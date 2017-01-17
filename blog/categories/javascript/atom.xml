@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Javascript | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2017-01-16T23:32:17+08:00</updated>
+  <updated>2017-01-17T08:43:16+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -277,6 +277,14 @@ a[0](); // 10 ，全部都是 10
 <h4>语法糖，用 => 定义方法， class 类, 像java似的写代码，</h4>
 
 <h4>字符编码，之前都是基于 UTF-16 两个字节的编码，length 和 charAt()都是基于这样来读取的。然而 ES6 加强了对 Unicode 的支持，并且扩展了字符串对象。对于那些需要四个字节存储的字符，再用之前的length ， charAt() 来操作就无法正确读取，所以得用新的方法新的方式来统一处理。codePointAt可以正确提取给定位置字符串的对应 Unicode 码.</h4>
+
+<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference">Mozilla MDN 文档</a></p>
+
+<p><a href="http://es6.ruanyifeng.com/#docs/reference">ECMAScript 6 入门</a></p>
+
+<p><a href="http://javascript.ruanyifeng.com/">JavaScript 标准参考</a></p>
+
+<p><a href="https://github.com/irideas/es6features">ES6 Features</a></p>
 ]]></content>
   </entry>
   
