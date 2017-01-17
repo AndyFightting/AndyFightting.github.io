@@ -9,9 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Node Dec 3rd, 2016 10:24 am Node.js 是运行在服务端的 JavaScript。Node.js 应用是由几部分组成的： 1. 引入 require 模块：可以使用 require 指令来载入 Node.js 模块。
-2. 创建服务器：服务器可以监听客户端的请求
-3 &hellip;">
+  <meta name="description" content="Node Dec 3rd, 2016 10:24 am Node 入门 墙裂推荐！ Node.js是单线程的，它通过事件轮询（event loop）来实现并行操作。 它是这样处理的：“嘿，longTimeFunction(),你继续处理你的事情，我（Node.js线程）先不等你了， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -97,7 +95,119 @@
   </header>
 
 
-<div class="entry-content"><p>Node.js 是运行在服务端的 JavaScript。Node.js 应用是由几部分组成的：</p>
+<div class="entry-content"><p><a href="http://www.nodebeginner.org/index-zh-cn.html#javascript-and-nodejs">Node 入门</a> <strong>墙裂推荐！</strong></p>
+
+<p>Node.js是单线程的，它通过事件轮询（event loop）来实现并行操作。</p>
+
+<p><strong>它是这样处理的：“嘿，longTimeFunction(),你继续处理你的事情，我（Node.js线程）先不等你了，我继续去处理你后面的代码，请你提供一个callbackFunction()，等你处理完之后我会去调用该回调函数的，谢谢！”</strong>  JavaScript都是基于这样单线程的事件回调来处理异步的。</p>
+
+<p><strong>相对采用将内容传递给服务器的方式，采用将服务器“传递”给内容的方式来实现异步。就是将response对象通过请求路由传递给请求处理程序。 随后，处理程序就可以采用该对象上的函数来对请求作出响应。</strong></p>
+
+<p>下面是上传图片显示图片的 <a href="/mysrc/java/node.zip">Demo:</a></p>
+
+<p>index.js</p>
+
+<pre><code>var server = require("./server");
+var router = require("./router");
+var requestHandlers = require("./requestHandlers");
+
+var handle = {}
+handle["/"] = requestHandlers.start;
+handle["/start"] = requestHandlers.start;
+handle["/upload"] = requestHandlers.upload;
+handle["/show"] = requestHandlers.show;
+
+server.start(router.route, handle);
+</code></pre>
+
+<p>router.js</p>
+
+<pre><code>function route(handle, pathname, response, request) {
+  if (typeof handle[pathname] === 'function') {
+    handle[pathname](response, request);
+  } else {
+    response.writeHead(404, {"Content-Type": "text/html"});
+    response.write("404 Not found");
+    response.end();
+  }
+}
+exports.route = route;
+</code></pre>
+
+<p>server.js</p>
+
+<pre><code>var http = require("http");
+var url = require("url");
+
+function start(route, handle) {
+  function onRequest(request, response) {
+    var pathname = url.parse(request.url).pathname;
+    route(handle, pathname, response, request);
+  }
+  http.createServer(onRequest).listen(8888);
+}
+exports.start = start;
+</code></pre>
+
+<p>requestHandlers.js</p>
+
+<pre><code>var querystring = require("querystring"),
+    fs = require("fs"),
+    formidable = require("formidable");
+
+function start(response) {
+  var body = '&lt;html&gt;'+
+    '&lt;head&gt;'+
+    '&lt;meta http-equiv="Content-Type" content="text/html; '+
+    'charset=UTF-8" /&gt;'+
+    '&lt;/head&gt;'+
+    '&lt;body&gt;'+
+    '&lt;form action="/upload" enctype="multipart/form-data" '+
+    'method="post"&gt;'+
+    '&lt;input type="file" name="upload" multiple="multiple"&gt;'+
+    '&lt;input type="submit" value="确定上传" /&gt;'+
+    '&lt;/form&gt;'+
+    '&lt;/body&gt;'+
+    '&lt;/html&gt;';
+
+    response.writeHead(200, {"Content-Type": "text/html"});
+    response.write(body);
+    response.end();
+}
+
+function upload(response, request) {
+  var form = new formidable.IncomingForm();
+  form.parse(request, function(error, fields, files) {
+    fs.renameSync(files.upload.path, "./tmp/test.png");
+    response.writeHead(200, {"Content-Type": "text/html"});
+    response.write("received image:&lt;br/&gt;");
+    response.write("&lt;img src='/show' /&gt;");
+    response.end();
+  });
+}
+
+function show(response) {
+  fs.readFile("./tmp/test.png", "binary", function(error, file) {
+    if(error) {
+      response.writeHead(500, {"Content-Type": "text/plain"});
+      response.write(error + "\n");
+      response.end();
+    } else {
+      response.writeHead(200, {"Content-Type": "image/png"});
+      response.write(file, "binary");
+      response.end();
+    }
+  });
+}
+
+exports.start = start;
+exports.upload = upload;
+exports.show = show;
+</code></pre>
+
+<p>运行： <code>cd node</code> <code>node index.js</code></p>
+
+<p>Node.js 是运行在服务端的 JavaScript。Node.js 应用是由几部分组成的：</p>
 
 <pre><code>1. 引入 require 模块：可以使用 require 指令来载入 Node.js 模块。
 2. 创建服务器：服务器可以监听客户端的请求
