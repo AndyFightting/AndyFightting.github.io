@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2017-01-17T18:38:23+08:00</updated>
+  <updated>2017-01-18T19:13:06+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -291,7 +291,26 @@ hello
 
 <h4>Proxy，代理拦截 var p = new Proxy(target, handler); 操作 p 就会被handler代理拦截。</h4>
 
-<h4>语法糖，用 => 定义方法， class 类, 像java似的写代码，</h4>
+<h4>语法糖，用 => 定义方法， class 类, 像java似的写代码，<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/Arrow_functions">注意：</a></h4>
+
+<pre><code>// 加上括弧包着是返回一个对象字面表达式, 注意两种区别 ！
+ params =&gt; ({foo: bar})
+ params =&gt; { statements }
+</code></pre>
+
+<p><strong>下面这种方式定义的方法会自动绑定上下文 this, 所以React可以用这样来代替手动 bind(this)</strong> <a href="https://facebook.github.io/react/docs/handling-events.html">这里</a></p>
+
+<pre><code> &lt;button onClick={this.handleClick}&gt;
+  handleClick = () =&gt; {  
+    //thist 可用
+  }
+
+  //或者 这样也会自动绑定this
+  &lt;button onClick={() =&gt; this.handleClick()}&gt;
+  handleClick() {
+     //this 可用
+  }
+</code></pre>
 
 <h4>字符编码，之前都是基于 UTF-16 两个字节的编码，length 和 charAt()都是基于这样来读取的。然而 ES6 加强了对 Unicode 的支持，并且扩展了字符串对象。对于那些需要四个字节存储的字符，再用之前的length ， charAt() 来操作就无法正确读取，所以得用新的方法新的方式来统一处理。codePointAt可以正确提取给定位置字符串的对应 Unicode 码.</h4>
 
@@ -2037,8 +2056,6 @@ http.createServer(function (request, response) {
 }).listen(8888);
 </code></pre>
 
-<p><img src="http://andyfightting.github.io/myimg/react/nodeHello.png" width="400" alt="" /></p>
-
 <h4>NPM</h4>
 
 <p>npm 是js包管理工具，像 CocoaPods 似的可以下载被人编写的第三方包，也可以把自己写的包上传的npm服务器。</p>
@@ -3243,10 +3260,14 @@ const styles = StyleSheet.create({
 
 <p>把这个<a href="https://facebook.github.io/react/docs/thinking-in-react.html">官方例子</a>看完就能收获不少了。主要在于思考，拿到设计图如何拆分模块，如何组建，如何选取放置状态参数，如何看懂别人写好的代码等。<a href="http://andyfightting.github.io/mysrc/java/reactPriceDemo.zip">下载</a></p>
 
+<h3>State 提升</h3>
+
+<p>State 提升就是把本来A组件的state值，提升到它的父组件B中，然后在父组件B通过prop传递下去给A. A的点击事件要修改数据的话，就调用B通过prop传给A的方法，也就是A的事件回调到B去处理state了，然后B的state变化后又会刷新它的子组件A了，这个流程就叫 state提升。这主要是用来解决多个子组件A1,A2,A3&hellip;依赖于同一个state进行变化时的处理流程。</p>
+
 <h5>链接</h5>
 
 <ol>
-<li><a href="http://www.cnblogs.com/sakurayeah/category/868210.html">React入门</a></li>
+<li><a href="https://facebook.github.io/react/">React</a></li>
 <li><a href="https://babeljs.io/docs/learn-es2015/">ECMAScript 2015</a></li>
 <li><a href="http://es6.ruanyifeng.com/">ECMAScript 6入门</a></li>
 <li><a href="http://bbs.reactnative.cn/topic/15/react-react-native-%E7%9A%84es5-es6%E5%86%99%E6%B3%95%E5%AF%B9%E7%85%A7%E8%A1%A8">ES5和ES6的写法对照表</a></li>

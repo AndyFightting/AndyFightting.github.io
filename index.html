@@ -371,7 +371,26 @@ hello
 
 <h4>Proxy，代理拦截 var p = new Proxy(target, handler); 操作 p 就会被handler代理拦截。</h4>
 
-<h4>语法糖，用 => 定义方法， class 类, 像java似的写代码，</h4>
+<h4>语法糖，用 => 定义方法， class 类, 像java似的写代码，<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/Arrow_functions">注意：</a></h4>
+
+<pre><code>// 加上括弧包着是返回一个对象字面表达式, 注意两种区别 ！
+ params =&gt; ({foo: bar})
+ params =&gt; { statements }
+</code></pre>
+
+<p><strong>下面这种方式定义的方法会自动绑定上下文 this, 所以React可以用这样来代替手动 bind(this)</strong> <a href="https://facebook.github.io/react/docs/handling-events.html">这里</a></p>
+
+<pre><code> &lt;button onClick={this.handleClick}&gt;
+  handleClick = () =&gt; {  
+    //thist 可用
+  }
+
+  //或者 这样也会自动绑定this
+  &lt;button onClick={() =&gt; this.handleClick()}&gt;
+  handleClick() {
+     //this 可用
+  }
+</code></pre>
 
 <h4>字符编码，之前都是基于 UTF-16 两个字节的编码，length 和 charAt()都是基于这样来读取的。然而 ES6 加强了对 Unicode 的支持，并且扩展了字符串对象。对于那些需要四个字节存储的字符，再用之前的length ， charAt() 来操作就无法正确读取，所以得用新的方法新的方式来统一处理。codePointAt可以正确提取给定位置字符串的对应 Unicode 码.</h4>
 
@@ -2277,8 +2296,6 @@ http.createServer(function (request, response) {
     response.end('Hello World！\n');
 }).listen(8888);
 </code></pre>
-
-<p><img src="/myimg/react/nodeHello.png" width="400" alt="" /></p>
 
 <h4>NPM</h4>
 
