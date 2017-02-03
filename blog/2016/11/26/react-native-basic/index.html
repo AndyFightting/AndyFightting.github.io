@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="React Nov 26th, 2016 11:16 am React 的核心思想是：封装组件! React 应用都是构建在组件之上，各个组件维护自己的状态和 UI，当状态变更，自动重新渲染自身组件。组件的第一个字母必须大写,组件只能包含一个顶层标签。 Declarative React &hellip;">
+  <meta name="description" content="React Nov 26th, 2016 11:16 am React 的核心思想是：封装组件! React 应用都是构建在组件之上，各个组件维护自己的状态和 UI，当状态变更，自动重新渲染自身组件。组件的第一个字母必须大写,组件只能包含一个顶层标签。 Remember that &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -96,6 +96,8 @@
 
 
 <div class="entry-content"><h4>React 的核心思想是：封装组件! React 应用都是构建在组件之上，各个组件维护自己的状态和 UI，当状态变更，自动重新渲染自身组件。组件的第一个字母必须大写,组件只能包含一个顶层标签。</h4>
+
+<p><strong>Remember that components may accept any props, including primitive values, React elements, or functions !.</strong></p>
 
 <h4>Declarative</h4>
 
@@ -307,12 +309,83 @@
 
 <p>State 提升就是把本来A组件的state值，提升到它的父组件B中，然后在父组件B通过prop传递下去给A. A的点击事件要修改数据的话，就调用B通过prop传给A的方法，也就是A的事件回调到B去处理state了，然后B的state变化后又会刷新它的子组件A了，这个流程就叫 state提升。这主要是用来解决多个子组件A1,A2,A3&hellip;依赖于同一个state进行变化时的处理流程。</p>
 
+<h3>ref</h3>
+
+<p>ref 旧的语法使用 string 赋值，然后在 this.refs.xxx 获取，而新的ES6语法如下,用 => 定义方法写法。然后this.inStockOnlyInput 获取。</p>
+
+<pre><code>    &lt;input 
+        type="checkbox"
+        ref={(input) =&gt; this.inStockOnlyInput = input}/&gt;
+</code></pre>
+
+<p>看明白了吗？没明白用<a href="https://babeljs.io/repl/#?babili=false&amp;evaluate=true&amp;lineWrap=false&amp;presets=es2015%2Creact%2Cstage-0&amp;code=%20%20%20%20%20%20%20%20%3Cinput%0A%20%20%20%20%20%20%20%20%20%20%20%20type%3D%22checkbox%22%0A%20%20%20%20%20%20%20%20%20%20%20%20ref%3D%7B(input">babel</a>%20%3D%3E%20this.inStockOnlyInput%20%3D%20input%7D%2F%3E)转一下就明白了。</p>
+
+<pre><code>React.createElement("input", {
+    type: "checkbox",
+    ref: function ref(input) {
+        return this.inStockOnlyInput = input;
+    } });
+</code></pre>
+
+<h3>PureComponent</h3>
+
+<p>在使用PureComponent的时候，如果直接修改对应的prop 或 state 是不会触发render的！ 如下面的代码使用PureComponent将没效果，而使用Component就可以。</p>
+
+<pre><code>class WordAdder extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      words: ['marklar']
+    };
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    // This section is bad style and causes a bug
+    const words = this.state.words;
+    words.push('marklar');
+    this.setState({words: words});
+  }
+
+  render() {
+    return (
+      &lt;div&gt;
+        &lt;button onClick={this.handleClick} /&gt;
+       {this.state.words}
+      &lt;/div&gt;
+    );
+  }
+}
+  ReactDOM.render(
+    &lt;WordAdder/&gt;,
+    document.getElementById('root')
+  );
+</code></pre>
+
+<p>如果要使用PureComponent有效果的话就不能直接修改prop 或 state 值！改成下面这样才正确。</p>
+
+<pre><code>handleClick() {
+  this.setState(prevState =&gt; ({
+    words: prevState.words.concat(['marklar'])
+  }));
+}
+</code></pre>
+
+<p>或者用 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign">Object.assign</a>来处理对象：</p>
+
+<pre><code>function updateColorMap(colormap) {
+  return Object.assign({}, colormap, {right: 'blue'});
+}
+</code></pre>
+
+<p>或者用<a href="https://github.com/facebook/immutable-js">Immutable JS</a>处理数据</p>
+
 <h5>链接</h5>
 
 <ol>
 <li><a href="https://facebook.github.io/react/">React</a></li>
-<li><a href="https://babeljs.io/docs/learn-es2015/">ECMAScript 2015</a></li>
-<li><a href="http://es6.ruanyifeng.com/">ECMAScript 6入门</a></li>
+<li><a href="https://babeljs.io/docs/learn-es2015/">ECMAScript6</a></li>
+<li><a href="http://es6.ruanyifeng.com/">ECMAScript6</a></li>
 <li><a href="http://bbs.reactnative.cn/topic/15/react-react-native-%E7%9A%84es5-es6%E5%86%99%E6%B3%95%E5%AF%B9%E7%85%A7%E8%A1%A8">ES5和ES6的写法对照表</a></li>
 </ol>
 
@@ -398,10 +471,6 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2016/12/22/react-ios/">React Native 和 iOS 互相调用</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2016/12/20/weex/">Weex</a>
       </li>
     
@@ -411,6 +480,10 @@
     
       <li class="post">
         <a href="/blog/2016/12/10/suan-fa/">排序算法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/09/google-protocol-buffer/">Google Protocol Buffer</a>
       </li>
     
   </ul>

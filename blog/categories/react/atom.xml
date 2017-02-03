@@ -4,7 +4,7 @@
   <title><![CDATA[Category: React | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/react/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2017-01-18T19:13:06+08:00</updated>
+  <updated>2017-02-03T10:20:58+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[React Native 和 iOS 互相调用]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/12/22/react-ios/"/>
-    <updated>2016-12-22T09:19:38+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/12/22/react-ios</id>
+    <link href="http://andyfightting.github.io/blog/2016/12/02/react-ios/"/>
+    <updated>2016-12-02T09:19:38+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/12/02/react-ios</id>
     <content type="html"><![CDATA[<p>这里记录如何在iOS项目中集成React Native ，和他们之间互相传参，互相调用。</p>
 
 <p>初学者可能都是按照RN官网来学习的，通过 <code>react-native init xxx</code> 来创建一个新项目，iOS和Android都放在一起了，对于新手来说有点乱，其实他们就是共用了配置文件和依赖库。但通过单独在iOS中集成RN更能清楚的知道需要的是哪些东西。</p>

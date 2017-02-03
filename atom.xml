@@ -4,7 +4,7 @@
   <title><![CDATA[阿贵]]></title>
   <link href="http://andyfightting.github.io/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2017-01-18T19:13:06+08:00</updated>
+  <updated>2017-02-03T10:20:58+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -321,155 +321,6 @@ hello
 <p><a href="http://javascript.ruanyifeng.com/">JavaScript 标准参考</a></p>
 
 <p><a href="https://github.com/irideas/es6features">ES6 Features</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[React Native 和 iOS 互相调用]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/12/22/react-ios/"/>
-    <updated>2016-12-22T09:19:38+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/12/22/react-ios</id>
-    <content type="html"><![CDATA[<p>这里记录如何在iOS项目中集成React Native ，和他们之间互相传参，互相调用。</p>
-
-<p>初学者可能都是按照RN官网来学习的，通过 <code>react-native init xxx</code> 来创建一个新项目，iOS和Android都放在一起了，对于新手来说有点乱，其实他们就是共用了配置文件和依赖库。但通过单独在iOS中集成RN更能清楚的知道需要的是哪些东西。</p>
-
-<p>CocoaPods，如果pod版本是 0.39.0 请更新版本，依次用如下命令，我更新到了1.2.0：</p>
-
-<pre><code>gem install cocoapods --pre
-pod repo update --verbose
-</code></pre>
-
-<p>1.用Xcode新建一个OC项目叫MyRN_iOS，在项目文件夹里新建一个文件夹叫ReactComponent(名字随意)，在这文件夹里新建 <code>package.json</code> 文件里放：</p>
-
-<pre><code>{
-  "name": "MyRN_iOS",
-  "version": "0.0.1",
-  "private": true,
-  "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start"
-  },
-  "dependencies": {
-    "react": "15.4.1",
-    "react-native": "0.39.2"
-  }
-}
-</code></pre>
-
-<p>2.进入<code>package.json</code>所在文件夹即ReactComponent，执行命令<code>npm install</code>安装依赖包。</p>
-
-<p>3.进入ReactComponent里创建index.ios.js文件(位置和命名随意都可以 xxx.js，只不过我放这里，后面配置的时候会用它的具体路径)，里面放过hello world：</p>
-
-<pre><code>import React, { Component } from 'react';
-import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
-
-class NativeRNApp extends Component {
-  render() {
-    return (
-        &lt;View style={styles.container}&gt;
-            &lt;Text style={styles.welcome}&gt;
-               hello world
-            &lt;/Text&gt;
-        &lt;/View&gt;
-    );
-  }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-});
-
-//  项目名必须对应!! 
-AppRegistry.registerComponent('MyRN_iOS', () =&gt; NativeRNApp);
-</code></pre>
-
-<p>4.这里就是pod 操作了。进入项目文件夹，新建 <code>vim Podfile</code> 文件：（不知道为啥要8.0才可以，不然提示版本不够，稍后再看这问题），然后 <code>pod install</code> 安装。</p>
-
-<pre><code>target 'MyRN_iOS' do
-platform :ios, ‘8.0’
-
-pod 'React', :path =&gt; ‘./ReactComponent/node_modules/react-native', :subspecs =&gt; [
- 'Core',
-  'ART',
-  'RCTActionSheet',
-  'RCTAdSupport',
-  'RCTGeolocation',
-  'RCTImage',
-  'RCTNetwork',
-  'RCTPushNotification',
-  'RCTSettings',
-  'RCTText',
-  'RCTVibration',
-  'RCTWebSocket',
-  'RCTLinkingIOS',
-]
-
-end
-</code></pre>
-
-<p>6.OC里加载RN文件</p>
-
-<pre><code>- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    NSString * strUrl = @"http://localhost:8081/index.ios.bundle?platform=ios&amp;dev=true";
-    NSURL * jsCodeLocation = [NSURL URLWithString:strUrl];
-
-    RCTRootView * rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
-                                                         moduleName:@"MyRN_iOS"
-                                                  initialProperties:nil
-                                                      launchOptions:nil];
-    self.view = rootView;
-}
-</code></pre>
-
-<p>7.还要允许OC进行 http 通信..
-<img src="http://andyfightting.github.io/myimg/js/fuck.png" width="700" alt="" /></p>
-
-<p>8.Xcode打开项目然后Run,发现红屏报 can not connect server 。进入 <code>package.json</code>所在文件夹即ReactComponent, 执行 <code>npm start</code>,再运行Xcode就可以了。</p>
-
-<p>用 WebStorm 或者 Sublime Text 打开上面新建项目是创建的文件夹 ReactComponent ,编辑里面的 js 文件，然后再Xcode运行。(是这样处理吧，还是我打开的方式不对…😂)</p>
-
-<h4>OC向RN传参</h4>
-
-<p>RN 可以看成就是MVC中的V, 它是通过 <code>RCTRootView</code> 包装了一下，而 RCTRootView 就是继承于 UIView 的！在初始化 RCTRootView的时候， initialProperties 这里传入一个字典，然后就可以在js的 props 中根据字典的key获取值了。</p>
-
-<pre><code>//--OC中传字典
-    NSDictionary* dic = @{
-        @"name":@"andy",
-        @"age":@"18",
-    };
-    RCTRootView * rootView = [[RCTRootView alloc] initWithBundleURL:jsLocation
-                                                         moduleName:@"MyRN_iOS"
-                                                  initialProperties:dic
-                                                      launchOptions:nil];
- //JS中通过props读取传来的字典
-  render() {
-        return (
-            &lt;View style={styles.container}&gt;
-                &lt;Text style={styles.welcome}&gt;
-                    {this.props.name} --- {this.props.age}
-                &lt;/Text&gt;
-            &lt;/View&gt;
-        );
-    }
-</code></pre>
-
-<h5>坑！本来单纯的在RN中调用点击事件是很简单的，前提是ViewController 中 self.view =rCTRootView; 。但是当用 [self.view addSubview:rCTRootView]; 时，即时在 RN 代码中设置 width,height 了，点击是没效果的！要在OC代码中设置 rCTRootView 的 frame 后才有效果！</h5>
 ]]></content>
   </entry>
   
@@ -2374,6 +2225,155 @@ setInterval() 方法会不停地调用函数，直到 clearInterval() 被调用�
   </entry>
   
   <entry>
+    <title type="html"><![CDATA[React Native 和 iOS 互相调用]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/12/02/react-ios/"/>
+    <updated>2016-12-02T09:19:38+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/12/02/react-ios</id>
+    <content type="html"><![CDATA[<p>这里记录如何在iOS项目中集成React Native ，和他们之间互相传参，互相调用。</p>
+
+<p>初学者可能都是按照RN官网来学习的，通过 <code>react-native init xxx</code> 来创建一个新项目，iOS和Android都放在一起了，对于新手来说有点乱，其实他们就是共用了配置文件和依赖库。但通过单独在iOS中集成RN更能清楚的知道需要的是哪些东西。</p>
+
+<p>CocoaPods，如果pod版本是 0.39.0 请更新版本，依次用如下命令，我更新到了1.2.0：</p>
+
+<pre><code>gem install cocoapods --pre
+pod repo update --verbose
+</code></pre>
+
+<p>1.用Xcode新建一个OC项目叫MyRN_iOS，在项目文件夹里新建一个文件夹叫ReactComponent(名字随意)，在这文件夹里新建 <code>package.json</code> 文件里放：</p>
+
+<pre><code>{
+  "name": "MyRN_iOS",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start"
+  },
+  "dependencies": {
+    "react": "15.4.1",
+    "react-native": "0.39.2"
+  }
+}
+</code></pre>
+
+<p>2.进入<code>package.json</code>所在文件夹即ReactComponent，执行命令<code>npm install</code>安装依赖包。</p>
+
+<p>3.进入ReactComponent里创建index.ios.js文件(位置和命名随意都可以 xxx.js，只不过我放这里，后面配置的时候会用它的具体路径)，里面放过hello world：</p>
+
+<pre><code>import React, { Component } from 'react';
+import {
+  AppRegistry,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native';
+
+class NativeRNApp extends Component {
+  render() {
+    return (
+        &lt;View style={styles.container}&gt;
+            &lt;Text style={styles.welcome}&gt;
+               hello world
+            &lt;/Text&gt;
+        &lt;/View&gt;
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+});
+
+//  项目名必须对应!! 
+AppRegistry.registerComponent('MyRN_iOS', () =&gt; NativeRNApp);
+</code></pre>
+
+<p>4.这里就是pod 操作了。进入项目文件夹，新建 <code>vim Podfile</code> 文件：（不知道为啥要8.0才可以，不然提示版本不够，稍后再看这问题），然后 <code>pod install</code> 安装。</p>
+
+<pre><code>target 'MyRN_iOS' do
+platform :ios, ‘8.0’
+
+pod 'React', :path =&gt; ‘./ReactComponent/node_modules/react-native', :subspecs =&gt; [
+ 'Core',
+  'ART',
+  'RCTActionSheet',
+  'RCTAdSupport',
+  'RCTGeolocation',
+  'RCTImage',
+  'RCTNetwork',
+  'RCTPushNotification',
+  'RCTSettings',
+  'RCTText',
+  'RCTVibration',
+  'RCTWebSocket',
+  'RCTLinkingIOS',
+]
+
+end
+</code></pre>
+
+<p>6.OC里加载RN文件</p>
+
+<pre><code>- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    NSString * strUrl = @"http://localhost:8081/index.ios.bundle?platform=ios&amp;dev=true";
+    NSURL * jsCodeLocation = [NSURL URLWithString:strUrl];
+
+    RCTRootView * rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
+                                                         moduleName:@"MyRN_iOS"
+                                                  initialProperties:nil
+                                                      launchOptions:nil];
+    self.view = rootView;
+}
+</code></pre>
+
+<p>7.还要允许OC进行 http 通信..
+<img src="http://andyfightting.github.io/myimg/js/fuck.png" width="700" alt="" /></p>
+
+<p>8.Xcode打开项目然后Run,发现红屏报 can not connect server 。进入 <code>package.json</code>所在文件夹即ReactComponent, 执行 <code>npm start</code>,再运行Xcode就可以了。</p>
+
+<p>用 WebStorm 或者 Sublime Text 打开上面新建项目是创建的文件夹 ReactComponent ,编辑里面的 js 文件，然后再Xcode运行。(是这样处理吧，还是我打开的方式不对…😂)</p>
+
+<h4>OC向RN传参</h4>
+
+<p>RN 可以看成就是MVC中的V, 它是通过 <code>RCTRootView</code> 包装了一下，而 RCTRootView 就是继承于 UIView 的！在初始化 RCTRootView的时候， initialProperties 这里传入一个字典，然后就可以在js的 props 中根据字典的key获取值了。</p>
+
+<pre><code>//--OC中传字典
+    NSDictionary* dic = @{
+        @"name":@"andy",
+        @"age":@"18",
+    };
+    RCTRootView * rootView = [[RCTRootView alloc] initWithBundleURL:jsLocation
+                                                         moduleName:@"MyRN_iOS"
+                                                  initialProperties:dic
+                                                      launchOptions:nil];
+ //JS中通过props读取传来的字典
+  render() {
+        return (
+            &lt;View style={styles.container}&gt;
+                &lt;Text style={styles.welcome}&gt;
+                    {this.props.name} --- {this.props.age}
+                &lt;/Text&gt;
+            &lt;/View&gt;
+        );
+    }
+</code></pre>
+
+<h5>坑！本来单纯的在RN中调用点击事件是很简单的，前提是ViewController 中 self.view =rCTRootView; 。但是当用 [self.view addSubview:rCTRootView]; 时，即时在 RN 代码中设置 width,height 了，点击是没效果的！要在OC代码中设置 rCTRootView 的 frame 后才有效果！</h5>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[React Native Navigator]]></title>
     <link href="http://andyfightting.github.io/blog/2016/12/01/react-navigator/"/>
     <updated>2016-12-01T09:27:30+08:00</updated>
@@ -3054,6 +3054,8 @@ const styles = StyleSheet.create({
     <id>http://andyfightting.github.io/blog/2016/11/26/react-native-basic</id>
     <content type="html"><![CDATA[<h4>React 的核心思想是：封装组件! React 应用都是构建在组件之上，各个组件维护自己的状态和 UI，当状态变更，自动重新渲染自身组件。组件的第一个字母必须大写,组件只能包含一个顶层标签。</h4>
 
+<p><strong>Remember that components may accept any props, including primitive values, React elements, or functions !.</strong></p>
+
 <h4>Declarative</h4>
 
 <p><a href="https://facebook.github.io/react/">React</a> 可以很好的创建交互式组件，设计不同状态下的组件，并且React可以根据组件的不同参数高效的刷新渲染。这样的组件可以让你的代码更加的可预测并且更方便调试。</p>
@@ -3264,12 +3266,83 @@ const styles = StyleSheet.create({
 
 <p>State 提升就是把本来A组件的state值，提升到它的父组件B中，然后在父组件B通过prop传递下去给A. A的点击事件要修改数据的话，就调用B通过prop传给A的方法，也就是A的事件回调到B去处理state了，然后B的state变化后又会刷新它的子组件A了，这个流程就叫 state提升。这主要是用来解决多个子组件A1,A2,A3&hellip;依赖于同一个state进行变化时的处理流程。</p>
 
+<h3>ref</h3>
+
+<p>ref 旧的语法使用 string 赋值，然后在 this.refs.xxx 获取，而新的ES6语法如下,用 => 定义方法写法。然后this.inStockOnlyInput 获取。</p>
+
+<pre><code>    &lt;input 
+        type="checkbox"
+        ref={(input) =&gt; this.inStockOnlyInput = input}/&gt;
+</code></pre>
+
+<p>看明白了吗？没明白用<a href="https://babeljs.io/repl/#?babili=false&amp;evaluate=true&amp;lineWrap=false&amp;presets=es2015%2Creact%2Cstage-0&amp;code=%20%20%20%20%20%20%20%20%3Cinput%0A%20%20%20%20%20%20%20%20%20%20%20%20type%3D%22checkbox%22%0A%20%20%20%20%20%20%20%20%20%20%20%20ref%3D%7B(input">babel</a>%20%3D%3E%20this.inStockOnlyInput%20%3D%20input%7D%2F%3E)转一下就明白了。</p>
+
+<pre><code>React.createElement("input", {
+    type: "checkbox",
+    ref: function ref(input) {
+        return this.inStockOnlyInput = input;
+    } });
+</code></pre>
+
+<h3>PureComponent</h3>
+
+<p>在使用PureComponent的时候，如果直接修改对应的prop 或 state 是不会触发render的！ 如下面的代码使用PureComponent将没效果，而使用Component就可以。</p>
+
+<pre><code>class WordAdder extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      words: ['marklar']
+    };
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    // This section is bad style and causes a bug
+    const words = this.state.words;
+    words.push('marklar');
+    this.setState({words: words});
+  }
+
+  render() {
+    return (
+      &lt;div&gt;
+        &lt;button onClick={this.handleClick} /&gt;
+       {this.state.words}
+      &lt;/div&gt;
+    );
+  }
+}
+  ReactDOM.render(
+    &lt;WordAdder/&gt;,
+    document.getElementById('root')
+  );
+</code></pre>
+
+<p>如果要使用PureComponent有效果的话就不能直接修改prop 或 state 值！改成下面这样才正确。</p>
+
+<pre><code>handleClick() {
+  this.setState(prevState =&gt; ({
+    words: prevState.words.concat(['marklar'])
+  }));
+}
+</code></pre>
+
+<p>或者用 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign">Object.assign</a>来处理对象：</p>
+
+<pre><code>function updateColorMap(colormap) {
+  return Object.assign({}, colormap, {right: 'blue'});
+}
+</code></pre>
+
+<p>或者用<a href="https://github.com/facebook/immutable-js">Immutable JS</a>处理数据</p>
+
 <h5>链接</h5>
 
 <ol>
 <li><a href="https://facebook.github.io/react/">React</a></li>
-<li><a href="https://babeljs.io/docs/learn-es2015/">ECMAScript 2015</a></li>
-<li><a href="http://es6.ruanyifeng.com/">ECMAScript 6入门</a></li>
+<li><a href="https://babeljs.io/docs/learn-es2015/">ECMAScript6</a></li>
+<li><a href="http://es6.ruanyifeng.com/">ECMAScript6</a></li>
 <li><a href="http://bbs.reactnative.cn/topic/15/react-react-native-%E7%9A%84es5-es6%E5%86%99%E6%B3%95%E5%AF%B9%E7%85%A7%E8%A1%A8">ES5和ES6的写法对照表</a></li>
 </ol>
 

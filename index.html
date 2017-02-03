@@ -416,178 +416,6 @@ hello
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2016/12/22/react-ios/">React Native 和 iOS 互相调用</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-12-22T09:19:38+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2016</span></span> <span class='time'>9:19 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>这里记录如何在iOS项目中集成React Native ，和他们之间互相传参，互相调用。</p>
-
-<p>初学者可能都是按照RN官网来学习的，通过 <code>react-native init xxx</code> 来创建一个新项目，iOS和Android都放在一起了，对于新手来说有点乱，其实他们就是共用了配置文件和依赖库。但通过单独在iOS中集成RN更能清楚的知道需要的是哪些东西。</p>
-
-<p>CocoaPods，如果pod版本是 0.39.0 请更新版本，依次用如下命令，我更新到了1.2.0：</p>
-
-<pre><code>gem install cocoapods --pre
-pod repo update --verbose
-</code></pre>
-
-<p>1.用Xcode新建一个OC项目叫MyRN_iOS，在项目文件夹里新建一个文件夹叫ReactComponent(名字随意)，在这文件夹里新建 <code>package.json</code> 文件里放：</p>
-
-<pre><code>{
-  "name": "MyRN_iOS",
-  "version": "0.0.1",
-  "private": true,
-  "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start"
-  },
-  "dependencies": {
-    "react": "15.4.1",
-    "react-native": "0.39.2"
-  }
-}
-</code></pre>
-
-<p>2.进入<code>package.json</code>所在文件夹即ReactComponent，执行命令<code>npm install</code>安装依赖包。</p>
-
-<p>3.进入ReactComponent里创建index.ios.js文件(位置和命名随意都可以 xxx.js，只不过我放这里，后面配置的时候会用它的具体路径)，里面放过hello world：</p>
-
-<pre><code>import React, { Component } from 'react';
-import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
-
-class NativeRNApp extends Component {
-  render() {
-    return (
-        &lt;View style={styles.container}&gt;
-            &lt;Text style={styles.welcome}&gt;
-               hello world
-            &lt;/Text&gt;
-        &lt;/View&gt;
-    );
-  }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-});
-
-//  项目名必须对应!! 
-AppRegistry.registerComponent('MyRN_iOS', () =&gt; NativeRNApp);
-</code></pre>
-
-<p>4.这里就是pod 操作了。进入项目文件夹，新建 <code>vim Podfile</code> 文件：（不知道为啥要8.0才可以，不然提示版本不够，稍后再看这问题），然后 <code>pod install</code> 安装。</p>
-
-<pre><code>target 'MyRN_iOS' do
-platform :ios, ‘8.0’
-
-pod 'React', :path =&gt; ‘./ReactComponent/node_modules/react-native', :subspecs =&gt; [
- 'Core',
-  'ART',
-  'RCTActionSheet',
-  'RCTAdSupport',
-  'RCTGeolocation',
-  'RCTImage',
-  'RCTNetwork',
-  'RCTPushNotification',
-  'RCTSettings',
-  'RCTText',
-  'RCTVibration',
-  'RCTWebSocket',
-  'RCTLinkingIOS',
-]
-
-end
-</code></pre>
-
-<p>6.OC里加载RN文件</p>
-
-<pre><code>- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    NSString * strUrl = @"http://localhost:8081/index.ios.bundle?platform=ios&amp;dev=true";
-    NSURL * jsCodeLocation = [NSURL URLWithString:strUrl];
-
-    RCTRootView * rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
-                                                         moduleName:@"MyRN_iOS"
-                                                  initialProperties:nil
-                                                      launchOptions:nil];
-    self.view = rootView;
-}
-</code></pre>
-
-<p>7.还要允许OC进行 http 通信..
-<img src="/myimg/js/fuck.png" width="700" alt="" /></p>
-
-<p>8.Xcode打开项目然后Run,发现红屏报 can not connect server 。进入 <code>package.json</code>所在文件夹即ReactComponent, 执行 <code>npm start</code>,再运行Xcode就可以了。</p>
-
-<p>用 WebStorm 或者 Sublime Text 打开上面新建项目是创建的文件夹 ReactComponent ,编辑里面的 js 文件，然后再Xcode运行。(是这样处理吧，还是我打开的方式不对…😂)</p>
-
-<h4>OC向RN传参</h4>
-
-<p>RN 可以看成就是MVC中的V, 它是通过 <code>RCTRootView</code> 包装了一下，而 RCTRootView 就是继承于 UIView 的！在初始化 RCTRootView的时候， initialProperties 这里传入一个字典，然后就可以在js的 props 中根据字典的key获取值了。</p>
-
-<pre><code>//--OC中传字典
-    NSDictionary* dic = @{
-        @"name":@"andy",
-        @"age":@"18",
-    };
-    RCTRootView * rootView = [[RCTRootView alloc] initWithBundleURL:jsLocation
-                                                         moduleName:@"MyRN_iOS"
-                                                  initialProperties:dic
-                                                      launchOptions:nil];
- //JS中通过props读取传来的字典
-  render() {
-        return (
-            &lt;View style={styles.container}&gt;
-                &lt;Text style={styles.welcome}&gt;
-                    {this.props.name} --- {this.props.age}
-                &lt;/Text&gt;
-            &lt;/View&gt;
-        );
-    }
-</code></pre>
-
-<h5>坑！本来单纯的在RN中调用点击事件是很简单的，前提是ViewController 中 self.view =rCTRootView; 。但是当用 [self.view addSubview:rCTRootView]; 时，即时在 RN 代码中设置 width,height 了，点击是没效果的！要在OC代码中设置 rCTRootView 的 frame 后才有效果！</h5>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/12/22/react-ios/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
       <h1 class="entry-title"><a href="/blog/2016/12/20/weex/">Weex</a></h1>
     
     
@@ -2626,6 +2454,178 @@ setInterval() 方法会不停地调用函数，直到 clearInterval() 被调用�
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/12/02/react-ios/">React Native 和 iOS 互相调用</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-02T09:19:38+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2016</span></span> <span class='time'>9:19 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>这里记录如何在iOS项目中集成React Native ，和他们之间互相传参，互相调用。</p>
+
+<p>初学者可能都是按照RN官网来学习的，通过 <code>react-native init xxx</code> 来创建一个新项目，iOS和Android都放在一起了，对于新手来说有点乱，其实他们就是共用了配置文件和依赖库。但通过单独在iOS中集成RN更能清楚的知道需要的是哪些东西。</p>
+
+<p>CocoaPods，如果pod版本是 0.39.0 请更新版本，依次用如下命令，我更新到了1.2.0：</p>
+
+<pre><code>gem install cocoapods --pre
+pod repo update --verbose
+</code></pre>
+
+<p>1.用Xcode新建一个OC项目叫MyRN_iOS，在项目文件夹里新建一个文件夹叫ReactComponent(名字随意)，在这文件夹里新建 <code>package.json</code> 文件里放：</p>
+
+<pre><code>{
+  "name": "MyRN_iOS",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start"
+  },
+  "dependencies": {
+    "react": "15.4.1",
+    "react-native": "0.39.2"
+  }
+}
+</code></pre>
+
+<p>2.进入<code>package.json</code>所在文件夹即ReactComponent，执行命令<code>npm install</code>安装依赖包。</p>
+
+<p>3.进入ReactComponent里创建index.ios.js文件(位置和命名随意都可以 xxx.js，只不过我放这里，后面配置的时候会用它的具体路径)，里面放过hello world：</p>
+
+<pre><code>import React, { Component } from 'react';
+import {
+  AppRegistry,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native';
+
+class NativeRNApp extends Component {
+  render() {
+    return (
+        &lt;View style={styles.container}&gt;
+            &lt;Text style={styles.welcome}&gt;
+               hello world
+            &lt;/Text&gt;
+        &lt;/View&gt;
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+});
+
+//  项目名必须对应!! 
+AppRegistry.registerComponent('MyRN_iOS', () =&gt; NativeRNApp);
+</code></pre>
+
+<p>4.这里就是pod 操作了。进入项目文件夹，新建 <code>vim Podfile</code> 文件：（不知道为啥要8.0才可以，不然提示版本不够，稍后再看这问题），然后 <code>pod install</code> 安装。</p>
+
+<pre><code>target 'MyRN_iOS' do
+platform :ios, ‘8.0’
+
+pod 'React', :path =&gt; ‘./ReactComponent/node_modules/react-native', :subspecs =&gt; [
+ 'Core',
+  'ART',
+  'RCTActionSheet',
+  'RCTAdSupport',
+  'RCTGeolocation',
+  'RCTImage',
+  'RCTNetwork',
+  'RCTPushNotification',
+  'RCTSettings',
+  'RCTText',
+  'RCTVibration',
+  'RCTWebSocket',
+  'RCTLinkingIOS',
+]
+
+end
+</code></pre>
+
+<p>6.OC里加载RN文件</p>
+
+<pre><code>- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    NSString * strUrl = @"http://localhost:8081/index.ios.bundle?platform=ios&amp;dev=true";
+    NSURL * jsCodeLocation = [NSURL URLWithString:strUrl];
+
+    RCTRootView * rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
+                                                         moduleName:@"MyRN_iOS"
+                                                  initialProperties:nil
+                                                      launchOptions:nil];
+    self.view = rootView;
+}
+</code></pre>
+
+<p>7.还要允许OC进行 http 通信..
+<img src="/myimg/js/fuck.png" width="700" alt="" /></p>
+
+<p>8.Xcode打开项目然后Run,发现红屏报 can not connect server 。进入 <code>package.json</code>所在文件夹即ReactComponent, 执行 <code>npm start</code>,再运行Xcode就可以了。</p>
+
+<p>用 WebStorm 或者 Sublime Text 打开上面新建项目是创建的文件夹 ReactComponent ,编辑里面的 js 文件，然后再Xcode运行。(是这样处理吧，还是我打开的方式不对…😂)</p>
+
+<h4>OC向RN传参</h4>
+
+<p>RN 可以看成就是MVC中的V, 它是通过 <code>RCTRootView</code> 包装了一下，而 RCTRootView 就是继承于 UIView 的！在初始化 RCTRootView的时候， initialProperties 这里传入一个字典，然后就可以在js的 props 中根据字典的key获取值了。</p>
+
+<pre><code>//--OC中传字典
+    NSDictionary* dic = @{
+        @"name":@"andy",
+        @"age":@"18",
+    };
+    RCTRootView * rootView = [[RCTRootView alloc] initWithBundleURL:jsLocation
+                                                         moduleName:@"MyRN_iOS"
+                                                  initialProperties:dic
+                                                      launchOptions:nil];
+ //JS中通过props读取传来的字典
+  render() {
+        return (
+            &lt;View style={styles.container}&gt;
+                &lt;Text style={styles.welcome}&gt;
+                    {this.props.name} --- {this.props.age}
+                &lt;/Text&gt;
+            &lt;/View&gt;
+        );
+    }
+</code></pre>
+
+<h5>坑！本来单纯的在RN中调用点击事件是很简单的，前提是ViewController 中 self.view =rCTRootView; 。但是当用 [self.view addSubview:rCTRootView]; 时，即时在 RN 代码中设置 width,height 了，点击是没效果的！要在OC代码中设置 rCTRootView 的 frame 后才有效果！</h5>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/12/02/react-ios/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/12/01/react-navigator/">React Native Navigator</a></h1>
     
     
@@ -3078,10 +3078,6 @@ const styles = StyleSheet.create({
       </li>
     
       <li class="post">
-        <a href="/blog/2016/12/22/react-ios/">React Native 和 iOS 互相调用</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2016/12/20/weex/">Weex</a>
       </li>
     
@@ -3091,6 +3087,10 @@ const styles = StyleSheet.create({
     
       <li class="post">
         <a href="/blog/2016/12/10/suan-fa/">排序算法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/09/google-protocol-buffer/">Google Protocol Buffer</a>
       </li>
     
   </ul>
