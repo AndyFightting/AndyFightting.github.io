@@ -423,6 +423,35 @@
 <p>11.在GDC中一个操作是多线程执行还是单线程执行取决于当前队列类型和执行方法，只有队列类型为并发队列并且使用异步方法执行时才能在多个线程中并发执行。</p>
 
 <p>12.相比使用NSLock，@synchronized更加简单。</p>
+
+<p>13.主队列是个串行队列，但是它不会新建子线程，所以当在主队列中执行dispatch_sync 时会卡死。</p>
+
+<h3>问题</h3>
+
+<p>在主线程中调用，以下代码结果是什么？</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>NSLog(@"1"); //任务1
+</span><span class='line'>    dispatch_sync(dispatch_get_main_queue(), ^{
+</span><span class='line'>        NSLog(@"2"); //任务2
+</span><span class='line'>    });
+</span><span class='line'>    NSLog(@"3"); //任务3</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后只输出1，然后就卡在 dispatch_sync 这里了，分析如下：</p>
+
+<ol>
+<li>dispatch_sync表示是一个同步线程，会阻塞当前线程，然后把Block中任务添加到队列中执行，等到Block中任务完成后才会让当前线程继续执行。</li>
+<li>dispatch_get_main_queue表示主线程中的主队列；
+首先执行任务1，打印出1，程序遇到dispatch_sync会立即阻塞当前主线程，把任务2放到主队列中， 等待任务2执行完，再执行任务3。可是主队列是按照FIFO原则执行任务，此时主队列中任务3排在任务2之前，所以要等到任务3执行完后才能执行任务2，这就会造成他们进入互相等待的局面，从而产生死锁。避免死锁的方法是在使用dispatch_sync执行任务时，传入参数的队列不要和当前线程的队列是一样的。</li>
+</ol>
+
+
+<p><a href="http://www.cnblogs.com/yjg2014/p/yjg.html">链接</a></p>
 </div>
 
 
