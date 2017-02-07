@@ -451,6 +451,18 @@
 </ol>
 
 
+<h4>串行队列+dispatch_sync：在当前线程里顺序执行。</h4>
+
+<h4>串行队列+dispatch_async：会新建一个子线程，在同一个子线程里顺序执行。</h4>
+
+<h4>并发队列+dispatch_sync：在当前线程里顺序执行。</h4>
+
+<h4>并发队列+dispatch_async：会创建多个线程，任务在不同的子线程里无须并发执行。</h4>
+
+<h4>系统的全局队列和并发队列一样，只不过不能指定队列名。</h4>
+
+<h4>主队列是个串行队列，dispatch_async 任务都在主线程执行，dispatch_sync会造成主线程死锁。</h4>
+
 <p><a href="http://www.cnblogs.com/yjg2014/p/yjg.html">链接</a></p>
 </div>
 
