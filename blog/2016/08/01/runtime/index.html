@@ -280,6 +280,8 @@ dispatch_once(&amp;onceToken, ^{
 <p>这两个方法是可选的，且只有在实现了它们时才会被调用。由于method swizzling会影响到类的全局状态，因此要尽量避免在并发处理中出现竞争的情况。+load能保证在类的初始化过程中被加载，并保证这种改变应用级别的行为的一致性。相比之下，+initialize在其执行时不提供这种保证—事实上，如果在应用中没为给这个类发送消息，则它可能永远不会被调用。</p>
 
 <p>Swizzling应该总是在dispatch_once中执行, 因为swizzling会改变全局状态，所以我们需要它确保代码只被执行一次，不管有多少个线程，而GCD的dispatch_once可以确保这种行为。</p>
+
+<p><a href="http://www.cnblogs.com/zhidao-chen/archive/2013/03/21/2973329.html">链接</a></p>
 </div>
 
 

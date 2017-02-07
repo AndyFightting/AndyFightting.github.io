@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="设计模式 Dec 19th, 2015 9:51 pm 我理解的设计模式都是为了让代码模块化，结构化，各司其职，再把各个模块通过"接口"组合起来。封装变化；多用组合少用继承；针对接口编程，不针对实现编程；为交互对象之间的松耦合设计而努力；对扩展开放，对修改关闭。 1.MVC模式 看图就可以了， &hellip;">
+  <meta name="description" content="设计模式 Dec 19th, 2015 9:51 pm 我理解的设计模式都是为了让代码模块化，结构化，各司其职，再把各个模块通过"接口"组合起来。封装变化；多用组合少用继承；针对接口编程，不针对实现编程；为交互对象之间的松耦合设计而努力；对扩展开放，对修改关闭。 MVC模式 看图就可以了， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -97,12 +97,12 @@
 
 <div class="entry-content"><p>我理解的设计模式都是为了让代码模块化，结构化，各司其职，再把各个模块通过"接口"组合起来。封装变化；多用组合少用继承；针对接口编程，不针对实现编程；为交互对象之间的松耦合设计而努力；对扩展开放，对修改关闭。</p>
 
-<h3>1.MVC模式</h3>
+<h3>MVC模式</h3>
 
 <p>看图就可以了，简洁明了~
-<img src="/myimg/other/mvc.png" alt="image" /><!--more--></p>
+<img src="/myimg/other/mvc.png" alt="image" /></p>
 
-<h3>2.策略模式</h3>
+<h3>策略模式</h3>
 
 <p>比如有个父类有飞行功能，然后有很多子类的飞行功能各不一样，如果去继承父类然后分别实现不同的飞行行为，这就坑爹了&hellip;具体做法应该是：把飞行行为完全独立出来成一个Interface，然后不同的飞行行为再在单独的类中实现，不同的子类要不同的飞行行为的话就取对应的行为实现对象。</p>
 
@@ -152,13 +152,58 @@ public SubDuck(){
 
 <p><img src="/myimg/other/chelue.png" alt="image" /></p>
 
+<p><strong>Demo2</strong></p>
+
+<pre><code>//创建一个接口:Strategy.java
+public interface Strategy {
+   public int doOperation(int num1, int num2);
+}
+
+//具体实现1：OperationAdd.java
+public class OperationAdd implements Strategy{
+   @Override
+   public int doOperation(int num1, int num2) {
+      return num1 + num2;
+   }
+}
+
+//具体实现2：OperationSubstract.java
+public class OperationSubstract implements Strategy{
+   @Override
+   public int doOperation(int num1, int num2) {
+      return num1 - num2;
+   }
+}
+
+//用组合不用继承：
+public class Context {
+   private Strategy strategy;
+
+   public Context(Strategy strategy){
+      this.strategy = strategy;
+   }
+
+   public int execute(int num1, int num2){
+      return strategy.doOperation(num1, num2);
+   }
+}
+
+//使用：
+ public static void main(String[] args) {
+       Context context = new Context(new OperationAdd());      context.execute(10, 5);
+
+       context = new Context(new OperationSubstract());
+       context.execute(10, 5);      
+   }
+</code></pre>
+
 <p>1,找出可能需要变化之处，把它们独立封装起来，不要和那些不需要变化的代码混合在一起。</p>
 
 <p>2.针对接口编程，而不是针对实现编程。</p>
 
 <p>3.多用组合，少用继承。</p>
 
-<h3>3.观察者模式</h3>
+<h3>观察者模式</h3>
 
 <p>好好看图吧，把它转化为具体代码加深理解
 <img src="/myimg/other/guanCha0.jpg" alt="image" />
@@ -181,7 +226,184 @@ public SubDuck(){
 <p>要点
 <img src="/myimg/other/guanCha10.jpg" alt="image" /></p>
 
-<h3>4.装饰模式</h3>
+<h3>工厂模式</h3>
+
+<p>定义一个创建对实例的接口，让不同对象的子类去实现具体的实例创建，然后在工厂方法里调用不同的子类来产出对象。也就是说工厂模式把一个对象的具体创建移到了对应的子类里进行。</p>
+
+<pre><code>//创建一个接口：Shape.java
+public interface Shape {
+   void draw();
+}
+
+//创建实现接口的子类1：Rectangle.java
+public class Rectangle implements Shape {
+   @Override
+   public void draw() {
+      System.out.println("这是长方形");
+   }
+}
+
+//创建实现接口的子类2：Square.java
+public class Square implements Shape {
+   @Override
+   public void draw() {
+      System.out.println("这是长正形");
+   }
+}
+
+//创建一个工厂，生成基于给定信息的实体类的对象:ShapeFactory.java
+public class ShapeFactory {
+   public Shape getShape(String shapeType){
+      if(shapeType == null){
+         return null;
+      }     
+      if(shapeType.equalsIgnoreCase("RECTANGLE")){
+         return new Rectangle();
+      } else if(shapeType.equalsIgnoreCase("SQUARE")){
+         return new Square();
+      }
+      return null;
+   }
+}
+
+//使用
+public static void main(String[] args) {
+      ShapeFactory shapeFactory = new ShapeFactory();
+
+      Shape shape1 = shapeFactory.getShape("RECTANGLE");
+      Shape shape2 = shapeFactory.getShape("SQUARE");
+
+      shape1.draw();
+      shape2.draw();
+   }
+</code></pre>
+
+<h3>抽象工厂模式</h3>
+
+<p>抽象工厂模式又称为工厂的工厂。即工厂模式中的方法产出的是一个具体的实例对象，而抽象工厂的方法产出的是工厂对象。即先通过抽象工厂方法获取对应的工厂对象，然后就和工厂模式一样了，在工厂方法里用对应实例的子类来产出最终对象。</p>
+
+<pre><code>//为形状创建一个接口：Shape.java
+public interface Shape {
+   void draw();
+}
+
+//形状具体子类1：Rectangle.java
+public class Rectangle implements Shape {
+   @Override
+   public void draw() {
+      System.out.println("这是长方形");
+   }
+}
+
+//形状具体子类2：Square.java
+public class Square implements Shape {
+   @Override
+   public void draw() {
+      System.out.println("这是正方形");
+   }
+}
+
+//为颜色创建一个接口: Color.java
+public interface Color {
+   void fill();
+}
+
+//颜色具体子类1：Red.java
+public class Red implements Color {
+   @Override
+   public void fill() {
+      System.out.println("这是红色");
+   }
+}
+
+//颜色具体子类2：Green.java
+public class Green implements Color {
+   @Override
+   public void fill() {
+      System.out.println("这是绿色");
+   }
+}
+
+//大工厂接口：AbstractFactory.java
+public abstract class AbstractFactory {
+   abstract Color getColor(String color);
+   abstract Shape getShape(String shape) ;
+}
+
+//形状工厂：ShapeFactory.java
+public class ShapeFactory extends AbstractFactory {
+   @Override
+   public Shape getShape(String shapeType){
+      if(shapeType == null){
+         return null;
+      }     
+      if(shapeType.equalsIgnoreCase("RECTANGLE")){
+         return new Rectangle();
+      } else if(shapeType.equalsIgnoreCase("SQUARE")){
+         return new Square();
+      }
+      return null;
+   }
+
+   @Override
+   Color getColor(String color) {
+      return null;
+   }
+}
+
+//颜色工厂：ColorFactory.java
+public class ColorFactory extends AbstractFactory {
+   @Override
+   public Shape getShape(String shapeType){
+      return null;
+   }
+
+   @Override
+   Color getColor(String color) {
+      if(color == null){
+         return null;
+      }     
+      if(color.equalsIgnoreCase("RED")){
+         return new Red();
+      } else if(color.equalsIgnoreCase("GREEN")){
+         return new Green();
+      }
+      return null;
+   }
+}
+
+//大工厂：FactoryProducer.java
+public class FactoryProducer {
+   public static AbstractFactory getFactory(String choice){
+      if(choice.equalsIgnoreCase("SHAPE")){
+         return new ShapeFactory();
+      } else if(choice.equalsIgnoreCase("COLOR")){
+         return new ColorFactory();
+      }
+      return null;
+   }
+}
+
+//使用：
+ public static void main(String[] args) {
+      //获取形状工厂
+      AbstractFactory shapeFactory = FactoryProducer.getFactory("SHAPE");
+      //获取颜色工厂
+      AbstractFactory colorFactory = FactoryProducer.getFactory("COLOR");
+
+     //获取长方形
+      Shape shape1 = shapeFactory.getShape("RECTANGLE");
+      //获取正方形
+      Shape shape2 = shapeFactory.getShape("SQUARE");
+
+      //获取红色
+      Color color1 = colorFactory.getColor("RED");
+      //获取绿色
+      Color color1 = colorFactory.getColor("GREEN");
+ }
+</code></pre>
+
+<h3>装饰模式</h3>
 
 <p>动态的将责任附加到对象上，用对象组合的方式来解决继承滥用的问题。利用继承设计子类的行为是在编译时静态决定的，而且所有的子类都会继承到相同的行为。如果利用组合的做法扩展对象的行为，就可以在运行时动态的进行扩展。类应该多扩展开放，对修改关闭。即在不修改现有代码的情况下可以添加新的行为。</p>
 
@@ -194,10 +416,6 @@ public SubDuck(){
 <img src="/myimg/other/zhuangShi4.jpg" alt="image" />
 <img src="/myimg/other/zhuangShi5.jpg" alt="image" />
 <img src="/myimg/other/zhuangShi6.jpg" alt="image" /></p>
-
-<h3>5.工厂模式</h3>
-
-<p>当每次“new”的时候都会实例化一个类，所以这是用的实现编程而不是接口编程。“工厂”就是一个专门负责产生对象的一个类。</p>
 </div>
 
 
