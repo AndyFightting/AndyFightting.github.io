@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2017-02-07T22:32:41+08:00</updated>
+  <updated>2017-02-08T21:37:15+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -326,11 +326,103 @@ layer.position=CGPointMake(size.width/2, size.height/2);
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[iOS中的NSURLSession]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/08/04/session/"/>
-    <updated>2016-08-04T16:22:02+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/08/04/session</id>
-    <content type="html"><![CDATA[
+    <title type="html"><![CDATA[iOS中的block]]></title>
+    <link href="http://andyfightting.github.io/blog/2016/08/04/block/"/>
+    <updated>2016-08-04T16:21:41+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/08/04/block</id>
+    <content type="html"><![CDATA[<p>block就是一个代码块，闭包，会捕获上下文的匿名函数，它可以作为参数或者返回值进行传递。在objc中，根据对象的定义，凡是首地址是*isa的结构体指针，都可以认为是对象(id)，所以block实际上就算是对象，但它的内存管理又和NSObject有点不一样。</p>
+
+<h4>声明:</h4>
+
+<pre><code>*变量：returnType (^blockName)(parameterTypes) = ^returnType(parameters) {...};
+
+*属性：@property (nonatomic, copy) returnType (^blockName)(parameterTypes);
+
+*方法：-(void)someMethod:(returnType (^nullability)(parameterTypes))blockName;
+
+*回调：[object  method:^returnType (parameters) {...}];
+
+*定义：typedef returnType (^TypeName)(parameterTypes); --&gt; TypeName blockName = ^returnType(parameters) {...};
+</code></pre>
+
+<p>block中的isa指向的是该block的Class,主要有三种类型：</p>
+
+<pre><code>_NSConcreteGlobalBlock 全局的静态 block，不会访问任何外部变量。
+_NSConcreteStackBlock 保存在栈中的 block，当函数返回时会被销毁。
+_NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被销毁。
+</code></pre>
+
+<p>当block第一次被创建时，它是存在于该函数的栈上的，其Class是固定的NSConcreteStackBlock。其捕获的变量是会赋值到结构体的成员上，所以当block初始化完成后，捕获到的变量不能更改。当函数返回时，函数的栈被销毁，这个block的内存也会被清除。所以在函数结束后仍然需要这个block时，就必须用Block_copy()方法将它拷贝到堆上，类型变为NSConcreteMallocBlock，向它发送retain，增加block的引用计数。</p>
+
+<p>默认block捕获到的局部变量，都是赋值给block的结构体的，相当于const不可改。为了让block能访问并修改外面的局部变量，需要加上__block修饰词。</p>
+
+<pre><code>void test(){
+ __block int i = 3;
+  void(^myBlock)(void) = ^{
+     i = 5;//局部变量没有__block修饰的话不可修改
+  };
+ myBlock();
+}
+</code></pre>
+
+<h4>捕获规则：</h4>
+
+<pre><code>1.静态存储区的变量,例如全局变量、方法中的static变量:
+  引用，可修改。
+
+2.block接受的参数传值:
+  可修改，和一般函数的参数相同。
+
+3.栈变量(局部变量):
+  常量，不可修改，block会对id类型的变量产生强引用。
+
+4.栈变量(有__block前缀的局部变量):
+  引用，可以修改。如果是id类型则不会被block retain、如果该类型是C类型变量，该值会被挪动到堆中。
+</code></pre>
+
+<p>在ARC中，block被赋值传递的时候会自动拷贝到堆上，堆上的对象就有可能被释放掉，所以要用copy强引用着,以免野指针crash。</p>
+
+<h4>循环引用:</h4>
+
+<p>当block被copy到堆之后，该block对它捕获的对象产生强引用，所以有时需要避免block copy后产生的循环引用。</p>
+
+<p>如self引用了block，block又捕获了self，这样就会有循环引用,因此，需要用weak来声明self。</p>
+
+<pre><code>- (void)test {
+    ViewController * __weak weakSelf = self;
+    self.block = ^{
+        [weakSelf doSomething]; //用弱引用,打破循环引用
+    }
+}
+</code></pre>
+
+<p>如果捕获到的是对象的成员变量对象，也会间接造成对self的循环引用，同样也要避免。</p>
+
+<pre><code>- (void)test {
+    id tempPropertyObj = _propertyObj; //用临时变量,避免了循环引用
+    self.block = ^{
+        [tempPropertyObj doSomething];
+    }
+}
+</code></pre>
+
+<h4>问题</h4>
+
+<pre><code>[UIView animateWithDuration:0.5 animations:^{
+        [self doSomething];
+    }];
+</code></pre>
+
+<p>上面例子并不会造成循环引用，因为block强引用了self,而self并没有强引用block。如果像下面就会循环引用：self &ndash;> _observer &ndash;> block &ndash;> self 这也是一个循环引用。</p>
+
+<pre><code>//_observer 是self的实例变量
+    _observer = [[NSNotificationCenter defaultCenter] addObserverForName:@"test"
+                                                                  object:nil
+                                                                   queue:[NSOperationQueue mainQueue]
+                                                              usingBlock:^(NSNotification * _Nonnull note) {
+                                                                  [self doSomething];
+                                                              }];
+</code></pre>
 ]]></content>
   </entry>
   
