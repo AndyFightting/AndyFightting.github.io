@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Javascript | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2017-02-08T21:37:15+08:00</updated>
+  <updated>2017-02-09T21:27:21+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[ECMAScript 6]]></title>
-    <link href="http://andyfightting.github.io/blog/2016/12/24/es6/"/>
-    <updated>2016-12-24T13:14:56+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2016/12/24/es6</id>
+    <link href="http://andyfightting.github.io/blog/2016/12/21/es6/"/>
+    <updated>2016-12-21T13:14:56+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/12/21/es6</id>
     <content type="html"><![CDATA[<h3>Generator 函数</h3>
 
 <p>执行该函数时只是返回一个内部调用栈的指针，然后手动执行 <code>next()</code> 方法进行一次栈里的 <code>yield</code> 表达式。next 方法每次返回一个对象<code>{value: undefined, done: false}</code>
