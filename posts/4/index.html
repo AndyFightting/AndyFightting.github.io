@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="block就是一个代码块，闭包，会捕获上下文的匿名函数，它可以作为参数或者返回值进行传递。在objc中，根据对象的定义，凡是首地址是*isa的结构体指针，都可以认为是对象(id)，所以block实际上就算是对象，但它的内存管理又和NSObject有点不一样。 声明: *变量：returnType &hellip;">
+  <meta name="description" content="Core Data是一个对sqlite数据库进行封装的ORM(Object Relation Mapping)框架。它主要由以下几部分组成： NSManagedObject NSManagedObject is a generic class that implements all the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,65 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/04/core-data/">iOS中的Core Data</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-04T16:22:22+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:22 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://developer.apple.com/library/watchos/documentation/Cocoa/Conceptual/CoreData/index.html">Core Data</a>是一个对sqlite数据库进行封装的ORM(Object Relation Mapping)框架。它主要由以下几部分组成：</p>
+
+<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObject_Class/">NSManagedObject</a></h4>
+
+<p>NSManagedObject is a generic class that implements all the basic behavior required of a Core Data model object. It is not possible to use instances of direct subclasses of NSObject (or any other class not inheriting from NSManagedObject) with a managed object context. You may create custom subclasses of NSManagedObject, although this is not always required. If no custom logic is needed, a complete object graph can be formed with NSManagedObject instances.</p>
+
+<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObjectModel_Class/">NSManagedObjectModel</a></h4>
+
+<p>An NSManagedObjectModel object describes a schema, a collection of entities (data models) that you use in your application.</p>
+
+<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObjectContext_Class/">NSManagedObjectContext</a></h4>
+
+<p>An instance of NSManagedObjectContext represents a single “object space” or scratch pad in an application. Its primary responsibility is to manage a collection of managed objects. These objects form a group of related model objects that represent an internally consistent view of one or more persistent stores. A single managed object instance exists in one and only one context, but multiple copies of an object can exist in different contexts. Thus object uniquing is scoped to a particular context.</p>
+
+<h4><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSPersistentStoreCoordinator_Class/">NSPersistentStoreCoordinator</a></h4>
+
+<p>Instances of NSPersistentStoreCoordinator associate persistent stores (by type) with a model (or more accurately, a configuration of a model) and serve to mediate between the persistent store or stores and the managed object context or contexts. Instances of NSManagedObjectContext use a coordinator to save object graphs to persistent storage and to retrieve model information. A context without a coordinator is not fully functional as it cannot access a model except through a coordinator. The coordinator is designed to present a façade to the managed object contexts such that a group of persistent stores appears as an aggregate store. A managed object context can then create an object graph based on the union of all the data stores the coordinator covers.</p>
+
+<h4><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSFetchRequest_Class/index.html#//apple_ref/occ/cl/NSFetchRequest">NSFetchRequest</a></h4>
+
+<p>An instance of NSFetchRequest describes search criteria used to retrieve data from a persistent store.</p>
+
+<h4><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSPredicate_Class/">NSPredicate</a></h4>
+
+<p>The NSPredicate class is used to define logical conditions used to constrain a search either for a fetch or for in-memory filtering.</p>
+
+<p><img src="/myimg/ios/cd_orm.png" alt="image" />
+<img src="/myimg/ios/cd_table.png" alt="image" /></p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/08/04/core-data/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -885,47 +944,6 @@ public class FactoryProducer {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/14/jiaocheng/">Octopress搭建个人博客</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-14T11:21:39+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:21 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本人的博客刚刚搭建好，并绑定了个人域名(<a href="http://guimingsu.com">guimingsu.com</a>)，现将该过程记录下来。</p>
-
-<p><a href="https://pages.github.com/">Github Pages</a>是Github提供的一个免费空间，相当于我们博客的免费托管服务器，我们写的博客就是放这上面的。它可以拥有一个独立的二级域名如xxx.github.io(如果有自己的个人域名，可以用自己的个人域名指向它)，允许开发者提交静态网页文件，用于介绍自己，或者自己的开源项目，可以看作是个人或项目主页。</p>
-
-<p><a href="http://octopress.org/">Octopress</a>“A blogging framework for hackers”，即像写代码似的写博客。一个博客网页生成框架，我们按照它要求的格式写博客内容，然后敲命令<code>rake generate</code>,<code>rake deploy</code>,就可以把网页放到Github服务器上，然后我们就可以看到了啊，它就是一个写博客的工具可以这样理解。</p>
-
-<p>个人域名，这个要自己买了，可以上<a href="http://wanwang.aliyun.com/">阿里云</a>上买，一年几十块，配置后面再讲。在注册阿里云的时候我用的QQ邮箱，就是收不到邮件，换成Gmail就收到了。不知道是我网络问题还是大公司间的任性撕逼，如果你也收不到邮件就换个邮箱注册吧。</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/11/14/jiaocheng/">阅读全文</a>
-    </footer>
-  
-
-
-      | <a href="/blog/2015/11/14/jiaocheng/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/5">&larr; Older</a>
@@ -943,6 +961,10 @@ public class FactoryProducer {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2017/02/11/jsonp/">前端基础知识</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/12/30/utf8/">Unicode、UTF-8编码起源</a>
       </li>
     
@@ -958,10 +980,6 @@ public class FactoryProducer {
         <a href="/blog/2016/12/21/es6/">ECMAScript 6</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/12/20/weex/">Weex</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -974,7 +992,7 @@ public class FactoryProducer {
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (9)</a></li>
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
-<li class='category'><a href='/blog/categories/javascript/'>javascript (4)</a></li>
+<li class='category'><a href='/blog/categories/javascript/'>javascript (5)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
 <li class='category'><a href='/blog/categories/react/'>react (8)</a></li>
 

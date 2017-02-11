@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="Unicode、UTF-8编码起源 Dec 30th, 2016 3:39 pm 很久很久以前，有一群人，他们决定用8个可以开合的晶体管来组合成不同的状态，以表示世界上的万物。他们看到8个开关状态是好的，于是他们把这称为字节。再后来，他们又做了一些可以处理这些字节的机器，机器开动了， &hellip;">
+  <meta name="description" content="前端基础知识 Feb 11th, 2017 1:45 pm *JSONP原理 JSON是一种数据交换格式，JSONP(JSON Padding)是数据的传递方式，不一样的概念。打个比方，JSON是地下党们用来书写和交换情报的“暗号”，而JSONP则是把用“暗号”书写的情报， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,454 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/02/11/jsonp/">前端基础知识</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-02-11T13:45:11+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>1:45 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>*JSONP原理</h4>
+
+<p>JSON是一种数据交换格式，JSONP(JSON Padding)是数据的传递方式，不一样的概念。打个比方，JSON是地下党们用来书写和交换情报的“暗号”，而JSONP则是把用“暗号”书写的情报，传递给自己同志时使用的接头方式。一个是描述信息的格式，一个是信息传递时约定的方法。</p>
+
+<p>JSONP是为了解决跨域问题，因为受限于浏览器的同源策略(域名相同，协议相同，端口相同)，XMLHttpRequest 不能进行跨域请求，但是 script 标签却可以(有src属性的标签都可以，如img,iframe)。JSONP的原理就是：<strong>让服务器端调用本地的JS方法，在调用的时候把数据当做参数传进去，然后本地就可以获得数据进行处理了。</strong></p>
+
+<p>远程服务器remoteserver.com根目录下有个remote.js文件代码如下：</p>
+
+<pre><code>localHandler({"result":"我是远程js带来的数据"});
+</code></pre>
+
+<p>现在我们在test.html页面定义一个函数，然后在远程remote.js中传入数据进行调用,就获取到跨域服务器端的数据了。</p>
+
+<pre><code>&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;&lt;/title&gt;
+    &lt;script type="text/javascript"&gt;
+    var localHandler = function(data){
+        alert('我是本地函数，可以被跨域的remote.js文件调用，远程js带来的数据是：' + data.result);
+    };
+    &lt;/script&gt;
+    &lt;script type="text/javascript" src="http://remoteserver.com/remote.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>基本原理就是这样，剩下的就是如何弹性封装了，如：</p>
+
+<pre><code>&lt;script type="text/javascript"&gt;
+    var localHandler = function(data){
+        alert('我是本地函数，可以被跨域的remote.js文件调用，远程js带来的数据是：' + data.result);
+    };
+
+    var url = "http://remoteserver.com/remote.js?id=123&amp;callback=localHandler";
+    var script = document.createElement('script');
+    script.setAttribute('src', url);
+    // 把script标签加入head，此时调用开始
+   document.getElementsByTagName('head')[0].appendChild(script); 
+&lt;/script&gt;
+</code></pre>
+
+<h4>*cookie、sessionStorage、localStorage的区别</h4>
+
+<p>document.cookie: 是服务器端保存在客户端的一段信息，如保存登录信息，记住密码等,它可以设置过期时间自动清除,4K左右.cookie数据始终在同源的http请求中携带（即使不需要），即cookie在浏览器和服务器间来回传递，所以不宜过大。如服务器端会在他登录时往 Cookie 中插入一段加密过的唯一辨识单一用户的辨识码，下次只要读取这个值就可以判断当前用户是否登录啦。</p>
+
+<p>window.sessionStorage: session即会话，关闭浏览器即清除。5M左右，仅保存在客户端中，不参与通信。</p>
+
+<p>window.localStorage: 本地持久化，一直都在除非手动删除。5M左右。</p>
+
+<p>sessionStorage：不在不同的浏览器窗口中共享，即使是同一个页面。</p>
+
+<p>localStorage：在所有同源窗口中都是共享的。</p>
+
+<p>cookie：也是在所有同源窗口中都是共享的。</p>
+
+<p>共同点：都是保存在浏览器中，且都是同源的。</p>
+
+<p>不同点：大小不同，有效期不同，作用域不同。</p>
+
+<h3>* <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain">JS原型链是什么</a></h3>
+
+<p>在 javaScript 中，每个对象都有一个指向它的原型（prototype）对象的内部属性。这个原型对象又有自己的原型，直到某个对象的原型为 null 为止（也就是不再有原型指向），组成这条链的最后一环。这种一级一级的链结构就称为原型链（prototype chain）。</p>
+
+<p>Javascript规定，每一个构造函数都有一个prototype属性，指向另一个对象。这个对象的所有属性和方法，都会被构造函数的实例继承。</p>
+
+<p>JavaScript的对象中都包含了一个 prototype 内部属性，这个属性所对应的就是该对象的原型。在JavaScript的原型对象中，还包含一个"constructor"属性，这个属性对应创建所有指向该原型的实例的构造函数。JavaScript 不包含传统的类继承模型，而是使用 prototypal 原型模型。</p>
+
+<pre><code>XXX.__proto__ :原型(父类)。
+XXX.protoype :原型对象(父实例)。
+</code></pre>
+
+<p><a href="http://blog.jobbole.com/66441/">参考</a></p>
+
+<h4>*<a href="http://www.w3school.com.cn/css/css_boxmodel.asp">CSS盒模型</a></h4>
+
+<p><img src="/myimg/js/cssbox.png" width="400" alt="" /></p>
+
+<p>背景应用于由内容和内边距、边框组成的区域。width,heightz只是内容宽高，不包括padding,border,marin.</p>
+
+<h3>*get和post请求的区别</h3>
+
+<p>Http定义了与服务器交互的不同方法，最基本的方法有4种，分别是GET，POST，PUT，DELETE,可以应着对这个资源的查，改，增，删4个操作。GET一般用于获取/查询资源信息，而POST一般用于更新资源信息。</p>
+
+<p>GET请求的数据会附在URL之后，以?分割URL和传输数据，参数之间以&amp;相连。POST把提交的数据则放置在是HTTP包的包体中。</p>
+
+<p>GET方式提交的数据有大小限制，而POST理论上没有。</p>
+
+<p>POST的安全性要比GET的安全性高。比如：通过GET提交数据，用户名和密码将明文出现在URL上，因为登录页面有可能被浏览器缓存，其他人查看浏览器的历史纪录，那么别人就可以拿到你的账号和密码了。</p>
+
+<p><a href="https://www.oschina.net/news/77354/http-get-post-different">99%的人都理解错了&hellip;</a></p>
+
+<h3>*什么是HTTPS</h3>
+
+<p>https是https+ssl(Secure Socket Layer),它是从底层协议的层面来解决如下问题：</p>
+
+<ol>
+<li>数据裸奔问题</li>
+<li>数据被篡改问题</li>
+<li>身份验证问题</li>
+</ol>
+
+
+<p>它的基本思路是采用公钥加密法(RSA)，也就是说，客户端先向服务器端索要公钥，然后用公钥加密信息，服务器收到密文后，用自己的私钥解密。由于非对称加密的效率问题，一般是用对称加密给数据进行加密，然后把对称加密的密钥进行RSA加密来传输，并且对称加密的密钥是动态变化的。</p>
+
+<h3>*说说TCP/UDP</h3>
+
+<p>TCP: 传输控制协议，三次握手，四次挥手。面向连接，安全可靠。传输大量数据，慢。</p>
+
+<p>UDP: 用户数据协议，面向非连接，直接发数据，不可靠，发小量数据，快。</p>
+
+<h3>*JS类的创建</h3>
+
+<p> <strong>构造函数法</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>function Dog() {
+</span><span class='line'>   this.name = "金毛";
+</span><span class='line'>}
+</span><span class='line'>var dog = new Dog();
+</span><span class='line'>alert(dog.name);</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Object.create()法</strong>, 但是不能实现私有属性和私有方法</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  var Dog = {
+</span><span class='line'>　　　　name: "金毛",
+</span><span class='line'>　　　　makeSound: function(){ alert("hello world"); }
+</span><span class='line'>　　};
+</span><span class='line'>　　var dog = Object.create(Dog);
+</span><span class='line'>　　alert(dog.name); 
+</span><span class='line'>　　cat1.makeSound(); </span></code></pre></td></tr></table></div></figure>
+
+
+<p> <strong>极简法</strong> (这不就是工厂方法吗？工厂的属性和方法是私有的且是共享的)</p>
+
+<p>封装：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  var Cat = {
+</span><span class='line'>　　　　createNew: function(){
+</span><span class='line'>　　　　　　var cat = {};
+</span><span class='line'>　　　　　　cat.name = "大毛";
+</span><span class='line'>　　　　　　cat.makeSound = function(){ alert("喵喵喵"); };
+</span><span class='line'>　　　　　　return cat;
+</span><span class='line'>　　　　}
+</span><span class='line'>　　};
+</span><span class='line'>　　var cat1 = Cat.createNew();
+</span><span class='line'>　　cat1.makeSound();</span></code></pre></td></tr></table></div></figure>
+
+
+<p> 继承：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>   var Animal = {
+</span><span class='line'>　　　　createNew: function(){
+</span><span class='line'>　　　　　　var animal = {};
+</span><span class='line'>　　　　　　animal.sleep = function(){ alert("睡懒觉"); };
+</span><span class='line'>　　　　　　return animal;
+</span><span class='line'>　　　　}
+</span><span class='line'>　　};
+</span><span class='line'>   var Cat = {
+</span><span class='line'>　　　　createNew: function(){
+</span><span class='line'>　　　　　　var cat = Animal.createNew();
+</span><span class='line'>　　　　　　cat.name = "大毛";
+</span><span class='line'>　　　　　　cat.makeSound = function(){ alert("喵喵喵"); };
+</span><span class='line'>　　　　　　return cat;
+</span><span class='line'>　　　　}
+</span><span class='line'>　　};
+</span><span class='line'>   var cat1 = Cat.createNew();
+</span><span class='line'>　　cat1.sleep();
+</span><span class='line'>　　cat1.makeSount();</span></code></pre></td></tr></table></div></figure>
+
+
+<p>私有属性和方法：下面只要不是定义在cat对象上的方法和属性，都是私有的。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  var Cat = {
+</span><span class='line'>　　　　createNew: function(){
+</span><span class='line'>　　　　　　var cat = {};
+</span><span class='line'>　　　　　　var sound = "喵喵喵"; //私有属性
+</span><span class='line'>　　　　　　cat.makeSound = function(){ alert(sound); };
+</span><span class='line'>　　　　　　return cat;
+</span><span class='line'>　　　　}
+</span><span class='line'>　　};
+</span><span class='line'>　　var cat1 = Cat.createNew();
+</span><span class='line'>　　alert(cat1.sound); // undefined</span></code></pre></td></tr></table></div></figure>
+
+
+<p>数据共享：</p>
+
+<pre><code>  var Cat = {
+　　　　sound : "喵喵喵", //被各个实例共享
+　　　　createNew: function(){
+　　　　　　var cat = {};
+　　　　　　cat.makeSound = function(){ alert(Cat.sound); };
+　　　　　　return cat;
+　　　　}
+　　};
+　　var cat1 = Cat.createNew();
+　　var cat2 = Cat.createNew();
+　　cat1.makeSound(); // 喵喵喵
+</code></pre>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes">ES6 class法</a></strong></p>
+
+<pre><code>class Cat { 
+  constructor(name) {
+    this.name = name;
+  }
+
+  speak() {
+    console.log(this.name + ' makes a noise.');
+  }
+}
+
+class Lion extends Cat {
+  speak() {
+    super.speak();
+    console.log(this.name + ' roars.');
+  }
+}
+</code></pre>
+
+<h3>*JS闭包</h3>
+
+<p>闭包是可以访问上一层函数作用域里变量的函数，即便上一层函数已经关闭。闭包使得函数拥有私有变量称为可能，下面计数器受匿名函数的作用域保护，只能通过 add 方法修改。</p>
+
+<pre><code>var add = (function () {
+   var counter = 0;
+   return function () {
+      return counter += 1;
+    }
+})();
+
+add();
+add();
+add();
+</code></pre>
+
+<h3>* use strict</h3>
+
+<p>严格模式，使得JS在更严格的条件下运行，有如下优势：</p>
+
+<pre><code>消除Javascript语法的一些不合理、不严谨之处，减少一些怪异行为
+消除代码运行的一些不安全之处，保证代码运行的安全
+提高编译器效率，增加运行速度
+为未来新版本的JS特性做好铺垫
+</code></pre>
+
+<h3>* CSS Reset 是什么</h3>
+
+<p>在HTML标签在浏览器里有默认的样式，例如 p 标签有上下边距，strong标签有字体加粗样式，em标签有字体倾斜样式。不同浏览器的默认样式之间也会有差别。把浏览器提供的默认样式覆盖掉, 这就是CSS Reset。</p>
+
+<h3>* 回调地狱</h3>
+
+<p>即异步回调的层层嵌套,可以用 Promise 对象、Generator函数，Async函数来解决。</p>
+
+<pre><code>$.ajax({  
+    url: url1,  
+    success: function(data){  
+        $.ajax({  
+            url: url2,  
+            data: data,  
+            success: function(data){  
+                $.ajax({  
+                    //...
+                });  
+            }      
+        });  
+    }  
+});  
+</code></pre>
+
+<h3>* xss和csrf是什么</h3>
+
+<p>XSS它的全名是：Cross-site scripting 夸站脚本攻击，为了和CSS层叠样式表区分所以取名XSS。是一种网站应用程序的安全漏洞攻击，是代码注入的一种。其特点是不对服务器端造成任何伤害，而是通过一些正常的站内交互途径，例如发布评论，提交含有 JavaScript 的内容文本。这时服务器端如果没有过滤或转义掉这些脚本，作为内容发布到了页面上，其他用户访问这个页面的时候就会运行这些脚本。</p>
+
+<p>CSRF全名是：Cross-site request forgery 跨站请求伪造，也是不攻击服务器端而攻击正常访问网站的用户。CSRF 顾名思义，是伪造请求，冒充用户在站内的正常操作。大多数网站是通过 cookie 等方式辨识用户身份再予以授权的。所以要伪造用户的正常操作，最好的方法是通过 XSS 或链接欺骗等途径，让用户在本机发起用户所不知道的请求。</p>
+
+<h3>* 图片滚动到了才加载原理</h3>
+
+<p>即懒加载延迟加载，原理是：先在img src中放一张占位符图片，而真实的图片地址存放在相对应一个属性 data-img中，这样的话 那么页面加载的时候 只加载src地址 不会对属性的图片真正地址加载，滚动时候判断 待加载的资源相对于浏览器顶端的距离小于可视区域相对于浏览器顶端的距离 如果为true的话 则把相对应的data-img值赋值给src 加载，否则不加载。</p>
+
+<p>主要有三种模式：</p>
+
+<pre><code>第一种是纯粹的延迟加载，使用setTimeOut或setInterval进行加载延迟，如果用户在加载前就离开了页面，那么就不会加载。
+第二种是条件加载，符合某些条件，或触发了某些事件才开始异步下载。
+第三种是可视区加载，即仅加载用户可以看到的区域，这个主要由监控滚动条来实现，一般会在距用户看到某图片前一定距离遍开始加载，这样能保证用户拉下时正好能看到图片。
+</code></pre>
+
+<h3>* 把URL参数解析为一个对象</h3>
+
+<pre><code>var url = "http://www.taobao.com/index.php?key0=0&amp;key1=1&amp;key2=2";
+var obj = parseUrl(url);
+
+function parseUrl(argu){
+  var str = argu.split('?')[1];
+  var result = {};
+  var temp = str.split('&amp;');
+  for(var i=0; i&lt;temp.length; i++)
+  {
+     var temp2 = temp[i].split('=');
+     result[temp2[0]] = temp2[1];
+  }
+  return result;
+}
+</code></pre>
+
+<h3>* flex布局与传统布局</h3>
+
+<p>布局的传统解决方案，基于盒状模型，依赖 display属性 + position属性 + float属性。</p>
+
+<p>flex容器布局：默认存在两根轴：水平的主轴（main axis）和垂直的交叉轴（cross axis）。主轴的开始位置（与边框的交叉点）叫做main start，结束位置叫做main end；交叉轴的开始位置叫做cross start，结束位置叫做cross end。</p>
+
+<p><img src="/myimg/js/flexbox.png" width="600" alt="" /></p>
+
+<p><a href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html">参考</a></p>
+
+<h3>* JS事件流</h3>
+
+<p>捕获，冒泡：xxx.addEventListener(type,handler,flag),flag是一个bool值，true表示事件捕捉阶段执行，false表示事件冒泡阶段执行，默认是冒泡。</p>
+
+<p><img src="/myimg/js/event.png" width="400" alt="" /></p>
+
+<p><a href="http://www.cnblogs.com/starof/p/4066381.html">参考</a></p>
+
+<h3>* 创建一个从1到100的数组</h3>
+
+<p>一看这题目肯定就不是for循环这么简单了，得有点别的了。</p>
+
+<p>递归：</p>
+
+<pre><code>  function test(arr, num) {
+      if (num &gt; 100) {
+          return arr
+      }
+      arr.push(num);
+      return test(arr, num + 1)
+  }
+  var arr = test([], 1);
+</code></pre>
+
+<p>Generator函数：</p>
+
+<pre><code>function* test(i) {
+    yield i;
+    if (i &lt; 100) {
+        yield* test(i + 1);
+    }
+}
+ var arr =   Array.from(test(1));
+</code></pre>
+
+<h3>* 从输入 URL 到页面加载完的过程中都发生了什么事情</h3>
+
+<p><a href="https://segmentfault.com/q/1010000000489803">参考</a></p>
+
+<h3>* 实现1px 像素线条</h3>
+
+<h3>* link和import的区别</h3>
+
+<h3>* JS弱类型的优缺点</h3>
+
+<h3>* http状态码</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web">MDN</a></p>
+
+<p><a href="https://leohxj.gitbooks.io/front-end-database/content/index.html">前端参考手册</a></p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2017/02/11/jsonp/#comments">Comments</a>
+
+
+    </article>
   
   
     <article>
@@ -2985,80 +3433,6 @@ const styles = StyleSheet.create({
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/11/30/react-native-life/">React Native 组件生命周期</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-11-30T11:08:59+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:08 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>生命周期就是一个对象从开始生成到最后消亡所经历的状态，理解生命周期是开发的基础。<a href="http://bbs.reactnative.cn/topic/15/react-react-native-%E7%9A%84es5-es6%E5%86%99%E6%B3%95%E5%AF%B9%E7%85%A7%E8%A1%A8">ES5语法和ES6语法有所变化</a>。</p>
-
-<p><img src="/myimg/java/life2.png" alt="" /></p>
-
-<h4>可以把组件生命周期大致分为三个阶段：</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>第一阶段：是组件第一次绘制阶段，如图中的上面虚线框内，在这里完成了组件的加载和初始化；
-</span><span class='line'>第二阶段：是组件在运行和交互阶段，如图中左下角虚线框，这个阶段组件可以处理用户交互接收事件更新界面；
-</span><span class='line'>第三阶段：是组件卸载消亡的阶段，如图中右下角的虚线框中，这里做一些组件的清理工作。</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>constructor(props) :</strong>这个方法会在组件创建的时候调用一次。 这个方法中可以通过this.state初始化状态参数，ES5是通过getInitialState()方法初始化的。</p>
-
-<p><strong>getDefaultProps() :</strong>在组件类创建的时候调用一次，然后返回值被缓存下来。全局调用一次，所有实例共享。</p>
-
-<p><strong>getInitialState() :</strong>在组件挂载之前调用一次。返回值将会作为 this.state 的初始值。</p>
-
-<p><strong>componentWillMount() :</strong>在组件创建并初始化了状态之后，在第一次 render() 之前。可以在这里做一些初始化操作。这个函数在整个生命周期中只被调用一次。</p>
-
-<p><strong>render() :</strong>这个方法是必须的，对视图进行渲染，也可以返回 null 或者 false 来表明不需要渲染任何东西.</p>
-
-<p><strong>componentDidMount() :</strong>在组件第一次绘制之后，会调用该方法通知组件已经加载完成。这个方法调用的时候，其虚拟 DOM 已经构建完成，可以在这个函数里获取其中的元素或者子组件。框架是先调用子组件的该方法，然后再调用父组件的。可以在这里发起网络请求等。</p>
-
-<p><strong>componentWillReceiveProps(nextProps) :</strong> 父组件改变子组件的属性的时候会调用该方法,初次渲染时不会调用该方法。参数nextProps是即将被设置的属性，旧的属性还是可以通过 this.props 来获取。</p>
-
-<p><strong>shouldComponentUpdate(nextProps,nextState) :</strong>当组件接收到新的属性或状态改变的话会调用该方法。参数 nextProps 和上面的方法一样。nextState 表示组件即将更新的状态值。这个方法的返回值决定是否需要更新组件，默认返回true。可以重载这个函数来决定组件是否需要更新。</p>
-
-<p><strong>componentWillUpdate(nextProps,nextState) :</strong>如果组件状态改变，并且上面的方法返回为true，就会开始准更新组件。这里可以做一些在更新组件之前要做的事情。<strong>在这个方法里面不能再调用 this.setState 来修改状态</strong>。这个方法调用之后，就会把 nextProps 和 nextState 分别设置到 this.props 和 this.state 中。紧接着就会调用 render() 来更新组件了。</p>
-
-<p><strong>componentDidUpdate(prevProps,prevState) :</strong>在调用了 render() 更新组件同步到 DOM 中之后立刻调用该方法。因为到这里已经完成了属性和状态的更新了，此方法的参数变成了 prevProps 和 prevState。</p>
-
-<p><strong>componentWillUnmount() :</strong>当组件从 DOM 中移除的时候就会调用该方法。可以这个方法中做一些资源清理工作。</p>
-
-<p><a href="http://bbs.reactnative.cn/topic/15/react-react-native-%E7%9A%84es5-es6%E5%86%99%E6%B3%95%E5%AF%B9%E7%85%A7%E8%A1%A8">ES5 ES6写法对照表</a></p>
-
-<p><a href="http://blog.kdchang.cc/2016/04/04/react-react-native-es5-es6-cheat-sheet/">ES5 ES6区别</a></p>
-
-<p><a href="https://babeljs.io/blog/2015/06/07/react-on-es6-plus">React on ES6</a></p>
-
-<p><a href="http://egorsmirnov.me/2015/06/14/react-and-es6-part2.html">React and ES6</a></p>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/11/30/react-native-life/#comments">Comments</a>
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -3072,6 +3446,10 @@ const styles = StyleSheet.create({
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/02/11/jsonp/">前端基础知识</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/12/30/utf8/">Unicode、UTF-8编码起源</a>
@@ -3089,10 +3467,6 @@ const styles = StyleSheet.create({
         <a href="/blog/2016/12/21/es6/">ECMAScript 6</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/12/20/weex/">Weex</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -3105,7 +3479,7 @@ const styles = StyleSheet.create({
     <li class='category'><a href='/blog/categories/android/'>android (9)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (9)</a></li>
 <li class='category'><a href='/blog/categories/java/'>java (6)</a></li>
-<li class='category'><a href='/blog/categories/javascript/'>javascript (4)</a></li>
+<li class='category'><a href='/blog/categories/javascript/'>javascript (5)</a></li>
 <li class='category'><a href='/blog/categories/other/'>other (5)</a></li>
 <li class='category'><a href='/blog/categories/react/'>react (8)</a></li>
 
