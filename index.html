@@ -142,6 +142,20 @@
 &lt;/script&gt;
 </code></pre>
 
+<h3>* <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain">JS原型链是什么</a></h3>
+
+<p>在 javaScript 中，每个对象都有一个指向它的原型（prototype）对象的内部属性。这个原型对象又有自己的原型，直到某个对象的原型为 null 为止（也就是不再有原型指向），组成这条链的最后一环。这种一级一级的链结构就称为原型链（prototype chain）。</p>
+
+<p>Javascript规定，每一个构造函数都有一个prototype属性，指向另一个对象。这个对象的所有属性和方法，都会被构造函数的实例继承。</p>
+
+<p>JavaScript的对象中都包含了一个 prototype 内部属性，这个属性所对应的就是该对象的原型。在JavaScript的原型对象中，还包含一个"constructor"属性，这个属性对应创建所有指向该原型的实例的构造函数。JavaScript 不包含传统的类继承模型，而是使用 prototypal 原型模型。</p>
+
+<pre><code>XXX.__proto__ :原型(父类)。
+XXX.protoype :原型对象(父实例)。
+</code></pre>
+
+<p><a href="http://blog.jobbole.com/66441/">参考</a></p>
+
 <h4>*cookie、sessionStorage、localStorage的区别</h4>
 
 <p>document.cookie: 是服务器端保存在客户端的一段信息，如保存登录信息，记住密码等,它可以设置过期时间自动清除,4K左右.cookie数据始终在同源的http请求中携带（即使不需要），即cookie在浏览器和服务器间来回传递，所以不宜过大。如服务器端会在他登录时往 Cookie 中插入一段加密过的唯一辨识单一用户的辨识码，下次只要读取这个值就可以判断当前用户是否登录啦。</p>
@@ -187,19 +201,11 @@
  var arr =   Array.from(test(1));
 </code></pre>
 
-<h3>* <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain">JS原型链是什么</a></h3>
+<h3>* 说说React &amp; Vue</h3>
 
-<p>在 javaScript 中，每个对象都有一个指向它的原型（prototype）对象的内部属性。这个原型对象又有自己的原型，直到某个对象的原型为 null 为止（也就是不再有原型指向），组成这条链的最后一环。这种一级一级的链结构就称为原型链（prototype chain）。</p>
+<p>虚拟DOM, 单向数据流，双向绑定响应式，组件化，模板+js+css，JSX语法,生命周期，指令，依赖追踪，检查机制,更快的渲染更小的体积, 庞大的社区，RN，Weex,引用本地模块。</p>
 
-<p>Javascript规定，每一个构造函数都有一个prototype属性，指向另一个对象。这个对象的所有属性和方法，都会被构造函数的实例继承。</p>
-
-<p>JavaScript的对象中都包含了一个 prototype 内部属性，这个属性所对应的就是该对象的原型。在JavaScript的原型对象中，还包含一个"constructor"属性，这个属性对应创建所有指向该原型的实例的构造函数。JavaScript 不包含传统的类继承模型，而是使用 prototypal 原型模型。</p>
-
-<pre><code>XXX.__proto__ :原型(父类)。
-XXX.protoype :原型对象(父实例)。
-</code></pre>
-
-<p><a href="http://blog.jobbole.com/66441/">参考</a></p>
+<p><a href="http://cn.vuejs.org/v2/guide/comparison.html">对比</a> ,<a href="http://mp.weixin.qq.com/s?__biz=MzIwNjQwMzUwMQ==&amp;mid=2247484393&amp;idx=1&amp;sn=142b8e37dfc94de07be211607e468030&amp;chksm=9723612ba054e83db6622a891287af119bb63708f1b7a09aed9149d846c9428ad5abbb822294&amp;mpshare=1&amp;scene=1&amp;srcid=1026oUz3521V74ua0uwTcIWa&amp;from=groupmessage&amp;isappinstalled=0#wechat_redirect&amp;utm_source=tuicool&amp;utm_medium=referral">参考</a></p>
 
 <h4>*<a href="http://www.w3school.com.cn/css/css_boxmodel.asp">CSS盒模型</a></h4>
 
@@ -542,12 +548,6 @@ function parseUrl(argu){
 允许同名函数的重复定义，后面的定义可以覆盖前面的定义。隐式类型转换。全局变量难以控制，null &amp; undefined鸡肋。
 </code></pre>
 
-<h3>* 说说React &amp; Vue</h3>
-
-<p>虚拟DOM, 单向数据流，双向绑定响应式，组件化，模板+js+css，JSX语法,生命周期，指令，依赖追踪，检查机制,更快的渲染更小的体积, 庞大的社区，RN，Weex,引用本地模块。</p>
-
-<p><a href="http://cn.vuejs.org/v2/guide/comparison.html">对比</a> ,<a href="http://mp.weixin.qq.com/s?__biz=MzIwNjQwMzUwMQ==&amp;mid=2247484393&amp;idx=1&amp;sn=142b8e37dfc94de07be211607e468030&amp;chksm=9723612ba054e83db6622a891287af119bb63708f1b7a09aed9149d846c9428ad5abbb822294&amp;mpshare=1&amp;scene=1&amp;srcid=1026oUz3521V74ua0uwTcIWa&amp;from=groupmessage&amp;isappinstalled=0#wechat_redirect&amp;utm_source=tuicool&amp;utm_medium=referral">参考</a></p>
-
 <h3>* CSS预处理</h3>
 
 <p>CSS 预处理器用一种专门的编程语言，进行 Web 页面样式设计，然后再编译成正常的 CSS 文件，以供项目使用。CSS 预处理器为 CSS 增加一些编程的特性，无需考虑浏览器的兼容性问题，例如你可以在 CSS 中使用变量、简单的逻辑程序、函数等,在编程语言中的一些基本特性，可以让你的 CSS 更加简洁、适应性更强、可读性更佳，更易于代码的维护等诸多好处。</p>
@@ -599,6 +599,43 @@ function parseUrl(argu){
 <p><a href="https://www.web-tinker.com/article/20115.html">参考</a></p>
 
 <h3>* ajax 原理</h3>
+
+<h3>* jquery 原理</h3>
+
+<h3>* 作用域链</h3>
+
+<h3>* XMLHttpRequest</h3>
+
+<h3>* JS事件委托</h3>
+
+<h3>* this</h3>
+
+<p><a href="http://www.cnblogs.com/yuanzm/p/4150558.html">参考</a></p>
+
+<h3>* AMD &amp; CMD &amp; CommonJs规范，优缺点</h3>
+
+<h3>* 模块化</h3>
+
+<h3>* CSS动画原理</h3>
+
+<h3>* 前端性能优化</h3>
+
+<ol>
+<li><a href="http://www.cnblogs.com/autumn123/p/4237286.html">CSS精灵(CSS Sprites)</a>,把网页中一些零散的图片整合到一张图片中，然后通过background-position来定位获取。减少网页请求，设计师修改风格只需在一张图片上操作，没命名困扰，能减少字节(aaa>A)。
+改动麻烦，一改全动，要么就新增。</li>
+<li><a href="https://yq.aliyun.com/articles/49918">JS文件合并</a></li>
+<li>JS延迟加载(setTimeout)，图片延迟按需加载(jquery lazyload)，预加载资源</li>
+<li>减少DOM元素数量</li>
+<li>避免没必要的重定向跳转</li>
+<li>减小cookie大小</li>
+<li>避免空的src,因为它仍然会发送请求</li>
+<li>资源压缩传输（Google protocol buffer）</li>
+<li>利用缓存，cache-control,Expires</li>
+<li>缓存DNS查找</li>
+<li>减少http请求</li>
+<li><a href="http://kb.cnblogs.com/page/121664/">使用CDN</a>(Content Delivery Network，即内容分发网络,将网站的内容发布到最接近用户的网络"边缘"，使用户可以就近取得所需的内容，解决Internet网络拥塞状况，提高用户访问网站的响应速度)</li>
+</ol>
+
 
 <p><a href="https://developer.mozilla.org/en-US/docs/Web">MDN</a></p>
 
