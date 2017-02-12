@@ -160,6 +160,33 @@
 
 <p>不同点：大小不同，有效期不同，作用域不同。</p>
 
+<h3>* 创建一个从1到100的数组</h3>
+
+<p>一看这题目应该就不是for循环这么简单了</p>
+
+<p>递归：</p>
+
+<pre><code>  function test(arr, num) {
+      if (num &gt; 100) {
+          return arr
+      }
+      arr.push(num);
+      return test(arr, num + 1)
+  }
+  var arr = test([], 1);
+</code></pre>
+
+<p>Generator函数：</p>
+
+<pre><code>function* test(i) {
+    yield i;
+    if (i &lt; 100) {
+        yield* test(i + 1);
+    }
+}
+ var arr =   Array.from(test(1));
+</code></pre>
+
 <h3>* <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain">JS原型链是什么</a></h3>
 
 <p>在 javaScript 中，每个对象都有一个指向它的原型（prototype）对象的内部属性。这个原型对象又有自己的原型，直到某个对象的原型为 null 为止（也就是不再有原型指向），组成这条链的最后一环。这种一级一级的链结构就称为原型链（prototype chain）。</p>
@@ -370,9 +397,13 @@ class Lion extends Cat {
 }
 </code></pre>
 
+<p><a href="http://www.ruanyifeng.com/blog/2011/06/designing_ideas_of_inheritance_mechanism_in_javascript.html">参考</a></p>
+
 <h3>*JS闭包</h3>
 
-<p>闭包是可以访问上一层函数作用域里变量的函数，即便上一层函数已经关闭。闭包使得函数拥有私有变量称为可能，下面计数器受匿名函数的作用域保护，只能通过 add 方法修改。</p>
+<p>闭包就是能够读取其他函数内部变量的函数。闭包使得函数拥有私有变量称为可能，它的最大用处有两个，一个是前面提到的可以读取函数内部的变量，另一个就是让这些变量的值始终保持在内存中。因为里面的闭包函数是个全局变量，会一直在内存中。</p>
+
+<p>下面计数器受匿名函数的作用域保护，只能通过 add 方法修改。</p>
 
 <pre><code>var add = (function () {
    var counter = 0;
@@ -385,6 +416,8 @@ add();
 add();
 add();
 </code></pre>
+
+<p><a href="http://www.ruanyifeng.com/blog/2009/08/learning_javascript_closures.html">参考</a></p>
 
 <h3>* use strict</h3>
 
@@ -467,50 +500,105 @@ function parseUrl(argu){
 
 <h3>* JS事件流</h3>
 
+<p>事件流：事件在页面中传播的顺序。</p>
+
 <p>捕获，冒泡：xxx.addEventListener(type,handler,flag),flag是一个bool值，true表示事件捕捉阶段执行，false表示事件冒泡阶段执行，默认是冒泡。</p>
 
 <p><img src="/myimg/js/event.png" width="400" alt="" /></p>
 
 <p><a href="http://www.cnblogs.com/starof/p/4066381.html">参考</a></p>
 
-<h3>* 创建一个从1到100的数组</h3>
-
-<p>一看这题目肯定就不是for循环这么简单了，得有点别的了。</p>
-
-<p>递归：</p>
-
-<pre><code>  function test(arr, num) {
-      if (num &gt; 100) {
-          return arr
-      }
-      arr.push(num);
-      return test(arr, num + 1)
-  }
-  var arr = test([], 1);
-</code></pre>
-
-<p>Generator函数：</p>
-
-<pre><code>function* test(i) {
-    yield i;
-    if (i &lt; 100) {
-        yield* test(i + 1);
-    }
-}
- var arr =   Array.from(test(1));
-</code></pre>
-
 <h3>* 从输入 URL 到页面加载完的过程中都发生了什么事情</h3>
 
-<p><a href="https://segmentfault.com/q/1010000000489803">参考</a></p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>检查浏览器缓存，如果有的话直接解析显示。
+</span><span class='line'>DNS域名解析，层层寻找，负载均衡，找到对应的IP
+</span><span class='line'>TCP链接，三次握手(HTTPS更多次)
+</span><span class='line'>加载策略，RSA密钥协商，加密解密
+</span><span class='line'>服务器处理，数据库查询，返回页面
+</span><span class='line'>网页重定向
+</span><span class='line'>页面里的资源链接再获取数据，浏览器渲染</span></code></pre></td></tr></table></div></figure>
 
-<h3>* 实现1px 像素线条</h3>
 
 <h3>* link和import的区别</h3>
 
-<h3>* JS弱类型的优缺点</h3>
+<pre><code>来源不同：link 属于html标签，而@import完全是css提供的一种方式。link还能加载其他东西如RSS,而import只能加载CSS.
+加载顺序不同：当一个页面被加载的时候，link引用的CSS会同时被加载，而@import引用的CSS 会等到页面全部被下载完再被加载。所以有时候浏览@import加载CSS的页面时开始会没有样式（就是闪烁，阿里云APP总这样闪），网速慢的时候还挺明显。
+兼容性差别：由于@import是CSS2.1提出的所以老的浏览器不支持，@import只有在IE5以上的才能识别，而link标签无此问题。
+使用dom控制样式时的差别：当使用javascript控制dom去改变样式的时候，只能使用link标签，因为@import不是dom可以控制的。
+</code></pre>
 
-<h3>* http状态码</h3>
+<h3>* JS优缺点</h3>
+
+<pre><code>JavaScript是一种基于对象（Object）和事件驱动（Event Driven,单线程事件轮询）、动态、弱类型、基于原型的语言。
+函数作为一等公民存在,函数式编程。动态性，指定函数的执行语境，动态混入，动态修改原型等。
+
+允许同名函数的重复定义，后面的定义可以覆盖前面的定义。隐式类型转换。全局变量难以控制，null &amp; undefined鸡肋。
+</code></pre>
+
+<h3>* 说说React &amp; Vue</h3>
+
+<p>虚拟DOM, 单向数据流，双向绑定响应式，组件化，模板+js+css，JSX语法,生命周期，指令，依赖追踪，检查机制,更快的渲染更小的体积, 庞大的社区，RN，Weex,引用本地模块。</p>
+
+<p><a href="http://cn.vuejs.org/v2/guide/comparison.html">对比</a> ,<a href="http://mp.weixin.qq.com/s?__biz=MzIwNjQwMzUwMQ==&amp;mid=2247484393&amp;idx=1&amp;sn=142b8e37dfc94de07be211607e468030&amp;chksm=9723612ba054e83db6622a891287af119bb63708f1b7a09aed9149d846c9428ad5abbb822294&amp;mpshare=1&amp;scene=1&amp;srcid=1026oUz3521V74ua0uwTcIWa&amp;from=groupmessage&amp;isappinstalled=0#wechat_redirect&amp;utm_source=tuicool&amp;utm_medium=referral">参考</a></p>
+
+<h3>* CSS预处理</h3>
+
+<p>CSS 预处理器用一种专门的编程语言，进行 Web 页面样式设计，然后再编译成正常的 CSS 文件，以供项目使用。CSS 预处理器为 CSS 增加一些编程的特性，无需考虑浏览器的兼容性问题，例如你可以在 CSS 中使用变量、简单的逻辑程序、函数等,在编程语言中的一些基本特性，可以让你的 CSS 更加简洁、适应性更强、可读性更佳，更易于代码的维护等诸多好处。</p>
+
+<p><a href="http://less.bootcss.com/">Less</a> 是一门 CSS 预处理语言，它扩充了 CSS 语言，增加了诸如变量、混合（mixin）、函数等功能，让 CSS 更易维护、方便制作主题、扩充。</p>
+
+<p><a href="https://segmentfault.com/q/1010000002527156">参考</a></p>
+
+<h3>* 函数声明 &amp; 函数表达式</h3>
+
+<p>定义函数的方法主要有三种：</p>
+
+<ol>
+<li>函数声明(Function Declaration)</li>
+<li>函数表达式Function Expression)</li>
+<li>new Function构造函数</li>
+</ol>
+
+
+<p>用函数声明创建的函数funDeclaration可以在funDeclaration定义之前就进行调用；而用函数表达式创建的funExpression函数不能在funExpression被赋值之前进行调用。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>//声明
+</span><span class='line'>function functionName(arg1, arg2){}
+</span><span class='line'>//表达式
+</span><span class='line'>var  variable = function(arg1, arg2){}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>用函数声明创建的函数funDeclaration可以在funDeclaration定义之前就进行调用；而用函数表达式创建的funExpression函数不能在funExpression被赋值之前进行调用。</p>
+
+<pre><code>funDeclaration("Declaration");//=&gt; true
+     function funDeclaration(type){
+         return type==="Declaration";
+     }
+
+ funExpression("Expression");//=&gt;error
+     var funExpression = function(type){
+         return type==="Expression";
+     }
+</code></pre>
+
+<p><a href="http://www.cnblogs.com/isaboy/p/javascript_function.html">参考</a></p>
+
+<h3>* attribute和property的区别</h3>
+
+<p><a href="https://www.web-tinker.com/article/20115.html">参考</a></p>
+
+<h3>* ajax 原理</h3>
 
 <p><a href="https://developer.mozilla.org/en-US/docs/Web">MDN</a></p>
 
