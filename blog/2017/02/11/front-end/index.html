@@ -615,6 +615,67 @@ function parseUrl(argu){
 
 <p><a href="http://www.cnblogs.com/isaboy/p/javascript_function.html">参考</a></p>
 
+<h3>* <a href="http://webpackdoc.com/amd.html">AMD(异步模块定义)</a> &amp; <a href="http://webpackdoc.com/commonjs.html">CommonJs规范</a></h3>
+
+<p>CommonJS是服务器端模块化规范，NodeJS采用了这个规范。根据它的规范，一个文件就是一个模块，每个模块都在一个单独的作用域，也就是说在该模块内部定义的变量，无法被其他模块读取，除非定义global对象的属性。CommonJS加载模块是同步的，也就是说只有加载完成，才能执行后面的操作。它的 exports 才是对外接口。</p>
+
+<p>CommonJS 规范是为了解决 JavaScript 的作用域问题而定义的模块形式，可以使每个模块它自身的命名空间中执行。该规范的主要内容是，模块必须通过 module.exports 导出对外的变量或接口，通过 require() 来导入其他模块的输出到当前模块作用域中。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>所有代码都运行在模块作用域，不会污染全局作用域。
+</span><span class='line'>模块可以多次加载，但是只会在第一次加载时运行一次，然后运行结果就被缓存了，以后再加载，就直接读取缓存结果。要想让模块再次运行，必须清除缓存。
+</span><span class='line'>模块加载的顺序，按照其在代码中出现的顺序。</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>//模块定义 example.js
+var x = 5;
+var addX = function (value) {
+  return value + x;
+};
+module.exports.x = x;
+module.exports.addX = addX;
+
+//使用模块
+var example = require('./example.js');
+console.log(example.x); // 5
+console.log(example.addX(1)); // 6
+</code></pre>
+
+<p>Node内部提供一个Module构建函数。所有模块都是Module的实例。每个模块内部，都有一个module对象，代表当前模块。它有以下属性。module.exports属性表示当前模块对外输出的接口，其他文件加载该模块，实际上就是读取module.exports变量。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>module.id 模块的识别符，通常是带有绝对路径的模块文件名。
+</span><span class='line'>module.filename 模块的文件名，带有绝对路径。
+</span><span class='line'>module.loaded 返回一个布尔值，表示模块是否已经完成加载。
+</span><span class='line'>module.parent 返回一个对象，表示调用该模块的模块。
+</span><span class='line'>module.children 返回一个数组，表示该模块要用到的其他模块。
+</span><span class='line'>module.exports 表示模块对外输出的值。</span></code></pre></td></tr></table></div></figure>
+
+
+<p>AMD规范则是非同步的加载模块，允许指定回调函数。由于nodeJS主要用于服务器编程，模块文件一般都在本地，所以加载起来比较快，不用考虑非同步的加载方式，所以CommonJS规范比较适用。但如果是浏览器环境，要从服务器端加载模块，则必须采用非同步模式，所以浏览器一般采用AMD规范。</p>
+
+<p>规范其实只有一个主要接口 define(id?, dependencies?, factory)，它要在声明模块的时候指定所有的依赖 dependencies，并且还要当做形参传到 factory 中，对于依赖的模块提前执行，依赖前置。</p>
+
+<pre><code>define(['package/lib'], function(lib){
+  function foo(){
+    lib.log('hello world!');
+  }
+
+  return {
+    foo: foo
+  };
+});
+</code></pre>
+
+<p><a href="http://javascript.ruanyifeng.com/nodejs/module.html">参考</a></p>
+
 <h3>* attribute和property的区别</h3>
 
 <p><a href="https://www.web-tinker.com/article/20115.html">参考</a></p>
@@ -632,16 +693,6 @@ function parseUrl(argu){
 <h3>* this</h3>
 
 <p><a href="http://www.cnblogs.com/yuanzm/p/4150558.html">参考</a></p>
-
-<h3>* <a href="http://webpackdoc.com/amd.html">AMD(异步模块定义)</a> &amp; <a href="http://webpackdoc.com/commonjs.html">CommonJs规范</a></h3>
-
-<p>CommonJS是服务器端模块化规范，NodeJS采用了这个规范。根据它的规范，一个文件就是一个模块，每个模块都在一个单独的作用域，也就是说在该模块内部定义的变量，无法被其他模块读取，除非定义global对象的属性。CommonJS加载模块是同步的，也就是说只有加载完成，才能执行后面的操作。</p>
-
-<p>AMD规范则是非同步的加载模块，允许指定回调函数。由于nodeJS主要用于服务器编程，模块文件一般都在本地，所以加载起来比较快，不用考虑非同步的加载方式，所以CommonJS规范比较适用。但如果是浏览器环境，要从服务器端加载模块，则必须采用非同步模式，所以浏览器一般采用AMD规范。</p>
-
-<p><a href="http://javascript.ruanyifeng.com/nodejs/module.html">参考</a>,<a href="http://www.tuicool.com/articles/nueqi27">参考2</a></p>
-
-<h3>* 什么是模块化</h3>
 
 <h3>* CSS动画原理</h3>
 
