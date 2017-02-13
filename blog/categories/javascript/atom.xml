@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Javascript | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2017-02-13T21:18:38+08:00</updated>
+  <updated>2017-02-13T21:25:49+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -18,27 +18,7 @@
     <link href="http://andyfightting.github.io/blog/2017/02/11/front-end/"/>
     <updated>2017-02-11T13:45:11+08:00</updated>
     <id>http://andyfightting.github.io/blog/2017/02/11/front-end</id>
-    <content type="html"><![CDATA[<h3>* 前端性能优化</h3>
-
-<ol>
-<li><a href="http://www.cnblogs.com/autumn123/p/4237286.html">CSS精灵(CSS Sprites)</a>,把网页中一些零散的图片整合到一张图片中，然后通过background-position来定位获取。减少网页请求，设计师修改风格只需在一张图片上操作，没命名困扰，能减少字节(aaa>A)。
-改动麻烦，一改全动，要么就新增。</li>
-<li><a href="https://yq.aliyun.com/articles/49918">JS文件合并</a></li>
-<li>JS延迟加载(setTimeout)，图片延迟按需加载(jquery lazyload)，预加载资源</li>
-<li>减少DOM元素数量</li>
-<li>避免重定向跳转</li>
-<li>减小cookie大小</li>
-<li>避免空的src,因为它仍然会发送请求</li>
-<li>资源压缩传输（Google protocol buffer）</li>
-<li>利用缓存，cache-control,Expires</li>
-<li>缓存DNS查找</li>
-<li>减少http请求(CSS精灵，文件合并都是为了这个)</li>
-<li>浏览器会对同一个域的下载链接数有限制(一般是6个)，所以可以按域名来划分下载内容，增大并发下载数量。</li>
-<li><a href="http://kb.cnblogs.com/page/121664/">使用CDN</a>(Content Delivery Network，即内容分发网络,将网站的内容发布到最接近用户的网络"边缘"，使用户可以就近取得所需的内容，解决Internet网络拥塞状况，提高用户访问网站的响应速度)</li>
-</ol>
-
-
-<h4>*JSONP原理</h4>
+    <content type="html"><![CDATA[<h4>*JSONP原理</h4>
 
 <p>JSON是一种数据交换格式，JSONP(JSON Padding)是数据的传递方式，不一样的概念。打个比方，JSON是地下党们用来书写和交换情报的“暗号”，而JSONP则是把用“暗号”书写的情报，传递给自己同志时使用的接头方式。一个是描述信息的格式，一个是信息传递时约定的方法。</p>
 
@@ -796,6 +776,26 @@ add.apply(o, [10, 20]); // 1 + 3 + 10 + 20 = 34
 </code></pre>
 
 <h3>* <a href="http://stackoverflow.com/questions/211383/what-methods-of-clearfix-can-i-use">浮动清除</a></h3>
+
+<h3>* 前端性能优化</h3>
+
+<ol>
+<li><a href="http://www.cnblogs.com/autumn123/p/4237286.html">CSS精灵(CSS Sprites)</a>,把网页中一些零散的图片整合到一张图片中，然后通过background-position来定位获取。减少网页请求，设计师修改风格只需在一张图片上操作，没命名困扰，能减少字节(aaa>A)。
+改动麻烦，一改全动，要么就新增。</li>
+<li><a href="https://yq.aliyun.com/articles/49918">JS文件合并</a></li>
+<li>JS延迟加载(setTimeout)，图片延迟按需加载(jquery lazyload)，预加载资源</li>
+<li>减少DOM元素数量</li>
+<li>避免重定向跳转</li>
+<li>减小cookie大小</li>
+<li>避免空的src,因为它仍然会发送请求</li>
+<li>资源压缩传输（Google protocol buffer）</li>
+<li>利用缓存，cache-control,Expires</li>
+<li>缓存DNS查找</li>
+<li>减少http请求(CSS精灵，文件合并都是为了这个)</li>
+<li>浏览器会对同一个域的下载链接数有限制(一般是6个)，所以可以按域名来划分下载内容，增大并发下载数量。</li>
+<li><a href="http://kb.cnblogs.com/page/121664/">使用CDN</a>(Content Delivery Network，即内容分发网络,将网站的内容发布到最接近用户的网络"边缘"，使用户可以就近取得所需的内容，解决Internet网络拥塞状况，提高用户访问网站的响应速度)</li>
+</ol>
+
 
 <p><a href="https://developer.mozilla.org/en-US/docs/Web">MDN</a></p>
 
