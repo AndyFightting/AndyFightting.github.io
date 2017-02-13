@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Javascript | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2017-02-13T12:04:44+08:00</updated>
+  <updated>2017-02-13T21:18:38+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -531,31 +531,271 @@ module.exports 表示模块对外输出的值。
 
 <h3>* attribute和property的区别</h3>
 
-<p><a href="https://www.web-tinker.com/article/20115.html">参考</a></p>
+<p>attribute: 是一个属性节点，每个DOM元素都有一个对应的 attributes 属性来存放所有的 attribute节点。</p>
+
+<pre><code>&lt;div class="box" id="box" gameid="880"&gt;hello&lt;/div&gt;
+上面div的 attributes 为：[ class="box", id="box", gameid="880" ]
+可以这样来访问attribute节点：
+var elem = document.getElementById( 'box' );
+console.log( elem.attributes[0].name ); // class
+console.log( elem.attributes[0].value ); // box
+通常要获取一个attribute节点直接用getAttribute方法：
+console.log( elem.getAttribute('gameid') ); // 880
+elem.setAttribute('testAttr', 'testVal');
+console.log( elem.removeAttribute('gameid') ); // undefined
+</code></pre>
+
+<p>property：就是一个属性，如果把DOM元素看成是一个普通的Object对象，那么property就是一个以名值对(name=”value”)的形式存放在Object中的属性。要添加和删除property也简单多了，和普通的对象没啥分别。</p>
+
+<pre><code>elem.gameid = 880; // 添加
+console.log( elem.gameid ) // 获取
+delete elem.gameid // 删除
+</code></pre>
+
+<p>之所以attribute和property容易混倄在一起的原因是，很多attribute节点还有一个相对应的property属性，比如上面的div元素的id和class既是attribute，也有对应的property，不管使用哪种方法都可以访问和修改。DOM元素一些默认常见的attribute节点都有与之对应的property属性.</p>
+
+<pre><code>console.log( elem.getAttribute('id') ); // box
+console.log( elem.id ); // box
+elem.id = 'hello';
+console.log( elem.getAttribute('id') ); // hello
+</code></pre>
+
+<p>但是对于自定义的attribute节点，或者自定义property，两者就没有关系了。</p>
+
+<pre><code>console.log( elem.getAttribute('gameid') ); // 880
+console.log( elem.gameid ); // undefined
+elem.areaid = '900';
+console.log( elem.getAttribute('areaid') ) // null
+</code></pre>
+
+<p>对于IE6-7来说，没有区分attribute和property：</p>
+
+<pre><code>console.log( elem.getAttribute('gameid') ); // 880
+console.log( elem.gameid ); // 880
+elem.areaid = '900';
+console.log( elem.getAttribute('areaid') ) // 900
+</code></pre>
+
+<p>attribute是一个属性节点对象，而property则是对象的一个字段</p>
+
+<p><img src="/myimg/js/attribute.png" alt="" /></p>
+
+<p><a href="https://www.web-tinker.com/article/20115.html">参考</a>, <a href="http://www.cnblogs.com/elcarim5efil/p/4698980.html">参考</a></p>
 
 <h3>* ajax 原理</h3>
 
-<h3>* jquery 原理</h3>
+<p>Asynchronous JavaScript and XML（异步的 JavaScript 和 XML），在不重新加载整个页面的情况下，可以与服务器交换数据并更新部分网页内容。</p>
+
+<pre><code>function test(){
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        // IE6, IE5 浏览器执行代码
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange=function(){
+        if (xmlhttp.readyState==4 &amp;&amp; xmlhttp.status==200){
+            document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
+        }
+    }
+    xmlhttp.open("GET","/try/ajax/ajax_info.txt",true);
+    xmlhttp.send();
+}
+</code></pre>
+
+<p>优点：异步通信，按需加载
+缺点：破坏了浏览器的back,history功能，安全问题，csrf(跨站请求伪造)，不能很好的支持移动设备</p>
+
+<p><a href="http://www.cnblogs.com/SanMaoSpace/archive/2013/06/15/3137180.html">参考</a></p>
+
+<h3>* <a href="http://www.zhangxinxu.com/wordpress/2013/07/jquery-%E5%8E%9F%E7%90%86-%E6%9C%BA%E5%88%B6/">jquery 原理分析</a></h3>
+
+<p>jquery 是一个JS函数库，即选取元素(CSS选取器一样)，然后对元素进行操作的封装。它包含以下功能：</p>
+
+<pre><code>HTML 元素选取
+HTML 元素操作
+CSS 操作
+HTML 事件函数
+JavaScript 特效和动画
+HTML DOM 遍历和修改
+AJAX
+</code></pre>
 
 <h3>* 作用域链</h3>
 
-<h3>* XMLHttpRequest</h3>
+<p>域：Scope这个术语被用来描述在某个代码块可见的所有实体（或有效的所有标识符），更精准一点，叫做上下文（context）或当前执行环境（environment）。作用域就是变量与函数的可访问范围。在JavaScript中，变量的作用域有全局作用域和局部作用域两种。</p>
+
+<p>在JavaScript中，函数也是对象，实际上，JavaScript里一切都是对象。函数对象和其它对象一样，拥有可以通过代码访问的属性和一系列仅供JavaScript引擎访问的内部属性。其中一个内部属性是 scope，该内部属性包含了函数被创建的作用域中对象的集合，这个集合被称为函数的作用域链，它决定了哪些数据能被函数访问。</p>
+
+<p>当一个函数创建后，它的作用域链，会被创建此函数的作用域中可访问的数据对象填充。</p>
+
+<p><a href="http://www.cnblogs.com/lhb25/archive/2011/09/06/javascript-scope-chain.html">参考</a></p>
 
 <h3>* JS事件委托</h3>
 
 <h3>* this</h3>
 
-<p><a href="http://www.cnblogs.com/yuanzm/p/4150558.html">参考</a></p>
+<p>this不是author-time binding，而是 runtime binding。
+this的上下文基于函数调用的情况。和函数在哪定义无关，而和函数怎么调用有关。
+this在具体情况下的分析：</p>
 
-<h3>* CSS动画原理</h3>
+<ol>
+<li><p>在全局上下文（任何函数以外），this指向全局对象。
+<code>
+console.log(this === window); // true
+</code></p></li>
+<li><p>在函数内部时，this由函数怎么调用来确定。</p></li>
+</ol>
+
+
+<h4>2.1</h4>
+
+<p>简单调用,this必须指向对象，那么默认就指向全局对象。</p>
+
+<pre><code>function f1(){
+  return this;
+}
+f1() === window; // global object
+</code></pre>
+
+<p>在严格模式下，this保持进入execution context时被设置的值。如果没有设置，那么默认是undefined。它可以被设置为任意值**（包括null/undefined/1等等基础值，不会被转换成对象）</p>
+
+<pre><code>function f2(){
+  "use strict"; 
+  return this;
+}
+f2() === undefined;
+</code></pre>
+
+<h4>2.2</h4>
+
+<p>当函数作为对象方法调用时，this指向该对象。</p>
+
+<pre><code>var o = {
+  prop: 37,
+  f: function() {
+    return this.prop;
+  }
+};
+console.log(o.f()); // logs 37
+</code></pre>
+
+<h4>2.3</h4>
+
+<p>在构造函数（函数用new调用）中，this指向要被constructed创建的新对象。</p>
+
+<h4>2.4</h4>
+
+<p>Function.prototype上的call和apply可以指定函数运行时的this。</p>
+
+<pre><code>function add(c, d){
+  return this.a + this.b + c + d;
+}
+
+var o = {a:1, b:3};
+add.call(o, 5, 7); // 1 + 3 + 5 + 7 = 16
+add.apply(o, [10, 20]); // 1 + 3 + 10 + 20 = 34
+</code></pre>
+
+<p>注意，当用call和apply而传进去作为this的不是对象时，将会调用内置的ToObject操作转换成对象。所以4将会装换成new Number(4)，而null/undefined由于无法转换成对象，全局对象将作为this。</p>
+
+<h4>2.5 bind</h4>
+
+<p>ES5引进了Function.prototype.bind。f.bind(someObject)会创建新的函数（函数体和作用域与原函数一致），但this被永久绑定到someObject，不论你怎么调用。</p>
+
+<h4>2.6 As a DOM event handler</h4>
+
+<p>this自动设置为触发事件的dom元素。</p>
+
+<p><a href="http://www.cnblogs.com/yuanzm/p/4150558.html">参考</a></p>
 
 <h3>* 拖拽实现</h3>
 
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;script&gt;
+        var params = {
+            left: 0,
+            top: 0,
+            currentX: 0,
+            currentY: 0,
+            flag: false
+        };
+        var getCss = function(o,key){
+            return o.currentStyle? o.currentStyle[key] : document.defaultView.getComputedStyle(o,false)[key];
+        };
+
+        var startDrag = function(bar, target, callback){
+            if(getCss(target, "left") !== "auto"){
+                params.left = getCss(target, "left");
+            }
+            if(getCss(target, "top") !== "auto"){
+                params.top = getCss(target, "top");
+            }
+            bar.onmousedown = function(event){
+                params.flag = true;
+                if(!event){
+                    event = window.event;
+                    bar.onselectstart = function(){
+                        return false;
+                    }
+                }
+                var e = event;
+                params.currentX = e.clientX;
+                params.currentY = e.clientY;
+            };
+            document.onmouseup = function(){
+                params.flag = false;
+                if(getCss(target, "left") !== "auto"){
+                    params.left = getCss(target, "left");
+                }
+                if(getCss(target, "top") !== "auto"){
+                    params.top = getCss(target, "top");
+                }
+            };
+            document.onmousemove = function(event){
+                var e = event ? event: window.event;
+                if(params.flag){
+                    var nowX = e.clientX, nowY = e.clientY;
+                    var disX = nowX - params.currentX, disY = nowY - params.currentY;
+                    target.style.left = parseInt(params.left) + disX + "px";
+                    target.style.top = parseInt(params.top) + disY + "px";
+                }
+
+                if (typeof callback == "function") {
+                    callback(parseInt(params.left) + disX, parseInt(params.top) + disY);
+                }
+            }
+        };
+
+    &lt;/script&gt;
+
+&lt;/head&gt;
+&lt;body id="box" style="position:absolute; "&gt;
+&lt;div style="width: 100px;height: 100px;background-color: red" id="bar"&gt;&lt;/div&gt;
+&lt;script type="text/javascript"&gt;
+    var oBox = document.getElementById("box");
+    var oBar = document.getElementById("bar");
+    startDrag(oBar, oBox);
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
 <h3>* session</h3>
 
-<h3>* 浮动清除</h3>
+<pre><code>1，session 在服务器端，cookie 在客户端（浏览器）
+2，session 默认被存在在服务器的一个文件里（不是内存）
+3，session 的运行依赖 session id，而 session id 是存在 cookie 中的，也就是说，如果浏览器禁用了 cookie ，同时 session 也会失效（但是可以通过其它方式实现，比如在 url 中传递 session_id）
+4，session 可以放在 文件、数据库、或内存中都可以。
+5，用户验证这种场合一般会用 session
+</code></pre>
 
-<h3>* 几种定位方法</h3>
+<h3>* <a href="http://stackoverflow.com/questions/211383/what-methods-of-clearfix-can-i-use">浮动清除</a></h3>
 
 <p><a href="https://developer.mozilla.org/en-US/docs/Web">MDN</a></p>
 
