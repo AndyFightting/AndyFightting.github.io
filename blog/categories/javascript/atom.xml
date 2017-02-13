@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Javascript | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2017-02-12T20:43:16+08:00</updated>
+  <updated>2017-02-13T08:03:30+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -18,7 +18,27 @@
     <link href="http://andyfightting.github.io/blog/2017/02/11/front-end/"/>
     <updated>2017-02-11T13:45:11+08:00</updated>
     <id>http://andyfightting.github.io/blog/2017/02/11/front-end</id>
-    <content type="html"><![CDATA[<h4>*JSONP原理</h4>
+    <content type="html"><![CDATA[<h3>* 前端性能优化</h3>
+
+<ol>
+<li><a href="http://www.cnblogs.com/autumn123/p/4237286.html">CSS精灵(CSS Sprites)</a>,把网页中一些零散的图片整合到一张图片中，然后通过background-position来定位获取。减少网页请求，设计师修改风格只需在一张图片上操作，没命名困扰，能减少字节(aaa>A)。
+改动麻烦，一改全动，要么就新增。</li>
+<li><a href="https://yq.aliyun.com/articles/49918">JS文件合并</a></li>
+<li>JS延迟加载(setTimeout)，图片延迟按需加载(jquery lazyload)，预加载资源</li>
+<li>减少DOM元素数量</li>
+<li>避免重定向跳转</li>
+<li>减小cookie大小</li>
+<li>避免空的src,因为它仍然会发送请求</li>
+<li>资源压缩传输（Google protocol buffer）</li>
+<li>利用缓存，cache-control,Expires</li>
+<li>缓存DNS查找</li>
+<li>减少http请求(CSS精灵，文件合并都是为了这个)</li>
+<li>浏览器会对同一个域的下载链接数有限制(一般是6个)，所以可以按域名来划分下载内容，增大并发下载数量。</li>
+<li><a href="http://kb.cnblogs.com/page/121664/">使用CDN</a>(Content Delivery Network，即内容分发网络,将网站的内容发布到最接近用户的网络"边缘"，使用户可以就近取得所需的内容，解决Internet网络拥塞状况，提高用户访问网站的响应速度)</li>
+</ol>
+
+
+<h4>*JSONP原理</h4>
 
 <p>JSON是一种数据交换格式，JSONP(JSON Padding)是数据的传递方式，不一样的概念。打个比方，JSON是地下党们用来书写和交换情报的“暗号”，而JSONP则是把用“暗号”书写的情报，传递给自己同志时使用的接头方式。一个是描述信息的格式，一个是信息传递时约定的方法。</p>
 
@@ -333,7 +353,11 @@ add();
 
 <p>XSS它的全名是：Cross-site scripting 夸站脚本攻击，为了和CSS层叠样式表区分所以取名XSS。是一种网站应用程序的安全漏洞攻击，是代码注入的一种。其特点是不对服务器端造成任何伤害，而是通过一些正常的站内交互途径，例如发布评论，提交含有 JavaScript 的内容文本。这时服务器端如果没有过滤或转义掉这些脚本，作为内容发布到了页面上，其他用户访问这个页面的时候就会运行这些脚本。</p>
 
+<p>提交过滤。</p>
+
 <p>CSRF全名是：Cross-site request forgery 跨站请求伪造，也是不攻击服务器端而攻击正常访问网站的用户。CSRF 顾名思义，是伪造请求，冒充用户在站内的正常操作。大多数网站是通过 cookie 等方式辨识用户身份再予以授权的。所以要伪造用户的正常操作，最好的方法是通过 XSS 或链接欺骗等途径，让用户在本机发起用户所不知道的请求。</p>
+
+<p>验证码，域名判断，添加token。</p>
 
 <h3>* 图片滚动到了才加载原理</h3>
 
@@ -471,30 +495,25 @@ var  variable = function(arg1, arg2){}
 
 <p><a href="http://www.cnblogs.com/yuanzm/p/4150558.html">参考</a></p>
 
-<h3>* AMD &amp; CMD &amp; CommonJs规范，优缺点</h3>
+<h3>* <a href="http://webpackdoc.com/amd.html">AMD(异步模块定义)</a> &amp; <a href="http://webpackdoc.com/commonjs.html">CommonJs规范</a></h3>
 
-<h3>* 模块化</h3>
+<p>CommonJS是服务器端模块化规范，NodeJS采用了这个规范。根据它的规范，一个文件就是一个模块，每个模块都在一个单独的作用域，也就是说在该模块内部定义的变量，无法被其他模块读取，除非定义global对象的属性。CommonJS加载模块是同步的，也就是说只有加载完成，才能执行后面的操作。</p>
+
+<p>AMD规范则是非同步的加载模块，允许指定回调函数。由于nodeJS主要用于服务器编程，模块文件一般都在本地，所以加载起来比较快，不用考虑非同步的加载方式，所以CommonJS规范比较适用。但如果是浏览器环境，要从服务器端加载模块，则必须采用非同步模式，所以浏览器一般采用AMD规范。</p>
+
+<p><a href="http://javascript.ruanyifeng.com/nodejs/module.html">参考</a>,<a href="http://www.tuicool.com/articles/nueqi27">参考2</a></p>
+
+<h3>* 什么是模块化</h3>
 
 <h3>* CSS动画原理</h3>
 
-<h3>* 前端性能优化</h3>
+<h3>* 拖拽实现</h3>
 
-<ol>
-<li><a href="http://www.cnblogs.com/autumn123/p/4237286.html">CSS精灵(CSS Sprites)</a>,把网页中一些零散的图片整合到一张图片中，然后通过background-position来定位获取。减少网页请求，设计师修改风格只需在一张图片上操作，没命名困扰，能减少字节(aaa>A)。
-改动麻烦，一改全动，要么就新增。</li>
-<li><a href="https://yq.aliyun.com/articles/49918">JS文件合并</a></li>
-<li>JS延迟加载(setTimeout)，图片延迟按需加载(jquery lazyload)，预加载资源</li>
-<li>减少DOM元素数量</li>
-<li>避免没必要的重定向跳转</li>
-<li>减小cookie大小</li>
-<li>避免空的src,因为它仍然会发送请求</li>
-<li>资源压缩传输（Google protocol buffer）</li>
-<li>利用缓存，cache-control,Expires</li>
-<li>缓存DNS查找</li>
-<li>减少http请求</li>
-<li><a href="http://kb.cnblogs.com/page/121664/">使用CDN</a>(Content Delivery Network，即内容分发网络,将网站的内容发布到最接近用户的网络"边缘"，使用户可以就近取得所需的内容，解决Internet网络拥塞状况，提高用户访问网站的响应速度)</li>
-</ol>
+<h3>* session</h3>
 
+<h3>* 浮动清除</h3>
+
+<h3>* 几种定位方法</h3>
 
 <p><a href="https://developer.mozilla.org/en-US/docs/Web">MDN</a></p>
 
