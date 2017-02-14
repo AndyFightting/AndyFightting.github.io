@@ -9,7 +9,7 @@
   <meta name="author" content="guimingsu">
 
   
-  <meta name="description" content="前端基础知识 Feb 11th, 2017 1:45 pm *JSONP原理 JSON是一种数据交换格式，JSONP(JSON Padding)是数据的传递方式，不一样的概念。打个比方，JSON是地下党们用来书写和交换情报的“暗号”，而JSONP则是把用“暗号”书写的情报， &hellip;">
+  <meta name="description" content="Unicode、UTF-8编码起源 Dec 30th, 2016 3:39 pm 很久很久以前，有一群人，他们决定用8个可以开合的晶体管来组合成不同的状态，以表示世界上的万物。他们看到8个开关状态是好的，于是他们把这称为字节。再后来，他们又做了一些可以处理这些字节的机器，机器开动了， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,7 +82,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2017/02/11/front-end/">前端基础知识</a></h1>
+      <h1 class="entry-title"><a href="/blog/2016/12/30/utf8/">Unicode、UTF-8编码起源</a></h1>
     
     
       <p class="meta">
@@ -91,7 +91,722 @@
 
 
 
-<time class='entry-date' datetime='2017-02-11T13:45:11+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>1:45 pm</span></time>
+<time class='entry-date' datetime='2016-12-30T15:39:55+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:39 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>很久很久以前，有一群人，他们决定用8个可以开合的晶体管来组合成不同的状态，以表示世界上的万物。他们看到8个开关状态是好的，于是他们把这称为字节。再后来，他们又做了一些可以处理这些字节的机器，机器开动了，可以用字节来组合出很多状态，状态开始变来变去。他们看到这样是好的，于是它们就这机器称为计算机。</p>
+
+<p>开始计算机只在美国用。八位的字节一共可以组合出256(2的8次方)种不同的状态。 他们把其中的编号从0开始的32种状态分别规定了特殊的用途，一但终端、打印机遇上约定好的这些字节被传过来时，就要做一些约定的动作。遇上0×10(0x表示16进制), 终端就换行，遇上0×07, 终端就向人们嘟嘟叫，例好遇上0x1b, 打印机就打印反白的字，或者终端就用彩色显示字母。他们看到这样很好，于是就把这些0×20以下的字节状态称为控制码。他们又把所有的空 格、标点符号、数字、大小写字母分别用连续的字节状态表示，一直编到了第127号，这样计算机就可以用不同字节来存储英语的文字了。大家看到这样，都感觉 很好，于是大家都把这个方案叫做 ANSI 的Ascii编码（American Standard Code for Information Interchange，美国信息互换标准代码）。当时世界上所有的计算机都用同样的ASCII方案来保存英文文字。
+<img src="/myimg/other/asc1.jpg" alt="" /></p>
+
+<p>后来，就像建造巴比伦塔一样，世界各地的都开始使用计算机，但是很多国家用的不是英文，他们的字母里有许多是ASCII里没有的，为了可以在计算机 保存他们的文字，他们决定采用 127号之后的空位来表示这些新的字母、符号，还加入了很多画表格时需要用下到的横线、竖线、交叉等形状，一直把序号编到了最后一个状态255。从128 到255这一页的字符集被称扩展字符集。从此之后，贪婪的人类再没有新的状态可以用了，美帝国主义可能没有想到还有第三世界国家的人们也希望可以用到计算机吧！
+<img src="/myimg/other/asc2.jpg" alt="" /></p>
+
+<p>等中国人们得到计算机时，已经没有可以利用的字节状态来表示汉字，况且有6000多个常用汉字需要保存呢。但是这难不倒智慧的中国人民，我们不客气 地把那些127号之后的奇异符号们直接取消掉, 规定：一个小于127的字符的意义与原来相同，但两个大于127的字符连在一起时，就表示一个汉字，前面的一个字节（他称之为高字节）从0xA1用到 0xF7(16进制以0x开头)，后面一个字节（低字节）从0xA1到0xFE，这样我们就可以组合出大约7000多个简体汉字了。在这些编码里，我们还把数学符号、罗马希腊的 字母、日文的假名们都编进去了，连在 ASCII 里本来就有的数字、标点、字母都统统重新编了两个字节长的编码，这就是常说的”全角”字符，而原来在127号以下的那些就叫”半角”字符了。 中国人民看到这样很不错，于是就把这种汉字方案叫做 “GB2312“。GB2312 是对 ASCII 的中文扩展。
+<img src="/myimg/other/gbk1.png" alt="" /></p>
+
+<p>但是中国的汉字太多了，我们很快就就发现有许多人的人名没有办法在这里打出来，特别是某些很会麻烦别人的国家领导人。于是我们不得不继续把 GB2312 没有用到的码位找出来老实不客气地用上。 后来还是不够用，于是干脆不再要求低字节一定是127号之后的内码，只要第一个字节是大于127就固定表示这是一个汉字的开始，不管后面跟的是不是扩展字 符集里的内容。结果扩展之后的编码方案被称为 GBK 标准，GBK包括了GB2312 的所有内容，同时又增加了近20000个新的汉字（包括繁体字）和符号。 后来少数民族也要用电脑了，于是我们再扩展，又加了几千个新的少数民族的字，GBK扩成了 GB18030。从此之后，中华民族的文化就可以在计算机时代中传承了。 中国的程序员们看到这一系列汉字编码的标准是好的，于是通称他们叫做 “DBCS“（Double Byte Charecter Set 双字节字符集）。在DBCS系列标准里，最大的特点是两字节长的汉字字符和一字节长的英文字符并存于同一套编码方案里，因此他们写的程序为了支持中文处 理，必须要注意字串里的每一个字节的值，如果这个值是大于127的，那么就认为一个双字节字符集里的字符出现了。那时候凡是受过加持，会编程的计算机僧侣 们都要每天念下面这个咒语数百遍： “一个汉字算两个英文字符！一个汉字算两个英文字符……”</p>
+
+<p>因为当时各个国家都像中国这样搞出一套自己的编码标准，结果互相之间谁也不懂谁的编码，谁也不支持别人的编码，连大陆和台湾这样只相隔了150海 里，使用着同一种语言的兄弟地区，也分别采用了不同的 DBCS 编码方案——当时的中国人想让电脑显示汉字，就必须装上一个”汉字系统”，专门用来处理汉字的显示、输入的问题，但是那个台湾的愚昧封建人士写的算命程序 就必须加装另一套支持 BIG5 编码的什么”倚天汉字系统”才可以用，装错了字符系统，显示就会乱了套！这怎么办？而且世界民族之林中还有那些一时用不上电脑的穷苦人民，他们的文字又怎 么办？ 真是计算机的巴比伦塔命题啊！</p>
+
+<p>正在这时，大天使加百列及时出现了——一个叫 ISO （国际标谁化组织）的国际组织决定着手解决这个问题。他们采用的方法很简单：废了所有的地区性编码方案，重新搞一个包括了地球上所有文化、所有字母和符号 的编码！他们打算叫它”Universal Multiple-Octet Coded Character Set”，简称 UCS, 俗称 “unicode“。</p>
+
+<p>unicode开始制订时，计算机的存储器容量极大地发展了，空间再也不成为问题了。于是 ISO 就直接规定必须用两个字节，也就是16位来统一表示所有的字符，对于ASCII里的那些“半角”字符，unicode包持其原编码不变，只是将其长度由原 来的8位扩展为16位，而其他文化和语言的字符则全部重新统一编码。由于”半角”英文符号只需要用到低8位，所以其高8位永远是0，因此这种大气的方案在 保存英文文本时会多浪费一倍的空间。</p>
+
+<p>这时候，从旧社会里走过来的程序员开始发现一个奇怪的现象：他们的strlen函数靠不住了，一个汉字不再是相当于两个字符了，而是一个！是的，从unicode开始，无论是半角的英文字母，还是全角的汉字，它们都是统一的”一个字符“！同时，也都是统一的”两个字节“，请注意”字符”和”字节”两个术语的不同，“字节”是一个8位的物理存贮单元，而“字符”则是一个文化相关的符号。在unicode中，一个字符就是两个字节。一个汉字算两个英文字符的时代已经快过去了。</p>
+
+<p>从前多种字符集存在时，那些做多语言软件的公司遇上过很大麻烦，他们为了在不同的国家销售同一套软件，就不得不在区域化软件时也加持那个双字节字符集咒语，不仅要处处小心不要搞错，还要把软件中的文字在不同的字符集中转来转去。UNICODE 对于他们来说是一个很好的一揽子解决方案，于是从 Windows NT 开始，MS 趁机把它们的操作系统改了一遍，把所有的核心代码都改成了用 UNICODE 方式工作的版本，从这时开始，WINDOWS 系统终于无需要加装各种本土语言系统，就可以显示全世界上所有文化的字符了。</p>
+
+<p>但是，UNICODE 在制订时没有考虑与任何一种现有的编码方案保持兼容，这使得 GBK 与UNICODE 在汉字的内码编排上完全是不一样的，没有一种简单的算术方法可以把文本内容从UNICODE编码和另一种编码进行转换，这种转换必须通过查表来进行。</p>
+
+<p>如前所述，UNICODE 是用两个字节来表示为一个字符，他总共可以组合出65535不同的字符，这大概已经可以覆盖世界上所有文化的符号。如果还不够也没有关系，ISO已经准备了UCS-4方案，说简单了就是四个字节来表示一个字符，这样我们就可以组合出21亿个不同的字符出来（最高位有其他用途），这大概可以用到银河联邦成立那一天吧！</p>
+
+<p>这里就有两个的问题，一个是如何才能区别unicode和ascii？计算机怎么知道三个字节表示一个符号，而不是分别表示三个符号呢？第二个问题是，我们已经知道，英文字母只用一个字节表示就够了，如果unicode统一规定，每个符号用三个或四个字节表示，那么每 个英文字母前都必然有二到三个字节是0，这对于存储空间来说是极大的浪费，文本文件的大小会因此大出二三倍，这是难以接受的。</p>
+
+<p>unicode在很长一段时间内无法推广，直到互联网的出现，为解决unicode如何在网络上传输的问题，于是面向传输的众多 UTF（UCS Transfer Format）标准出现了，顾名思义，UTF-8就是每次8个位传输数据，而UTF-16就是每次16个位。UTF-8就是在互联网上使用最广的一种unicode的实现方式，这是为传输而设计的编码，并使编码无国界，这样就可以显示全世界上所有文化的字符了。</p>
+
+<p>UTF-8(8-bit Unicode Transformation Format)最大的一个特点，就是它是一种变长的编码方式。它可以使用1~4个字节表示一个符号，根据不同的符号而变化字节长度，当字符在ASCII 码的范围时，就用一个字节表示，保留了ASCII字符一个字节的编码做为它的一部分，注意的是unicode一个中文字符占2个字节，而UTF-8一个中 文字符占3个字节。从unicode到uft-8并不是直接的对应，而是要过一些算法和规则来转换。</p>
+
+<p>讲到这里，我们再顺便说说一个很著名的奇怪现象：当你在 windows 的记事本里新建一个文件，输入"联通"两个字之后，保存，关闭，然后再次打开，你会发现这两个字已经消失了，代之的是几个乱码！呵呵，有人说这就是联通之所以拼不过移动的原因。其实这是因为GB2312编码与UTF-8编码产生了编码冲撞的原因。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Unicode符号范围     |        UTF-8编码方式
+</span><span class='line'> (十六进制)         |           （二进制）
+</span><span class='line'>—————————————————————–——————————————————————————————————
+</span><span class='line'>0000 0000 0000 007F | 0xxxxxxx
+</span><span class='line'>0000 0080 0000 07FF | 110xxxxx 10xxxxxx
+</span><span class='line'>0000 0800 0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx
+</span><span class='line'>0001 0000 0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+</span><span class='line'>... ...</span></code></pre></td></tr></table></div></figure>
+
+
+<p>例如"汉"字的Unicode编码是6C49。6C49在0800-FFFF之间，所以要用3字节模板：1110xxxx 10xxxxxx 10xxxxxx。将6C49写成二进制是：0110 1100 0100 1001，将这个比特流按三字节模板的分段方法分为0110110001001001，依次代替上面3字节模板<code>1110xxxx 10xxxxxx 10xxxxxx</code>中的x，得到：1110-0110 10-110001 10-001001，即E6 B1 89，这就是其UTF-8的编码。</p>
+
+<p>而当你新建一个文本文件时，记事本的编码默认是ANSI, 如果你在ANSI的编码输入汉字，那么他实际就是GB系列的编码方式，在这种编码下，"联通"的GB内码是：</p>
+
+<pre><code>c1 1100 0001
+aa 1010 1010
+
+cd 1100 1101
+a8 1010 1000
+</code></pre>
+
+<p>注意到了吗？第一二个字节、第三四个字节的起始部分分别都是"110"和"10"，正好与UTF-8规则里的两字节模板是一致的，于是再次打开记事本时，记事本就误认为这是一个UTF-8编码的文件，让我们把第一个字节的110和第二个字节的10去掉，我们就得到了"00001 101010"，再把各位对齐，补上前导的0，就得到了"0000 0000 0110 1010"，不好意思，这是unicode的006A，也就是小写的字母"j"，而之后的两字节用UTF-8解码之后是0368，这个字符什么也不是。</p>
+
+<p>这就是只有"联通"两个字的文件没有办法在记事本里正常显示的原因。而如果你在"联通"之后多输入几个字，其他的字的编码不见得又恰好是110和10开始的字节，这样再次打开时，记事本就不会坚持这是一个UTF-8编码的文件，而会用ANSI的方式解读之，这时乱码又不出现了。</p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/12/30/utf8/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/12/28/google-protocol-buffer/">Google Protocol Buffer</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-28T09:54:35+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:54 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://developers.google.com/protocol-buffers/">Google Protocol Buffer</a>是一种轻便高效的结构化数据存储格式，它很适合用于网络传输、数据存储等领域的与语言无关、平台无关、可扩展的序列化结构数据格式。google 提供了多种语言的实现：java、c#、c++、go 和 python，每一种实现都包含了相应语言的编译器以及库文件。由于它是一种二进制的格式，比使用 XML、JSON 进行数据交换快许多也小许多。</p>
+
+<p>首先需要安装编译器，在<a href="https://github.com/google/protobuf/releases">这里</a>选择一种语言下载，我下载的是<code>protobuf-java-3.0.0.zip</code>。</p>
+
+<pre><code>//安装步骤
+1.解压后 cd 进入文件夹
+2.终端输入 ./configure (如果不是管理员身份，需要输入：./configure --prefix=$INSTALL_DIR 后面表示你要把protobuf安装的路径，需要是绝对路径)
+3.输入 make 
+4.输入 make check 
+5.输入 make install 
+</code></pre>
+
+<p>每个过程时间都挺长的，然后输入<code>protoc -- version</code>验证是否安装成功！
+<img src="/myimg/java/proto0.png" width="600" alt="" /></p>
+
+<p>下面就可以开始写例子了.新建一个<code>addressbook.proto</code>文件，输入：</p>
+
+<pre><code>syntax = "proto2";
+package tutorial;
+
+option java_package = "com.example.tutorial";
+option java_outer_classname = "AddressBookProtos";
+
+message Person {
+  required string name = 1;
+  required int32 id = 2;
+  optional string email = 3;
+
+  enum PhoneType {
+    MOBILE = 0;
+    HOME = 1;
+    WORK = 2;
+  }
+
+  message PhoneNumber {
+    required string number = 1;
+    optional PhoneType type = 2 [default = HOME];
+  }
+
+  repeated PhoneNumber phone = 4;
+}
+
+message AddressBook {
+  repeated Person person = 1;
+}
+</code></pre>
+
+<p>终端 cd 进入文件所在的目录，运行<code>protoc -I=./ --java_out=./ ./addressbook.proto</code>，就会在文件夹里生成一个<code>AddressBookProtos.java</code>的文件。把文件放到Eclipse里，然后添加<a href="http://mavensearch.io/repo/com.google.protobuf/protobuf-java/3.0.0">jar包</a>。</p>
+
+<p>然后创建一个用于写入的类：<code>AddPerson</code></p>
+
+<pre><code>package com.example.tutorial;
+
+import com.example.tutorial.AddressBookProtos.AddressBook;
+import com.example.tutorial.AddressBookProtos.Person;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.PrintStream;
+
+class AddPerson {
+  // This function fills in a Person message based on user input.
+  static Person PromptForAddress(BufferedReader stdin,
+                                 PrintStream stdout) throws IOException {
+    Person.Builder person = Person.newBuilder();
+
+    stdout.print("Enter person ID: ");
+    person.setId(Integer.valueOf(stdin.readLine()));
+
+    stdout.print("Enter name: ");
+    person.setName(stdin.readLine());
+
+    stdout.print("Enter email address (blank for none): ");
+    String email = stdin.readLine();
+    if (email.length() &gt; 0) {
+      person.setEmail(email);
+    }
+
+    while (true) {
+      stdout.print("Enter a phone number (or leave blank to finish): ");
+      String number = stdin.readLine();
+      if (number.length() == 0) {
+        break;
+      }
+
+      Person.PhoneNumber.Builder phoneNumber =
+        Person.PhoneNumber.newBuilder().setNumber(number);
+
+      stdout.print("Is this a mobile, home, or work phone? ");
+      String type = stdin.readLine();
+      if (type.equals("mobile")) {
+        phoneNumber.setType(Person.PhoneType.MOBILE);
+      } else if (type.equals("home")) {
+        phoneNumber.setType(Person.PhoneType.HOME);
+      } else if (type.equals("work")) {
+        phoneNumber.setType(Person.PhoneType.WORK);
+      } else {
+        stdout.println("Unknown phone type.  Using default.");
+      }
+
+      person.addPhone(phoneNumber);
+    }
+
+    return person.build();
+  }
+
+  //   Main function:  Reads the entire address book from a file,
+  //   adds one person based on user input, then writes it back out to the same file.
+  public static void main(String[] args) throws Exception {
+    if (args.length != 1) {
+      System.err.println("Usage:  AddPerson ADDRESS_BOOK_FILE");
+      System.exit(-1);
+    }
+
+    AddressBook.Builder addressBook = AddressBook.newBuilder();
+
+    // Read the existing address book.
+    try {
+      addressBook.mergeFrom(new FileInputStream(args[0]));
+    } catch (FileNotFoundException e) {
+      System.out.println(args[0] + ": File not found.  Creating a new file.");
+    }
+
+    // Add an address.
+    addressBook.addPerson(
+      PromptForAddress(new BufferedReader(new InputStreamReader(System.in)),
+                       System.out));
+
+    // Write the new address book back to disk.
+    FileOutputStream output = new FileOutputStream(args[0]);
+    addressBook.build().writeTo(output);
+    output.close();
+  }
+}
+</code></pre>
+
+<p>再创建一个用于读取的类：<code>ListPeople</code></p>
+
+<pre><code>package com.example.tutorial;
+
+import com.example.tutorial.AddressBookProtos.AddressBook;
+import com.example.tutorial.AddressBookProtos.Person;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+
+class ListPeople {
+  // Iterates though all people in the AddressBook and prints info about them.
+  static void Print(AddressBook addressBook) {
+    for (Person person: addressBook.getPersonList()) {
+      System.out.println("Person ID: " + person.getId());
+      System.out.println("  Name: " + person.getName());
+      if (person.hasEmail()) {
+        System.out.println("  E-mail address: " + person.getEmail());
+      }
+
+      for (Person.PhoneNumber phoneNumber : person.getPhoneList()) {
+        switch (phoneNumber.getType()) {
+          case MOBILE:
+            System.out.print("  Mobile phone #: ");
+            break;
+          case HOME:
+            System.out.print("  Home phone #: ");
+            break;
+          case WORK:
+            System.out.print("  Work phone #: ");
+            break;
+        }
+        System.out.println(phoneNumber.getNumber());
+      }
+    }
+  }
+
+  // Main function:  Reads the entire address book from a file and prints all
+  //   the information inside.
+  public static void main(String[] args) throws Exception {
+    if (args.length != 1) {
+      System.err.println("Usage:  ListPeople ADDRESS_BOOK_FILE");
+      System.exit(-1);
+    }
+
+    // Read the existing address book.
+    AddressBook addressBook =
+      AddressBook.parseFrom(new FileInputStream(args[0]));
+
+    Print(addressBook);
+  }
+} 
+</code></pre>
+
+<p>然后在项目文件夹里放一个用于保存数据的空文件：<code>addressbook.txt</code>,再设置<code>Run Configurations</code></p>
+
+<p><img src="/myimg/java/pro0.png" alt="" /></p>
+
+<p>运行<code>AddPerson</code>文件，从控制台输入：</p>
+
+<p><img src="/myimg/java/pro1.png" alt="" /></p>
+
+<p>再运行<code>ListPeople</code>就可读取输出了：</p>
+
+<p><img src="/myimg/java/pro2.png" alt="" /></p>
+
+<p>再想打开查看<code>`addressbook.txt</code>文件已经查看不了了，应为它的编码不是Unicode也不utf-8等，而是前面安装的编译器的编码。它的优势就是小，不浪费字节，所以快，还安全。例子运行起来了，语法规则再慢慢看吧~</p>
+
+<p><a href="/mysrc/java/ProtoBufferTest.zip">下载</a></p>
+
+<p><a href="https://developers.google.com/protocol-buffers/docs/javatutorial">Tutorial</a></p>
+
+<p><a href="http://www.surajnayak.com/2015/05/05/protocol-buffers-hour-1-generating-code-and-using-generated-class/">Blog</a></p>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/12/28/google-protocol-buffer/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/12/27/suan-fa/">排序算法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-27T14:25:43+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:25 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h5>1.冒泡排序</h5>
+
+<p>比如要升序排序，原理是从第一位开始，把它依次和后面的每一位数字进行两两比较,如果低位的比高位的大就交换，然后用较大的数字继续和后面比较交换。这样一趟比较过去后,最大的数字被交换到了最后一位。然后再从头开始以此类推,直到倒数第二位和最后一位比较交换完时结束。</p>
+
+<pre><code>void ascSort(int array[], int size){
+    int i, j, temp;
+    for (j = 0; j &lt; size - 1; j++) //比较的趟数
+        for (i = 0; i &lt; size - 1 - j; i++){ //每趟要比较的次数
+            if(array[i] &gt; array[i + 1]){
+                temp = array[i];
+                array[i] = array[i + 1];
+                array[i + 1] = temp;
+            }
+        }
+}
+</code></pre>
+
+<p>时间复杂度，一个算法花费的时间与算法中语句的执行次数成正比，算法中语句执行次数多，它花费时间就多。算法中基本操作重复执行的次数是问题规模n的某个函数，用T(n)表示，若有某个辅助函数f(n),使得当n趋近于无穷大时，T(n)/f(n)的极限值为不等于零的常数，则称f(n)是T(n)的同数量级函数。记作T(n)=O(f(n)),称O(f(n)) 为算法的渐进时间复杂度，简称时间复杂度。</p>
+
+<p>在冒泡排序中，最坏情况下 T(n) = n * (n - 1) / 2 = (n<sup>2</sup> - n) / 2。如果 n = 10000，那么 (n<sup>2</sup> - n) / 2 = (100000000 - 10000) / 2, 相对10<sup>8</sup>来说，10000可以忽略不计了。所以总计算次数约为 0.5 * n<sup>2</sup>。 忽略前面的倍数， 所以冒泡排序的时间复杂度是  O(n<sup>2</sup>) 。</p>
+
+<p>算法的稳定性是指，如果有两个相等的数 Ai = Aj， 在排序前 Ai 在 Aj 前面，排序后 Ai 还是在 Aj 前面，即两个相等的数不会交换位置。排序算法是否为稳定的是由具体算法决定的，不稳定的算法在某种条件下可以变为稳定的算法，而稳定的算法在某种条件下也可以变为不稳定的算法。</p>
+
+<p>例如，对于冒泡排序，原本是稳定的排序算法，如果将记录交换的条件改成A[i] >= A[i + 1]，则两个相等的记录就会交换位置，从而变成不稳定的排序算法。</p>
+
+<h5>2.鸡尾酒排序</h5>
+
+<p>鸡尾酒排序也叫来回排序，是冒泡排序的一种改进。此算法与冒泡排序的不同处在于从低到高然后从高到低，而冒泡排序则仅从低到高去比较序列里的每个元素，他可以得到比冒泡排序稍微好一点的效率。</p>
+
+<p>原理是先找到最小的数字，把他放到第一位，然后找到最大的数字放到最后一位。然后再找到第二小的数字放到第二位，再找到第二大的数字放到倒数第二位。以此类推，直到完成排序。</p>
+
+<pre><code>void ascSort(int array[], int size){
+    //初始化查询边界
+    int left = 0;
+    int right = size - 1;
+    int tmp;
+
+    while (left &lt; right) {
+        for (int i=left; i&lt;right; i++) { //最大值放右边
+            if (array[i] &gt; array[i+1]) {
+                tmp = array[i];
+                array[i] = array[i + 1];
+                array[i + 1] = tmp;
+            }
+        }
+        right--;
+
+        for (int i=right; i&gt;left; i--) {//最小值放左边
+            if (array[i-1] &gt; array[i]) {
+                tmp = array[i-1];
+                array[i-1] = array[i];
+                array[i] = tmp;
+            }
+        }
+        left++;
+    }
+}
+</code></pre>
+
+<h5>3.选择排序</h5>
+
+<p>每次从剩余序列中选出最小的数放在剩余序列的第一个位置。如从10个数中选出最小的和 array[0] 交换，那 array[0] 就是最小的了。再从剩下的 array[1] 到 array[9] 中选出最小的和 array[1] 交换，依次类推。</p>
+
+<pre><code>void ascSort(int array[], int size){
+    int i,j,k,t;
+    for (i=0; i&lt;size-1; i++) {
+        k=i;
+        for (j=i+1; j&lt;size; j++){//从剩余数组中找出最小数的位置放k里
+            if (array[j] &lt; array[k]){
+                 k = j;
+            }
+        }
+
+        t = array[k];
+        array[k] = array[i];
+        array[i] = t;
+    }
+}
+</code></pre>
+
+<p>时间复杂度也是  O(n<sup>2</sup>) 。</p>
+
+<h5>4.插入排序</h5>
+
+<p>插入排序是一种简单直观的排序算法。它的工作原理非常类似于我们抓扑克牌。对于未排序数据(右手抓到的牌)，在已排序序列(左手已经排好序的手牌)中从后向前扫描，找到相应位置并插入。
+<img src="/myimg/java/charu.png" width="300" alt="" /></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>从第一个元素开始，该元素可以认为已经被排序
+</span><span class='line'>取出下一个元素，在已经排序的元素序列中从后向前扫描
+</span><span class='line'>如果该元素（已排序）大于新元素，将该元素移到下一位置
+</span><span class='line'>重复步骤3，直到找到已排序的元素小于或者等于新元素的位置
+</span><span class='line'>将新元素插入到该位置后
+</span><span class='line'>重复步骤2~5</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>void ascSort(int array[], int size){
+    int j,tmp;
+    for (int i = 1; i &lt; size; i++) { //把array[0]当做已排序好的，从array[1]到array[size-1]是将要一个一个拿来插入的
+        tmp = array[i]; //要被插入的数
+        j = i - 1; //j是已经排好的数组的最后一位数的位置，第一次即为 index 0
+
+        while (j &gt;=0 &amp;&amp; array[j] &gt; tmp) {
+            array[j+1] = array[j]; //后移
+            j--;
+        }
+
+        array[j+1] = tmp;//直到遇到比要插入的数小，然后把要插入的数插到它右边
+    }
+}
+</code></pre>
+
+<h5>5.希尔排序</h5>
+
+<p>希尔排序，也叫递减增量排序，是插入排序的一种更高效的改进版本，因为插入排序每次只能将数据移动一位。而该方法实质上是一种分组插入方法，算法先将要排序的一组数按某个增量d分成若干组，每组中记录的下标相差d.对每组中全部元素进行排序，然后再用一个较小的增量对它进行，在每组中再进行排序。当增量减到1时，整个要排序的数被分成一组，排序完成。一般的初次取序列的一半为增量，以后每次减半，直到增量为1。
+<img src="/myimg/java/xier.jpg" width="400" alt="" /></p>
+
+<pre><code>void ascSort(int array[], int size){
+    int h = size/2; //初始增量为一半
+    int i,j,tmp;
+
+    while (h &gt;= 1) {
+        for (i = h; i &lt; size; i++) {
+            //下面是跨度为h的插入排序，
+            tmp = array[i];
+            j = i - h;
+            while (j &gt;= 0 &amp;&amp; array[j] &gt; tmp){
+                array[j + h] = array[j];
+                j = j - h;
+            }
+            array[j + h] = tmp;
+        }
+        h = h/2; //增量每次减半
+    }
+}
+</code></pre>
+
+<h5>6.堆排序</h5>
+
+<p>堆排序是指利用堆这种数据结构所设计的一种排序算法。堆是一个近似完全二叉树的结构,并同时满足堆的性质：父节点总是小于等于它的子节点。(父节点或大于等于子节点，这里就举例小于等于的)。当父结点总是小于或等于任何一个子节点时称为小根堆，反之为大根堆。</p>
+
+<p>可以用一维数组来表示堆，节点 i 的父节点是 (i – 1) / 2。 i 的左右子结点下标分别为2 * i + 1和2 * i + 2, 如第0个结点左右子结点下标分别为1和2。
+<img src="/myimg/java/dui.png" width="500" alt="" /></p>
+
+<pre><code>1.根据数组初始化一个大根堆
+2.把堆顶元素和堆尾元素交换
+3.把堆的尺寸减一，然后调整堆使剩下的堆继续满足大根堆
+4.重复2、3，直到堆的尺寸为1
+</code></pre>
+
+<p>如 int array[] = {16,7,3,20,17,8}; 可以看成以下的完全二叉树：
+<img src="/myimg/java/shu0.png" width="300" alt="" /></p>
+
+<p>然后从最后一个非叶子节点开始调整，比较自己和左节点，右节点谁最大，最大的调为父节点。经过 3-8，7-20-17，16-20-8，16-7-17 四次调整后最后就是一个大根堆了，每个父节点都比子节点大！</p>
+
+<p><img src="/myimg/java/shu1.png" width="500" alt="" /></p>
+
+<p>即每次调整都是从父节点、左孩子节点、右孩子节点三者中选择最大者跟父节点进行交换，交换之后可能造成被交换的孩子节点不满足堆的性质，因此每次交换之后要重新对被交换的孩子节点进行调整。初始化好大根堆后就可以进行排序了。</p>
+
+<p>第一轮，把20和最后的3交换，再调整后如下：</p>
+
+<p><img src="/myimg/java/shu2.png" width="400" alt="" /></p>
+
+<p>再把17和3交换，调整后如下：</p>
+
+<p><img src="/myimg/java/shu3.png" width="400" alt="" /></p>
+
+<p>再把16和3交换调整后如下：</p>
+
+<p><img src="/myimg/java/shu4.png" width="300" alt="" /></p>
+
+<p>然后8和3交换调整：</p>
+
+<p><img src="/myimg/java/shu5.png" width="300" alt="" /></p>
+
+<p>最后7和3交换，完成。</p>
+
+<p><img src="/myimg/java/shu6.png" width="250" alt="" /></p>
+
+<pre><code>int heapsize;
+void ascSort(int array[], int size){
+    buildHeap(array, size);
+    for (int i = size - 1; i &gt;= 1; i--){
+        exchange(array, 0, i);       // 将堆顶元素最大值与堆的最后一个元素互换
+        heapsize--;                  // 从堆中去掉最后一个元素
+        heapModify(array, 0);        // 从新的堆顶元素开始进行堆调整
+    }
+}
+
+void buildHeap(int array[], int size){
+    heapsize = size;
+    for (int i = heapsize/2 - 1; i &gt;= 0; i--){ // 对每一个非叶结点 不断的堆调整
+        heapModify(array, i);
+    }
+}
+
+void heapModify(int array[], int i){    // 堆调整函数,这里使用的是大根堆
+    int leftchild = 2 * i + 1;          // 左孩子索引
+    int rightchild = 2 * i + 2;         // 右孩子索引
+    int largest;                        // 选出当前结点与左右孩子之中的最大值
+
+    if (leftchild &lt; heapsize &amp;&amp; array[leftchild] &gt; array[i]){
+        largest = leftchild;
+    }else{
+        largest = i;
+    }
+
+    if (rightchild &lt; heapsize &amp;&amp; array[rightchild] &gt; array[largest]){
+        largest = rightchild;
+    }
+
+    if (largest != i){
+        exchange(array, i, largest);     // 把当前结点和它的最大直接子节点进行交换
+        heapModify(array, largest);      // 递归调用，继续从当前结点向下进行堆调整
+    }
+}
+
+void exchange(int array[], int i, int j){   // 交换array[i]和array[j]
+    int temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+}
+</code></pre>
+
+<h5>7.归并排序</h5>
+
+<p>归并操作指的是将两个已经排序的序列合并成一个有序序列的操作，即只要从比较二个数列的第一个数，谁小就先取谁，取了后就在对应数列中删除这个数。然后再进行比较，如果有数列为空，那直接将另一个数列的数据依次取出即可。</p>
+
+<pre><code>void mergeArray(int arrayA[], int sizeA, int arrayB[], int sizeB, int resultArray[]){
+    int indexA =0;
+    int indexB =0;
+    int indexResult =0;
+
+    while (indexA &lt; sizeA &amp;&amp; indexB &lt; sizeB){
+        if (arrayA[indexA] &lt; arrayB[indexB]){
+            resultArray[indexResult] = arrayA[indexA];
+            indexResult++;
+            indexA++;
+        }else{
+            resultArray[indexResult] = arrayB[indexB];
+            indexResult++;
+            indexB++;
+        }
+    }
+
+    while (indexA &lt; sizeA){
+       resultArray[indexResult] = arrayA[indexA];
+        indexResult++;
+        indexA++;
+    }
+
+    while (indexB &lt; sizeB){
+       resultArray[indexResult] = arrayB[indexB];
+        indexResult++;
+        indexB++;
+    }
+}
+</code></pre>
+
+<p>归并的基本思路是将数组分成二组A，B，如果这二组组内的数据都是有序的，那么就可以很方便的将这二组数据进行排序。如何让这二组组内数据有序了？可以将A，B组各自再分成二组，依次类推。当分出来的小组只有一个数据时，可以认为这个小组组内已经达到了有序，然后再合并相邻的二个小组就可以了。
+<img src="/myimg/java/dg0.png" width="600" alt="" /></p>
+
+<pre><code>void ascSort(int array[], int size){
+    int *temp = malloc(size * sizeof(int));
+    recursionArray(array, temp, 0, size - 1);
+    free(temp);
+}
+
+void recursionArray(int array[], int temp[], int low, int high){
+    if (low &lt; high){
+        int middle = (low + high) / 2;
+        recursionArray(array, temp, low, middle);   //左边有序
+        recursionArray(array, temp, middle + 1, high); //右边有序
+        mergeArray(array, temp, low,middle,high);  //再把两个有序的合并
+    }
+}
+
+//将有二个有序数列 array[low...middle]和 array[middle...high]合并
+void mergeArray(int array[], int temp[], int low, int middle, int high){
+    int i = low;
+    int j = middle + 1;
+    int k = low;
+
+    while (i &lt;= middle &amp;&amp; j &lt;= high){
+        if (array[i] &lt;= array[j]){
+            temp[k++] = array[i++];
+        }
+        else{
+            temp[k++] = array[j++];
+        }
+    }
+
+    while (i &lt;= middle){
+        temp[k++] = array[i++];
+    }
+
+    while (j &lt;= high){
+        temp[k++] = array[j++];
+    }
+
+    for (int k = low; k &lt;= high; k++){
+        array[k] = temp[k];
+    }
+}
+</code></pre>
+
+<h5>8.快速排序</h5>
+
+<p>快速排序也是用分治法来实现的，即先分解分解再分解，然后逐个击破，最后挨个合并。其基本思想是：通过一趟排序将要排序的数据分割成独立的两部分，其中一部分的所有数据都比另外一部分的所有数据都要小，然后再按此方法对这两部分数据分别进行快速排序，整个排序过程可以递归进行，以此达到整个数据变成有序序列。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>先从数列中取出一个数作为基准数。
+</span><span class='line'>分区过程，将比这个数大的数全放到它的右边，小于或等于它的数全放到它的左边。
+</span><span class='line'>再对左右区间重复第二步，直到各区间只有一个数。</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>void ascSort(int array[], int left, int right){
+    if (left &lt; right){
+        int i = left, j = right, x = array[left];
+        while (i &lt; j){
+            while(i &lt; j &amp;&amp; array[j] &gt;= x) // 从右向左找第一个小于x的数
+                j--;
+            if(i &lt; j)
+                array[i++] = array[j];
+
+            while(i &lt; j &amp;&amp; array[i] &lt; x) // 从左向右找第一个大于等于x的数
+                i++;
+            if(i &lt; j)
+                array[j--] = array[i];
+        }
+        array[i] = x;
+        ascSort(array, left, i - 1); // 递归调用
+        ascSort(array, i + 1, right);
+    }
+}
+</code></pre>
+</div>
+  
+  
+
+
+      | <a href="/blog/2016/12/27/suan-fa/#comments">Comments</a>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/12/25/front-end/">前端基础知识</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-25T13:45:11+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>1:45 pm</span></time>
         
       </p>
     
@@ -960,722 +1675,7 @@ add.apply(o, [10, 20]); // 1 + 3 + 10 + 20 = 34
   
 
 
-      | <a href="/blog/2017/02/11/front-end/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/12/30/utf8/">Unicode、UTF-8编码起源</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-12-30T15:39:55+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:39 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>很久很久以前，有一群人，他们决定用8个可以开合的晶体管来组合成不同的状态，以表示世界上的万物。他们看到8个开关状态是好的，于是他们把这称为字节。再后来，他们又做了一些可以处理这些字节的机器，机器开动了，可以用字节来组合出很多状态，状态开始变来变去。他们看到这样是好的，于是它们就这机器称为计算机。</p>
-
-<p>开始计算机只在美国用。八位的字节一共可以组合出256(2的8次方)种不同的状态。 他们把其中的编号从0开始的32种状态分别规定了特殊的用途，一但终端、打印机遇上约定好的这些字节被传过来时，就要做一些约定的动作。遇上0×10(0x表示16进制), 终端就换行，遇上0×07, 终端就向人们嘟嘟叫，例好遇上0x1b, 打印机就打印反白的字，或者终端就用彩色显示字母。他们看到这样很好，于是就把这些0×20以下的字节状态称为控制码。他们又把所有的空 格、标点符号、数字、大小写字母分别用连续的字节状态表示，一直编到了第127号，这样计算机就可以用不同字节来存储英语的文字了。大家看到这样，都感觉 很好，于是大家都把这个方案叫做 ANSI 的Ascii编码（American Standard Code for Information Interchange，美国信息互换标准代码）。当时世界上所有的计算机都用同样的ASCII方案来保存英文文字。
-<img src="/myimg/other/asc1.jpg" alt="" /></p>
-
-<p>后来，就像建造巴比伦塔一样，世界各地的都开始使用计算机，但是很多国家用的不是英文，他们的字母里有许多是ASCII里没有的，为了可以在计算机 保存他们的文字，他们决定采用 127号之后的空位来表示这些新的字母、符号，还加入了很多画表格时需要用下到的横线、竖线、交叉等形状，一直把序号编到了最后一个状态255。从128 到255这一页的字符集被称扩展字符集。从此之后，贪婪的人类再没有新的状态可以用了，美帝国主义可能没有想到还有第三世界国家的人们也希望可以用到计算机吧！
-<img src="/myimg/other/asc2.jpg" alt="" /></p>
-
-<p>等中国人们得到计算机时，已经没有可以利用的字节状态来表示汉字，况且有6000多个常用汉字需要保存呢。但是这难不倒智慧的中国人民，我们不客气 地把那些127号之后的奇异符号们直接取消掉, 规定：一个小于127的字符的意义与原来相同，但两个大于127的字符连在一起时，就表示一个汉字，前面的一个字节（他称之为高字节）从0xA1用到 0xF7(16进制以0x开头)，后面一个字节（低字节）从0xA1到0xFE，这样我们就可以组合出大约7000多个简体汉字了。在这些编码里，我们还把数学符号、罗马希腊的 字母、日文的假名们都编进去了，连在 ASCII 里本来就有的数字、标点、字母都统统重新编了两个字节长的编码，这就是常说的”全角”字符，而原来在127号以下的那些就叫”半角”字符了。 中国人民看到这样很不错，于是就把这种汉字方案叫做 “GB2312“。GB2312 是对 ASCII 的中文扩展。
-<img src="/myimg/other/gbk1.png" alt="" /></p>
-
-<p>但是中国的汉字太多了，我们很快就就发现有许多人的人名没有办法在这里打出来，特别是某些很会麻烦别人的国家领导人。于是我们不得不继续把 GB2312 没有用到的码位找出来老实不客气地用上。 后来还是不够用，于是干脆不再要求低字节一定是127号之后的内码，只要第一个字节是大于127就固定表示这是一个汉字的开始，不管后面跟的是不是扩展字 符集里的内容。结果扩展之后的编码方案被称为 GBK 标准，GBK包括了GB2312 的所有内容，同时又增加了近20000个新的汉字（包括繁体字）和符号。 后来少数民族也要用电脑了，于是我们再扩展，又加了几千个新的少数民族的字，GBK扩成了 GB18030。从此之后，中华民族的文化就可以在计算机时代中传承了。 中国的程序员们看到这一系列汉字编码的标准是好的，于是通称他们叫做 “DBCS“（Double Byte Charecter Set 双字节字符集）。在DBCS系列标准里，最大的特点是两字节长的汉字字符和一字节长的英文字符并存于同一套编码方案里，因此他们写的程序为了支持中文处 理，必须要注意字串里的每一个字节的值，如果这个值是大于127的，那么就认为一个双字节字符集里的字符出现了。那时候凡是受过加持，会编程的计算机僧侣 们都要每天念下面这个咒语数百遍： “一个汉字算两个英文字符！一个汉字算两个英文字符……”</p>
-
-<p>因为当时各个国家都像中国这样搞出一套自己的编码标准，结果互相之间谁也不懂谁的编码，谁也不支持别人的编码，连大陆和台湾这样只相隔了150海 里，使用着同一种语言的兄弟地区，也分别采用了不同的 DBCS 编码方案——当时的中国人想让电脑显示汉字，就必须装上一个”汉字系统”，专门用来处理汉字的显示、输入的问题，但是那个台湾的愚昧封建人士写的算命程序 就必须加装另一套支持 BIG5 编码的什么”倚天汉字系统”才可以用，装错了字符系统，显示就会乱了套！这怎么办？而且世界民族之林中还有那些一时用不上电脑的穷苦人民，他们的文字又怎 么办？ 真是计算机的巴比伦塔命题啊！</p>
-
-<p>正在这时，大天使加百列及时出现了——一个叫 ISO （国际标谁化组织）的国际组织决定着手解决这个问题。他们采用的方法很简单：废了所有的地区性编码方案，重新搞一个包括了地球上所有文化、所有字母和符号 的编码！他们打算叫它”Universal Multiple-Octet Coded Character Set”，简称 UCS, 俗称 “unicode“。</p>
-
-<p>unicode开始制订时，计算机的存储器容量极大地发展了，空间再也不成为问题了。于是 ISO 就直接规定必须用两个字节，也就是16位来统一表示所有的字符，对于ASCII里的那些“半角”字符，unicode包持其原编码不变，只是将其长度由原 来的8位扩展为16位，而其他文化和语言的字符则全部重新统一编码。由于”半角”英文符号只需要用到低8位，所以其高8位永远是0，因此这种大气的方案在 保存英文文本时会多浪费一倍的空间。</p>
-
-<p>这时候，从旧社会里走过来的程序员开始发现一个奇怪的现象：他们的strlen函数靠不住了，一个汉字不再是相当于两个字符了，而是一个！是的，从unicode开始，无论是半角的英文字母，还是全角的汉字，它们都是统一的”一个字符“！同时，也都是统一的”两个字节“，请注意”字符”和”字节”两个术语的不同，“字节”是一个8位的物理存贮单元，而“字符”则是一个文化相关的符号。在unicode中，一个字符就是两个字节。一个汉字算两个英文字符的时代已经快过去了。</p>
-
-<p>从前多种字符集存在时，那些做多语言软件的公司遇上过很大麻烦，他们为了在不同的国家销售同一套软件，就不得不在区域化软件时也加持那个双字节字符集咒语，不仅要处处小心不要搞错，还要把软件中的文字在不同的字符集中转来转去。UNICODE 对于他们来说是一个很好的一揽子解决方案，于是从 Windows NT 开始，MS 趁机把它们的操作系统改了一遍，把所有的核心代码都改成了用 UNICODE 方式工作的版本，从这时开始，WINDOWS 系统终于无需要加装各种本土语言系统，就可以显示全世界上所有文化的字符了。</p>
-
-<p>但是，UNICODE 在制订时没有考虑与任何一种现有的编码方案保持兼容，这使得 GBK 与UNICODE 在汉字的内码编排上完全是不一样的，没有一种简单的算术方法可以把文本内容从UNICODE编码和另一种编码进行转换，这种转换必须通过查表来进行。</p>
-
-<p>如前所述，UNICODE 是用两个字节来表示为一个字符，他总共可以组合出65535不同的字符，这大概已经可以覆盖世界上所有文化的符号。如果还不够也没有关系，ISO已经准备了UCS-4方案，说简单了就是四个字节来表示一个字符，这样我们就可以组合出21亿个不同的字符出来（最高位有其他用途），这大概可以用到银河联邦成立那一天吧！</p>
-
-<p>这里就有两个的问题，一个是如何才能区别unicode和ascii？计算机怎么知道三个字节表示一个符号，而不是分别表示三个符号呢？第二个问题是，我们已经知道，英文字母只用一个字节表示就够了，如果unicode统一规定，每个符号用三个或四个字节表示，那么每 个英文字母前都必然有二到三个字节是0，这对于存储空间来说是极大的浪费，文本文件的大小会因此大出二三倍，这是难以接受的。</p>
-
-<p>unicode在很长一段时间内无法推广，直到互联网的出现，为解决unicode如何在网络上传输的问题，于是面向传输的众多 UTF（UCS Transfer Format）标准出现了，顾名思义，UTF-8就是每次8个位传输数据，而UTF-16就是每次16个位。UTF-8就是在互联网上使用最广的一种unicode的实现方式，这是为传输而设计的编码，并使编码无国界，这样就可以显示全世界上所有文化的字符了。</p>
-
-<p>UTF-8(8-bit Unicode Transformation Format)最大的一个特点，就是它是一种变长的编码方式。它可以使用1~4个字节表示一个符号，根据不同的符号而变化字节长度，当字符在ASCII 码的范围时，就用一个字节表示，保留了ASCII字符一个字节的编码做为它的一部分，注意的是unicode一个中文字符占2个字节，而UTF-8一个中 文字符占3个字节。从unicode到uft-8并不是直接的对应，而是要过一些算法和规则来转换。</p>
-
-<p>讲到这里，我们再顺便说说一个很著名的奇怪现象：当你在 windows 的记事本里新建一个文件，输入"联通"两个字之后，保存，关闭，然后再次打开，你会发现这两个字已经消失了，代之的是几个乱码！呵呵，有人说这就是联通之所以拼不过移动的原因。其实这是因为GB2312编码与UTF-8编码产生了编码冲撞的原因。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Unicode符号范围     |        UTF-8编码方式
-</span><span class='line'> (十六进制)         |           （二进制）
-</span><span class='line'>—————————————————————–——————————————————————————————————
-</span><span class='line'>0000 0000 0000 007F | 0xxxxxxx
-</span><span class='line'>0000 0080 0000 07FF | 110xxxxx 10xxxxxx
-</span><span class='line'>0000 0800 0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx
-</span><span class='line'>0001 0000 0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-</span><span class='line'>... ...</span></code></pre></td></tr></table></div></figure>
-
-
-<p>例如"汉"字的Unicode编码是6C49。6C49在0800-FFFF之间，所以要用3字节模板：1110xxxx 10xxxxxx 10xxxxxx。将6C49写成二进制是：0110 1100 0100 1001，将这个比特流按三字节模板的分段方法分为0110110001001001，依次代替上面3字节模板<code>1110xxxx 10xxxxxx 10xxxxxx</code>中的x，得到：1110-0110 10-110001 10-001001，即E6 B1 89，这就是其UTF-8的编码。</p>
-
-<p>而当你新建一个文本文件时，记事本的编码默认是ANSI, 如果你在ANSI的编码输入汉字，那么他实际就是GB系列的编码方式，在这种编码下，"联通"的GB内码是：</p>
-
-<pre><code>c1 1100 0001
-aa 1010 1010
-
-cd 1100 1101
-a8 1010 1000
-</code></pre>
-
-<p>注意到了吗？第一二个字节、第三四个字节的起始部分分别都是"110"和"10"，正好与UTF-8规则里的两字节模板是一致的，于是再次打开记事本时，记事本就误认为这是一个UTF-8编码的文件，让我们把第一个字节的110和第二个字节的10去掉，我们就得到了"00001 101010"，再把各位对齐，补上前导的0，就得到了"0000 0000 0110 1010"，不好意思，这是unicode的006A，也就是小写的字母"j"，而之后的两字节用UTF-8解码之后是0368，这个字符什么也不是。</p>
-
-<p>这就是只有"联通"两个字的文件没有办法在记事本里正常显示的原因。而如果你在"联通"之后多输入几个字，其他的字的编码不见得又恰好是110和10开始的字节，这样再次打开时，记事本就不会坚持这是一个UTF-8编码的文件，而会用ANSI的方式解读之，这时乱码又不出现了。</p>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/12/30/utf8/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/12/28/google-protocol-buffer/">Google Protocol Buffer</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-12-28T09:54:35+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:54 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="https://developers.google.com/protocol-buffers/">Google Protocol Buffer</a>是一种轻便高效的结构化数据存储格式，它很适合用于网络传输、数据存储等领域的与语言无关、平台无关、可扩展的序列化结构数据格式。google 提供了多种语言的实现：java、c#、c++、go 和 python，每一种实现都包含了相应语言的编译器以及库文件。由于它是一种二进制的格式，比使用 XML、JSON 进行数据交换快许多也小许多。</p>
-
-<p>首先需要安装编译器，在<a href="https://github.com/google/protobuf/releases">这里</a>选择一种语言下载，我下载的是<code>protobuf-java-3.0.0.zip</code>。</p>
-
-<pre><code>//安装步骤
-1.解压后 cd 进入文件夹
-2.终端输入 ./configure (如果不是管理员身份，需要输入：./configure --prefix=$INSTALL_DIR 后面表示你要把protobuf安装的路径，需要是绝对路径)
-3.输入 make 
-4.输入 make check 
-5.输入 make install 
-</code></pre>
-
-<p>每个过程时间都挺长的，然后输入<code>protoc -- version</code>验证是否安装成功！
-<img src="/myimg/java/proto0.png" width="600" alt="" /></p>
-
-<p>下面就可以开始写例子了.新建一个<code>addressbook.proto</code>文件，输入：</p>
-
-<pre><code>syntax = "proto2";
-package tutorial;
-
-option java_package = "com.example.tutorial";
-option java_outer_classname = "AddressBookProtos";
-
-message Person {
-  required string name = 1;
-  required int32 id = 2;
-  optional string email = 3;
-
-  enum PhoneType {
-    MOBILE = 0;
-    HOME = 1;
-    WORK = 2;
-  }
-
-  message PhoneNumber {
-    required string number = 1;
-    optional PhoneType type = 2 [default = HOME];
-  }
-
-  repeated PhoneNumber phone = 4;
-}
-
-message AddressBook {
-  repeated Person person = 1;
-}
-</code></pre>
-
-<p>终端 cd 进入文件所在的目录，运行<code>protoc -I=./ --java_out=./ ./addressbook.proto</code>，就会在文件夹里生成一个<code>AddressBookProtos.java</code>的文件。把文件放到Eclipse里，然后添加<a href="http://mavensearch.io/repo/com.google.protobuf/protobuf-java/3.0.0">jar包</a>。</p>
-
-<p>然后创建一个用于写入的类：<code>AddPerson</code></p>
-
-<pre><code>package com.example.tutorial;
-
-import com.example.tutorial.AddressBookProtos.AddressBook;
-import com.example.tutorial.AddressBookProtos.Person;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.io.PrintStream;
-
-class AddPerson {
-  // This function fills in a Person message based on user input.
-  static Person PromptForAddress(BufferedReader stdin,
-                                 PrintStream stdout) throws IOException {
-    Person.Builder person = Person.newBuilder();
-
-    stdout.print("Enter person ID: ");
-    person.setId(Integer.valueOf(stdin.readLine()));
-
-    stdout.print("Enter name: ");
-    person.setName(stdin.readLine());
-
-    stdout.print("Enter email address (blank for none): ");
-    String email = stdin.readLine();
-    if (email.length() &gt; 0) {
-      person.setEmail(email);
-    }
-
-    while (true) {
-      stdout.print("Enter a phone number (or leave blank to finish): ");
-      String number = stdin.readLine();
-      if (number.length() == 0) {
-        break;
-      }
-
-      Person.PhoneNumber.Builder phoneNumber =
-        Person.PhoneNumber.newBuilder().setNumber(number);
-
-      stdout.print("Is this a mobile, home, or work phone? ");
-      String type = stdin.readLine();
-      if (type.equals("mobile")) {
-        phoneNumber.setType(Person.PhoneType.MOBILE);
-      } else if (type.equals("home")) {
-        phoneNumber.setType(Person.PhoneType.HOME);
-      } else if (type.equals("work")) {
-        phoneNumber.setType(Person.PhoneType.WORK);
-      } else {
-        stdout.println("Unknown phone type.  Using default.");
-      }
-
-      person.addPhone(phoneNumber);
-    }
-
-    return person.build();
-  }
-
-  //   Main function:  Reads the entire address book from a file,
-  //   adds one person based on user input, then writes it back out to the same file.
-  public static void main(String[] args) throws Exception {
-    if (args.length != 1) {
-      System.err.println("Usage:  AddPerson ADDRESS_BOOK_FILE");
-      System.exit(-1);
-    }
-
-    AddressBook.Builder addressBook = AddressBook.newBuilder();
-
-    // Read the existing address book.
-    try {
-      addressBook.mergeFrom(new FileInputStream(args[0]));
-    } catch (FileNotFoundException e) {
-      System.out.println(args[0] + ": File not found.  Creating a new file.");
-    }
-
-    // Add an address.
-    addressBook.addPerson(
-      PromptForAddress(new BufferedReader(new InputStreamReader(System.in)),
-                       System.out));
-
-    // Write the new address book back to disk.
-    FileOutputStream output = new FileOutputStream(args[0]);
-    addressBook.build().writeTo(output);
-    output.close();
-  }
-}
-</code></pre>
-
-<p>再创建一个用于读取的类：<code>ListPeople</code></p>
-
-<pre><code>package com.example.tutorial;
-
-import com.example.tutorial.AddressBookProtos.AddressBook;
-import com.example.tutorial.AddressBookProtos.Person;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-
-class ListPeople {
-  // Iterates though all people in the AddressBook and prints info about them.
-  static void Print(AddressBook addressBook) {
-    for (Person person: addressBook.getPersonList()) {
-      System.out.println("Person ID: " + person.getId());
-      System.out.println("  Name: " + person.getName());
-      if (person.hasEmail()) {
-        System.out.println("  E-mail address: " + person.getEmail());
-      }
-
-      for (Person.PhoneNumber phoneNumber : person.getPhoneList()) {
-        switch (phoneNumber.getType()) {
-          case MOBILE:
-            System.out.print("  Mobile phone #: ");
-            break;
-          case HOME:
-            System.out.print("  Home phone #: ");
-            break;
-          case WORK:
-            System.out.print("  Work phone #: ");
-            break;
-        }
-        System.out.println(phoneNumber.getNumber());
-      }
-    }
-  }
-
-  // Main function:  Reads the entire address book from a file and prints all
-  //   the information inside.
-  public static void main(String[] args) throws Exception {
-    if (args.length != 1) {
-      System.err.println("Usage:  ListPeople ADDRESS_BOOK_FILE");
-      System.exit(-1);
-    }
-
-    // Read the existing address book.
-    AddressBook addressBook =
-      AddressBook.parseFrom(new FileInputStream(args[0]));
-
-    Print(addressBook);
-  }
-} 
-</code></pre>
-
-<p>然后在项目文件夹里放一个用于保存数据的空文件：<code>addressbook.txt</code>,再设置<code>Run Configurations</code></p>
-
-<p><img src="/myimg/java/pro0.png" alt="" /></p>
-
-<p>运行<code>AddPerson</code>文件，从控制台输入：</p>
-
-<p><img src="/myimg/java/pro1.png" alt="" /></p>
-
-<p>再运行<code>ListPeople</code>就可读取输出了：</p>
-
-<p><img src="/myimg/java/pro2.png" alt="" /></p>
-
-<p>再想打开查看<code>`addressbook.txt</code>文件已经查看不了了，应为它的编码不是Unicode也不utf-8等，而是前面安装的编译器的编码。它的优势就是小，不浪费字节，所以快，还安全。例子运行起来了，语法规则再慢慢看吧~</p>
-
-<p><a href="/mysrc/java/ProtoBufferTest.zip">下载</a></p>
-
-<p><a href="https://developers.google.com/protocol-buffers/docs/javatutorial">Tutorial</a></p>
-
-<p><a href="http://www.surajnayak.com/2015/05/05/protocol-buffers-hour-1-generating-code-and-using-generated-class/">Blog</a></p>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/12/28/google-protocol-buffer/#comments">Comments</a>
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/12/27/suan-fa/">排序算法</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-12-27T14:25:43+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:25 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h5>1.冒泡排序</h5>
-
-<p>比如要升序排序，原理是从第一位开始，把它依次和后面的每一位数字进行两两比较,如果低位的比高位的大就交换，然后用较大的数字继续和后面比较交换。这样一趟比较过去后,最大的数字被交换到了最后一位。然后再从头开始以此类推,直到倒数第二位和最后一位比较交换完时结束。</p>
-
-<pre><code>void ascSort(int array[], int size){
-    int i, j, temp;
-    for (j = 0; j &lt; size - 1; j++) //比较的趟数
-        for (i = 0; i &lt; size - 1 - j; i++){ //每趟要比较的次数
-            if(array[i] &gt; array[i + 1]){
-                temp = array[i];
-                array[i] = array[i + 1];
-                array[i + 1] = temp;
-            }
-        }
-}
-</code></pre>
-
-<p>时间复杂度，一个算法花费的时间与算法中语句的执行次数成正比，算法中语句执行次数多，它花费时间就多。算法中基本操作重复执行的次数是问题规模n的某个函数，用T(n)表示，若有某个辅助函数f(n),使得当n趋近于无穷大时，T(n)/f(n)的极限值为不等于零的常数，则称f(n)是T(n)的同数量级函数。记作T(n)=O(f(n)),称O(f(n)) 为算法的渐进时间复杂度，简称时间复杂度。</p>
-
-<p>在冒泡排序中，最坏情况下 T(n) = n * (n - 1) / 2 = (n<sup>2</sup> - n) / 2。如果 n = 10000，那么 (n<sup>2</sup> - n) / 2 = (100000000 - 10000) / 2, 相对10<sup>8</sup>来说，10000可以忽略不计了。所以总计算次数约为 0.5 * n<sup>2</sup>。 忽略前面的倍数， 所以冒泡排序的时间复杂度是  O(n<sup>2</sup>) 。</p>
-
-<p>算法的稳定性是指，如果有两个相等的数 Ai = Aj， 在排序前 Ai 在 Aj 前面，排序后 Ai 还是在 Aj 前面，即两个相等的数不会交换位置。排序算法是否为稳定的是由具体算法决定的，不稳定的算法在某种条件下可以变为稳定的算法，而稳定的算法在某种条件下也可以变为不稳定的算法。</p>
-
-<p>例如，对于冒泡排序，原本是稳定的排序算法，如果将记录交换的条件改成A[i] >= A[i + 1]，则两个相等的记录就会交换位置，从而变成不稳定的排序算法。</p>
-
-<h5>2.鸡尾酒排序</h5>
-
-<p>鸡尾酒排序也叫来回排序，是冒泡排序的一种改进。此算法与冒泡排序的不同处在于从低到高然后从高到低，而冒泡排序则仅从低到高去比较序列里的每个元素，他可以得到比冒泡排序稍微好一点的效率。</p>
-
-<p>原理是先找到最小的数字，把他放到第一位，然后找到最大的数字放到最后一位。然后再找到第二小的数字放到第二位，再找到第二大的数字放到倒数第二位。以此类推，直到完成排序。</p>
-
-<pre><code>void ascSort(int array[], int size){
-    //初始化查询边界
-    int left = 0;
-    int right = size - 1;
-    int tmp;
-
-    while (left &lt; right) {
-        for (int i=left; i&lt;right; i++) { //最大值放右边
-            if (array[i] &gt; array[i+1]) {
-                tmp = array[i];
-                array[i] = array[i + 1];
-                array[i + 1] = tmp;
-            }
-        }
-        right--;
-
-        for (int i=right; i&gt;left; i--) {//最小值放左边
-            if (array[i-1] &gt; array[i]) {
-                tmp = array[i-1];
-                array[i-1] = array[i];
-                array[i] = tmp;
-            }
-        }
-        left++;
-    }
-}
-</code></pre>
-
-<h5>3.选择排序</h5>
-
-<p>每次从剩余序列中选出最小的数放在剩余序列的第一个位置。如从10个数中选出最小的和 array[0] 交换，那 array[0] 就是最小的了。再从剩下的 array[1] 到 array[9] 中选出最小的和 array[1] 交换，依次类推。</p>
-
-<pre><code>void ascSort(int array[], int size){
-    int i,j,k,t;
-    for (i=0; i&lt;size-1; i++) {
-        k=i;
-        for (j=i+1; j&lt;size; j++){//从剩余数组中找出最小数的位置放k里
-            if (array[j] &lt; array[k]){
-                 k = j;
-            }
-        }
-
-        t = array[k];
-        array[k] = array[i];
-        array[i] = t;
-    }
-}
-</code></pre>
-
-<p>时间复杂度也是  O(n<sup>2</sup>) 。</p>
-
-<h5>4.插入排序</h5>
-
-<p>插入排序是一种简单直观的排序算法。它的工作原理非常类似于我们抓扑克牌。对于未排序数据(右手抓到的牌)，在已排序序列(左手已经排好序的手牌)中从后向前扫描，找到相应位置并插入。
-<img src="/myimg/java/charu.png" width="300" alt="" /></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>从第一个元素开始，该元素可以认为已经被排序
-</span><span class='line'>取出下一个元素，在已经排序的元素序列中从后向前扫描
-</span><span class='line'>如果该元素（已排序）大于新元素，将该元素移到下一位置
-</span><span class='line'>重复步骤3，直到找到已排序的元素小于或者等于新元素的位置
-</span><span class='line'>将新元素插入到该位置后
-</span><span class='line'>重复步骤2~5</span></code></pre></td></tr></table></div></figure>
-
-
-<pre><code>void ascSort(int array[], int size){
-    int j,tmp;
-    for (int i = 1; i &lt; size; i++) { //把array[0]当做已排序好的，从array[1]到array[size-1]是将要一个一个拿来插入的
-        tmp = array[i]; //要被插入的数
-        j = i - 1; //j是已经排好的数组的最后一位数的位置，第一次即为 index 0
-
-        while (j &gt;=0 &amp;&amp; array[j] &gt; tmp) {
-            array[j+1] = array[j]; //后移
-            j--;
-        }
-
-        array[j+1] = tmp;//直到遇到比要插入的数小，然后把要插入的数插到它右边
-    }
-}
-</code></pre>
-
-<h5>5.希尔排序</h5>
-
-<p>希尔排序，也叫递减增量排序，是插入排序的一种更高效的改进版本，因为插入排序每次只能将数据移动一位。而该方法实质上是一种分组插入方法，算法先将要排序的一组数按某个增量d分成若干组，每组中记录的下标相差d.对每组中全部元素进行排序，然后再用一个较小的增量对它进行，在每组中再进行排序。当增量减到1时，整个要排序的数被分成一组，排序完成。一般的初次取序列的一半为增量，以后每次减半，直到增量为1。
-<img src="/myimg/java/xier.jpg" width="400" alt="" /></p>
-
-<pre><code>void ascSort(int array[], int size){
-    int h = size/2; //初始增量为一半
-    int i,j,tmp;
-
-    while (h &gt;= 1) {
-        for (i = h; i &lt; size; i++) {
-            //下面是跨度为h的插入排序，
-            tmp = array[i];
-            j = i - h;
-            while (j &gt;= 0 &amp;&amp; array[j] &gt; tmp){
-                array[j + h] = array[j];
-                j = j - h;
-            }
-            array[j + h] = tmp;
-        }
-        h = h/2; //增量每次减半
-    }
-}
-</code></pre>
-
-<h5>6.堆排序</h5>
-
-<p>堆排序是指利用堆这种数据结构所设计的一种排序算法。堆是一个近似完全二叉树的结构,并同时满足堆的性质：父节点总是小于等于它的子节点。(父节点或大于等于子节点，这里就举例小于等于的)。当父结点总是小于或等于任何一个子节点时称为小根堆，反之为大根堆。</p>
-
-<p>可以用一维数组来表示堆，节点 i 的父节点是 (i – 1) / 2。 i 的左右子结点下标分别为2 * i + 1和2 * i + 2, 如第0个结点左右子结点下标分别为1和2。
-<img src="/myimg/java/dui.png" width="500" alt="" /></p>
-
-<pre><code>1.根据数组初始化一个大根堆
-2.把堆顶元素和堆尾元素交换
-3.把堆的尺寸减一，然后调整堆使剩下的堆继续满足大根堆
-4.重复2、3，直到堆的尺寸为1
-</code></pre>
-
-<p>如 int array[] = {16,7,3,20,17,8}; 可以看成以下的完全二叉树：
-<img src="/myimg/java/shu0.png" width="300" alt="" /></p>
-
-<p>然后从最后一个非叶子节点开始调整，比较自己和左节点，右节点谁最大，最大的调为父节点。经过 3-8，7-20-17，16-20-8，16-7-17 四次调整后最后就是一个大根堆了，每个父节点都比子节点大！</p>
-
-<p><img src="/myimg/java/shu1.png" width="500" alt="" /></p>
-
-<p>即每次调整都是从父节点、左孩子节点、右孩子节点三者中选择最大者跟父节点进行交换，交换之后可能造成被交换的孩子节点不满足堆的性质，因此每次交换之后要重新对被交换的孩子节点进行调整。初始化好大根堆后就可以进行排序了。</p>
-
-<p>第一轮，把20和最后的3交换，再调整后如下：</p>
-
-<p><img src="/myimg/java/shu2.png" width="400" alt="" /></p>
-
-<p>再把17和3交换，调整后如下：</p>
-
-<p><img src="/myimg/java/shu3.png" width="400" alt="" /></p>
-
-<p>再把16和3交换调整后如下：</p>
-
-<p><img src="/myimg/java/shu4.png" width="300" alt="" /></p>
-
-<p>然后8和3交换调整：</p>
-
-<p><img src="/myimg/java/shu5.png" width="300" alt="" /></p>
-
-<p>最后7和3交换，完成。</p>
-
-<p><img src="/myimg/java/shu6.png" width="250" alt="" /></p>
-
-<pre><code>int heapsize;
-void ascSort(int array[], int size){
-    buildHeap(array, size);
-    for (int i = size - 1; i &gt;= 1; i--){
-        exchange(array, 0, i);       // 将堆顶元素最大值与堆的最后一个元素互换
-        heapsize--;                  // 从堆中去掉最后一个元素
-        heapModify(array, 0);        // 从新的堆顶元素开始进行堆调整
-    }
-}
-
-void buildHeap(int array[], int size){
-    heapsize = size;
-    for (int i = heapsize/2 - 1; i &gt;= 0; i--){ // 对每一个非叶结点 不断的堆调整
-        heapModify(array, i);
-    }
-}
-
-void heapModify(int array[], int i){    // 堆调整函数,这里使用的是大根堆
-    int leftchild = 2 * i + 1;          // 左孩子索引
-    int rightchild = 2 * i + 2;         // 右孩子索引
-    int largest;                        // 选出当前结点与左右孩子之中的最大值
-
-    if (leftchild &lt; heapsize &amp;&amp; array[leftchild] &gt; array[i]){
-        largest = leftchild;
-    }else{
-        largest = i;
-    }
-
-    if (rightchild &lt; heapsize &amp;&amp; array[rightchild] &gt; array[largest]){
-        largest = rightchild;
-    }
-
-    if (largest != i){
-        exchange(array, i, largest);     // 把当前结点和它的最大直接子节点进行交换
-        heapModify(array, largest);      // 递归调用，继续从当前结点向下进行堆调整
-    }
-}
-
-void exchange(int array[], int i, int j){   // 交换array[i]和array[j]
-    int temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-}
-</code></pre>
-
-<h5>7.归并排序</h5>
-
-<p>归并操作指的是将两个已经排序的序列合并成一个有序序列的操作，即只要从比较二个数列的第一个数，谁小就先取谁，取了后就在对应数列中删除这个数。然后再进行比较，如果有数列为空，那直接将另一个数列的数据依次取出即可。</p>
-
-<pre><code>void mergeArray(int arrayA[], int sizeA, int arrayB[], int sizeB, int resultArray[]){
-    int indexA =0;
-    int indexB =0;
-    int indexResult =0;
-
-    while (indexA &lt; sizeA &amp;&amp; indexB &lt; sizeB){
-        if (arrayA[indexA] &lt; arrayB[indexB]){
-            resultArray[indexResult] = arrayA[indexA];
-            indexResult++;
-            indexA++;
-        }else{
-            resultArray[indexResult] = arrayB[indexB];
-            indexResult++;
-            indexB++;
-        }
-    }
-
-    while (indexA &lt; sizeA){
-       resultArray[indexResult] = arrayA[indexA];
-        indexResult++;
-        indexA++;
-    }
-
-    while (indexB &lt; sizeB){
-       resultArray[indexResult] = arrayB[indexB];
-        indexResult++;
-        indexB++;
-    }
-}
-</code></pre>
-
-<p>归并的基本思路是将数组分成二组A，B，如果这二组组内的数据都是有序的，那么就可以很方便的将这二组数据进行排序。如何让这二组组内数据有序了？可以将A，B组各自再分成二组，依次类推。当分出来的小组只有一个数据时，可以认为这个小组组内已经达到了有序，然后再合并相邻的二个小组就可以了。
-<img src="/myimg/java/dg0.png" width="600" alt="" /></p>
-
-<pre><code>void ascSort(int array[], int size){
-    int *temp = malloc(size * sizeof(int));
-    recursionArray(array, temp, 0, size - 1);
-    free(temp);
-}
-
-void recursionArray(int array[], int temp[], int low, int high){
-    if (low &lt; high){
-        int middle = (low + high) / 2;
-        recursionArray(array, temp, low, middle);   //左边有序
-        recursionArray(array, temp, middle + 1, high); //右边有序
-        mergeArray(array, temp, low,middle,high);  //再把两个有序的合并
-    }
-}
-
-//将有二个有序数列 array[low...middle]和 array[middle...high]合并
-void mergeArray(int array[], int temp[], int low, int middle, int high){
-    int i = low;
-    int j = middle + 1;
-    int k = low;
-
-    while (i &lt;= middle &amp;&amp; j &lt;= high){
-        if (array[i] &lt;= array[j]){
-            temp[k++] = array[i++];
-        }
-        else{
-            temp[k++] = array[j++];
-        }
-    }
-
-    while (i &lt;= middle){
-        temp[k++] = array[i++];
-    }
-
-    while (j &lt;= high){
-        temp[k++] = array[j++];
-    }
-
-    for (int k = low; k &lt;= high; k++){
-        array[k] = temp[k];
-    }
-}
-</code></pre>
-
-<h5>8.快速排序</h5>
-
-<p>快速排序也是用分治法来实现的，即先分解分解再分解，然后逐个击破，最后挨个合并。其基本思想是：通过一趟排序将要排序的数据分割成独立的两部分，其中一部分的所有数据都比另外一部分的所有数据都要小，然后再按此方法对这两部分数据分别进行快速排序，整个排序过程可以递归进行，以此达到整个数据变成有序序列。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>先从数列中取出一个数作为基准数。
-</span><span class='line'>分区过程，将比这个数大的数全放到它的右边，小于或等于它的数全放到它的左边。
-</span><span class='line'>再对左右区间重复第二步，直到各区间只有一个数。</span></code></pre></td></tr></table></div></figure>
-
-
-<pre><code>void ascSort(int array[], int left, int right){
-    if (left &lt; right){
-        int i = left, j = right, x = array[left];
-        while (i &lt; j){
-            while(i &lt; j &amp;&amp; array[j] &gt;= x) // 从右向左找第一个小于x的数
-                j--;
-            if(i &lt; j)
-                array[i++] = array[j];
-
-            while(i &lt; j &amp;&amp; array[i] &lt; x) // 从左向右找第一个大于等于x的数
-                i++;
-            if(i &lt; j)
-                array[j--] = array[i];
-        }
-        array[i] = x;
-        ascSort(array, left, i - 1); // 递归调用
-        ascSort(array, i + 1, right);
-    }
-}
-</code></pre>
-</div>
-  
-  
-
-
-      | <a href="/blog/2016/12/27/suan-fa/#comments">Comments</a>
+      | <a href="/blog/2016/12/25/front-end/#comments">Comments</a>
 
 
     </article>
@@ -3888,10 +3888,6 @@ const styles = StyleSheet.create({
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2017/02/11/front-end/">前端基础知识</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2016/12/30/utf8/">Unicode、UTF-8编码起源</a>
       </li>
     
@@ -3901,6 +3897,10 @@ const styles = StyleSheet.create({
     
       <li class="post">
         <a href="/blog/2016/12/27/suan-fa/">排序算法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/25/front-end/">前端基础知识</a>
       </li>
     
       <li class="post">

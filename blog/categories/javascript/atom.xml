@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Javascript | 阿贵]]></title>
   <link href="http://andyfightting.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://andyfightting.github.io/"/>
-  <updated>2017-02-13T21:25:49+08:00</updated>
+  <updated>2017-02-14T08:41:27+08:00</updated>
   <id>http://andyfightting.github.io/</id>
   <author>
     <name><![CDATA[guimingsu]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[前端基础知识]]></title>
-    <link href="http://andyfightting.github.io/blog/2017/02/11/front-end/"/>
-    <updated>2017-02-11T13:45:11+08:00</updated>
-    <id>http://andyfightting.github.io/blog/2017/02/11/front-end</id>
+    <link href="http://andyfightting.github.io/blog/2016/12/25/front-end/"/>
+    <updated>2016-12-25T13:45:11+08:00</updated>
+    <id>http://andyfightting.github.io/blog/2016/12/25/front-end</id>
     <content type="html"><![CDATA[<h4>*JSONP原理</h4>
 
 <p>JSON是一种数据交换格式，JSONP(JSON Padding)是数据的传递方式，不一样的概念。打个比方，JSON是地下党们用来书写和交换情报的“暗号”，而JSONP则是把用“暗号”书写的情报，传递给自己同志时使用的接头方式。一个是描述信息的格式，一个是信息传递时约定的方法。</p>
