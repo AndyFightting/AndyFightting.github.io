@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+	<title>百度一下，你就知道</title>
+	<link rel="stylesheet" type="text/css" href="../css/baiduHome.css">
+	<link rel="shortcut icon" href="../image/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+
+<!-- title 导航 -->
+<div id="nav_div">
+<a class="mnav" href="#">糯米</a>
+<a class="mnav" href="#">新闻</a>
+<a class="mnav" href="#">hao123</a>	
+<a class="mnav" href="#">地图</a>
+<a class="mnav" href="#">视频</a>
+<a class="mnav" href="#">贴吧</a>
+<a class="mnav" href="#">登录</a>
+
+<span id="sz_span">
+	<a class="mnav" href="#">设置</a>
+	<div class="out"></div>
+	<div class="in"></div>
+	<div id="sz_container">
+		<p>搜索设置</p>
+		<p>高级搜索</p>
+		<p>开启预测</p>
+		<p>搜索历史</p>
+	</div>
+</span>
+
+	<a id="more_title" href="#" onmouseover="showRight()">更多产品</a>
+
+</div>
+
+<div id="search_div">
+	<img id="baidu_img" src="../image/baidu_icon.png">
+	<form action="#">
+    <input class="search" type="text"><button type="button">百度一下</button>
+	<img id="bd_voice" src="../image/bd_voice.png">
+	<img id="bd_camera" src="../image/bd_camera.png">
+  </form>
+</div>
+<div id="info_div">
+	<img src="../image/baidu_ewm.png" width="60px" height="60px">
+	<div id="phone_name">手机百度</div>
+	<div id="about_div">
+		<a class="mnav" href="#">把百度设为主页</a>
+		<a class="mnav" href="#">关于百度</a>
+		<a class="mnav" href="#">About Baidu</a>
+		<a class="mnav" href="#">百度推广</a>
+	</div>
+
+	<div id="feed_div">
+		<span>©2017 Baidu</span>
+		<a class="mnav" href="#">使用百度前必读</a>
+		<a class="mnav" href="#">意见反馈</a>
+		<span>京ICP证030173号</span>
+		<span id="jing0"></span>
+		<a class="mnav" href="#">京公网安备11000002000001号</a>
+		<span id="jing1"></span>
+	</div>
+
+</div>
+
+<!--右边隐藏栏-->
+<div id="right_container" onmouseout="hideRight()" onmouseover="showRight()">
+<p id="r_gd">更多产品</p>
+
+<div class="yy_div">
+  <span id="yy_img"></span>
+   <a class="right_name " href="#">音乐</a>
+</div>
+
+<div class="yy_div">
+  <span id="tp_img"></span>
+   <a class="right_name " href="#">图片</a>
+</div>
+
+<div class="yy_div">
+  <span id="zd_img"></span>
+   <a class="right_name " href="#">知道</a>
+</div>
+
+<div class="yy_div">
+  <span id="wk_img"></span>
+   <a class="right_name " href="#">文库</a>
+</div>
+
+<div class="yy_div">
+  <span id="fyb_img"></span>
+  <a class="right_name " href="#">风云榜</a>
+</div>
+
+	<a class="name_a" href="#">全部产品>></a>
+
+</div>
+</body>
+
+<script>
+    function showRight() {
+        var rightContainer = document.getElementById("right_container");
+        rightContainer.style.display="block";
+    }
+    function hideRight() {
+        var rightContainer = document.getElementById("right_container");
+        rightContainer.style.display="none";
+    }
+</script>
+
+</html>

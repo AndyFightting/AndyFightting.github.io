@@ -1,0 +1,130 @@
+body{
+	margin: 0px;
+	padding: 0px;
+	background: #f5f5f5;
+}
+#nav_container_div{
+	height: 32px;
+	background-color: #f2f2f2;
+	border-width: 0px;
+	border-bottom-width: 1px;
+	border-style: solid;
+	border-color: #e5e5e5;
+    min-width: 800px;
+    color: #999999;
+    font-size: 12px;
+    font-family: "STSong";
+}
+#welcome_container_span{
+    left: 7%;
+    position: relative;
+    line-height: 32px;
+}
+.welcome_a{
+    text-decoration: none;
+    margin-left: 15px;
+}
+a[class="welcome_a"]:link{
+     color:#999999;
+}
+a[class="welcome_a"]:visited{
+     color:#999999;
+}
+a[class="welcome_a"]:hover{
+     color:#c40000;
+}
+a[class="welcome_a"]:active{
+     color:#999999;
+}
+#menu_span{
+	height: 32px;
+	margin-right: 7%;
+	float: right;
+}
+
+/*--------我的淘宝----------*/
+#menu_span > ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  overflow: hidden;
+  display: inline-block;
+}
+.dropdown {
+  display: inline-block;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+   border-width: 1px;
+   border-top-width: 0px;
+   border-color: #e5e5e5;
+   border-style: solid;
+}
+#dropdown_ul a {
+  display: block;
+  padding: 10px;
+}
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+.dropdown:hover .dropdown-btn {
+   background-color: white;
+   border-width: 0px 1px;
+   border-color: #e5e5e5;
+   border-style: solid;
+}
+
+.dropdown-btn, .dropdown:hover a:link{
+    text-decoration: none;
+    color:#999999;
+}
+.dropdown-btn, .dropdown:hover a:visited{
+	color:#999999;
+}
+.dropdown-btn, .dropdown:hover a:hover{
+    text-decoration: underline;
+    color:#c40000;
+}
+.dropdown-btn, .dropdown:hover a:active{
+	text-decoration: none;
+	color:#999999;
+}
+
+/*我关注的品牌*/
+.nav_icon{
+    width: 12px;
+    height: 12px;
+    margin-bottom: 9px;
+    margin-left: 15px;
+}
+.like_pinpai_a{
+	position: relative;
+	bottom: 12px;
+	text-decoration: none;
+	margin-right: 5px;
+}
+
+.like_pinpai_a:link{
+   color:#999999;
+}
+.like_pinpai_a:visited{
+	color:#999999;
+}
+.like_pinpai_a:hover{
+	color:#c40000;
+}
+.like_pinpai_a:active{
+	color:#999999;
+}
+
+
+
+
+
+
+
+
+
+

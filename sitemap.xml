@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://andyfightting.github.io/blog/2017/02/19/css-menu/</loc>
+    <lastmod>2017-02-19T19:40:42+08:00</lastmod>
+  </url>
+  <url>
     <loc>http://andyfightting.github.io/blog/2016/12/30/utf8/</loc>
     <lastmod>2016-12-30T15:39:55+08:00</lastmod>
   </url>
@@ -194,5 +198,20 @@
   </url>
   <url>
     <loc>http://andyfightting.github.io/blog/categories/javascript/</loc>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/blog/categories/web/</loc>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/myweb/web_origin/html/baiduHome.html</loc>
+    <lastmod>2017-02-25T14:51:11+08:00</lastmod>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/myweb/web_origin/html/index.html</loc>
+    <lastmod>2017-02-19T16:51:49+08:00</lastmod>
+  </url>
+  <url>
+    <loc>http://andyfightting.github.io/myweb/web_origin/html/zhihu.html</loc>
+    <lastmod>2017-02-25T14:40:11+08:00</lastmod>
   </url>
 </urlset>
